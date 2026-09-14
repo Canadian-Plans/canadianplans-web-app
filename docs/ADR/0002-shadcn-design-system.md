@@ -31,7 +31,23 @@ in `packages/ui/src/styles/tokens.css`, using shadcn's standard Tailwind v4
 token shape (`:root`/`.dark` CSS custom properties feeding an `@theme
 inline` block: `--color-*`, `--radius-*`, `--font-sans`). Apps import it via
 `@canadian-plans/ui/tokens.css` from their global stylesheet and never
-redeclare a colour or radius value locally. Because Tailwind v4's content
+redeclare a colour or radius value locally.
+
+**The concrete palette comes from shadcn preset `b4gfJS2z4`** (style vega,
+base neutral, theme **red**, radius **small** = `--radius: 0.45rem`, font
+**Inter**, lucide icons — decode with `npx shadcn@latest preset decode
+b4gfJS2z4`). The preset's values were captured via
+`shadcn apply --preset b4gfJS2z4 --only theme` and hand-merged into
+`tokens.css` rather than left in a CLI-managed `app/globals.css`, so the
+single-source rule above still holds — there is no second token file and no
+`components.json`. Re-running the preset means re-merging its `:root`/`.dark`
+blocks into `tokens.css`, not pointing the CLI at it. The preset also carries
+`--chart-1..5` (red family), included for completeness though nothing renders
+charts yet. Font: the preset's `font-inter` registry item 404s upstream, so
+Inter is loaded the idiomatic Next way — `next/font/google` in the admin root
+layout exposes it as `--font-sans-inter`, which `tokens.css` consumes with a
+system-stack fallback (`var(--font-sans-inter, ui-sans-serif), …`). Every
+future frontend loads Inter the same way and inherits the same token. Because Tailwind v4's content
 scanner doesn't cross a pnpm workspace symlink by default, `apps/admin/src/
 app/globals.css` adds `@source '../../../../packages/ui/src'` so utility
 classes referenced only inside `@canadian-plans/ui` component source (e.g.

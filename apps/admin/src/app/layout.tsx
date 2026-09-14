@@ -1,7 +1,16 @@
 import type { ReactNode } from 'react';
+import { Inter } from 'next/font/google';
 import { SkipLink } from '@canadian-plans/ui';
 
 import './globals.css';
+
+// Feeds the shared `--font-sans-inter` token (see @canadian-plans/ui tokens.css)
+// per shadcn preset b4gfJS2z4 (font: inter). next/font self-hosts the files.
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-sans-inter',
+  display: 'swap',
+});
 
 export const metadata = {
   title: 'Canadian Plans — Admin',
@@ -9,7 +18,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <body>
         <SkipLink />
         {children}
