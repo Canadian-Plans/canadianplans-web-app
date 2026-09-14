@@ -1,8 +1,8 @@
 # API.md
 
-Hand-maintained reference for `apps/backend`'s `/api/v1` surface. The health
-response is checked against the shared contract in backend tests and the
-admin's placeholder client; the handler constructs its typed response.
+Hand-maintained reference for `apps/backend`'s `/api/v1` surface. Shared Zod
+request/response/error schemas live in `@canadian-plans/contracts` and are
+consumed by both backend tests and the admin API client.
 
 An OpenAPI document generated from `@canadian-plans/contracts` is planned
 (PLATFORM_CONTEXT.md §3, IMPLEMENTATION_PLAN.md §7) but not wired yet; this
@@ -14,10 +14,48 @@ file is the hand-maintained skeleton until that generation step exists.
 - Every response carries a fresh server-generated `x-request-id` header.
   The health JSON echoes that value in `requestId`. Unknown routes/methods
   currently use Express's default 404 response, not a JSON error envelope.
-- Error envelope shape is defined once `@canadian-plans/contracts` adds it
-  (T7) — not yet in place.
-- No endpoint below performs a database operation or requires
-  authentication; both arrive with T4/T5/T6.
+- Staff errors use `{ "error": { "code", "message", "requestId" } }`. Stable
+  T5 codes include `missing_session`, `invalid_session`, `membership_missing`,
+  `membership_pending`, `membership_revoked`, `permission_denied`, and
+  `mfa_required`.
+- Staff endpoints accept `Authorization: Bearer <Supabase access token>`.
+  The backend verifies the token with Supabase Auth on every request, obtains
+  the current assurance level for that exact token, then reads membership,
+  roles and individual permissions from Postgres. Client role/AAL headers and
+  user-editable metadata are ignored.
+- Browser access is allowed only from the exact `ADMIN_ORIGIN`. Staff request
+  bodies are capped at 64 KiB.
+
+## Authentication
+
+`/api/v1` has three caller types. The workspace is always derived from the
+verified identity — never from a body field, `workspace_id`, Host, Origin or
+CORS (PLATFORM_CONTEXT §4b, invariant 2).
+
+- **Staff** (`/api/v1/staff/*`): `Authorization: Bearer <Supabase access token>`.
+  Verified with Supabase Auth on every request; membership, roles and
+  permissions are re-read from Postgres. See the T5 codes above.
+- **Website** (`/api/v1/website/*`): `Authorization: Bearer cplsk_<secret>`. The
+  backend hashes the secret (SHA-256) and resolves it through the SECURITY
+  DEFINER `app.resolve_website_credential` bootstrap function to a workspace,
+  scopes and revocation status. A credential may hold only these scopes:
+  `leads:write`, `quotes:create`, `orders:create`, `uploads:customer`,
+  `tracking:otp`. Size and edge/bot admission run before any database work; a
+  durable, bounded per-IP and per-credential rate limiter
+  (`app.rate_limit_hit`, fixed window, no global counter) gates database work.
+  Error codes: `missing_credential`, `invalid_credential`, `credential_revoked`,
+  `credential_not_found`, `scope_denied`, `caller_forbidden`, `rate_limited`,
+  `payload_too_large`.
+- **Machine** (webhooks and schedulers, wired in later tasks): resolved by the
+  server-only registry (`MACHINE_REGISTRY_JSON`, PLATFORM_CONTEXT §4b). URL
+  selectors are untrusted; the mapped HMAC signature or scheduler secret is
+  verified before any context is derived. Unknown/revoked selectors, invalid
+  signatures, wrong provider accounts and foreign workspaces all fail closed.
+  Error codes: `machine_unknown`, `machine_signature_invalid`,
+  `machine_account_mismatch`, `machine_workspace_mismatch`.
+
+All error codes share the one envelope `{ error: { code, message, requestId } }`
+(`authErrorCodeSchema` in `@canadian-plans/contracts`).
 
 ## Endpoints
 
@@ -33,3 +71,111 @@ Liveness check. No auth, no tenant context, no DB access.
 
 Schema: `healthResponseSchema` in
 [`packages/contracts/src/health.ts`](../packages/contracts/src/health.ts).
+
+### `GET /api/v1/staff/workspaces`
+
+Protected staff bootstrap lookup. The first verified login also atomically
+accepts pending staff invitations matching the verified Auth email. Returns
+only the actor's active membership/workspace metadata and assigned role names;
+it never returns another actor or tenant business data.
+
+- `200`: `{ workspaces: StaffWorkspace[], requestId }`
+- `401`: `missing_session` or `invalid_session`
+
+### `GET /api/v1/staff/workspaces/{workspaceId}/access`
+
+Re-reads this actor's membership, roles and individual permission overrides
+inside tenant RLS and authorizes `workspace.read`.
+
+- `200`: `{ workspace, permissions, requestId }`
+- `400`: `invalid_request`
+- `401`: session errors
+- `403`: membership/permission reason code
+- `404`: `workspace_not_found`
+
+### `POST /api/v1/staff/workspaces/{workspaceId}/invitations`
+
+Owner-only privileged action; requires a server-verified `aal2` session. Body:
+`{ email, roles[] }`. Creates a pending membership and role assignments, and
+audits the action. The recipient uses **Accept staff invitation** on `/login`;
+Supabase Auth sends its confirmation email, and the first verified backend
+request binds the pending membership. This avoids any privileged Auth key in
+application code.
+
+- `201`: `{ membershipId, status: "pending", requestId }`
+- `400`: `invalid_request`
+- `403`: `permission_denied`, membership reason, or `mfa_required`
+- `409`: `membership_conflict`
+
+### `DELETE /api/v1/staff/workspaces/{workspaceId}/memberships/{membershipId}`
+
+Owner-only privileged action; requires server-verified `aal2`. Sets status to
+`revoked` and audits old/new status. Self-removal is refused. Because every
+later protected request re-reads the row, an already-issued access token does
+not retain workspace access.
+
+- `200`: `{ membershipId, status: "revoked", requestId }`
+- `400`: invalid IDs or self-removal
+- `403`: authorization/MFA reason
+- `404`: `membership_not_found`
+
+### `POST /api/v1/staff/workspaces/{workspaceId}/service-credentials`
+
+Owner-only privileged action (`integration.manage`); requires a server-verified
+`aal2` session. Body: `{ scopes: WebsiteScopeName[] }` (1–5 scopes). Generates a
+random secret, stores only its hash, and audits the action. The plaintext
+`secret` is returned **once** in this response and never again.
+
+- `201`: `{ credential: { id, scopes, createdAt, revokedAt }, secret, requestId }`
+- `400`: `invalid_request` (empty/unknown scopes)
+- `403`: `permission_denied`, membership reason, or `mfa_required`
+
+### `GET /api/v1/staff/workspaces/{workspaceId}/service-credentials`
+
+Owner-only (`integration.manage`, `aal2`). Lists the workspace's credentials
+without secrets.
+
+- `200`: `{ credentials: { id, scopes, createdAt, revokedAt }[], requestId }`
+- `403`: authorization/MFA reason
+
+### `DELETE /api/v1/staff/workspaces/{workspaceId}/service-credentials/{credentialId}`
+
+Owner-only (`integration.manage`, `aal2`). Sets `revoked_at`; the next website
+request presenting that credential is denied `credential_revoked`. Idempotent —
+re-revoking returns the original revocation time.
+
+- `200`: `{ id, revokedAt, requestId }`
+- `403`: authorization/MFA reason
+- `404`: `credential_not_found`
+
+### `POST /api/v1/website/leads`
+
+Storefront endpoint authenticated by a website service credential holding the
+`leads:write` scope. The workspace comes from the credential; any `workspace_id`
+in the body is ignored. Real lead persistence lands in A2; this route currently
+acknowledges the authenticated, scoped context.
+
+- `202`: `{ workspaceId, callerType: "website", scopes, requestId }`
+- `401`: `missing_credential`, `invalid_credential`, `credential_revoked`
+- `403`: `scope_denied`, `caller_forbidden`
+- `429`: `rate_limited` (with `Retry-After`)
+
+## Staff permission matrix
+
+`workspace.read` is non-privileged so an authenticated Owner/Finance actor can
+reach MFA enrollment/challenge and recovery. Every other Owner/Finance action
+below requires verified `aal2`.
+
+| Role     | Matrix actions                                        |
+| -------- | ----------------------------------------------------- |
+| owner    | every T5 action                                       |
+| orders   | `workspace.read`                                      |
+| partners | `workspace.read`                                      |
+| finance  | `workspace.read`, `financial.read`, `invoice.approve` |
+| content  | `workspace.read`                                      |
+| viewer   | `workspace.read`                                      |
+
+Individual permission rows map to document download, financial data, bulk
+export, deletion, invoice approval and integration management. An explicit
+individual `deny` wins over the matrix; otherwise an explicit `allow` can add
+the mapped action. No match denies by default.

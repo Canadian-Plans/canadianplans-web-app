@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Inter } from 'next/font/google';
 import { SkipLink } from '@canadian-plans/ui';
 
+import { StaffSessionProvider } from '../components/staff-session-provider';
 import './globals.css';
 
 // Feeds the shared `--font-sans-inter` token (see @canadian-plans/ui tokens.css)
@@ -25,7 +26,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" className={`dark ${inter.variable}`}>
       <body>
         <SkipLink />
-        {children}
+        <StaffSessionProvider>{children}</StaffSessionProvider>
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
 ---
 name: project-workflow
-description: Guide AI work in Canadian Plans at session startup and during implementation, review, debugging, refactoring, and documentation. Use to keep scope focused, reuse context, make evidence-based changes, and run proportionate verification.
+description: Guide Canadian Plans implementation, review, debugging, refactoring, and documentation with focused scope and proportionate verification. Load for project work, not merely to list available skills.
 license: MIT
 ---
 
@@ -8,7 +8,9 @@ license: MIT
 
 Adapted from the owner's supplied `karpathy-guidelines` (MIT). PLATFORM_CONTEXT.md
 remains the source of architecture and rules. Follow AGENTS.md's startup reading
-order once per session.
+rules once per session. Skill discovery and announcements live in AGENTS.md;
+select specialist skills from their descriptions and load their bodies only when
+needed. Cross-links are task-dependent references, not a mandatory reading chain.
 
 ## Establish scope
 

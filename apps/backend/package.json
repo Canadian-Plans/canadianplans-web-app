@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "node --env-file-if-exists=.env.local --import tsx --watch src/server.ts",
     "build": "tsup api/index.ts src/server.ts --format esm --target node22 --out-dir dist --clean",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
@@ -14,7 +14,10 @@
     "@canadian-plans/contracts": "workspace:*",
     "@canadian-plans/db": "workspace:*",
     "@canadian-plans/types": "workspace:*",
-    "express": "5.2.1"
+    "@supabase/supabase-js": "2.116.0",
+    "drizzle-orm": "catalog:",
+    "express": "5.2.1",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@canadian-plans/config": "workspace:*",

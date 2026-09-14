@@ -8,6 +8,34 @@
       "when": 1789367963605,
       "tag": "0000_cheerful_vermin",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789374021543,
+      "tag": "0001_boring_mister_fear",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789377104893,
+      "tag": "0002_shallow_ogun",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789377395099,
+      "tag": "0003_chubby_songbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789382847995,
+      "tag": "0004_simple_hellfire_club",
+      "breakpoints": true
     }
   ]
 }

@@ -14,6 +14,7 @@
     "@canadian-plans/contracts": "workspace:*",
     "@canadian-plans/types": "workspace:*",
     "@canadian-plans/ui": "workspace:*",
+    "@supabase/supabase-js": "2.116.0",
     "lucide-react": "catalog:",
     "next": "16.3.5",
     "react": "19.3.0",

@@ -1,14 +1,24 @@
 import { sql } from 'drizzle-orm';
 import {
+  membershipStatuses,
+  permissionEffects,
+  staffPermissionNames,
+  staffRoleNames,
+} from '@canadian-plans/types';
+import {
+  check,
   foreignKey,
   index,
+  integer,
   jsonb,
   pgPolicy,
   pgRole,
   pgSchema,
+  primaryKey,
   text,
   timestamp,
   unique,
+  uniqueIndex,
   uuid,
   type AnyPgColumn,
 } from 'drizzle-orm/pg-core';
@@ -16,28 +26,20 @@ import {
 export const appSchema = pgSchema('app');
 
 export const membershipType = appSchema.enum('membership_type', ['staff', 'partner']);
-export const roleName = appSchema.enum('role_name', [
-  'owner',
-  'orders',
-  'partners',
-  'finance',
-  'content',
-  'viewer',
-]);
-export const permissionName = appSchema.enum('permission_name', [
-  'document_download',
-  'financial_data',
-  'bulk_export',
-  'deletion',
-  'invoice_approval',
-  'integration_management',
-]);
+export const roleName = appSchema.enum('role_name', staffRoleNames);
+export const permissionName = appSchema.enum('permission_name', staffPermissionNames);
+export const permissionEffect = appSchema.enum('permission_effect', permissionEffects);
 
 const appRuntimeRole = pgRole('app_runtime').existing();
 
 function tenantPolicy(name: string, workspaceId: AnyPgColumn) {
-  const predicate = sql`${workspaceId} = nullif(current_setting('app.workspace_id', true), '')::uuid
-    and nullif(current_setting('app.actor_id', true), '')::uuid is not null`;
+  const predicate = sql`${workspaceId} = nullif(
+      (select current_setting('app.workspace_id', true)),
+      ''
+    )::uuid and nullif(
+      (select current_setting('app.actor_id', true)),
+      ''
+    )::uuid is not null`;
 
   return pgPolicy(name, {
     for: 'all',
@@ -49,6 +51,8 @@ function tenantPolicy(name: string, workspaceId: AnyPgColumn) {
 
 const createdAt = () =>
   timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull();
+
+const membershipStatusList = sql.raw(membershipStatuses.map((status) => `'${status}'`).join(', '));
 
 /** Global workspace registry: the sole non-tenant table in this migration. */
 export const workspaces = appSchema.table('workspaces', {
@@ -66,18 +70,42 @@ export const memberships = appSchema
       workspaceId: uuid('workspace_id')
         .notNull()
         .references(() => workspaces.id, { onDelete: 'cascade' }),
-      userId: uuid('user_id').notNull(),
+      userId: uuid('user_id'),
+      invitedEmail: text('invited_email'),
       membershipType: membershipType('membership_type').notNull(),
       status: text('status').notNull(),
+      acceptedAt: timestamp('accepted_at', { withTimezone: true, mode: 'date' }),
+      revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'date' }),
       createdAt: createdAt(),
     },
     (table) => [
       unique('memberships_workspace_id_id_unique').on(table.workspaceId, table.id),
       unique('memberships_workspace_id_user_id_unique').on(table.workspaceId, table.userId),
+      uniqueIndex('memberships_workspace_pending_email_unique')
+        .on(table.workspaceId, sql`lower(${table.invitedEmail})`)
+        .where(sql`${table.status} = 'pending'`),
       index('memberships_workspace_id_status_idx').on(
         table.workspaceId,
         table.status,
         table.userId,
+      ),
+      index('memberships_user_id_status_workspace_id_idx').on(
+        table.userId,
+        table.status,
+        table.workspaceId,
+      ),
+      check('memberships_status_check', sql`${table.status} in (${membershipStatusList})`),
+      check(
+        'memberships_identity_state_check',
+        sql`(
+          ${table.status} = 'pending'
+          and ${table.userId} is null
+          and ${table.invitedEmail} is not null
+        ) or (
+          ${table.status} = 'active'
+          and ${table.userId} is not null
+          and ${table.invitedEmail} is null
+        ) or ${table.status} = 'revoked'`,
       ),
       tenantPolicy('memberships_tenant_policy', table.workspaceId),
     ],
@@ -167,6 +195,7 @@ export const membershipPermissions = appSchema
         .references(() => workspaces.id, { onDelete: 'cascade' }),
       membershipId: uuid('membership_id').notNull(),
       permissionId: uuid('permission_id').notNull(),
+      effect: permissionEffect('effect').default('allow').notNull(),
       createdAt: createdAt(),
     },
     (table) => [
@@ -213,11 +242,38 @@ export const serviceCredentials = appSchema
     },
     (table) => [
       unique('service_credentials_workspace_id_id_unique').on(table.workspaceId, table.id),
+      // A credential secret resolves to exactly one workspace before tenant
+      // context exists (the website bootstrap lookup in PLATFORM_CONTEXT §4b);
+      // a global unique hash guarantees that resolution is unambiguous.
+      unique('service_credentials_secret_hash_unique').on(table.secretHash),
       index('service_credentials_workspace_id_revoked_at_idx').on(
         table.workspaceId,
         table.revokedAt,
       ),
       tenantPolicy('service_credentials_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Durable, bounded per-key rate-limit buckets for public (pre-tenant) requests.
+ * There is no tenant policy and no `app_runtime` table grant: the runtime role
+ * reaches these rows only through the SECURITY DEFINER `app.rate_limit_hit`
+ * function, so a bug in application code cannot read or scan the counters. Rows
+ * are keyed per credential/IP + fixed window, never a single global counter.
+ */
+export const rateLimitBuckets = appSchema
+  .table(
+    'rate_limit_buckets',
+    {
+      bucketKey: text('bucket_key').notNull(),
+      windowStart: timestamp('window_start', { withTimezone: true, mode: 'date' }).notNull(),
+      requestCount: integer('request_count').default(1).notNull(),
+      expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
+    },
+    (table) => [
+      primaryKey({ columns: [table.bucketKey, table.windowStart] }),
+      index('rate_limit_buckets_expires_at_idx').on(table.expiresAt),
     ],
   )
   .enableRLS();
@@ -262,6 +318,7 @@ export const schema = {
   permissions,
   membershipPermissions,
   serviceCredentials,
+  rateLimitBuckets,
   auditEvents,
 };
 
@@ -272,4 +329,5 @@ export type MembershipRole = typeof membershipRoles.$inferSelect;
 export type Permission = typeof permissions.$inferSelect;
 export type MembershipPermission = typeof membershipPermissions.$inferSelect;
 export type ServiceCredential = typeof serviceCredentials.$inferSelect;
+export type RateLimitBucket = typeof rateLimitBuckets.$inferSelect;
 export type AuditEvent = typeof auditEvents.$inferSelect;

@@ -11,6 +11,7 @@
   "scripts": {
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/migrate.ts",
+    "db:seed": "tsx src/seed.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
@@ -23,6 +24,7 @@
     "vitest": "catalog:"
   },
   "dependencies": {
+    "@canadian-plans/types": "workspace:*",
     "drizzle-orm": "catalog:",
     "postgres": "3.4.9"
   }

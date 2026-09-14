@@ -1,6 +1,6 @@
 # Canadian Plans
 
-T1–T3 provide the monorepo, backend/admin shell and site-1 scaffold. T4 adds the first Drizzle workspace/access schema, restricted runtime role, tenant RLS and pooled transaction helper. Authentication and operational order data remain later tasks; this is not yet a production-ready platform.
+T1–T5 provide the monorepo, backend/admin/site-1 shells, restricted tenant database foundation, and staff authentication/authorization layer. Operational order data remains later work; this is not yet a production-ready platform.
 
 ## Read the project context
 
@@ -36,9 +36,10 @@ Use Node **22.19.0** and pnpm **9.15.0**. Dependency versions are pinned in mani
 pnpm install --frozen-lockfile
 pnpm --filter backend dev
 pnpm --filter admin dev
+pnpm --filter @canadian-plans/db db:seed
 ```
 
-The backend listens on port 4000; admin defaults to 3000. The health endpoint and frontend scaffolds need no credentials. Database-backed work uses the two connection variables documented in [docs/ENV.md](docs/ENV.md). The admin starts at `/login`; inspect the shell at `/w/site-1/orders`.
+The backend listens on port 4000; admin defaults to 3000. The health endpoint needs no credentials. Staff routes require the Supabase Auth and restricted database variables documented in [docs/ENV.md](docs/ENV.md). The admin starts at `/login`; authenticated workspace routes begin at `/w/site-1/orders`.
 
 ## Verification
 

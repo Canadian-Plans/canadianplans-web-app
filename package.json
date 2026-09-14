@@ -19,6 +19,7 @@
     "format:fix": "prettier --write .",
     "typecheck": "pnpm -r run typecheck",
     "test": "vitest run",
+    "test:recovery-spike": "node scripts/recovery-spike.mjs",
     "build": "pnpm -r run build",
     "test:tooling": "node --test scripts/*.test.mjs",
     "build:affected": "node scripts/affected-builds.mjs --build",
