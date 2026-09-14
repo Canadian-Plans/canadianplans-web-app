@@ -29,7 +29,7 @@ Business questions that are not yet answered. **AI agents: never invent an answe
 | 19 | Carrier eligibility / activation evidence / who collects each fee / taxes | T9/T14 | TEST offers only until set | |
 | 20 | Cancellation after manual payment or activation — the manual staff process (no refund automation) | T14/T21 | flag for authorised review; no automated adjustment | |
 | 21 | Supabase Auth email (staff invites/recovery) — verified sender + custom SMTP, separate from the customer EmailAdapter | T5/T18 | needed before real staff-invite testing | |
-| 22 | Staging setup — separate Free Supabase org, or a second paid project in the prod org (billing is per-org) | T0 | decide before hosted staging | |
+| 22 | Staging setup — separate Free Supabase org, or a second paid project in the prod org (billing is per-org) | T0 | decide before hosted staging | Single live environment — no separate staging project |
 | 23 | Email provider selection, SES region/production access and sending quota, sender/event verification | T0 approval request / T18 integration / before live mail | SES preferred candidate; fake adapter in tests; no automatic provider fallback | |
 
 ## Deferred recovery objectives (do not block development)
@@ -56,7 +56,7 @@ Move rows here once decided, with the date. Don't delete them; a decided input t
 
 | # | Input | Answer | Decided |
 |---|---|---|---|
-| — | Region for data and functions | Canada | 9 Sep 2026 |
+| — | Region for data and functions | Canada preferred; superseded 14 Sep 2026 — Supabase project provisioned in us-west-2 is acceptable | 9 Sep 2026 |
 | — | Analytics tool | Umami | 9 Sep 2026 |
 | — | Malware scanning on uploads | Not at launch — deliberate; signature verification only | 9 Sep 2026 |
 | — | Refund / cancellation policy | None exists; no logic to build | 9 Sep 2026 |
@@ -81,3 +81,4 @@ Move rows here once decided, with the date. Don't delete them; a decided input t
 | — | Integrity vs availability | Temporarily stop new orders when necessary to preserve confirmed orders | 14 Sep 2026 |
 | — | Recovery baseline | Proceed with standard backups, separate encrypted archive, alerts and tested restore; exact recovery-time/loss objectives deferred | 14 Sep 2026 |
 | — | Company / umbrella brand | Canadian Plans. Individual storefront names/domains and registered billing identity remain separate inputs | 14 Sep 2026 |
+| 22 | Staging setup | Single live environment — no separate staging Supabase org/project | 14 Sep 2026 |
