@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 import { membershipStatuses, staffPermissionNames, staffRoleNames } from '@canadian-plans/types';
 
+import { websiteAuthErrorCodeSchema } from './website-auth';
+
 export const staffRoleNameSchema = z.enum(staffRoleNames);
 export const staffPermissionNameSchema = z.enum(staffPermissionNames);
 export const membershipStatusSchema = z.enum(membershipStatuses);
@@ -23,9 +25,21 @@ export const staffAuthErrorCodeSchema = z.enum([
 
 export type StaffAuthErrorCode = z.infer<typeof staffAuthErrorCodeSchema>;
 
+/**
+ * Every `/api/v1` error code: staff, website credential, and machine identity.
+ * One envelope validates all callers so the admin client and storefront share
+ * a single error shape.
+ */
+export const authErrorCodeSchema = z.enum([
+  ...staffAuthErrorCodeSchema.options,
+  ...websiteAuthErrorCodeSchema.options,
+]);
+
+export type AuthErrorCode = z.infer<typeof authErrorCodeSchema>;
+
 export const apiErrorResponseSchema = z.object({
   error: z.object({
-    code: staffAuthErrorCodeSchema,
+    code: authErrorCodeSchema,
     message: z.string(),
     requestId: z.uuid(),
   }),

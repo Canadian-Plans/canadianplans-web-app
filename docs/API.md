@@ -26,6 +26,37 @@ file is the hand-maintained skeleton until that generation step exists.
 - Browser access is allowed only from the exact `ADMIN_ORIGIN`. Staff request
   bodies are capped at 64 KiB.
 
+## Authentication
+
+`/api/v1` has three caller types. The workspace is always derived from the
+verified identity — never from a body field, `workspace_id`, Host, Origin or
+CORS (PLATFORM_CONTEXT §4b, invariant 2).
+
+- **Staff** (`/api/v1/staff/*`): `Authorization: Bearer <Supabase access token>`.
+  Verified with Supabase Auth on every request; membership, roles and
+  permissions are re-read from Postgres. See the T5 codes above.
+- **Website** (`/api/v1/website/*`): `Authorization: Bearer cplsk_<secret>`. The
+  backend hashes the secret (SHA-256) and resolves it through the SECURITY
+  DEFINER `app.resolve_website_credential` bootstrap function to a workspace,
+  scopes and revocation status. A credential may hold only these scopes:
+  `leads:write`, `quotes:create`, `orders:create`, `uploads:customer`,
+  `tracking:otp`. Size and edge/bot admission run before any database work; a
+  durable, bounded per-IP and per-credential rate limiter
+  (`app.rate_limit_hit`, fixed window, no global counter) gates database work.
+  Error codes: `missing_credential`, `invalid_credential`, `credential_revoked`,
+  `credential_not_found`, `scope_denied`, `caller_forbidden`, `rate_limited`,
+  `payload_too_large`.
+- **Machine** (webhooks and schedulers, wired in later tasks): resolved by the
+  server-only registry (`MACHINE_REGISTRY_JSON`, PLATFORM_CONTEXT §4b). URL
+  selectors are untrusted; the mapped HMAC signature or scheduler secret is
+  verified before any context is derived. Unknown/revoked selectors, invalid
+  signatures, wrong provider accounts and foreign workspaces all fail closed.
+  Error codes: `machine_unknown`, `machine_signature_invalid`,
+  `machine_account_mismatch`, `machine_workspace_mismatch`.
+
+All error codes share the one envelope `{ error: { code, message, requestId } }`
+(`authErrorCodeSchema` in `@canadian-plans/contracts`).
+
 ## Endpoints
 
 ### `GET /api/v1/health`
@@ -87,6 +118,47 @@ not retain workspace access.
 - `400`: invalid IDs or self-removal
 - `403`: authorization/MFA reason
 - `404`: `membership_not_found`
+
+### `POST /api/v1/staff/workspaces/{workspaceId}/service-credentials`
+
+Owner-only privileged action (`integration.manage`); requires a server-verified
+`aal2` session. Body: `{ scopes: WebsiteScopeName[] }` (1–5 scopes). Generates a
+random secret, stores only its hash, and audits the action. The plaintext
+`secret` is returned **once** in this response and never again.
+
+- `201`: `{ credential: { id, scopes, createdAt, revokedAt }, secret, requestId }`
+- `400`: `invalid_request` (empty/unknown scopes)
+- `403`: `permission_denied`, membership reason, or `mfa_required`
+
+### `GET /api/v1/staff/workspaces/{workspaceId}/service-credentials`
+
+Owner-only (`integration.manage`, `aal2`). Lists the workspace's credentials
+without secrets.
+
+- `200`: `{ credentials: { id, scopes, createdAt, revokedAt }[], requestId }`
+- `403`: authorization/MFA reason
+
+### `DELETE /api/v1/staff/workspaces/{workspaceId}/service-credentials/{credentialId}`
+
+Owner-only (`integration.manage`, `aal2`). Sets `revoked_at`; the next website
+request presenting that credential is denied `credential_revoked`. Idempotent —
+re-revoking returns the original revocation time.
+
+- `200`: `{ id, revokedAt, requestId }`
+- `403`: authorization/MFA reason
+- `404`: `credential_not_found`
+
+### `POST /api/v1/website/leads`
+
+Storefront endpoint authenticated by a website service credential holding the
+`leads:write` scope. The workspace comes from the credential; any `workspace_id`
+in the body is ignored. Real lead persistence lands in A2; this route currently
+acknowledges the authenticated, scoped context.
+
+- `202`: `{ workspaceId, callerType: "website", scopes, requestId }`
+- `401`: `missing_credential`, `invalid_credential`, `credential_revoked`
+- `403`: `scope_denied`, `caller_forbidden`
+- `429`: `rate_limited` (with `Retry-After`)
 
 ## Staff permission matrix
 

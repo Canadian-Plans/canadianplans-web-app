@@ -27,3 +27,28 @@ export type PermissionEffect = (typeof permissionEffects)[number];
 
 export const membershipStatuses = tuple('pending', 'active', 'revoked');
 export type MembershipStatus = (typeof membershipStatuses)[number];
+
+/**
+ * Scopes a storefront service credential may hold. The public website may only
+ * create/resume its own drafts and request quotes/orders/uploads/tracking; it
+ * can never list records or take a staff action (PLATFORM_CONTEXT.md §5).
+ */
+export const websiteScopeNames = tuple(
+  'leads:write',
+  'quotes:create',
+  'orders:create',
+  'uploads:customer',
+  'tracking:otp',
+);
+export type WebsiteScopeName = (typeof websiteScopeNames)[number];
+
+/** Distinguishes how a request authenticated, so a staff-only route can refuse a website caller. */
+export const callerTypes = tuple('staff', 'website', 'machine');
+export type CallerType = (typeof callerTypes)[number];
+
+/**
+ * Scopes a verified machine identity may hold. Scheduler identities in the
+ * server-only registry (PLATFORM_CONTEXT.md §4b) are granted an explicit subset.
+ */
+export const machineScopeNames = tuple('outbox:run', 'reconcile:run', 'synthetic:check');
+export type MachineScopeName = (typeof machineScopeNames)[number];

@@ -89,6 +89,41 @@ advisor and avoids per-row session-setting evaluation.
 Authorization behavior remains unchanged. The connected Supabase project reports
 no security findings and no remaining RLS initialization-plan warnings.
 
+## 0004_simple_hellfire_club.sql
+
+Task: T6
+
+Date: 2026-09-14
+
+### Change
+
+- New `app.rate_limit_buckets` table: bounded per-key fixed-window counters
+  (`bucket_key` + `window_start` primary key, `request_count`, `expires_at`).
+- New global unique constraint `service_credentials_secret_hash_unique` so a
+  credential secret resolves to exactly one workspace.
+- New SECURITY DEFINER bootstrap functions (search_path `''`):
+  `app.resolve_website_credential(secret_hash)` returns the credential's own
+  workspace/scopes/revocation before tenant context; `app.rate_limit_hit(key,
+window_seconds, max_count)` records a hit and reports allow/retry with a short
+  `lock_timeout` and opportunistic bounded expiry cleanup.
+- `EXECUTE` on both functions granted to `app_runtime`.
+
+### Why
+
+T6 storefront-to-backend authentication (PLATFORM_CONTEXT §4b website bootstrap;
+IMPLEMENTATION_PLAN §5 public abuse controls). The website credential resolves
+its own workspace without a caller-supplied workspace and without a broad
+cross-tenant read; the durable limiter uses per-key rows, never a global hot
+counter.
+
+### RLS
+
+`rate_limit_buckets` has RLS enabled and FORCED with **no** policy and **no**
+`app_runtime` table grant, so the runtime role reaches it only through
+`app.rate_limit_hit`. `service_credentials` keeps its existing tenant policy;
+`app.resolve_website_credential` is the sole pre-tenant read path, scoped to a
+single secret-hash lookup.
+
 Each future entry follows this shape:
 
 ```

@@ -1,4 +1,5 @@
 import type { VerifiedStaffSession } from '../auth/session.js';
+import type { WebsiteContext } from '../website/session.js';
 
 declare global {
   namespace Express {
@@ -7,6 +8,8 @@ declare global {
       id: string;
       /** Present only after the protected staff-session middleware succeeds. */
       staffSession?: VerifiedStaffSession;
+      /** Present only after the website credential middleware succeeds. */
+      websiteContext?: WebsiteContext;
     }
   }
 }

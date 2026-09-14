@@ -17,6 +17,15 @@ import type {
   RevokeResult,
   StaffStore,
 } from '../src/staff/store.js';
+import type { WebsiteCredentialStore } from '../src/website/store.js';
+
+const noopCredentialStore: WebsiteCredentialStore = {
+  createCredential: async () => {
+    throw new Error('not used in these staff-route tests');
+  },
+  listCredentials: async () => [],
+  revokeCredential: async () => ({ status: 'not_found' }),
+};
 
 const ACTOR = '20000000-0000-4000-8000-000000000001';
 const WORKSPACE = '10000000-0000-4000-8000-000000000001';
@@ -76,7 +85,9 @@ beforeEach(async () => {
     assuranceLevel: 'aal2',
   });
   store = new MemoryStaffStore();
-  server = createApp({ staff: { sessionVerifier: verifier, store } }).listen(0);
+  server = createApp({
+    staff: { sessionVerifier: verifier, store, credentialStore: noopCredentialStore },
+  }).listen(0);
   await new Promise<void>((resolve) => server.once('listening', resolve));
   const address = server.address();
   if (address === null || typeof address === 'string') throw new Error('expected TCP server');
@@ -89,17 +100,14 @@ afterEach(async () => {
 
 describe('protected staff routes', () => {
   it('rejects malformed JSON with the shared safe error envelope', async () => {
-    const response = await fetch(
-      `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/invitations`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: 'Bearer aal2-token',
-          'content-type': 'application/json',
-        },
-        body: '{"email":',
+    const response = await fetch(`${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/invitations`, {
+      method: 'POST',
+      headers: {
+        authorization: 'Bearer aal2-token',
+        'content-type': 'application/json',
       },
-    );
+      body: '{"email":',
+    });
     expect(response.status).toBe(400);
     expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe('invalid_request');
   });

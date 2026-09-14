@@ -11,6 +11,7 @@ them or paste them into chat.
 - `API_BASE_URL`
 - `NEXT_PUBLIC_API_BASE_URL`
 - `ADMIN_ORIGIN` — backend-only exact admin origin allowed for browser API calls; defaults to `http://localhost:3000` in local development
+- `MACHINE_REGISTRY_JSON` — backend-only server-only integration registry (PLATFORM_CONTEXT §4b): JSON mapping webhook selectors to `{ provider, providerAccount, workspaceId, verificationSecret }` and scheduler selectors to `{ secret, workspaceIds, scopes }`; deployment configuration set through the owner's release process, never customer data. Unset means a deny-all registry. Staging and production registries and secrets are separate.
 
 ## Supabase
 

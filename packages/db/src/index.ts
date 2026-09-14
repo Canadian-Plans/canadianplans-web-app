@@ -20,11 +20,43 @@ export interface DatabaseClientOptions {
 export type Database = PostgresJsDatabase<typeof schema>;
 export type TenantTransaction = Parameters<Parameters<Database['transaction']>[0]>[0];
 
+export interface WebsiteCredentialResolution {
+  workspaceId: string;
+  scopes: string[];
+  revoked: boolean;
+}
+
+export interface RateLimitResult {
+  allowed: boolean;
+  retryAfterSeconds: number;
+}
+
+export interface RateLimitInput {
+  bucketKey: string;
+  windowSeconds: number;
+  maxCount: number;
+}
+
 export interface DatabaseClient {
   db: Database;
   withActorTx<T>(actorId: string, fn: (tx: TenantTransaction) => Promise<T> | T): Promise<T>;
   withTenantTx<T>(ctx: TenantContext, fn: (tx: TenantTransaction) => Promise<T> | T): Promise<T>;
+  resolveWebsiteCredential(secretHash: string): Promise<WebsiteCredentialResolution | undefined>;
+  rateLimitHit(input: RateLimitInput): Promise<RateLimitResult>;
   close(): Promise<void>;
+}
+
+interface CredentialRow {
+  [key: string]: unknown;
+  workspaceId: string;
+  scopes: string[];
+  revoked: boolean;
+}
+
+interface RateLimitRow {
+  [key: string]: unknown;
+  allowed: boolean;
+  retryAfterSeconds: number;
 }
 
 function createClient(options: DatabaseClientOptions) {
@@ -64,6 +96,33 @@ export function createDatabaseClient(options: DatabaseClientOptions): DatabaseCl
         );
         return fn(tx);
       }),
+    // Pre-tenant website bootstrap (PLATFORM_CONTEXT §4b): resolve a credential
+    // to its own workspace/scopes/revocation through the SECURITY DEFINER
+    // function without any caller-supplied workspace and without tenant context.
+    resolveWebsiteCredential: async (secretHash) => {
+      const rows = await db.execute<CredentialRow>(sql`
+        select
+          workspace_id as "workspaceId",
+          scopes,
+          revoked
+        from app.resolve_website_credential(${secretHash})
+      `);
+      const row = rows[0];
+      return row
+        ? { workspaceId: row.workspaceId, scopes: row.scopes, revoked: row.revoked }
+        : undefined;
+    },
+    rateLimitHit: async ({ bucketKey, windowSeconds, maxCount }) => {
+      const rows = await db.execute<RateLimitRow>(sql`
+        select
+          allowed,
+          retry_after_seconds as "retryAfterSeconds"
+        from app.rate_limit_hit(${bucketKey}, ${windowSeconds}, ${maxCount})
+      `);
+      const row = rows[0];
+      if (!row) throw new Error('rate_limit_hit returned no row');
+      return { allowed: row.allowed, retryAfterSeconds: row.retryAfterSeconds };
+    },
     close: () => sqlClient.end(),
   };
 }
@@ -102,4 +161,16 @@ export function withActorTx<T>(
   fn: (tx: TenantTransaction) => Promise<T> | T,
 ): Promise<T> {
   return getDefaultClient().withActorTx(actorId, fn);
+}
+
+/** Website bootstrap: resolve a credential secret hash to its workspace/scopes/revocation. */
+export function resolveWebsiteCredential(
+  secretHash: string,
+): Promise<WebsiteCredentialResolution | undefined> {
+  return getDefaultClient().resolveWebsiteCredential(secretHash);
+}
+
+/** Records one hit against a bounded per-key rate-limit window and reports whether it is allowed. */
+export function rateLimitHit(input: RateLimitInput): Promise<RateLimitResult> {
+  return getDefaultClient().rateLimitHit(input);
 }

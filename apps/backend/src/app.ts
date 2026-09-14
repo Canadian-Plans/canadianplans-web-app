@@ -7,9 +7,15 @@ import {
   createStaffRouter,
   type StaffRouteDependencies,
 } from './routes/staff.js';
+import {
+  createDefaultWebsiteRouteDependencies,
+  createWebsiteRouter,
+  type WebsiteRouteDependencies,
+} from './routes/website.js';
 
 export interface CreateAppOptions {
   staff?: StaffRouteDependencies;
+  website?: WebsiteRouteDependencies;
 }
 
 function adminCors(): RequestHandler {
@@ -51,6 +57,12 @@ export function createApp(options: CreateAppOptions = {}): Express {
   app.use(
     '/api/v1/staff',
     createStaffRouter(options.staff ?? createDefaultStaffRouteDependencies()),
+  );
+  // Public storefront surface. Server-to-server, so CORS does not apply and is
+  // never treated as authentication; the service credential is the only proof.
+  app.use(
+    '/api/v1/website',
+    createWebsiteRouter(options.website ?? createDefaultWebsiteRouteDependencies()),
   );
   app.use(invalidBodyError);
 

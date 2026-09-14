@@ -9,10 +9,12 @@ import {
   check,
   foreignKey,
   index,
+  integer,
   jsonb,
   pgPolicy,
   pgRole,
   pgSchema,
+  primaryKey,
   text,
   timestamp,
   unique,
@@ -240,11 +242,38 @@ export const serviceCredentials = appSchema
     },
     (table) => [
       unique('service_credentials_workspace_id_id_unique').on(table.workspaceId, table.id),
+      // A credential secret resolves to exactly one workspace before tenant
+      // context exists (the website bootstrap lookup in PLATFORM_CONTEXT §4b);
+      // a global unique hash guarantees that resolution is unambiguous.
+      unique('service_credentials_secret_hash_unique').on(table.secretHash),
       index('service_credentials_workspace_id_revoked_at_idx').on(
         table.workspaceId,
         table.revokedAt,
       ),
       tenantPolicy('service_credentials_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Durable, bounded per-key rate-limit buckets for public (pre-tenant) requests.
+ * There is no tenant policy and no `app_runtime` table grant: the runtime role
+ * reaches these rows only through the SECURITY DEFINER `app.rate_limit_hit`
+ * function, so a bug in application code cannot read or scan the counters. Rows
+ * are keyed per credential/IP + fixed window, never a single global counter.
+ */
+export const rateLimitBuckets = appSchema
+  .table(
+    'rate_limit_buckets',
+    {
+      bucketKey: text('bucket_key').notNull(),
+      windowStart: timestamp('window_start', { withTimezone: true, mode: 'date' }).notNull(),
+      requestCount: integer('request_count').default(1).notNull(),
+      expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
+    },
+    (table) => [
+      primaryKey({ columns: [table.bucketKey, table.windowStart] }),
+      index('rate_limit_buckets_expires_at_idx').on(table.expiresAt),
     ],
   )
   .enableRLS();
@@ -289,6 +318,7 @@ export const schema = {
   permissions,
   membershipPermissions,
   serviceCredentials,
+  rateLimitBuckets,
   auditEvents,
 };
 
@@ -299,4 +329,5 @@ export type MembershipRole = typeof membershipRoles.$inferSelect;
 export type Permission = typeof permissions.$inferSelect;
 export type MembershipPermission = typeof membershipPermissions.$inferSelect;
 export type ServiceCredential = typeof serviceCredentials.$inferSelect;
+export type RateLimitBucket = typeof rateLimitBuckets.$inferSelect;
 export type AuditEvent = typeof auditEvents.$inferSelect;

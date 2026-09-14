@@ -1,15 +1,22 @@
 import {
   apiErrorResponseSchema,
+  createServiceCredentialResponseSchema,
   healthResponseSchema,
   inviteStaffResponseSchema,
+  listServiceCredentialsResponseSchema,
+  revokeServiceCredentialResponseSchema,
   revokeStaffResponseSchema,
   staffWorkspaceAccessResponseSchema,
   staffWorkspacesResponseSchema,
+  type CreateServiceCredentialRequest,
+  type CreateServiceCredentialResponse,
   type HealthResponse,
   type InviteStaffRequest,
   type InviteStaffResponse,
+  type ListServiceCredentialsResponse,
+  type RevokeServiceCredentialResponse,
   type RevokeStaffResponse,
-  type StaffAuthErrorCode,
+  type AuthErrorCode,
   type StaffWorkspaceAccessResponse,
   type StaffWorkspacesResponse,
 } from '@canadian-plans/contracts';
@@ -19,7 +26,7 @@ const API_BASE_URL =
 
 export class BackendError extends Error {
   constructor(
-    readonly code: StaffAuthErrorCode,
+    readonly code: AuthErrorCode,
     readonly status: number,
   ) {
     super(code);
@@ -95,6 +102,43 @@ export async function revokeStaff(
   return revokeStaffResponseSchema.parse(
     await staffRequest(
       `/api/v1/staff/workspaces/${workspaceId}/memberships/${membershipId}`,
+      accessToken,
+      { method: 'DELETE' },
+    ),
+  );
+}
+
+export async function listServiceCredentials(
+  accessToken: string,
+  workspaceId: string,
+): Promise<ListServiceCredentialsResponse> {
+  return listServiceCredentialsResponseSchema.parse(
+    await staffRequest(`/api/v1/staff/workspaces/${workspaceId}/service-credentials`, accessToken),
+  );
+}
+
+export async function createServiceCredential(
+  accessToken: string,
+  workspaceId: string,
+  input: CreateServiceCredentialRequest,
+): Promise<CreateServiceCredentialResponse> {
+  return createServiceCredentialResponseSchema.parse(
+    await staffRequest(`/api/v1/staff/workspaces/${workspaceId}/service-credentials`, accessToken, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(input),
+    }),
+  );
+}
+
+export async function revokeServiceCredential(
+  accessToken: string,
+  workspaceId: string,
+  credentialId: string,
+): Promise<RevokeServiceCredentialResponse> {
+  return revokeServiceCredentialResponseSchema.parse(
+    await staffRequest(
+      `/api/v1/staff/workspaces/${workspaceId}/service-credentials/${credentialId}`,
       accessToken,
       { method: 'DELETE' },
     ),
