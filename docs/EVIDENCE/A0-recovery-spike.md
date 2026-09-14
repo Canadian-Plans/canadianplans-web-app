@@ -146,7 +146,7 @@ selection alone is not append-only proof. Unique operation keys, compliance
 Object Lock, version-aware listing, and an independently authenticated fresh
 checkpoint are all required.
 
-Live bootstrap now has two private Backblaze B2 buckets in the account: 
+Live bootstrap now has two private Backblaze B2 buckets in the account:
 `canadian-plans-backup-archive` (bucket ID `88d367ae494ba509af08071f`) and
 `canadian-plans-deletion-ledger` (bucket ID `2863b74e494ba509af08071f`). Both
 have server-side encryption and Object Lock enabled. The dashboard's
