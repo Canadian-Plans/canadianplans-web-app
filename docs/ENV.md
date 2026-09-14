@@ -17,8 +17,11 @@ Read-only provider observation on 2026-09-14 found no Vercel projects in the
 Canadian Plans team and one Supabase project in `us-west-2`. Do not use that
 project as evidence of Canadian staging compliance (required: `ca-central-1`).
 
-The default website-write route is deliberately closed until a verified
-edge/bot admission implementation is supplied. Tests inject explicit admission.
+The default website-write route validates `X-Turnstile-Token` through Cloudflare
+Siteverify before database work. It denies missing configuration, invalid tokens,
+hostname/action mismatches and provider failures. The storefront must forward a
+fresh widget token with action `lead-submit`; deployed widget verification remains
+pending. Tests inject explicit admission or mock the provider response.
 The backend does not trust caller-controlled `X-Forwarded-For`; any deployment
 proxy trust policy must be narrowly verified before enabling public traffic.
 
@@ -53,6 +56,16 @@ The application has no privileged Supabase key variable. Staff invitations use a
 - `R2_SECRET_ACCESS_KEY`
 - `R2_BUCKET`
 - `R2_ENDPOINT`
+
+## Cloudflare Turnstile
+
+- `TURNSTILE_SECRET_KEY` — backend-only Siteverify secret; public test secrets are rejected
+- `TURNSTILE_HOSTNAME` — exact allowed storefront hostname returned by Siteverify, without scheme or path
+
+The verifier has a five-second network timeout and does not cache successful tokens.
+It never takes the allowed hostname from the request. Do not place live Turnstile
+credentials in previews. The current credential proof endpoint uses `lead-submit`;
+future public actions must bind their own expected action explicitly.
 
 ## Sanity
 

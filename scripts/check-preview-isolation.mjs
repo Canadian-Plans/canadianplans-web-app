@@ -173,6 +173,7 @@ if (isMain) {
   const result = validatePreviewIsolation(inventory, {
     deployments: ['backend', 'admin', 'site-1'],
     credentialKeys: [
+      'backend:TURNSTILE_SECRET_KEY',
       'backend:DATABASE_URL',
       'backend:SUPABASE_ANON_KEY',
       'backend:MACHINE_REGISTRY_JSON',

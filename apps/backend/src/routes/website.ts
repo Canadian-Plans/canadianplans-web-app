@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { rateLimitHit, resolveWebsiteCredential } from '@canadian-plans/db';
+import { createTurnstileVerifier } from '../website/turnstile.js';
 
 import {
   requireScope,
@@ -13,13 +14,16 @@ export interface WebsiteRouteDependencies {
 }
 
 export function createDefaultWebsiteRouteDependencies(): WebsiteRouteDependencies {
+  const verify = createTurnstileVerifier({
+    secret: process.env.TURNSTILE_SECRET_KEY,
+    hostname: process.env.TURNSTILE_HOSTNAME,
+    action: 'lead-submit',
+  });
   return {
     auth: {
       resolveCredential: resolveWebsiteCredential,
       rateLimit: rateLimitHit,
-      // No edge/bot provider is provisioned yet. Keep public writes closed
-      // until a verified admission implementation is supplied at deployment.
-      botCheck: () => false,
+      botCheck: (req) => verify(req.get('x-turnstile-token')),
     },
   };
 }

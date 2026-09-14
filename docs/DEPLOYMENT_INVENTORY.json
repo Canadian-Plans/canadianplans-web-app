@@ -17,6 +17,11 @@
   "credentialCatalog": [
     {
       "deployment": "backend",
+      "name": "TURNSTILE_SECRET_KEY",
+      "resourceKind": "turnstile"
+    },
+    {
+      "deployment": "backend",
       "name": "DATABASE_URL",
       "resourceKind": "postgres"
     },

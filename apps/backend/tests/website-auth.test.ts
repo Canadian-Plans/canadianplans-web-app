@@ -76,6 +76,7 @@ let baseUrl: string;
 let resolver: FakeCredentialResolver;
 let limiter: FakeRateLimiter;
 let admitted: boolean;
+let admissionFailure: boolean;
 
 function post(path: string, headers: Record<string, string>, body?: unknown) {
   return fetch(`${baseUrl}${path}`, {
@@ -89,13 +90,17 @@ beforeEach(async () => {
   resolver = new FakeCredentialResolver();
   limiter = new FakeRateLimiter();
   admitted = true;
+  admissionFailure = false;
   server = createApp({
     staff: staffOnly,
     website: {
       auth: {
         resolveCredential: resolver.resolve,
         rateLimit: limiter.hit,
-        botCheck: () => admitted,
+        botCheck: async () => {
+          if (admissionFailure) throw new Error('provider unavailable');
+          return admitted;
+        },
       },
     },
   }).listen(0);
@@ -110,6 +115,16 @@ afterEach(async () => {
 });
 
 describe('public website credential authentication', () => {
+  it('denies an asynchronous admission exception without database work', async () => {
+    admissionFailure = true;
+    const response = await post(
+      '/api/v1/website/leads',
+      { authorization: `Bearer ${VALID_SECRET}` },
+      {},
+    );
+    expect(response.status).toBe(403);
+    expect(limiter.inputs).toHaveLength(0);
+  });
   it('denies failed admission before touching database-backed dependencies', async () => {
     admitted = false;
     const response = await post(
