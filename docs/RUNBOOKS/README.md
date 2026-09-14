@@ -5,8 +5,9 @@ required access, a safe stopping point, how to verify success, and an
 escalation owner — always the owner (Takib); there is no one else to
 escalate to (PLATFORM_CONTEXT.md "Who decides").
 
-None exist yet. Per IMPLEMENTATION_PLAN.md §18, the following are added as
-their tasks land:
+Runbooks are added as their tasks land. The A0 restore spike documents the
+provider-supported procedure and open production checks; it is not a passed
+production recovery rehearsal.
 
 | Runbook | Added by |
 |---|---|
@@ -16,7 +17,7 @@ their tasks land:
 | Dispatch and activation | T14/T19 |
 | Commission and invoice month-end | T19 |
 | Backup alert response | T24/T25 |
-| Full restore | T24 |
+| [Full restore (A0 spike; production gate open)](restore.md) | T4R, completed by T24 |
 | Workspace provisioning | T4/T4P |
 | Export/import | Phase B (see PLATFORM_CONTEXT.md §6) |
 | Credential rotation | T25/T26 |
