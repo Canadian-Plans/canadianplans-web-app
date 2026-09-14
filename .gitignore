@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Test / coverage
+coverage/
+playwright-report/
+test-results/
+blob-report/
+
+# Vercel
+.vercel/
+
+# Editor / OS
+.DS_Store
+*.log
+npm-debug.log*
+pnpm-debug.log*

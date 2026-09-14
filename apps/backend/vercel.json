@@ -1,0 +1,6 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": ["yyz1"],
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }],
+  "ignoreCommand": "bash ../../scripts/vercel-ignore-build.sh backend"
+}

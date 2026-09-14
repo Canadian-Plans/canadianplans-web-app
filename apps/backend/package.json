@@ -1,0 +1,28 @@
+{
+  "name": "backend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsup api/index.ts src/server.ts --format esm --target node22 --out-dir dist --clean",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@canadian-plans/adapters": "workspace:*",
+    "@canadian-plans/contracts": "workspace:*",
+    "@canadian-plans/db": "workspace:*",
+    "@canadian-plans/types": "workspace:*",
+    "express": "5.2.1"
+  },
+  "devDependencies": {
+    "@canadian-plans/config": "workspace:*",
+    "@types/express": "5.0.6",
+    "@types/node": "catalog:",
+    "tsup": "8.5.1",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}
