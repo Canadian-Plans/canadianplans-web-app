@@ -12,7 +12,7 @@ import {
 } from '../auth/session.js';
 import { sendStaffAuthError } from '../http/staff-errors.js';
 import { sendWebsiteError } from '../http/website-errors.js';
-import { createAuthorize } from '../staff/authorization.js';
+import { createAuthorize, denyReasonOf } from '../staff/authorization.js';
 import { DatabaseStaffStore, type StaffStore } from '../staff/store.js';
 import { generateServiceSecret } from '../website/credential.js';
 import {
@@ -94,7 +94,7 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         action: 'workspace.read',
       });
       if (!decision.allowed) {
-        sendStaffAuthError(res, req.id, decision.reason, 403);
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
         return;
       }
 
@@ -140,7 +140,7 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         action: 'staff.invite',
       });
       if (!decision.allowed) {
-        sendStaffAuthError(res, req.id, decision.reason, 403);
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
         return;
       }
 
@@ -182,7 +182,7 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         action: 'staff.remove',
       });
       if (!decision.allowed) {
-        sendStaffAuthError(res, req.id, decision.reason, 403);
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
         return;
       }
 
@@ -226,7 +226,7 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         action: 'integration.manage',
       });
       if (!decision.allowed) {
-        sendStaffAuthError(res, req.id, decision.reason, 403);
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
         return;
       }
 
@@ -264,7 +264,7 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         action: 'integration.manage',
       });
       if (!decision.allowed) {
-        sendStaffAuthError(res, req.id, decision.reason, 403);
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
         return;
       }
 
@@ -298,7 +298,7 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         action: 'integration.manage',
       });
       if (!decision.allowed) {
-        sendStaffAuthError(res, req.id, decision.reason, 403);
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
         return;
       }
 
