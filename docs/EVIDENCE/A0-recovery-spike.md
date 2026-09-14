@@ -146,9 +146,14 @@ selection alone is not append-only proof. Unique operation keys, compliance
 Object Lock, version-aware listing, and an independently authenticated fresh
 checkpoint are all required.
 
-No B2 account or credentials were available. Real denied read/delete probes,
-Object Lock retention, version listing, archive/ledger separation, and recovery
-key access must be proved in T21/T24.
+Live bootstrap now has two private Backblaze B2 buckets in the account: 
+`canadian-plans-backup-archive` (bucket ID `88d367ae494ba509af08071f`) and
+`canadian-plans-deletion-ledger` (bucket ID `2863b74e494ba509af08071f`). Both
+have server-side encryption and Object Lock enabled. The dashboard's
+write-only application-key preset was tested and found to include
+`deleteFiles`/`bypassGovernance`; that noncompliant key was revoked immediately.
+No B2 credential is currently retained. Real denied read/delete probes,
+retention, version listing, and recovery-key access remain T21/T24 work.
 
 ## Exact exclusions and required bootstrap changes
 
