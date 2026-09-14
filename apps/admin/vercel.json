@@ -1,5 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "regions": ["yyz1"],
+  "regions": ["sfo1"],
   "ignoreCommand": "node ../../scripts/affected-builds.mjs --vercel admin"
 }
