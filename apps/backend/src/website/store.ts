@@ -1,5 +1,10 @@
 import { and, desc, eq } from 'drizzle-orm';
-import { auditEvents, serviceCredentials, withTenantTx } from '@canadian-plans/db';
+import {
+  auditEvents,
+  type DatabaseClient,
+  serviceCredentials,
+  withTenantTx,
+} from '@canadian-plans/db';
 import { websiteScopeSchema } from '@canadian-plans/contracts';
 import type { WebsiteScopeName } from '@canadian-plans/types';
 
@@ -39,6 +44,10 @@ export interface WebsiteCredentialStore {
   revokeCredential(input: RevokeCredentialInput): Promise<RevokeCredentialResult>;
 }
 
+type CredentialDatabase = Pick<DatabaseClient, 'withTenantTx'>;
+
+const defaultCredentialDatabase: CredentialDatabase = { withTenantTx };
+
 function toRecord(row: {
   id: string;
   scopes: string[];
@@ -55,95 +64,106 @@ function toRecord(row: {
 }
 
 export class DatabaseWebsiteCredentialStore implements WebsiteCredentialStore {
+  constructor(private readonly database: CredentialDatabase = defaultCredentialDatabase) {}
+
   async createCredential(input: CreateCredentialInput): Promise<ServiceCredentialRecord> {
-    return withTenantTx({ actorId: input.actorId, workspaceId: input.workspaceId }, async (tx) => {
-      const [row] = await tx
-        .insert(serviceCredentials)
-        .values({
+    return this.database.withTenantTx(
+      { actorId: input.actorId, workspaceId: input.workspaceId },
+      async (tx) => {
+        const [row] = await tx
+          .insert(serviceCredentials)
+          .values({
+            workspaceId: input.workspaceId,
+            secretHash: input.secretHash,
+            scopes: [...input.scopes],
+          })
+          .returning({
+            id: serviceCredentials.id,
+            scopes: serviceCredentials.scopes,
+            createdAt: serviceCredentials.createdAt,
+            revokedAt: serviceCredentials.revokedAt,
+          });
+        if (!row) throw new Error('service credential insert did not return a row');
+
+        await tx.insert(auditEvents).values({
           workspaceId: input.workspaceId,
-          secretHash: input.secretHash,
-          scopes: [...input.scopes],
-        })
-        .returning({
-          id: serviceCredentials.id,
-          scopes: serviceCredentials.scopes,
-          createdAt: serviceCredentials.createdAt,
-          revokedAt: serviceCredentials.revokedAt,
+          actorId: input.actorId,
+          actorLabel: 'staff actor',
+          action: 'service_credential.created',
+          entity: 'service_credential',
+          entityId: row.id,
+          requestId: input.requestId,
+          after: { scopes: [...input.scopes] },
         });
-      if (!row) throw new Error('service credential insert did not return a row');
 
-      await tx.insert(auditEvents).values({
-        workspaceId: input.workspaceId,
-        actorId: input.actorId,
-        actorLabel: 'staff actor',
-        action: 'service_credential.created',
-        entity: 'service_credential',
-        entityId: row.id,
-        requestId: input.requestId,
-        after: { scopes: [...input.scopes] },
-      });
-
-      return toRecord(row);
-    });
+        return toRecord(row);
+      },
+    );
   }
 
   async listCredentials(input: {
     actorId: string;
     workspaceId: string;
   }): Promise<ServiceCredentialRecord[]> {
-    return withTenantTx({ actorId: input.actorId, workspaceId: input.workspaceId }, async (tx) => {
-      const rows = await tx
-        .select({
-          id: serviceCredentials.id,
-          scopes: serviceCredentials.scopes,
-          createdAt: serviceCredentials.createdAt,
-          revokedAt: serviceCredentials.revokedAt,
-        })
-        .from(serviceCredentials)
-        .where(eq(serviceCredentials.workspaceId, input.workspaceId))
-        .orderBy(desc(serviceCredentials.createdAt));
-      return rows.map(toRecord);
-    });
+    return this.database.withTenantTx(
+      { actorId: input.actorId, workspaceId: input.workspaceId },
+      async (tx) => {
+        const rows = await tx
+          .select({
+            id: serviceCredentials.id,
+            scopes: serviceCredentials.scopes,
+            createdAt: serviceCredentials.createdAt,
+            revokedAt: serviceCredentials.revokedAt,
+          })
+          .from(serviceCredentials)
+          .where(eq(serviceCredentials.workspaceId, input.workspaceId))
+          .orderBy(desc(serviceCredentials.createdAt));
+        return rows.map(toRecord);
+      },
+    );
   }
 
   async revokeCredential(input: RevokeCredentialInput): Promise<RevokeCredentialResult> {
-    return withTenantTx({ actorId: input.actorId, workspaceId: input.workspaceId }, async (tx) => {
-      const [existing] = await tx
-        .select({ id: serviceCredentials.id, revokedAt: serviceCredentials.revokedAt })
-        .from(serviceCredentials)
-        .where(
-          and(
-            eq(serviceCredentials.workspaceId, input.workspaceId),
-            eq(serviceCredentials.id, input.credentialId),
-          ),
-        )
-        .limit(1);
-      if (!existing) return { status: 'not_found' };
-      if (existing.revokedAt) {
-        return { status: 'already_revoked', revokedAt: existing.revokedAt.toISOString() };
-      }
+    return this.database.withTenantTx(
+      { actorId: input.actorId, workspaceId: input.workspaceId },
+      async (tx) => {
+        const [existing] = await tx
+          .select({ id: serviceCredentials.id, revokedAt: serviceCredentials.revokedAt })
+          .from(serviceCredentials)
+          .where(
+            and(
+              eq(serviceCredentials.workspaceId, input.workspaceId),
+              eq(serviceCredentials.id, input.credentialId),
+            ),
+          )
+          .limit(1);
+        if (!existing) return { status: 'not_found' };
+        if (existing.revokedAt) {
+          return { status: 'already_revoked', revokedAt: existing.revokedAt.toISOString() };
+        }
 
-      const revokedAt = new Date();
-      await tx
-        .update(serviceCredentials)
-        .set({ revokedAt })
-        .where(
-          and(
-            eq(serviceCredentials.workspaceId, input.workspaceId),
-            eq(serviceCredentials.id, input.credentialId),
-          ),
-        );
-      await tx.insert(auditEvents).values({
-        workspaceId: input.workspaceId,
-        actorId: input.actorId,
-        actorLabel: 'staff actor',
-        action: 'service_credential.revoked',
-        entity: 'service_credential',
-        entityId: input.credentialId,
-        requestId: input.requestId,
-        after: { revokedAt: revokedAt.toISOString() },
-      });
-      return { status: 'revoked', revokedAt: revokedAt.toISOString() };
-    });
+        const revokedAt = new Date();
+        await tx
+          .update(serviceCredentials)
+          .set({ revokedAt })
+          .where(
+            and(
+              eq(serviceCredentials.workspaceId, input.workspaceId),
+              eq(serviceCredentials.id, input.credentialId),
+            ),
+          );
+        await tx.insert(auditEvents).values({
+          workspaceId: input.workspaceId,
+          actorId: input.actorId,
+          actorLabel: 'staff actor',
+          action: 'service_credential.revoked',
+          entity: 'service_credential',
+          entityId: input.credentialId,
+          requestId: input.requestId,
+          after: { revokedAt: revokedAt.toISOString() },
+        });
+        return { status: 'revoked', revokedAt: revokedAt.toISOString() };
+      },
+    );
   }
 }

@@ -43,6 +43,10 @@ jobs:
           node-version: 22.19.0
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Verify preview credentials target isolated non-production resources
+        run: pnpm run check:preview-isolation
+      - name: Verify frontends cannot import the database package
+        run: pnpm run check:frontend-db-boundary
       - name: Record release metadata (no credentials)
         run: |
           git rev-parse HEAD

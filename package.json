@@ -22,6 +22,8 @@
     "test:recovery-spike": "node scripts/recovery-spike.mjs",
     "build": "pnpm -r run build",
     "test:tooling": "node --test scripts/*.test.mjs",
+    "check:preview-isolation": "node scripts/check-preview-isolation.mjs",
+    "check:frontend-db-boundary": "eslint apps/admin apps/site-1",
     "build:affected": "node scripts/affected-builds.mjs --build",
     "test:e2e": "pnpm --filter admin exec playwright test && pnpm --filter site-1 run test:security"
   },

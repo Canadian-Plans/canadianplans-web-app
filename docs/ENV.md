@@ -4,6 +4,13 @@ This file intentionally lists variable names only. Store all values in the
 password manager and in the appropriate deployment environment; never commit
 them or paste them into chat.
 
+The redacted [deployment inventory](DEPLOYMENT_INVENTORY.json) records which
+credential names are present in each preview deployment and maps each one to a
+non-production resource using a SHA-256 fingerprint of the provider-issued
+immutable resource ID. Display names are not accepted as isolation evidence.
+Preview deployments are currently recorded as not provisioned; update the
+inventory in the same reviewed change that provisions any preview credential.
+
 ## Runtime
 
 - `NODE_ENV`
