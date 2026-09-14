@@ -11,6 +11,16 @@ import { defineConfig } from 'tsup';
  * function is fully self-contained; leave real npm dependencies external
  * since they already ship plain JS. `splitting: false` avoids a shared
  * chunk file, since Vercel's build takes only the entry file per function.
+ *
+ * dist/vercelHandler.d.ts (written by scripts/write-vercel-handler-dts.mjs,
+ * run after this build) exists for the same reason: Vercel's separate
+ * type-check pass inspects api/index.ts (the function entrypoint it
+ * auto-discovers) regardless of this project's tsconfig `include`, and
+ * under `strict` an untyped `.js` import is an error (TS7016) without a
+ * declaration file. tsup's own `dts` option was tried first but its
+ * type-bundler fails on an unrelated deprecated `baseUrl` warning-as-error
+ * surfaced from elsewhere in the dependency graph; the actual shape here
+ * is trivial enough that hand-writing it sidesteps that entirely.
  */
 export default defineConfig({
   entry: { vercelHandler: 'src/vercelHandler.ts', 'src/server': 'src/server.ts' },
