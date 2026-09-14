@@ -1,5 +1,7 @@
 'use client';
+import { schemaTypes } from '@canadian-plans/contracts/cms';
 import { defineConfig } from 'sanity';
+import { presentationTool } from 'sanity/presentation';
 import { structureTool } from 'sanity/structure';
 
 // Browser-safe CMS identifiers only. No project is provisioned by T3.
@@ -14,8 +16,19 @@ export default defineConfig(
         basePath: '/studio',
         projectId,
         dataset,
-        plugins: [structureTool()],
-        schema: { types: [] },
+        plugins: [
+          structureTool(),
+          // Editor-only draft preview (REQ 08). Route allowlisting and cache
+          // suppression live in src/app/api/draft-mode/enable/route.ts.
+          presentationTool({
+            previewUrl: {
+              previewMode: {
+                enable: '/api/draft-mode/enable',
+              },
+            },
+          }),
+        ],
+        schema: { types: schemaTypes },
       }
     : [],
 );

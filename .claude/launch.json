@@ -6,6 +6,12 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "admin", "run", "dev"],
       "port": 3000
+    },
+    {
+      "name": "site-1",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "site-1", "run", "dev"],
+      "port": 3001
     }
   ]
 }

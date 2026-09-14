@@ -31,3 +31,4 @@ catalog:
   lucide-react: 0.548.0
   clsx: 2.1.1
   tailwind-merge: 3.4.0
+  sanity: 5.29.0
