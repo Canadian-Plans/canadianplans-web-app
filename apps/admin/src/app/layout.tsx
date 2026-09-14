@@ -17,8 +17,11 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  // Admin is dark-only. Force the `.dark` palette on the root instead of
+  // wiring a theme toggle; the shared @canadian-plans/ui tokens keep the light
+  // palette for storefronts that want it.
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`dark ${inter.variable}`}>
       <body>
         <SkipLink />
         {children}
