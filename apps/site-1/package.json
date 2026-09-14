@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "test:security": "node scripts/verify-client-bundle.mjs"
+    "test:security": "node scripts/verify-client-bundle.mjs",
+    "seed:test-offers": "node scripts/seed-test-offers.mjs"
   },
   "dependencies": {
     "@canadian-plans/contracts": "workspace:*",
@@ -21,7 +22,7 @@
     "next-sanity": "13.3.4",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "sanity": "5.29.0",
+    "sanity": "catalog:",
     "server-only": "0.0.1",
     "styled-components": "6.5.3"
   },

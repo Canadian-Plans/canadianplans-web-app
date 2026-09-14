@@ -76,6 +76,7 @@ future public actions must bind their own expected action explicitly.
 - `SANITY_DATASET`
 - `SANITY_API_VERSION`
 - `SANITY_API_TOKEN`
+- `SITE_1_SANITY_PREVIEW_TOKEN` — site-1-scoped, read-only viewer token for editor draft preview only; never `NEXT_PUBLIC_*`
 
 ## AWS SES
 
