@@ -75,12 +75,24 @@ Date: 2026-09-14
   pre-existing CRLF-only differences under local `core.autocrlf=true` (a
   Windows checkout artifact), which CI evaluates on an LF checkout.
 
+## Connected Supabase verification
+
+- Applied `0004` to the connected `canadianplans` project (migration
+  `t6_website_credentials_and_rate_limit`) under owner approval. The first apply
+  surfaced a real SQL defect never caught locally (the integration suite is
+  CI-gated): `pg_catalog.extract(epoch FROM …)` cannot be schema-qualified with
+  the `FROM` keyword form, and `GREATEST` is a special construct, not a
+  `pg_catalog` function. Corrected to `pg_catalog.date_part('epoch', …)` and
+  `GREATEST(…)`; the migration file and the live database now match, and the
+  re-apply succeeded.
+- `supabase_read_only_user` (a non-`app_runtime`, non-superuser role) is denied
+  `EXECUTE` on `app.rate_limit_hit`, confirming `REVOKE ALL … FROM PUBLIC` is
+  effective. Runtime execution as `app_runtime` is exercised by the gated
+  integration suite in CI (the test harness refuses to run against a non-`_test`
+  database, so it is not pointed at this project).
+- No application production deployment was performed.
+
 ## Not done here
 
-- The `0004` migration is verified structurally (drizzle-kit check) and its
-  functions/RLS are exercised by the gated integration suite in CI. It has
-  **not** been applied to the connected Supabase project; per
-  IMPLEMENTATION_PLAN §18, generated SQL/RLS/authorization is applied only under
-  owner review. No production deployment was performed.
 - Real lead/quote/order handlers remain A2; T6 provides the authenticated,
   scoped surface and proves the credential → context boundary.
