@@ -1,5 +1,7 @@
 # TASK_TEMPLATE.md
 
+Start by reading [AGENTS.md](../AGENTS.md) and following its session workflow.
+
 Every task given to an AI agent uses this template
 (IMPLEMENTATION_PLAN.md §18). `BUILD_TASKS.md` is the local task source;
 update external trackers only when explicitly authorized.

@@ -1,0 +1,9 @@
+
+H:\CanadianPlans\apps\admin\src\boundary-review-demo.ts
+  1:1   error  Only apps/backend, packages/db and explicitly listed offline files may import database code (PLATFORM_CONTEXT §4.3)  canadian-plans/data-boundary
+  3:22  error  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  4:26  error  Do not use any type assertions                                                                                       @typescript-eslint/consistent-type-assertions
+
+✖ 3 problems (3 errors, 0 warnings)
+
+Exit code: 1 (expected 1)

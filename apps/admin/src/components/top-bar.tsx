@@ -14,7 +14,9 @@ export function TopBar({ workspace }: { workspace: string }) {
       <SidebarTrigger />
       <div className="h-6 w-px bg-border" aria-hidden="true" />
       <WorkspaceSwitcher currentWorkspace={workspace} currentSection={section} />
-      <div className="ml-auto flex items-center gap-3 text-sm text-muted-foreground">Staff</div>
+      <div className="ml-auto hidden items-center gap-3 text-sm text-muted-foreground sm:flex">
+        Staff
+      </div>
     </header>
   );
 }

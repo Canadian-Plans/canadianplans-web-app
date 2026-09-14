@@ -8,7 +8,8 @@
     "./eslint": "./eslint.js",
     "./prettier.config.js": "./prettier.config.js",
     "./vitest.base": "./vitest.base.ts",
-    "./playwright.base": "./playwright.base.ts"
+    "./playwright.base": "./playwright.base.ts",
+    ".": "./src/index.ts"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
@@ -19,6 +20,10 @@
     "eslint-plugin-react-hooks": "catalog:",
     "globals": "catalog:",
     "typescript-eslint": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "typescript": "catalog:"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
   }
 }

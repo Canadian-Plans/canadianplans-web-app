@@ -1,0 +1,23 @@
+
+> canadian-plans@0.0.0 typecheck H:\CanadianPlans
+> pnpm -r run typecheck
+
+Scope: 9 of 10 workspace projects
+packages/config typecheck$ tsc --noEmit
+packages/config typecheck: Done
+packages/db typecheck$ tsc --noEmit
+packages/types typecheck$ tsc --noEmit
+packages/ui typecheck$ tsc --noEmit
+packages/db typecheck: Done
+packages/types typecheck: Done
+packages/ui typecheck: Done
+packages/adapters typecheck$ tsc --noEmit
+packages/contracts typecheck$ tsc --noEmit
+packages/adapters typecheck: Done
+packages/contracts typecheck: Done
+apps/admin typecheck$ tsc --noEmit
+apps/site-1 typecheck$ tsc --noEmit
+apps/backend typecheck$ tsc --noEmit
+apps/backend typecheck: Done
+apps/admin typecheck: Done
+apps/site-1 typecheck: Done

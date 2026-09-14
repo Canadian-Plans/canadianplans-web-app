@@ -10,14 +10,17 @@ them or paste them into chat.
 - `PORT`
 - `API_BASE_URL`
 - `NEXT_PUBLIC_API_BASE_URL`
-- `VITE_API_BASE_URL`
 
 ## Supabase
 
 - `SUPABASE_URL`
 - `SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `DATABASE_URL`
+- `DATABASE_URL` — backend-only Supavisor transaction-mode URL for the restricted `app_runtime` role; never use the migration owner or a service-role key
+- `DATABASE_SSL_MODE` — optional; defaults to `require`, with `disable` allowed only for local disposable PostgreSQL
+- `MIGRATION_DATABASE_URL` — offline/CI migration connection using a separate privileged database role; never exposed to applications or previews
+- `MIGRATION_DATABASE_SSL_MODE` — optional; defaults to `require`, with `disable` allowed only for local disposable PostgreSQL
+- `TEST_MIGRATION_DATABASE_URL` — test-only privileged connection to a disposable database whose name ends in `_test`; never reuse a staging or production migration URL
+- `DB_TEST_ALLOW_DESTRUCTIVE` — explicit integration-test opt-in; must be exactly `1` and is set only alongside `TEST_MIGRATION_DATABASE_URL`
 
 ## Cloudflare R2
 
@@ -28,6 +31,9 @@ them or paste them into chat.
 - `R2_ENDPOINT`
 
 ## Sanity
+
+- `NEXT_PUBLIC_SANITY_PROJECT_ID`
+- `NEXT_PUBLIC_SANITY_DATASET`
 
 - `SANITY_PROJECT_ID`
 - `SANITY_DATASET`
@@ -44,13 +50,18 @@ them or paste them into chat.
 
 ## Observability and analytics
 
+- `NEXT_PUBLIC_UMAMI_SCRIPT_URL`
+
 - `SENTRY_DSN`
 - `SENTRY_AUTH_TOKEN`
 - `NEXT_PUBLIC_SENTRY_DSN`
-- `VITE_SENTRY_DSN`
 - `UMAMI_WEBSITE_ID`
 - `NEXT_PUBLIC_UMAMI_WEBSITE_ID`
-- `VITE_UMAMI_WEBSITE_ID`
+
+## Site 1 backend (server only)
+
+- `SITE_1_BACKEND_URL`
+- `SITE_1_SERVICE_CREDENTIAL`
 
 ## Backblaze B2 backups
 

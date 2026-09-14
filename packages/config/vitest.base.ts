@@ -5,7 +5,7 @@ import type { UserWorkspaceConfig } from 'vitest/config';
  * several packages have no test files yet) is a root-only option in Vitest
  * 5 — set once in the repo-root vitest.config.ts instead of here.
  */
-export const baseTestConfig: UserWorkspaceConfig['test'] = {
+export const baseTestConfig = {
   restoreMocks: true,
   clearMocks: true,
-};
+} satisfies UserWorkspaceConfig['test'];

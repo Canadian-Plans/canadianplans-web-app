@@ -7,6 +7,11 @@
     "node": ">=22 <23"
   },
   "packageManager": "pnpm@9.15.0",
+  "pnpm": {
+    "overrides": {
+      "@sanity/cli>skills": "1.5.7"
+    }
+  },
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -14,7 +19,10 @@
     "format:fix": "prettier --write .",
     "typecheck": "pnpm -r run typecheck",
     "test": "vitest run",
-    "build": "pnpm -r run build"
+    "build": "pnpm -r run build",
+    "test:tooling": "node --test scripts/*.test.mjs",
+    "build:affected": "node scripts/affected-builds.mjs --build",
+    "test:e2e": "pnpm --filter admin exec playwright test && pnpm --filter site-1 run test:security"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",

@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { ChevronsUpDownIcon } from 'lucide-react';
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -30,12 +31,11 @@ export function WorkspaceSwitcher({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        className="flex h-9 items-center gap-2 rounded-md border border-input bg-background px-3 text-sm font-medium shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-        aria-label="Switch workspace"
-      >
-        <span>{current?.name ?? currentWorkspace}</span>
-        <ChevronsUpDownIcon className="size-4 text-muted-foreground" />
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" aria-label="Switch workspace" className="min-w-0 max-w-64">
+          <span className="truncate">{current?.name ?? currentWorkspace}</span>
+          <ChevronsUpDownIcon className="size-4 text-muted-foreground" />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="min-w-56">
         <DropdownMenuLabel>Workspaces</DropdownMenuLabel>

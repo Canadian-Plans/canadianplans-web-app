@@ -1,109 +1,84 @@
 name: CI
-
 on:
   push:
     branches: [main]
   pull_request:
-
-# No production secrets are used or required by this workflow. It only
-# checks the repository; it never deploys (the owner is the only one who
-# promotes a Vercel deployment to production — see PLATFORM_CONTEXT.md
-# "Hard rules").
 permissions:
   contents: read
-
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
-env:
-  NODE_VERSION: '22'
-  PNPM_VERSION: '9.15.0'
-
 jobs:
-  install:
-    name: Install
-    runs-on: ubuntu-latest
+  verify:
+    runs-on: ubuntu-24.04
+    env:
+      MIGRATION_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/canadian_plans_test
+      MIGRATION_DATABASE_SSL_MODE: disable
+      TEST_MIGRATION_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/canadian_plans_test
+      DB_TEST_ALLOW_DESTRUCTIVE: '1'
+      DATABASE_URL: postgresql://app_runtime:local_ci_runtime_password@localhost:5432/canadian_plans_test
+      DATABASE_SSL_MODE: disable
+    services:
+      postgres:
+        image: postgres:15.14-alpine3.22@sha256:64583b3cb4f2010277bdd9749456de78e5c36f8956466ba14b0b96922e510950
+        env:
+          POSTGRES_DB: canadian_plans_test
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d canadian_plans_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Record release metadata
-        run: |
-          echo "commit: ${{ github.sha }}"
-          echo "lockfile sha256: $(sha256sum pnpm-lock.yaml | cut -d' ' -f1)"
-
-  typecheck:
-    name: Typecheck (strict, no any)
-    needs: install
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run typecheck
-
-  lint:
-    name: Lint (incl. @canadian-plans/db import boundary)
-    needs: install
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run lint
-      - run: pnpm run format
-
-  test:
-    name: Unit / component tests
-    needs: install
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run test
-
-  build:
-    name: Affected builds (backend, admin)
-    needs: [typecheck, lint, test]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
         with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
+          version: 9.15.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: 22.19.0
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Build every app/package that declares a build script
-        run: pnpm -r run build --if-present
+      - name: Record release metadata (no credentials)
+        run: |
+          git rev-parse HEAD
+          sha256sum pnpm-lock.yaml
+          echo 'Schema compatibility: T4 additive workspace/access foundation'
+      - name: Apply migrations to empty disposable Postgres
+        run: pnpm --filter @canadian-plans/db db:migrate
+      - run: pnpm run typecheck
+      - run: pnpm run lint
+      - run: pnpm run format
+      - run: pnpm run test:tooling
+      - name: Prove no Supabase service-role key appears in application code
+        run: |
+          if git grep -n -E 'SUPABASE_SERVICE_ROLE_KEY|service_role' -- 'apps/**' 'packages/**/src/**' 'jobs/**' 'scripts/**'; then
+            echo 'Supabase service-role usage is forbidden in application code.' >&2
+            exit 1
+          fi
+      - run: pnpm run test
+      - name: Build affected applications and their shared dependencies
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: pnpm run build:affected
+      # Shell journeys run on every change, so admin must be built even when
+      # only backend changed. This is test setup, not a deployment selection.
+      - name: Ensure admin build exists for browser tests
+        run: test -f apps/admin/.next/BUILD_ID || pnpm --filter admin build
+      - run: pnpm --filter admin exec playwright install --with-deps chromium
+      - run: pnpm run test:e2e
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: failure()
+        with:
+          name: browser-failures
+          path: |
+            apps/admin/playwright-report
+            apps/admin/test-results
+            apps/site-1/playwright-report
+            apps/site-1/test-results
+          retention-days: 7
+# No production credentials or deployment steps. Owner selects all releases.

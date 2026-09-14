@@ -9,5 +9,6 @@ export default defineConfig({
     name: 'admin',
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
+    exclude: ['e2e/**', 'node_modules/**', '.next/**'],
   },
 });

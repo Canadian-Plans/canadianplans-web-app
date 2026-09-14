@@ -160,6 +160,10 @@ function Sidebar({
           className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
           style={withCssVars({ '--sidebar-width': SIDEBAR_WIDTH_MOBILE })}
           side={side}
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            document.querySelector<HTMLButtonElement>('[data-sidebar="trigger"]')?.focus();
+          }}
         >
           <SheetHeader className="sr-only">
             <SheetTitle>Sidebar</SheetTitle>
@@ -421,7 +425,8 @@ function SidebarMenuButton({
     />
   );
 
-  if (!tooltip) {
+  // Hidden tooltip layers still consume Escape. Only mount when labels are hidden.
+  if (!tooltip || isMobile || state !== 'collapsed') {
     return button;
   }
 

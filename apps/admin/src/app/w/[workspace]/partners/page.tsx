@@ -4,7 +4,9 @@ export default function PartnersPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Partners</CardTitle>
+        <CardTitle asChild>
+          <h1>Partners</h1>
+        </CardTitle>
         <CardDescription>No data yet — this is a placeholder route.</CardDescription>
       </CardHeader>
       <CardContent className="text-sm text-muted-foreground">

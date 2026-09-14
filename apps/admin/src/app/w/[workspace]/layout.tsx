@@ -16,12 +16,12 @@ export default async function WorkspaceLayout({
   return (
     <SidebarProvider>
       <AppSidebar workspace={workspace} />
-      <SidebarInset>
+      <div className="flex min-w-0 flex-1 flex-col">
         <TopBar workspace={workspace} />
-        <main id="main-content" tabIndex={-1} className="flex-1 p-6 outline-none">
+        <SidebarInset id="main-content" tabIndex={-1} className="flex-1 p-6 outline-none">
           {children}
-        </main>
-      </SidebarInset>
+        </SidebarInset>
+      </div>
     </SidebarProvider>
   );
 }

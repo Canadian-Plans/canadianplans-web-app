@@ -88,3 +88,13 @@ that don't yet match the "at the root" description.
 [PLATFORM_CONTEXT.md](../../PLATFORM_CONTEXT.md) §2–§4, §10 ·
 [Implementation Plan](../IMPLEMENTATION_PLAN.md) §3, §18 ·
 [Build Tasks T1](../BUILD_TASKS.md) · [ADR 0000](0000-reviewed-planning-baseline.md)
+
+## Review correction — T1/T2 audit
+
+The original blanket `jobs/**` and `scripts/**` DB exemptions were broader than PLATFORM_CONTEXT permits. They have been replaced by the exact-file list in `packages/config/boundaries.js` (currently empty). Static/dynamic/relative imports, re-exports, common direct DB clients and frontend server-adapter imports are checked. Supabase session clients must expose only Auth; no Auth SDK has been installed.
+
+The config package now has its own strict tsconfig, source entry and typecheck command. GitHub Actions now pins action SHAs and the Node/pnpm versions, tests boundary failures, runs browser shell journeys and selects affected builds through declared workspace dependencies. `scripts/affected-builds.mjs` is shared with Vercel and resolves paths from the repo root, including when invoked from an app directory. Missing history builds everything. Root tooling changes build every app; shared changes build transitive consumers.
+
+The detailed planning documents remain under `docs/`. Root forwarding files restore the paths used by existing prompts without duplicating content; README links both preserved OPEN_INPUTS files explicitly. This corrects discoverability without changing owner decisions or ADR 0000.
+
+See [review evidence](../EVIDENCE/T1-T2-review.md). The earlier T1 evidence is historical; this review's output describes the current checkout. No deployed Vercel selection/promotion was tested or performed.

@@ -1,0 +1,4 @@
+{
+  "regions": ["yyz1"],
+  "ignoreCommand": "node ../../scripts/affected-builds.mjs --vercel site-1"
+}
