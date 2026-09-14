@@ -1,0 +1,13 @@
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vitest/config';
+import { baseTestConfig } from '@canadian-plans/config/vitest.base';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    ...baseTestConfig,
+    name: 'admin',
+    environment: 'jsdom',
+    setupFiles: ['./vitest.setup.ts'],
+  },
+});
