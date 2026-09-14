@@ -156,3 +156,9 @@
     font-family: var(--font-sans);
   }
 }
+
+/* Outside the base layer so primitive outline-reset utilities cannot hide focus. */
+:is(a, button, input, select, textarea, [role='menuitem']):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}

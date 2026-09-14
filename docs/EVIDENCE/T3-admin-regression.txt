@@ -1,0 +1,37 @@
+[WebServer] (node:40124) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:39480) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 24 tests using 1 worker
+
+(node:13132) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [desktop] › e2e\shell.spec.ts:16:3 › login: renders, has a usable skip link, and fits the viewport (343ms)
+  ok  2 [desktop] › e2e\shell.spec.ts:16:3 › denied: renders, has a usable skip link, and fits the viewport (321ms)
+  ok  3 [desktop] › e2e\shell.spec.ts:16:3 › orders: renders, has a usable skip link, and fits the viewport (500ms)
+  ok  4 [desktop] › e2e\shell.spec.ts:16:3 › leads: renders, has a usable skip link, and fits the viewport (360ms)
+  ok  5 [desktop] › e2e\shell.spec.ts:16:3 › partners: renders, has a usable skip link, and fits the viewport (316ms)
+  ok  6 [desktop] › e2e\shell.spec.ts:16:3 › documents: renders, has a usable skip link, and fits the viewport (337ms)
+  ok  7 [desktop] › e2e\shell.spec.ts:16:3 › settings: renders, has a usable skip link, and fits the viewport (313ms)
+  ok  8 [desktop] › e2e\shell.spec.ts:48:1 › keyboard sidebar navigation and mobile dismissal (354ms)
+  ok  9 [desktop] › e2e\shell.spec.ts:74:1 › workspace switcher works with keyboard and retains section (473ms)
+  ok 10 [desktop] › e2e\shell.spec.ts:91:1 › sidebar toggle and Escape restore a usable shell (322ms)
+  ok 11 [desktop] › e2e\shell.spec.ts:114:1 › login is inert and denied page leads back to login (397ms)
+  ok 12 [desktop] › e2e\shell.spec.ts:124:1 › unknown route returns 404 (258ms)
+(node:44216) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 13 [mobile] › e2e\shell.spec.ts:16:3 › login: renders, has a usable skip link, and fits the viewport (392ms)
+  ok 14 [mobile] › e2e\shell.spec.ts:16:3 › denied: renders, has a usable skip link, and fits the viewport (316ms)
+  ok 15 [mobile] › e2e\shell.spec.ts:16:3 › orders: renders, has a usable skip link, and fits the viewport (317ms)
+  ok 16 [mobile] › e2e\shell.spec.ts:16:3 › leads: renders, has a usable skip link, and fits the viewport (306ms)
+  ok 17 [mobile] › e2e\shell.spec.ts:16:3 › partners: renders, has a usable skip link, and fits the viewport (356ms)
+  ok 18 [mobile] › e2e\shell.spec.ts:16:3 › documents: renders, has a usable skip link, and fits the viewport (344ms)
+  ok 19 [mobile] › e2e\shell.spec.ts:16:3 › settings: renders, has a usable skip link, and fits the viewport (352ms)
+  ok 20 [mobile] › e2e\shell.spec.ts:48:1 › keyboard sidebar navigation and mobile dismissal (800ms)
+  ok 21 [mobile] › e2e\shell.spec.ts:74:1 › workspace switcher works with keyboard and retains section (916ms)
+  ok 22 [mobile] › e2e\shell.spec.ts:91:1 › sidebar toggle and Escape restore a usable shell (924ms)
+  ok 23 [mobile] › e2e\shell.spec.ts:114:1 › login is inert and denied page leads back to login (388ms)
+  ok 24 [mobile] › e2e\shell.spec.ts:124:1 › unknown route returns 404 (222ms)
+
+  24 passed (14.7s)

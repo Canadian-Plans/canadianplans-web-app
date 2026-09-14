@@ -1,0 +1,146 @@
+
+> site-1@0.0.0 test:security H:\CanadianPlans\apps\site-1
+> node scripts/verify-client-bundle.mjs
+
+PASS: deliberate client import of backend.config fails the Next.js server-only boundary.
+
+> site-1@0.0.0 build H:\CanadianPlans\apps\site-1
+> next build
+
+▲ Next.js 16.3.5 (Turbopack)
+✓ Running next.config.ts took 63ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 26.7s
+  Running TypeScript ...
+  Finished TypeScript in 6.3s ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/8) ...
+  Generating static pages using 11 workers (2/8)
+  Generating static pages using 11 workers (4/8)
+  Generating static pages using 11 workers (6/8)
+✓ Generating static pages using 11 workers (8/8) in 1198ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /order
+├ ○ /plans
+├ ƒ /plans/[slug]
+├ ○ /privacy
+├ ○ /studio/[[...tool]]
+├ ○ /terms
+└ ○ /track
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+PASS: synthetic credential absent from 45 browser assets and 40 rendered payloads.
+[WebServer] (node:35948) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:42212) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 22 tests using 1 worker
+
+(node:20596) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [desktop] › e2e\scaffold.spec.ts:16:3 › renders / without exposing server credentials (481ms)
+  ok  2 [desktop] › e2e\scaffold.spec.ts:16:3 › renders /plans without exposing server credentials (272ms)
+  ok  3 [desktop] › e2e\scaffold.spec.ts:16:3 › renders /plans/test-plan without exposing server credentials (384ms)
+  ok  4 [desktop] › e2e\scaffold.spec.ts:16:3 › renders /order without exposing server credentials (273ms)
+  ok  5 [desktop] › e2e\scaffold.spec.ts:16:3 › renders /track without exposing server credentials (282ms)
+  ok  6 [desktop] › e2e\scaffold.spec.ts:16:3 › renders /privacy without exposing server credentials (254ms)
+  ok  7 [desktop] › e2e\scaffold.spec.ts:16:3 › renders /terms without exposing server credentials (251ms)
+  ok  8 [desktop] › e2e\scaffold.spec.ts:16:3 › renders /studio without exposing server credentials (3.9s)
+  ok  9 [desktop] › e2e\scaffold.spec.ts:16:3 › renders /studio/structure without exposing server credentials (766ms)
+  ok 10 [desktop] › e2e\scaffold.spec.ts:45:1 › keyboard skip link and navigation work (266ms)
+  ok 11 [desktop] › e2e\scaffold.spec.ts:59:1 › Umami loads only with complete public configuration (238ms)
+(node:10368) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 12 [mobile] › e2e\scaffold.spec.ts:16:3 › renders / without exposing server credentials (292ms)
+  ok 13 [mobile] › e2e\scaffold.spec.ts:16:3 › renders /plans without exposing server credentials (233ms)
+  ok 14 [mobile] › e2e\scaffold.spec.ts:16:3 › renders /plans/test-plan without exposing server credentials (253ms)
+  ok 15 [mobile] › e2e\scaffold.spec.ts:16:3 › renders /order without exposing server credentials (237ms)
+  ok 16 [mobile] › e2e\scaffold.spec.ts:16:3 › renders /track without exposing server credentials (240ms)
+  ok 17 [mobile] › e2e\scaffold.spec.ts:16:3 › renders /privacy without exposing server credentials (234ms)
+  ok 18 [mobile] › e2e\scaffold.spec.ts:16:3 › renders /terms without exposing server credentials (223ms)
+  ok 19 [mobile] › e2e\scaffold.spec.ts:16:3 › renders /studio without exposing server credentials (770ms)
+  ok 20 [mobile] › e2e\scaffold.spec.ts:16:3 › renders /studio/structure without exposing server credentials (703ms)
+  ok 21 [mobile] › e2e\scaffold.spec.ts:45:1 › keyboard skip link and navigation work (257ms)
+  ok 22 [mobile] › e2e\scaffold.spec.ts:59:1 › Umami loads only with complete public configuration (219ms)
+
+  22 passed (16.0s)
+
+> site-1@0.0.0 build H:\CanadianPlans\apps\site-1
+> next build
+
+▲ Next.js 16.3.5 (Turbopack)
+✓ Running next.config.ts took 44ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1754ms
+  Running TypeScript ...
+  Finished TypeScript in 4.3s ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/8) ...
+  Generating static pages using 11 workers (2/8)
+  Generating static pages using 11 workers (4/8)
+  Generating static pages using 11 workers (6/8)
+✓ Generating static pages using 11 workers (8/8) in 829ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /order
+├ ○ /plans
+├ ƒ /plans/[slug]
+├ ○ /privacy
+├ ○ /studio/[[...tool]]
+├ ○ /terms
+└ ○ /track
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+PASS: synthetic credential absent from 45 browser assets and 40 rendered payloads.
+[WebServer] (node:43992) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:40656) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 22 tests using 1 worker
+
+(node:29584) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [desktop] › e2e\scaffold.spec.ts:16:3 › renders / without exposing server credentials (319ms)
+  ok  2 [desktop] › e2e\scaffold.spec.ts:16:3 › renders /plans without exposing server credentials (249ms)
+  ok  3 [desktop] › e2e\scaffold.spec.ts:16:3 › renders /plans/test-plan without exposing server credentials (357ms)
+  ok  4 [desktop] › e2e\scaffold.spec.ts:16:3 › renders /order without exposing server credentials (235ms)
+  ok  5 [desktop] › e2e\scaffold.spec.ts:16:3 › renders /track without exposing server credentials (238ms)
+  ok  6 [desktop] › e2e\scaffold.spec.ts:16:3 › renders /privacy without exposing server credentials (240ms)
+  ok  7 [desktop] › e2e\scaffold.spec.ts:16:3 › renders /terms without exposing server credentials (254ms)
+  ok  8 [desktop] › e2e\scaffold.spec.ts:16:3 › renders /studio without exposing server credentials (1.5s)
+  ok  9 [desktop] › e2e\scaffold.spec.ts:16:3 › renders /studio/structure without exposing server credentials (740ms)
+  ok 10 [desktop] › e2e\scaffold.spec.ts:45:1 › keyboard skip link and navigation work (261ms)
+  ok 11 [desktop] › e2e\scaffold.spec.ts:59:1 › Umami loads only with complete public configuration (219ms)
+(node:36596) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 12 [mobile] › e2e\scaffold.spec.ts:16:3 › renders / without exposing server credentials (274ms)
+  ok 13 [mobile] › e2e\scaffold.spec.ts:16:3 › renders /plans without exposing server credentials (228ms)
+  ok 14 [mobile] › e2e\scaffold.spec.ts:16:3 › renders /plans/test-plan without exposing server credentials (221ms)
+  ok 15 [mobile] › e2e\scaffold.spec.ts:16:3 › renders /order without exposing server credentials (218ms)
+  ok 16 [mobile] › e2e\scaffold.spec.ts:16:3 › renders /track without exposing server credentials (206ms)
+  ok 17 [mobile] › e2e\scaffold.spec.ts:16:3 › renders /privacy without exposing server credentials (242ms)
+  ok 18 [mobile] › e2e\scaffold.spec.ts:16:3 › renders /terms without exposing server credentials (221ms)
+  ok 19 [mobile] › e2e\scaffold.spec.ts:16:3 › renders /studio without exposing server credentials (671ms)
+  ok 20 [mobile] › e2e\scaffold.spec.ts:16:3 › renders /studio/structure without exposing server credentials (658ms)
+  ok 21 [mobile] › e2e\scaffold.spec.ts:45:1 › keyboard skip link and navigation work (255ms)
+  ok 22 [mobile] › e2e\scaffold.spec.ts:59:1 › Umami loads only with complete public configuration (206ms)
+
+  22 passed (12.3s)
+PASS: credential scan and desktop/mobile journeys with Umami enabled and disabled.

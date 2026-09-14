@@ -1,0 +1,444 @@
+T1/T2 local CI - 2026-09-14T11:19:55.4123376+06:00
+Git HEAD (review changes are in working tree): 6ab22d4534d1e14c6d2a0958162a429f2321b214
+Lockfile SHA256: 7F871E89E26319AD313079BC0CEE862AE51D18AF7EB7680D441AB5A837242795
+
+> pnpm install --frozen-lockfile
+Scope: all 9 workspace projects
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+devDependencies:
++ @eslint/js 9.39.5
++ eslint 9.39.5
++ eslint-config-prettier 10.1.8
++ eslint-plugin-react 7.37.5
++ eslint-plugin-react-hooks 7.1.1
++ globals 17.12.0
++ prettier 3.9.6
++ typescript 6.0.3
++ typescript-eslint 8.70.0
++ vitest 5.0.0
+
+Done in 2.1s
+Exit code: 0
+
+> pnpm run typecheck
+
+> canadian-plans@0.0.0 typecheck H:\CanadianPlans
+> pnpm -r run typecheck
+
+Scope: 8 of 9 workspace projects
+packages/config typecheck$ tsc --noEmit
+packages/config typecheck: Done
+packages/db typecheck$ tsc --noEmit
+packages/types typecheck$ tsc --noEmit
+packages/ui typecheck$ tsc --noEmit
+packages/db typecheck: Done
+packages/types typecheck: Done
+packages/ui typecheck: Done
+packages/adapters typecheck$ tsc --noEmit
+packages/contracts typecheck$ tsc --noEmit
+packages/adapters typecheck: Done
+packages/contracts typecheck: Done
+apps/admin typecheck$ tsc --noEmit
+apps/backend typecheck$ tsc --noEmit
+apps/backend typecheck: Done
+apps/admin typecheck: Done
+Exit code: 0
+
+> pnpm run lint
+
+> canadian-plans@0.0.0 lint H:\CanadianPlans
+> eslint .
+
+Exit code: 0
+
+> pnpm run format
+
+> canadian-plans@0.0.0 format H:\CanadianPlans
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+Exit code: 0
+
+> pnpm run test:tooling
+
+> canadian-plans@0.0.0 test:tooling H:\CanadianPlans
+> node --test scripts/*.test.mjs
+
+TAP version 13
+# Subtest: admin-only changes do not build backend
+ok 1 - admin-only changes do not build backend
+  ---
+  duration_ms: 2.4805
+  type: 'test'
+  ...
+# Subtest: backend-only changes do not build admin
+ok 2 - backend-only changes do not build admin
+  ---
+  duration_ms: 0.2005
+  type: 'test'
+  ...
+# Subtest: shared UI builds its frontend consumer
+ok 3 - shared UI builds its frontend consumer
+  ---
+  duration_ms: 0.2276
+  type: 'test'
+  ...
+# Subtest: shared contracts build both consumers
+ok 4 - shared contracts build both consumers
+  ---
+  duration_ms: 0.1586
+  type: 'test'
+  ...
+# Subtest: DB change only builds backend
+ok 5 - DB change only builds backend
+  ---
+  duration_ms: 0.1411
+  type: 'test'
+  ...
+# Subtest: toolchain changes build every consumer
+ok 6 - toolchain changes build every consumer
+  ---
+  duration_ms: 0.129
+  type: 'test'
+  ...
+# Subtest: root configuration builds both apps
+ok 7 - root configuration builds both apps
+  ---
+  duration_ms: 0.2253
+  type: 'test'
+  ...
+# Subtest: documentation-only changes skip builds
+ok 8 - documentation-only changes skip builds
+  ---
+  duration_ms: 0.1654
+  type: 'test'
+  ...
+# Subtest: missing git baseline fails safe
+ok 9 - missing git baseline fails safe
+  ---
+  duration_ms: 50.8562
+  type: 'test'
+  ...
+# Subtest: no baseline builds all on first deployment
+ok 10 - no baseline builds all on first deployment
+  ---
+  duration_ms: 0.5054
+  type: 'test'
+  ...
+# Subtest: dependency propagation is transitive
+ok 11 - dependency propagation is transitive
+  ---
+  duration_ms: 0.2576
+  type: 'test'
+  ...
+# Subtest: admin rejects static DB import
+ok 12 - admin rejects static DB import
+  ---
+  duration_ms: 1834.4228
+  type: 'test'
+  ...
+# Subtest: admin rejects DB subpath
+ok 13 - admin rejects DB subpath
+  ---
+  duration_ms: 5.5142
+  type: 'test'
+  ...
+# Subtest: admin rejects dynamic DB import
+ok 14 - admin rejects dynamic DB import
+  ---
+  duration_ms: 5.1797
+  type: 'test'
+  ...
+# Subtest: admin rejects relative DB import
+ok 15 - admin rejects relative DB import
+  ---
+  duration_ms: 6.0725
+  type: 'test'
+  ...
+# Subtest: admin rejects CommonJS DB import
+ok 16 - admin rejects CommonJS DB import
+  ---
+  duration_ms: 5.3605
+  type: 'test'
+  ...
+# Subtest: admin rejects DB type import
+ok 17 - admin rejects DB type import
+  ---
+  duration_ms: 6.8032
+  type: 'test'
+  ...
+# Subtest: admin rejects postgres driver
+ok 18 - admin rejects postgres driver
+  ---
+  duration_ms: 2.5763
+  type: 'test'
+  ...
+# Subtest: admin rejects pg driver
+ok 19 - admin rejects pg driver
+  ---
+  duration_ms: 4.6135
+  type: 'test'
+  ...
+# Subtest: admin rejects Drizzle driver
+ok 20 - admin rejects Drizzle driver
+  ---
+  duration_ms: 5.7289
+  type: 'test'
+  ...
+# Subtest: admin rejects Prisma driver
+ok 21 - admin rejects Prisma driver
+  ---
+  duration_ms: 3.4248
+  type: 'test'
+  ...
+# Subtest: admin rejects SQLite driver
+ok 22 - admin rejects SQLite driver
+  ---
+  duration_ms: 3.4187
+  type: 'test'
+  ...
+# Subtest: admin rejects server adapter
+ok 23 - admin rejects server adapter
+  ---
+  duration_ms: 1.8553
+  type: 'test'
+  ...
+# Subtest: admin rejects relative backend import
+ok 24 - admin rejects relative backend import
+  ---
+  duration_ms: 2.1725
+  type: 'test'
+  ...
+# Subtest: admin rejects Supabase DB call
+ok 25 - admin rejects Supabase DB call
+  ---
+  duration_ms: 4.1083
+  type: 'test'
+  ...
+# Subtest: admin rejects Supabase Storage call
+ok 26 - admin rejects Supabase Storage call
+  ---
+  duration_ms: 5.3979
+  type: 'test'
+  ...
+# Subtest: admin rejects aliased Supabase client escape
+ok 27 - admin rejects aliased Supabase client escape
+  ---
+  duration_ms: 3.6334
+  type: 'test'
+  ...
+# Subtest: admin rejects Supabase factory escape
+ok 28 - admin rejects Supabase factory escape
+  ---
+  duration_ms: 2.3747
+  type: 'test'
+  ...
+# Subtest: admin rejects Supabase rest destructuring
+ok 29 - admin rejects Supabase rest destructuring
+  ---
+  duration_ms: 3.2051
+  type: 'test'
+  ...
+# Subtest: admin rejects dynamic Supabase import
+ok 30 - admin rejects dynamic Supabase import
+  ---
+  duration_ms: 2.5064
+  type: 'test'
+  ...
+# Subtest: admin rejects direct Storage SDK
+ok 31 - admin rejects direct Storage SDK
+  ---
+  duration_ms: 1.8301
+  type: 'test'
+  ...
+# Subtest: admin rejects computed module path
+ok 32 - admin rejects computed module path
+  ---
+  duration_ms: 2.1389
+  type: 'test'
+  ...
+# Subtest: apps/admin/src/demo.js has no implicit DB exemption
+ok 33 - apps/admin/src/demo.js has no implicit DB exemption
+  ---
+  duration_ms: 18.1892
+  type: 'test'
+  ...
+# Subtest: apps/site-1/src/demo.ts has no implicit DB exemption
+ok 34 - apps/site-1/src/demo.ts has no implicit DB exemption
+  ---
+  duration_ms: 1.9802
+  type: 'test'
+  ...
+# Subtest: packages/contracts/src/demo.ts has no implicit DB exemption
+ok 35 - packages/contracts/src/demo.ts has no implicit DB exemption
+  ---
+  duration_ms: 1.8631
+  type: 'test'
+  ...
+# Subtest: jobs/demo.ts has no implicit DB exemption
+ok 36 - jobs/demo.ts has no implicit DB exemption
+  ---
+  duration_ms: 4.9643
+  type: 'test'
+  ...
+# Subtest: scripts/demo.ts has no implicit DB exemption
+ok 37 - scripts/demo.ts has no implicit DB exemption
+  ---
+  duration_ms: 2.3138
+  type: 'test'
+  ...
+# Subtest: apps/backend/src/demo.ts may import DB
+ok 38 - apps/backend/src/demo.ts may import DB
+  ---
+  duration_ms: 3.0246
+  type: 'test'
+  ...
+# Subtest: packages/db/src/demo.ts may import DB
+ok 39 - packages/db/src/demo.ts may import DB
+  ---
+  duration_ms: 2.0311
+  type: 'test'
+  ...
+# Subtest: allowed session/type pattern: import { createClient } from '@supabase/supabase-js'; export const { auth } = createClient('url', 'key');
+ok 40 - allowed session/type pattern: import { createClient } from '@supabase/supabase-js'; export const { auth } = createClient('url', 'key');
+  ---
+  duration_ms: 3.52
+  type: 'test'
+  ...
+# Subtest: allowed session/type pattern: import { createBrowserClient as make } from '@supabase/ssr'; export const auth = make('url', 'key').auth;
+ok 41 - allowed session/type pattern: import { createBrowserClient as make } from '@supabase/ssr'; export const auth = make('url', 'key').auth;
+  ---
+  duration_ms: 3.1079
+  type: 'test'
+  ...
+# Subtest: allowed session/type pattern: import '@supabase/auth-js';
+ok 42 - allowed session/type pattern: import '@supabase/auth-js';
+  ---
+  duration_ms: 2.0631
+  type: 'test'
+  ...
+# Subtest: allowed session/type pattern: export const value = { label: 'safe' } as const;
+ok 43 - allowed session/type pattern: export const value = { label: 'safe' } as const;
+  ---
+  duration_ms: 4.274
+  type: 'test'
+  ...
+# Subtest: @typescript-eslint/no-explicit-any is active
+ok 44 - @typescript-eslint/no-explicit-any is active
+  ---
+  duration_ms: 3.0902
+  type: 'test'
+  ...
+# Subtest: @typescript-eslint/consistent-type-assertions is active
+ok 45 - @typescript-eslint/consistent-type-assertions is active
+  ---
+  duration_ms: 4.3154
+  type: 'test'
+  ...
+1..45
+# tests 45
+# suites 0
+# pass 45
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2383.6513
+Exit code: 0
+
+> pnpm run test
+
+> canadian-plans@0.0.0 test H:\CanadianPlans
+> vitest run
+
+
+ RUN  v5.0.0 H:/CanadianPlans
+
+
+ Test Files  4 passed (4)
+      Tests  15 passed (15)
+   Start at  11:20:20
+   Duration  2.88s (environment 54%, import 21%, tests 9%, setup 8%, transform 7%, worker 1%)
+
+Exit code: 0
+
+> pnpm run build:affected
+
+> canadian-plans@0.0.0 build:affected H:\CanadianPlans
+> node scripts/affected-builds.mjs --build
+
+Affected apps: admin, backend
+
+> admin@0.0.0 build H:\CanadianPlans\apps\admin
+> next build
+
+▲ Next.js 16.3.5 (Turbopack)
+✓ Running next.config.ts took 40ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1200ms
+  Running TypeScript ...
+  Finished TypeScript in 3.9s ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/5) ...
+  Generating static pages using 11 workers (1/5)
+  Generating static pages using 11 workers (2/5)
+  Generating static pages using 11 workers (3/5)
+✓ Generating static pages using 11 workers (5/5) in 948ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /denied
+├ ○ /login
+├ ƒ /w/[workspace]/documents
+├ ƒ /w/[workspace]/leads
+├ ƒ /w/[workspace]/orders
+├ ƒ /w/[workspace]/partners
+└ ƒ /w/[workspace]/settings
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> backend@0.0.0 build H:\CanadianPlans\apps\backend
+> tsup api/index.ts src/server.ts --format esm --target node22 --out-dir dist --clean
+
+CLI Building entry: api/index.ts, src/server.ts
+CLI Using tsconfig: tsconfig.json
+CLI tsup v8.5.1
+CLI Target: node22
+CLI Cleaning output folder
+ESM Build start
+ESM dist\chunk-EFTZ3AQV.js 635.00 B
+ESM dist\api\index.js      137.00 B
+ESM dist\src\server.js     219.00 B
+ESM ⚡️ Build success in 190ms
+Exit code: 0
+
+> pnpm run test:e2e
+
+> canadian-plans@0.0.0 test:e2e H:\CanadianPlans
+> pnpm --filter admin exec playwright test
+
+
+Running 24 tests using 1 worker
+(node:35156) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:31264) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+························
+  24 passed (15.9s)
+::notice title=🎭 Playwright Run Summary::  24 passed (15.9s)
+Exit code: 0
+FULL LOCAL CI PASSED

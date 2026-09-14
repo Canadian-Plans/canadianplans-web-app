@@ -18,7 +18,9 @@ export default function LoginPage() {
     >
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Staff sign in</CardTitle>
+          <CardTitle asChild>
+            <h1>Staff sign in</h1>
+          </CardTitle>
           <CardDescription>No auth is wired up yet — this is a placeholder route.</CardDescription>
         </CardHeader>
         <CardContent>

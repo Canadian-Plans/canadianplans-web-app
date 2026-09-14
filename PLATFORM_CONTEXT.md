@@ -2,6 +2,10 @@
 
 The single source of truth for what Canadian Plans is and how it must be built. AI agents read this in full at the start of every session, before touching code. If anything you're about to do conflicts with this file, stop and say so.
 
+Also follow [AGENTS.md](AGENTS.md) for the shared session workflow and required
+project skill. Read each startup document once per session; do not loop through
+links to documents already read.
+
 ---
 
 ## 1. What this is

@@ -19,6 +19,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '@canadian-plans/ui';
 
 const NAV_ITEMS = [
@@ -31,33 +32,48 @@ const NAV_ITEMS = [
 
 export function AppSidebar({ workspace }: { workspace: string }) {
   const pathname = usePathname();
+  const { isMobile, setOpenMobile } = useSidebar();
 
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <div className="flex h-8 items-center px-2 text-sm font-semibold">Canadian Plans</div>
+        <div className="flex h-8 items-center overflow-hidden whitespace-nowrap px-2 text-sm font-semibold">
+          <span className="group-data-[collapsible=icon]:hidden">Canadian Plans</span>
+          <span className="hidden group-data-[collapsible=icon]:inline" aria-label="Canadian Plans">
+            CP
+          </span>
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Workspace</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {NAV_ITEMS.map(({ section, label, icon: Icon }) => {
-                const href = `/w/${workspace}/${section}`;
-                const isActive = pathname === href;
+            <nav aria-label="Workspace navigation">
+              <SidebarMenu>
+                {NAV_ITEMS.map(({ section, label, icon: Icon }) => {
+                  const href = `/w/${workspace}/${section}`;
+                  const isActive = pathname === href;
 
-                return (
-                  <SidebarMenuItem key={section}>
-                    <SidebarMenuButton asChild isActive={isActive} tooltip={label}>
-                      <Link href={href} aria-current={isActive ? 'page' : undefined}>
-                        <Icon />
-                        <span>{label}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
+                  return (
+                    <SidebarMenuItem key={section}>
+                      <SidebarMenuButton asChild isActive={isActive} tooltip={label}>
+                        <Link
+                          href={href}
+                          aria-label={label}
+                          aria-current={isActive ? 'page' : undefined}
+                          onClick={() => {
+                            if (isMobile) setOpenMobile(false);
+                          }}
+                        >
+                          <Icon />
+                          <span>{label}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </nav>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

@@ -17,7 +17,9 @@ export default function DeniedPage() {
     >
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Access denied</CardTitle>
+          <CardTitle asChild>
+            <h1>Access denied</h1>
+          </CardTitle>
           <CardDescription>
             You don&apos;t have permission to view this workspace or action. Shown when a membership
             or role check fails server-side.

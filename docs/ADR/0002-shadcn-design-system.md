@@ -126,3 +126,17 @@ task did not touch.
 - `WorkspaceSwitcher`'s static list is a known gap tracked in
   `OPEN_INPUTS.md`; it must be replaced by a real memberships call before
   Phase A's admin app is considered done, not left as a permanent shortcut.
+
+## Review correction — T1/T2 audit
+
+Admin is dark-only, as recorded by the existing dark-theme commit; shared light tokens remain available to future storefronts. The T2 shell has five workspace section routes plus login and denied (seven routes total).
+
+Each page now has one H1 and one main landmark. `CardTitle asChild` supplies semantic headings without duplicating styles. The top bar remains outside the main landmark so the skip link bypasses it. Workspace selection reuses the shared Button, and long labels fit narrow screens. Sidebar links have explicit accessible names in collapsed mode; the brand label collapses without overflow.
+
+Mobile navigation closes after selecting a route. Tooltip layers mount only for collapsed desktop links, so invisible tooltips cannot intercept Escape inside the mobile sheet. Sheet dismissal returns focus to the sidebar trigger. Focus outlines are defined in the shared token stylesheet outside Tailwind's base layer so outline-reset utilities cannot hide them.
+
+`apps/admin/e2e/shell.spec.ts` replaces the previous unrecorded browser claim with repeatable desktop/mobile checks and screenshot capture. The tests wait for menu focus movement before sending the next key. Login remains disabled, with no authentication or operational data. Admin metadata is noindex.
+
+This review found no callable shadcn MCP in the active tool inventory. The existing ADR records the original MCP/preset sourcing; that historical tool use cannot be independently replayed here. Existing shadcn primitives were retained and reviewed against the official [sidebar documentation](https://ui.shadcn.com/docs/components/sidebar). No new component registry or provider was installed.
+
+See [current review evidence and screenshots](../EVIDENCE/T1-T2-review.md). The static workspace list remains an explicit T2 placeholder, not evidence of authorization.

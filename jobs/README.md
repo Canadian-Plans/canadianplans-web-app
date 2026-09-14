@@ -1,10 +1,5 @@
 # jobs
 
-Outbox handlers invoked by `apps/backend`'s Vercel Cron routes (transactional
-email/analytics/external-event sends, queued after commit per
-PLATFORM_CONTEXT.md §4 invariant 7). Nothing here yet — the outbox and
-runner are built in T15.
+Placeholder for backend-invoked outbox handlers (T15) and separately operated offline recovery tooling (T24), following the build plan. There is no worker, scheduler or database implementation yet.
 
-Separately authorized offline backup/restore/retention tooling is **not**
-part of this cron-invoked jobs directory; it lives under `scripts/` and is
-added in T24, with its own explicit ESLint allowlist entry.
+Ordinary handlers receive database operations from backend-owned orchestration; `jobs/**` has no blanket database-import exemption. Any future offline migration, backup, restore or database-test entry point must have its exact file path added to `offlineDbFiles` in `packages/config/boundaries.js`, with its responsibility and exception documented in the same task.

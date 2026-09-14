@@ -14,6 +14,7 @@ const inter = Inter({
 
 export const metadata = {
   title: 'Canadian Plans — Admin',
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
