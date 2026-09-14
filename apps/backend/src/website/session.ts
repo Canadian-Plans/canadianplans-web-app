@@ -33,18 +33,15 @@ export interface WebsiteAuthDependencies {
   resolveCredential(secretHash: string): Promise<WebsiteCredentialResolution | undefined>;
   rateLimit(input: RateLimitInput): Promise<RateLimitResult>;
   /** Edge/bot admission check run before any database work. Returns true to allow. */
-  botCheck?: (req: Request) => boolean;
+  botCheck: (req: Request) => boolean | Promise<boolean>;
   limits?: WebsiteRateLimits;
 }
 
 const knownScopes = new Set<string>(websiteScopeNames);
 
 function clientIp(req: Request): string {
-  const forwarded = req.get('x-forwarded-for');
-  if (forwarded) {
-    const first = forwarded.split(',')[0]?.trim();
-    if (first) return first.slice(0, 64);
-  }
+  // Express trusts no proxy by default. Do not let arbitrary forwarded headers
+  // select a fresh limiter bucket; deployment-specific proxy trust is explicit.
   return req.ip ?? req.socket.remoteAddress ?? 'unknown';
 }
 
@@ -63,10 +60,16 @@ function context(req: Request): WebsiteContext {
  */
 export function requireWebsiteCredential(deps: WebsiteAuthDependencies): RequestHandler {
   const limits = deps.limits ?? DEFAULT_WEBSITE_RATE_LIMITS;
-  const botCheck = deps.botCheck ?? (() => true);
+  const botCheck = deps.botCheck;
 
   return async (req: Request, res: Response, next: NextFunction) => {
-    if (!botCheck(req)) {
+    let admitted = false;
+    try {
+      admitted = await botCheck(req);
+    } catch {
+      // Provider failures deny admission before any database work.
+    }
+    if (!admitted) {
       sendWebsiteError(res, req.id, 'caller_forbidden', 403);
       return;
     }

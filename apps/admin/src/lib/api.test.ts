@@ -29,12 +29,13 @@ describe('staff backend client', () => {
     const result = await getStaffWorkspaces('verified-access-token');
 
     expect(result.workspaces.map((workspace) => workspace.slug)).toEqual(['site-1']);
-    expect(request).toHaveBeenCalledWith(
-      'http://localhost:4000/api/v1/staff/workspaces',
-      expect.objectContaining({
-        cache: 'no-store',
-        headers: expect.objectContaining({ authorization: 'Bearer verified-access-token' }),
-      }),
-    );
+
+    // Requests go through the shared typed client, which uses a URL and a
+    // Headers instance and validates the response against the contract.
+    const [input, init] = request.mock.calls[0] ?? [];
+    expect(String(input)).toBe('http://localhost:4000/api/v1/staff/workspaces');
+    expect(init?.cache).toBe('no-store');
+    expect(init?.redirect).toBe('error');
+    expect(new Headers(init?.headers).get('authorization')).toBe('Bearer verified-access-token');
   });
 });

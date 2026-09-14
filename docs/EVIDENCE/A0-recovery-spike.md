@@ -9,13 +9,19 @@ intended encrypted-artifact, separate-ledger, key-recovery, idempotency,
 checkpoint, staff-recovery, and fail-closed semantics without using customer
 data.
 
-**The production recovery gate has not passed.** The provider-connected
+**T4R early recovery feasibility and the production recovery gate have not passed.** The provider-connected
 database from T5 contains only synthetic workspace data, but this environment
 did not have an isolated second Supabase Auth target, disposable mail inbox,
 R2 credentials, Sanity credentials, B2 account/buckets, or `age`/provider CLI
 credentials. Real provider export/import, TOTP recovery, Object Lock, writer
-capability, retention, outbox, and end-to-end reconciliation evidence remains
-T21/T24 work.
+capability evidence is still required for T4R; it cannot all be deferred to
+T21/T24. Those later tasks add application integration and the full rehearsal.
+
+On 2026-09-14 the connected Supabase account listed only `canadianplans` in
+`us-west-2`, not the required `ca-central-1`. The Canadian Plans Vercel team
+listed no projects. Canadian staging/recovery provisioning, OPEN_INPUTS #22's
+organization/billing choice, fake Auth SMTP, and separate R2/Sanity/B2 access
+remain prerequisites. No connected resources were changed during finalization.
 
 ## Scope and safety
 
@@ -140,9 +146,14 @@ selection alone is not append-only proof. Unique operation keys, compliance
 Object Lock, version-aware listing, and an independently authenticated fresh
 checkpoint are all required.
 
-No B2 account or credentials were available. Real denied read/delete probes,
-Object Lock retention, version listing, archive/ledger separation, and recovery
-key access must be proved in T21/T24.
+Live bootstrap now has two private Backblaze B2 buckets in the account: 
+`canadian-plans-backup-archive` (bucket ID `88d367ae494ba509af08071f`) and
+`canadian-plans-deletion-ledger` (bucket ID `2863b74e494ba509af08071f`). Both
+have server-side encryption and Object Lock enabled. The dashboard's
+write-only application-key preset was tested and found to include
+`deleteFiles`/`bypassGovernance`; that noncompliant key was revoked immediately.
+No B2 credential is currently retained. Real denied read/delete probes,
+retention, version listing, and recovery-key access remain T21/T24 work.
 
 ## Exact exclusions and required bootstrap changes
 

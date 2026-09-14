@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-09-14",
+  "providerObservation": {
+    "observedAt": "2026-09-14",
+    "method": "Read-only connected Supabase list_projects and Vercel list_projects",
+    "vercelTeam": "Canadian Plans",
+    "vercelProjectCount": 0,
+    "supabaseProjectCount": 1,
+    "supabaseRegion": "us-west-2",
+    "requiredSupabaseRegion": "ca-central-1",
+    "foundationInfrastructureReady": false
+  },
+  "notes": "Redacted configuration inventory. Fingerprints are SHA-256 hashes of provider-issued immutable resource identifiers, never resource names or credentials. Preview deployment credentials are not provisioned yet.",
+  "productionResourceFingerprints": [],
+  "resources": [],
+  "credentialCatalog": [
+    {
+      "deployment": "backend",
+      "name": "TURNSTILE_SECRET_KEY",
+      "resourceKind": "turnstile"
+    },
+    {
+      "deployment": "backend",
+      "name": "DATABASE_URL",
+      "resourceKind": "postgres"
+    },
+    {
+      "deployment": "backend",
+      "name": "SUPABASE_ANON_KEY",
+      "resourceKind": "supabase-auth"
+    },
+    {
+      "deployment": "backend",
+      "name": "MACHINE_REGISTRY_JSON",
+      "resourceKind": "machine-registry"
+    },
+    {
+      "deployment": "backend",
+      "name": "R2_ACCESS_KEY_ID",
+      "resourceKind": "r2"
+    },
+    {
+      "deployment": "backend",
+      "name": "R2_SECRET_ACCESS_KEY",
+      "resourceKind": "r2"
+    },
+    {
+      "deployment": "backend",
+      "name": "SANITY_API_TOKEN",
+      "resourceKind": "sanity"
+    },
+    {
+      "deployment": "backend",
+      "name": "AWS_ACCESS_KEY_ID",
+      "resourceKind": "email"
+    },
+    {
+      "deployment": "backend",
+      "name": "AWS_SECRET_ACCESS_KEY",
+      "resourceKind": "email"
+    },
+    {
+      "deployment": "backend",
+      "name": "SENTRY_AUTH_TOKEN",
+      "resourceKind": "error-tracking"
+    },
+    {
+      "deployment": "admin",
+      "name": "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      "resourceKind": "supabase-auth"
+    },
+    {
+      "deployment": "admin",
+      "name": "SENTRY_AUTH_TOKEN",
+      "resourceKind": "error-tracking"
+    },
+    {
+      "deployment": "site-1",
+      "name": "SITE_1_SERVICE_CREDENTIAL",
+      "resourceKind": "backend-api"
+    },
+    {
+      "deployment": "site-1",
+      "name": "SANITY_API_TOKEN",
+      "resourceKind": "sanity"
+    },
+    {
+      "deployment": "site-1",
+      "name": "SENTRY_AUTH_TOKEN",
+      "resourceKind": "error-tracking"
+    }
+  ],
+  "previewDeployments": [
+    {
+      "deployment": "backend",
+      "status": "not_provisioned",
+      "credentialNames": []
+    },
+    {
+      "deployment": "admin",
+      "status": "not_provisioned",
+      "credentialNames": []
+    },
+    {
+      "deployment": "site-1",
+      "status": "not_provisioned",
+      "credentialNames": []
+    }
+  ],
+  "previewCredentialBindings": []
+}

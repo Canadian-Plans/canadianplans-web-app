@@ -23,6 +23,7 @@
     "@canadian-plans/config": "workspace:*",
     "@types/express": "5.0.6",
     "@types/node": "catalog:",
+    "postgres": "3.4.9",
     "tsup": "8.5.1",
     "tsx": "catalog:",
     "typescript": "catalog:",

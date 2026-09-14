@@ -22,6 +22,19 @@ afterEach(async () => {
 });
 
 describe('GET /api/v1/health', () => {
+  it('allows the shared client request headers through browser preflight', async () => {
+    const response = await fetch(`${baseUrl}/api/v1/staff/workspaces`, {
+      method: 'OPTIONS',
+      headers: {
+        origin: process.env.ADMIN_ORIGIN ?? 'http://localhost:3000',
+        'access-control-request-method': 'GET',
+        'access-control-request-headers': 'authorization,content-type,x-request-id',
+      },
+    });
+    expect(response.status).toBe(204);
+    expect(response.headers.get('access-control-allow-headers')).toContain('x-request-id');
+  });
+
   it('returns ok: true with a UUID requestId', async () => {
     const res = await fetch(`${baseUrl}/api/v1/health`);
     const body = healthResponseSchema.parse(await res.json());

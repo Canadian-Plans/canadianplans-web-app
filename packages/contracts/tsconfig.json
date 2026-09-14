@@ -1,7 +1,8 @@
 {
   "extends": "@canadian-plans/config/tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "./src"
+    "rootDir": ".",
+    "types": ["node"]
   },
-  "include": ["src"]
+  "include": ["src", "scripts"]
 }

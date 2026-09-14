@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { membershipStatuses, staffPermissionNames, staffRoleNames } from '@canadian-plans/types';
 
+import { domainErrorCodeSchema, errorDetailsSchema, requestIdSchema } from './common';
 import { websiteAuthErrorCodeSchema } from './website-auth';
 
 export const staffRoleNameSchema = z.enum(staffRoleNames);
@@ -26,9 +27,9 @@ export const staffAuthErrorCodeSchema = z.enum([
 export type StaffAuthErrorCode = z.infer<typeof staffAuthErrorCodeSchema>;
 
 /**
- * Every `/api/v1` error code: staff, website credential, and machine identity.
- * One envelope validates all callers so the admin client and storefront share
- * a single error shape.
+ * Every authentication error code: staff, website credential, and machine
+ * identity. `apiErrorCodeSchema` below widens this with the request-family
+ * domain codes so one envelope validates all callers.
  */
 export const authErrorCodeSchema = z.enum([
   ...staffAuthErrorCodeSchema.options,
@@ -37,12 +38,35 @@ export const authErrorCodeSchema = z.enum([
 
 export type AuthErrorCode = z.infer<typeof authErrorCodeSchema>;
 
+/**
+ * The full `/api/v1` error-code vocabulary: authentication codes plus the
+ * request-family domain codes (leads, quotes, orders, uploads, files,
+ * partners, exports, tracking, webhooks). A superset of `authErrorCodeSchema`,
+ * so anything that parsed before still parses.
+ */
+export const apiErrorCodeSchema = z.enum([
+  ...authErrorCodeSchema.options,
+  ...domainErrorCodeSchema.options,
+]);
+
+export type ApiErrorCode = z.infer<typeof apiErrorCodeSchema>;
+
+/**
+ * The canonical error envelope `{ code, message, requestId, details? }`
+ * (PLATFORM_CONTEXT.md §7). `details` is optional structured context and never
+ * carries PII (invariant 12). The wire response nests it under `error`.
+ */
+export const apiErrorSchema = z.object({
+  code: apiErrorCodeSchema,
+  message: z.string(),
+  requestId: requestIdSchema,
+  details: errorDetailsSchema.optional(),
+});
+
+export type ApiError = z.infer<typeof apiErrorSchema>;
+
 export const apiErrorResponseSchema = z.object({
-  error: z.object({
-    code: authErrorCodeSchema,
-    message: z.string(),
-    requestId: z.uuid(),
-  }),
+  error: apiErrorSchema,
 });
 
 export type ApiErrorResponse = z.infer<typeof apiErrorResponseSchema>;

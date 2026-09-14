@@ -43,6 +43,10 @@ jobs:
           node-version: 22.19.0
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Verify preview credentials target isolated non-production resources
+        run: pnpm run check:preview-isolation
+      - name: Verify frontends cannot import the database package
+        run: pnpm run check:frontend-db-boundary
       - name: Record release metadata (no credentials)
         run: |
           git rev-parse HEAD
@@ -61,6 +65,10 @@ jobs:
             exit 1
           fi
       - run: pnpm run test
+      - name: Verify generated API contract is current
+        run: |
+          pnpm --filter @canadian-plans/contracts build
+          git diff --exit-code -- docs/api/openapi.json
       - name: Build affected applications and their shared dependencies
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}

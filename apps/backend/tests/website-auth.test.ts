@@ -31,10 +31,12 @@ class FakeCredentialResolver {
 
 /** In-memory fixed-window limiter mirroring the SQL function's semantics. */
 class FakeRateLimiter {
+  readonly inputs: RateLimitInput[] = [];
   private counts = new Map<string, number>();
   denyPrefixes = new Set<string>();
 
   hit = async (input: RateLimitInput): Promise<RateLimitResult> => {
+    this.inputs.push(input);
     if ([...this.denyPrefixes].some((prefix) => input.bucketKey.startsWith(prefix))) {
       return { allowed: false, retryAfterSeconds: 42 };
     }
@@ -73,6 +75,8 @@ let server: Server;
 let baseUrl: string;
 let resolver: FakeCredentialResolver;
 let limiter: FakeRateLimiter;
+let admitted: boolean;
+let admissionFailure: boolean;
 
 function post(path: string, headers: Record<string, string>, body?: unknown) {
   return fetch(`${baseUrl}${path}`, {
@@ -85,9 +89,20 @@ function post(path: string, headers: Record<string, string>, body?: unknown) {
 beforeEach(async () => {
   resolver = new FakeCredentialResolver();
   limiter = new FakeRateLimiter();
+  admitted = true;
+  admissionFailure = false;
   server = createApp({
     staff: staffOnly,
-    website: { auth: { resolveCredential: resolver.resolve, rateLimit: limiter.hit } },
+    website: {
+      auth: {
+        resolveCredential: resolver.resolve,
+        rateLimit: limiter.hit,
+        botCheck: async () => {
+          if (admissionFailure) throw new Error('provider unavailable');
+          return admitted;
+        },
+      },
+    },
   }).listen(0);
   await new Promise<void>((resolve) => server.once('listening', resolve));
   const address = server.address();
@@ -100,6 +115,46 @@ afterEach(async () => {
 });
 
 describe('public website credential authentication', () => {
+  it('denies an asynchronous admission exception without database work', async () => {
+    admissionFailure = true;
+    const response = await post(
+      '/api/v1/website/leads',
+      { authorization: `Bearer ${VALID_SECRET}` },
+      {},
+    );
+    expect(response.status).toBe(403);
+    expect(limiter.inputs).toHaveLength(0);
+  });
+  it('denies failed admission before touching database-backed dependencies', async () => {
+    admitted = false;
+    const response = await post(
+      '/api/v1/website/leads',
+      { authorization: `Bearer ${VALID_SECRET}` },
+      {},
+    );
+    expect(response.status).toBe(403);
+    expect(limiter.inputs).toHaveLength(0);
+  });
+
+  it('ignores spoofed forwarding headers when selecting the IP bucket', async () => {
+    for (const address of ['203.0.113.1', '203.0.113.2']) {
+      expect(
+        (
+          await post(
+            '/api/v1/website/leads',
+            { authorization: `Bearer ${VALID_SECRET}`, 'x-forwarded-for': address },
+            {},
+          )
+        ).status,
+      ).toBe(202);
+    }
+    const buckets = limiter.inputs
+      .filter((input) => input.bucketKey.startsWith('ip:'))
+      .map((input) => input.bucketKey);
+    expect(new Set(buckets).size).toBe(1);
+    expect(buckets[0]).not.toContain('203.0.113.');
+  });
+
   it('requires a well-formed service credential', async () => {
     const missing = await post('/api/v1/website/leads', {}, {});
     expect(missing.status).toBe(401);
