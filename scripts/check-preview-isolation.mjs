@@ -10,7 +10,7 @@ function fail(message) {
   throw new Error(`Preview isolation inventory: ${message}`);
 }
 
-export function validatePreviewIsolation(inventory) {
+export function validatePreviewIsolation(inventory, expected = {}) {
   if (!inventory || typeof inventory !== 'object' || Array.isArray(inventory)) {
     fail('root must be an object');
   }
@@ -45,6 +45,8 @@ export function validatePreviewIsolation(inventory) {
   const productionKinds = new Set();
 
   const catalogKeys = new Set();
+  if (catalog.length === 0 || deployments.length === 0)
+    fail('catalog and deployments cannot be empty');
   for (const entry of catalog) {
     if (!entry?.deployment || !entry?.name || !entry?.resourceKind) {
       fail('each credential catalog entry needs deployment, name and resourceKind');
@@ -52,6 +54,9 @@ export function validatePreviewIsolation(inventory) {
     const key = `${entry.deployment}:${entry.name}`;
     if (catalogKeys.has(key)) fail(`duplicate credential catalog entry ${key}`);
     catalogKeys.add(key);
+  }
+  for (const key of expected.credentialKeys ?? []) {
+    if (!catalogKeys.has(key)) fail(`required credential catalog entry ${key} is missing`);
   }
 
   for (const entry of productionEntries) {
@@ -105,6 +110,14 @@ export function validatePreviewIsolation(inventory) {
       fail(`duplicate preview deployment ${deployment.deployment}`);
     }
     deploymentNames.add(deployment.deployment);
+    if (
+      deployment.status === 'provisioned' &&
+      (deployment.emailProvider !== 'fake' || deployment.authSmtp !== 'fake_sink')
+    ) {
+      fail(
+        `${deployment.deployment} requires fake customer email and an independent Auth SMTP sink`,
+      );
+    }
     if (!Array.isArray(deployment.credentialNames)) {
       fail(`${deployment.deployment} credentialNames must be an array`);
     }
@@ -116,6 +129,14 @@ export function validatePreviewIsolation(inventory) {
       if (!catalogKeys.has(key)) fail(`${key} is absent from the credential catalog`);
       if (!bindingKeys.has(key)) fail(`${key} has no isolated preview resource binding`);
     }
+  }
+
+  for (const name of expected.deployments ?? []) {
+    if (!deploymentNames.has(name)) fail(`required deployment ${name} is missing`);
+  }
+  for (const entry of catalog) {
+    if (!deploymentNames.has(entry.deployment))
+      fail(`unknown catalog deployment ${entry.deployment}`);
   }
 
   for (const key of bindingKeys) {
@@ -149,7 +170,25 @@ const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPat
 if (isMain) {
   const inventoryPath = path.resolve('docs/DEPLOYMENT_INVENTORY.json');
   const inventory = JSON.parse(fs.readFileSync(inventoryPath, 'utf8'));
-  const result = validatePreviewIsolation(inventory);
+  const result = validatePreviewIsolation(inventory, {
+    deployments: ['backend', 'admin', 'site-1'],
+    credentialKeys: [
+      'backend:DATABASE_URL',
+      'backend:SUPABASE_ANON_KEY',
+      'backend:MACHINE_REGISTRY_JSON',
+      'backend:R2_ACCESS_KEY_ID',
+      'backend:R2_SECRET_ACCESS_KEY',
+      'backend:SANITY_API_TOKEN',
+      'backend:AWS_ACCESS_KEY_ID',
+      'backend:AWS_SECRET_ACCESS_KEY',
+      'backend:SENTRY_AUTH_TOKEN',
+      'admin:NEXT_PUBLIC_SUPABASE_ANON_KEY',
+      'admin:SENTRY_AUTH_TOKEN',
+      'site-1:SITE_1_SERVICE_CREDENTIAL',
+      'site-1:SANITY_API_TOKEN',
+      'site-1:SENTRY_AUTH_TOKEN',
+    ],
+  });
   console.info(
     `Preview isolation inventory valid: ${result.provisionedDeployments}/${result.deployments} deployments provisioned, ${result.credentialBindings} credential bindings.`,
   );

@@ -4,9 +4,21 @@ Hand-maintained reference for `apps/backend`'s `/api/v1` surface. Shared Zod
 request/response/error schemas live in `@canadian-plans/contracts` and are
 consumed by both backend tests and the admin API client.
 
-An OpenAPI document generated from `@canadian-plans/contracts` is planned
-(PLATFORM_CONTEXT.md §3, IMPLEMENTATION_PLAN.md §7) but not wired yet; this
-file is the hand-maintained skeleton until that generation step exists.
+A machine-readable **OpenAPI 3.1** document is generated from the
+`@canadian-plans/contracts` Zod schemas — never hand-edited — and covers the
+full `/api/v1` surface (leads, quotes, orders, workspace orders, uploads,
+download links, partners/commissions/invoices, webhooks, exports, tracking, and
+the staff/service-credential routes):
+
+- Generated file: [`docs/api/openapi.json`](./api/openapi.json)
+- Regenerate: `pnpm --filter @canadian-plans/contracts build`
+  (runs [`scripts/generate-openapi.ts`](../packages/contracts/scripts/generate-openapi.ts)).
+
+The typed client `createBackendClient({ baseUrl, credential })` in the same
+package is derived from those schemas and is consumed by both `apps/admin`
+(staff session credential) and `apps/site-1` (service credential), so a schema
+change breaks both consumers at build time (REQ 50). This Markdown file remains
+the human-readable reference for the currently implemented (T5/T6) routes.
 
 ## Conventions
 
@@ -54,8 +66,13 @@ CORS (PLATFORM_CONTEXT §4b, invariant 2).
   Error codes: `machine_unknown`, `machine_signature_invalid`,
   `machine_account_mismatch`, `machine_workspace_mismatch`.
 
-All error codes share the one envelope `{ error: { code, message, requestId } }`
-(`authErrorCodeSchema` in `@canadian-plans/contracts`).
+All error codes share the one envelope
+`{ error: { code, message, requestId, details? } }`. The code vocabulary is
+`apiErrorCodeSchema` in `@canadian-plans/contracts` — the authentication codes
+(`authErrorCodeSchema`) plus the request-family domain codes (validation,
+conflicts, quote/draft/order/upload/file/commission/invoice/export/tracking
+states). `details` is optional structured context and never carries PII
+(invariant 12).
 
 ## Endpoints
 

@@ -124,6 +124,20 @@ counter.
 `app.resolve_website_credential` is the sole pre-tenant read path, scoped to a
 single secret-hash lookup.
 
+## 0005_reinvitation.sql
+
+Task: Foundation review / T5 correction
+Date: 2026-09-14 (disposable PostgreSQL only; not applied to hosted resources)
+
+Replaces `accept_staff_invitations` without editing historical migrations.
+Re-invitation preserves a revoked staff membership's identity, replaces its
+roles with the fresh invitation's roles, clears old permission overrides, and
+audits both consumption and acceptance. Invitations for an already-active
+identity are consumed/audited without changing roles. Actor advisory locking
+and row locking serialize concurrent acceptance. Existing SECURITY DEFINER,
+empty search path and restricted EXECUTE grants are retained; no broader RLS
+policy or application grant is added.
+
 Each future entry follows this shape:
 
 ```

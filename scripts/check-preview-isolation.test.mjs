@@ -26,6 +26,8 @@ function validInventory() {
         deployment: 'backend',
         status: 'provisioned',
         credentialNames: ['DATABASE_URL'],
+        emailProvider: 'fake',
+        authSmtp: 'fake_sink',
       },
     ],
     previewCredentialBindings: [
@@ -40,6 +42,35 @@ test('accepts a preview credential mapped to a distinct immutable resource finge
     provisionedDeployments: 1,
     credentialBindings: 1,
   });
+});
+
+test('rejects a vacuous inventory and missing required app/catalog entries', () => {
+  assert.throws(
+    () =>
+      validatePreviewIsolation({
+        ...validInventory(),
+        credentialCatalog: [],
+        previewDeployments: [],
+      }),
+    /cannot be empty/,
+  );
+  assert.throws(
+    () => validatePreviewIsolation(validInventory(), { deployments: ['admin'] }),
+    /required deployment admin/,
+  );
+  assert.throws(
+    () =>
+      validatePreviewIsolation(validInventory(), { credentialKeys: ['backend:SUPABASE_ANON_KEY'] }),
+    /required credential catalog/,
+  );
+});
+
+test('requires fake customer email and separately configured Auth SMTP', () => {
+  for (const field of ['emailProvider', 'authSmtp']) {
+    const inventory = validInventory();
+    delete inventory.previewDeployments[0][field];
+    assert.throws(() => validatePreviewIsolation(inventory), /independent Auth SMTP sink/);
+  }
 });
 
 test('rejects a provisioned preview credential without a resource binding', () => {

@@ -10,6 +10,17 @@ non-production resource using a SHA-256 fingerprint of the provider-issued
 immutable resource ID. Display names are not accepted as isolation evidence.
 Preview deployments are currently recorded as not provisioned; update the
 inventory in the same reviewed change that provisions any preview credential.
+Provisioned inventory entries must declare `emailProvider: fake` and
+`authSmtp: fake_sink`; customer email configuration does not configure Auth SMTP.
+The check validates the committed inventory, not live provider configuration.
+Read-only provider observation on 2026-09-14 found no Vercel projects in the
+Canadian Plans team and one Supabase project in `us-west-2`. Do not use that
+project as evidence of Canadian staging compliance (required: `ca-central-1`).
+
+The default website-write route is deliberately closed until a verified
+edge/bot admission implementation is supplied. Tests inject explicit admission.
+The backend does not trust caller-controlled `X-Forwarded-For`; any deployment
+proxy trust policy must be narrowly verified before enabling public traffic.
 
 ## Runtime
 

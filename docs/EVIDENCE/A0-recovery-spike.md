@@ -9,13 +9,19 @@ intended encrypted-artifact, separate-ledger, key-recovery, idempotency,
 checkpoint, staff-recovery, and fail-closed semantics without using customer
 data.
 
-**The production recovery gate has not passed.** The provider-connected
+**T4R early recovery feasibility and the production recovery gate have not passed.** The provider-connected
 database from T5 contains only synthetic workspace data, but this environment
 did not have an isolated second Supabase Auth target, disposable mail inbox,
 R2 credentials, Sanity credentials, B2 account/buckets, or `age`/provider CLI
 credentials. Real provider export/import, TOTP recovery, Object Lock, writer
-capability, retention, outbox, and end-to-end reconciliation evidence remains
-T21/T24 work.
+capability evidence is still required for T4R; it cannot all be deferred to
+T21/T24. Those later tasks add application integration and the full rehearsal.
+
+On 2026-09-14 the connected Supabase account listed only `canadianplans` in
+`us-west-2`, not the required `ca-central-1`. The Canadian Plans Vercel team
+listed no projects. Canadian staging/recovery provisioning, OPEN_INPUTS #22's
+organization/billing choice, fake Auth SMTP, and separate R2/Sanity/B2 access
+remain prerequisites. No connected resources were changed during finalization.
 
 ## Scope and safety
 

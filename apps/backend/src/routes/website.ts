@@ -17,6 +17,9 @@ export function createDefaultWebsiteRouteDependencies(): WebsiteRouteDependencie
     auth: {
       resolveCredential: resolveWebsiteCredential,
       rateLimit: rateLimitHit,
+      // No edge/bot provider is provisioned yet. Keep public writes closed
+      // until a verified admission implementation is supplied at deployment.
+      botCheck: () => false,
     },
   };
 }

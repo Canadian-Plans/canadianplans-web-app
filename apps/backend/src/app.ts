@@ -25,7 +25,7 @@ function adminCors(): RequestHandler {
     if (origin === allowedOrigin) {
       res.setHeader('access-control-allow-origin', allowedOrigin);
       res.setHeader('vary', 'Origin');
-      res.setHeader('access-control-allow-headers', 'authorization, content-type');
+      res.setHeader('access-control-allow-headers', 'authorization, content-type, x-request-id');
       res.setHeader('access-control-allow-methods', 'GET, POST, DELETE, OPTIONS');
     }
     if (req.method === 'OPTIONS') {

@@ -1,13 +1,6 @@
 import {
-  apiErrorResponseSchema,
-  createServiceCredentialResponseSchema,
-  healthResponseSchema,
-  inviteStaffResponseSchema,
-  listServiceCredentialsResponseSchema,
-  revokeServiceCredentialResponseSchema,
-  revokeStaffResponseSchema,
-  staffWorkspaceAccessResponseSchema,
-  staffWorkspacesResponseSchema,
+  BackendError,
+  createBackendClient,
   type CreateServiceCredentialRequest,
   type CreateServiceCredentialResponse,
   type HealthResponse,
@@ -16,7 +9,6 @@ import {
   type ListServiceCredentialsResponse,
   type RevokeServiceCredentialResponse,
   type RevokeStaffResponse,
-  type AuthErrorCode,
   type StaffWorkspaceAccessResponse,
   type StaffWorkspacesResponse,
 } from '@canadian-plans/contracts';
@@ -24,60 +16,32 @@ import {
 const API_BASE_URL =
   process.env['NEXT_PUBLIC_API_BASE_URL'] ?? process.env['API_BASE_URL'] ?? 'http://localhost:4000';
 
-export class BackendError extends Error {
-  constructor(
-    readonly code: AuthErrorCode,
-    readonly status: number,
-  ) {
-    super(code);
-    this.name = 'BackendError';
-  }
+/**
+ * Admin's staff-facing calls. Every request goes through the one typed client
+ * in `@canadian-plans/contracts` (createBackendClient), so admin and the
+ * storefronts share request/response types, response validation and transport
+ * hardening. The staff Supabase access token is the client's bearer credential.
+ */
+export { BackendError };
+
+function client(accessToken: string) {
+  return createBackendClient({ baseUrl: API_BASE_URL, credential: accessToken });
 }
 
-async function staffRequest(path: string, accessToken: string, init?: RequestInit) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    cache: 'no-store',
-    headers: {
-      ...init?.headers,
-      authorization: `Bearer ${accessToken}`,
-    },
-  });
-  const body: unknown = await response.json();
-  if (!response.ok) {
-    const error = apiErrorResponseSchema.safeParse(body);
-    throw new BackendError(
-      error.success ? error.data.error.code : 'internal_error',
-      response.status,
-    );
-  }
-  return body;
-}
-
-/** Public liveness check; staff data calls below always carry a bearer session. */
+/** Public liveness check; no session required. */
 export async function getHealth(): Promise<HealthResponse> {
-  const res = await fetch(`${API_BASE_URL}/api/v1/health`);
-
-  if (!res.ok) {
-    throw new Error(`backend health check failed with status ${res.status}`);
-  }
-
-  return healthResponseSchema.parse(await res.json());
+  return createBackendClient({ baseUrl: API_BASE_URL, credential: '' }).health();
 }
 
 export async function getStaffWorkspaces(accessToken: string): Promise<StaffWorkspacesResponse> {
-  return staffWorkspacesResponseSchema.parse(
-    await staffRequest('/api/v1/staff/workspaces', accessToken),
-  );
+  return client(accessToken).staff.listWorkspaces();
 }
 
 export async function getStaffWorkspaceAccess(
   accessToken: string,
   workspaceId: string,
 ): Promise<StaffWorkspaceAccessResponse> {
-  return staffWorkspaceAccessResponseSchema.parse(
-    await staffRequest(`/api/v1/staff/workspaces/${workspaceId}/access`, accessToken),
-  );
+  return client(accessToken).staff.workspaceAccess(workspaceId);
 }
 
 export async function inviteStaff(
@@ -85,13 +49,7 @@ export async function inviteStaff(
   workspaceId: string,
   input: InviteStaffRequest,
 ): Promise<InviteStaffResponse> {
-  return inviteStaffResponseSchema.parse(
-    await staffRequest(`/api/v1/staff/workspaces/${workspaceId}/invitations`, accessToken, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(input),
-    }),
-  );
+  return client(accessToken).staff.invite(workspaceId, input);
 }
 
 export async function revokeStaff(
@@ -99,22 +57,14 @@ export async function revokeStaff(
   workspaceId: string,
   membershipId: string,
 ): Promise<RevokeStaffResponse> {
-  return revokeStaffResponseSchema.parse(
-    await staffRequest(
-      `/api/v1/staff/workspaces/${workspaceId}/memberships/${membershipId}`,
-      accessToken,
-      { method: 'DELETE' },
-    ),
-  );
+  return client(accessToken).staff.revokeMembership(workspaceId, membershipId);
 }
 
 export async function listServiceCredentials(
   accessToken: string,
   workspaceId: string,
 ): Promise<ListServiceCredentialsResponse> {
-  return listServiceCredentialsResponseSchema.parse(
-    await staffRequest(`/api/v1/staff/workspaces/${workspaceId}/service-credentials`, accessToken),
-  );
+  return client(accessToken).staff.listServiceCredentials(workspaceId);
 }
 
 export async function createServiceCredential(
@@ -122,13 +72,7 @@ export async function createServiceCredential(
   workspaceId: string,
   input: CreateServiceCredentialRequest,
 ): Promise<CreateServiceCredentialResponse> {
-  return createServiceCredentialResponseSchema.parse(
-    await staffRequest(`/api/v1/staff/workspaces/${workspaceId}/service-credentials`, accessToken, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(input),
-    }),
-  );
+  return client(accessToken).staff.createServiceCredential(workspaceId, input);
 }
 
 export async function revokeServiceCredential(
@@ -136,11 +80,5 @@ export async function revokeServiceCredential(
   workspaceId: string,
   credentialId: string,
 ): Promise<RevokeServiceCredentialResponse> {
-  return revokeServiceCredentialResponseSchema.parse(
-    await staffRequest(
-      `/api/v1/staff/workspaces/${workspaceId}/service-credentials/${credentialId}`,
-      accessToken,
-      { method: 'DELETE' },
-    ),
-  );
+  return client(accessToken).staff.revokeServiceCredential(workspaceId, credentialId);
 }

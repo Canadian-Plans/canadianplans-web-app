@@ -1,6 +1,16 @@
 {
   "schemaVersion": 1,
   "reviewedAt": "2026-09-14",
+  "providerObservation": {
+    "observedAt": "2026-09-14",
+    "method": "Read-only connected Supabase list_projects and Vercel list_projects",
+    "vercelTeam": "Canadian Plans",
+    "vercelProjectCount": 0,
+    "supabaseProjectCount": 1,
+    "supabaseRegion": "us-west-2",
+    "requiredSupabaseRegion": "ca-central-1",
+    "foundationInfrastructureReady": false
+  },
   "notes": "Redacted configuration inventory. Fingerprints are SHA-256 hashes of provider-issued immutable resource identifiers, never resource names or credentials. Preview deployment credentials are not provisioned yet.",
   "productionResourceFingerprints": [],
   "resources": [],

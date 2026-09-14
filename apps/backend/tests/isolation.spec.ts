@@ -1,14 +1,14 @@
 import { createHmac } from 'node:crypto';
-import type { Server } from 'node:http';
+import { createServer, type Server } from 'node:http';
 
 import { sql } from 'drizzle-orm';
 import postgres from 'postgres';
-import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
 import { apiErrorResponseSchema } from '@canadian-plans/contracts';
 import { createDatabaseClient, type DatabaseClient } from '@canadian-plans/db';
 
 import { createApp } from '../src/app.js';
-import type { StaffSessionVerifier, VerifiedStaffSession } from '../src/auth/session.js';
+import { SupabaseStaffSessionVerifier, type VerifiedStaffSession } from '../src/auth/session.js';
 import { MachineRegistry, type MachineRegistryConfig } from '../src/machines/registry.js';
 import { DatabaseStaffStore } from '../src/staff/store.js';
 import { generateServiceSecret, hashServiceSecret } from '../src/website/credential.js';
@@ -17,7 +17,7 @@ import { DatabaseWebsiteCredentialStore } from '../src/website/store.js';
 function disposableDatabaseUrl(): string | undefined {
   const migrationUrl = process.env.TEST_MIGRATION_DATABASE_URL;
   const enabled = process.env.DB_TEST_ALLOW_DESTRUCTIVE === '1';
-  if (!migrationUrl && !enabled) return undefined;
+  if (!migrationUrl && !enabled && !process.env.CI) return undefined;
   if (!migrationUrl || !enabled) {
     throw new Error(
       'Isolation integration tests require TEST_MIGRATION_DATABASE_URL and DB_TEST_ALLOW_DESTRUCTIVE=1 together.',
@@ -45,25 +45,47 @@ const { secret: WEBSITE_SECRET_A } = generateServiceSecret();
 const { secret: REVOKED_WEBSITE_SECRET } = generateServiceSecret();
 const { secret: FOREIGN_WEBSITE_SECRET } = generateServiceSecret();
 
-class FixtureSessionVerifier implements StaffSessionVerifier {
-  private readonly sessions = new Map<string, VerifiedStaffSession>([
-    [
-      'owner-aal2',
-      { actorId: OWNER_A, verifiedEmail: 'owner-a@example.test', assuranceLevel: 'aal2' },
-    ],
-    [
-      'viewer-forged-role',
-      { actorId: VIEWER_B, verifiedEmail: 'viewer-b@example.test', assuranceLevel: 'aal2' },
-    ],
-  ]);
-
-  async verify(token: string) {
-    return this.sessions.get(token);
+const sessions = new Map<string, VerifiedStaffSession>([
+  [
+    'owner-aal2',
+    { actorId: OWNER_A, verifiedEmail: 'owner-a@example.test', assuranceLevel: 'aal2' },
+  ],
+  [
+    'viewer-forged-role',
+    { actorId: VIEWER_B, verifiedEmail: 'viewer-b@example.test', assuranceLevel: 'aal2' },
+  ],
+]);
+const signingKey = 'disposable-auth-fixture-signing-key';
+const issuedTokens = new Map<string, { session: VerifiedStaffSession; expiresAt: number }>();
+const tokens = new Map<string, string>();
+for (const [name, session] of sessions) {
+  for (const expired of [false, true]) {
+    const expiresAt = Math.floor(Date.now() / 1000) + (expired ? -3600 : 3600);
+    const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+    const payload = Buffer.from(
+      JSON.stringify({
+        sub: session.actorId,
+        email: session.verifiedEmail,
+        aal: session.assuranceLevel,
+        exp: expiresAt,
+        iat: expiresAt - 3600,
+      }),
+    ).toString('base64url');
+    const message = `${header}.${payload}`;
+    if (!expired) {
+      tokens.set(
+        'forged-session',
+        `${message}.${createHmac('sha256', 'untrusted-signing-key').update(message).digest('base64url')}`,
+      );
+    }
+    const token = `${message}.${createHmac('sha256', signingKey).update(message).digest('base64url')}`;
+    tokens.set(expired ? 'expired-session' : name, token);
+    issuedTokens.set(token, { session, expiresAt });
   }
 }
 
 function bearer(token: string): Record<string, string> {
-  return { authorization: `Bearer ${token}` };
+  return { authorization: `Bearer ${tokens.get(token) ?? token}` };
 }
 
 databaseTest('Phase A tenant isolation gate', () => {
@@ -71,6 +93,7 @@ databaseTest('Phase A tenant isolation gate', () => {
   let runtimeSql: ReturnType<typeof postgres>;
   let database: DatabaseClient;
   let server: Server;
+  let authServer: Server;
   let baseUrl: string;
 
   beforeAll(async () => {
@@ -121,9 +144,33 @@ databaseTest('Phase A tenant isolation gate', () => {
     });
 
     const credentialStore = new DatabaseWebsiteCredentialStore(database);
+    // Replace only the external Auth HTTP service. Exercise the production
+    // Supabase SDK/verifier with signed, genuinely expired, and forged tokens.
+    authServer = createServer((req, res) => {
+      const issued = issuedTokens.get(req.headers.authorization?.replace(/^Bearer /, '') ?? '');
+      res.setHeader('content-type', 'application/json');
+      if (req.url !== '/auth/v1/user' || !issued || issued.expiresAt <= Date.now() / 1000) {
+        res.writeHead(401).end(JSON.stringify({ message: 'invalid or expired token' }));
+        return;
+      }
+      res.end(
+        JSON.stringify({
+          id: issued.session.actorId,
+          email: issued.session.verifiedEmail,
+          email_confirmed_at: '2026-01-01T00:00:00Z',
+          factors: [],
+        }),
+      );
+    }).listen(0, '127.0.0.1');
+    await new Promise<void>((resolve) => authServer.once('listening', resolve));
+    const authAddress = authServer.address();
+    if (!authAddress || typeof authAddress === 'string')
+      throw new Error('expected Auth TCP server');
+    vi.stubEnv('SUPABASE_URL', `http://127.0.0.1:${authAddress.port}`);
+    vi.stubEnv('SUPABASE_ANON_KEY', 'disposable-auth-publishable-key');
     server = createApp({
       staff: {
-        sessionVerifier: new FixtureSessionVerifier(),
+        sessionVerifier: new SupabaseStaffSessionVerifier(),
         store: new DatabaseStaffStore(database),
         credentialStore,
       },
@@ -131,6 +178,7 @@ databaseTest('Phase A tenant isolation gate', () => {
         auth: {
           resolveCredential: database.resolveWebsiteCredential,
           rateLimit: database.rateLimitHit,
+          botCheck: () => true,
         },
       },
     }).listen(0);
@@ -150,6 +198,8 @@ databaseTest('Phase A tenant isolation gate', () => {
 
   afterAll(async () => {
     if (server) await new Promise<void>((resolve) => server.close(() => resolve()));
+    if (authServer) await new Promise<void>((resolve) => authServer.close(() => resolve()));
+    vi.unstubAllEnvs();
     if (admin) await admin`delete from app.workspaces where id in (${WORKSPACE_A}, ${WORKSPACE_B})`;
     if (database) await database.close();
     if (runtimeSql) await runtimeSql.end();
@@ -325,5 +375,74 @@ databaseTest('Phase A tenant isolation gate', () => {
         expectedWorkspaceId: WORKSPACE_B,
       }),
     ).toEqual({ ok: false, reason: 'machine_workspace_mismatch' });
+  });
+
+  test('re-invitation restores only fresh roles and consumes active-member invitations without escalation', async () => {
+    const store = new DatabaseStaffStore(database);
+    await admin`insert into app.roles(workspace_id, name) values (${WORKSPACE_A}, 'viewer') on conflict do nothing`;
+    await admin`update app.memberships set status = 'revoked', revoked_at = now() where id = ${OWNER_MEMBERSHIP_A}`;
+    await admin`insert into app.permissions(workspace_id, name) values (${WORKSPACE_A}, 'deletion') on conflict do nothing`;
+    await admin`insert into app.membership_permissions(workspace_id, membership_id, permission_id)
+      select workspace_id, ${OWNER_MEMBERSHIP_A}, id from app.permissions where workspace_id = ${WORKSPACE_A} and name = 'deletion'`;
+    const input = {
+      actorId: OWNER_A,
+      workspaceId: WORKSPACE_A,
+      normalizedEmail: 'owner-a@example.test',
+      requestId: '70000000-0000-4000-8000-000000000011',
+    };
+    await store.inviteStaff({ ...input, roleNames: ['viewer'] });
+    const bootstrap = {
+      actorId: OWNER_A,
+      verifiedEmail: input.normalizedEmail,
+      requestId: input.requestId,
+    };
+    await Promise.all([store.bootstrapStaff(bootstrap), store.bootstrapStaff(bootstrap)]);
+    expect(await store.loadStaffAccess(OWNER_A, WORKSPACE_A)).toMatchObject({
+      membershipId: OWNER_MEMBERSHIP_A,
+      status: 'active',
+      roles: ['viewer'],
+      permissions: [],
+    });
+    await store.inviteStaff({ ...input, roleNames: ['owner'] });
+    await store.bootstrapStaff(bootstrap);
+    expect(await store.loadStaffAccess(OWNER_A, WORKSPACE_A)).toMatchObject({ roles: ['viewer'] });
+    const pending =
+      await admin`select id from app.memberships where workspace_id = ${WORKSPACE_A} and status = 'pending'`;
+    expect(pending).toHaveLength(0);
+    const audit =
+      await admin`select id from app.audit_events where workspace_id = ${WORKSPACE_A} and action = 'membership.invitation_consumed'`;
+    expect(audit).toHaveLength(2);
+  });
+
+  test('concurrent limiter bursts enforce the exact cap without contaminating independent buckets', async () => {
+    for (const concurrency of [20, 40, 100]) {
+      const started = performance.now();
+      const results = await Promise.all(
+        Array.from({ length: concurrency }, () =>
+          database.rateLimitHit({
+            bucketKey: `foundation-burst-${concurrency}`,
+            windowSeconds: 3600,
+            maxCount: 10,
+          }),
+        ),
+      );
+      expect(results.filter((result) => result.allowed)).toHaveLength(10);
+      expect(
+        await database.rateLimitHit({
+          bucketKey: `foundation-independent-${concurrency}`,
+          windowSeconds: 3600,
+          maxCount: 10,
+        }),
+      ).toMatchObject({ allowed: true });
+      console.info(
+        JSON.stringify({
+          check: 'limiter-burst',
+          concurrency,
+          allowed: 10,
+          elapsedMs: Math.round(performance.now() - started),
+          poolConnections: 1,
+        }),
+      );
+    }
   });
 });
