@@ -72,21 +72,20 @@ export interface StaffAccessStore {
   loadStaffAccess(actorId: string, workspaceId: string): Promise<StaffAccessSnapshot | undefined>;
 }
 
-export type AuthorizationReason =
-  | 'role_allowed'
-  | 'individual_allowed'
+export type AuthorizationAllowReason = 'role_allowed' | 'individual_allowed';
+
+export type AuthorizationDenyReason =
   | 'membership_missing'
   | 'membership_pending'
   | 'membership_revoked'
   | 'permission_denied'
   | 'mfa_required';
 
+export type AuthorizationReason = AuthorizationAllowReason | AuthorizationDenyReason;
+
 export type AuthorizationDecision =
-  | { allowed: true; reason: 'role_allowed' | 'individual_allowed'; access: StaffAccessSnapshot }
-  | {
-      allowed: false;
-      reason: Exclude<AuthorizationReason, 'role_allowed' | 'individual_allowed'>;
-    };
+  | { allowed: true; reason: AuthorizationAllowReason; access: StaffAccessSnapshot }
+  | { allowed: false; reason: AuthorizationDenyReason };
 
 export interface AuthorizeInput {
   actorId: string;
