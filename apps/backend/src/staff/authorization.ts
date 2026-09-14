@@ -72,21 +72,43 @@ export interface StaffAccessStore {
   loadStaffAccess(actorId: string, workspaceId: string): Promise<StaffAccessSnapshot | undefined>;
 }
 
-export type AuthorizationReason =
-  | 'role_allowed'
-  | 'individual_allowed'
+export type AuthorizationAllowReason = 'role_allowed' | 'individual_allowed';
+
+export type AuthorizationDenyReason =
   | 'membership_missing'
   | 'membership_pending'
   | 'membership_revoked'
   | 'permission_denied'
   | 'mfa_required';
 
+export type AuthorizationReason = AuthorizationAllowReason | AuthorizationDenyReason;
+
 export type AuthorizationDecision =
-  | { allowed: true; reason: 'role_allowed' | 'individual_allowed'; access: StaffAccessSnapshot }
-  | {
-      allowed: false;
-      reason: Exclude<AuthorizationReason, 'role_allowed' | 'individual_allowed'>;
-    };
+  | { allowed: true; reason: AuthorizationAllowReason; access: StaffAccessSnapshot }
+  | { allowed: false; reason: AuthorizationDenyReason };
+
+/**
+ * Extracts the deny reason from a denied decision, for callers that already
+ * checked `!decision.allowed`. Narrows via a `switch` on `decision.reason`
+ * (ordinary literal-union narrowing) rather than on `decision.allowed`:
+ * narrowing `AuthorizationDecision` on its `allowed` discriminant has been
+ * observed to not apply under Vercel's isolated Node.js function type-check
+ * (reproducible there, never locally, across every tsconfig variant tried),
+ * even though the two members are a standard discriminated union. This
+ * avoids that specific path without an `as` assertion.
+ */
+export function denyReasonOf(decision: AuthorizationDecision): AuthorizationDenyReason {
+  switch (decision.reason) {
+    case 'membership_missing':
+    case 'membership_pending':
+    case 'membership_revoked':
+    case 'permission_denied':
+    case 'mfa_required':
+      return decision.reason;
+    default:
+      throw new Error('denyReasonOf called with an allowed AuthorizationDecision');
+  }
+}
 
 export interface AuthorizeInput {
   actorId: string;

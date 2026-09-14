@@ -2,7 +2,9 @@
   "extends": "@canadian-plans/config/tsconfig.base.json",
   "compilerOptions": {
     "rootDir": ".",
-    "types": ["node"]
+    "types": ["node"],
+    "lib": ["ES2023", "DOM"],
+    "strict": true
   },
   "include": ["src", "api", "tests"]
 }
