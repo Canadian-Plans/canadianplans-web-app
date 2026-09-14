@@ -1,5 +1,12 @@
 import { sql } from 'drizzle-orm';
 import {
+  membershipStatuses,
+  permissionEffects,
+  staffPermissionNames,
+  staffRoleNames,
+} from '@canadian-plans/types';
+import {
+  check,
   foreignKey,
   index,
   jsonb,
@@ -9,6 +16,7 @@ import {
   text,
   timestamp,
   unique,
+  uniqueIndex,
   uuid,
   type AnyPgColumn,
 } from 'drizzle-orm/pg-core';
@@ -16,28 +24,20 @@ import {
 export const appSchema = pgSchema('app');
 
 export const membershipType = appSchema.enum('membership_type', ['staff', 'partner']);
-export const roleName = appSchema.enum('role_name', [
-  'owner',
-  'orders',
-  'partners',
-  'finance',
-  'content',
-  'viewer',
-]);
-export const permissionName = appSchema.enum('permission_name', [
-  'document_download',
-  'financial_data',
-  'bulk_export',
-  'deletion',
-  'invoice_approval',
-  'integration_management',
-]);
+export const roleName = appSchema.enum('role_name', staffRoleNames);
+export const permissionName = appSchema.enum('permission_name', staffPermissionNames);
+export const permissionEffect = appSchema.enum('permission_effect', permissionEffects);
 
 const appRuntimeRole = pgRole('app_runtime').existing();
 
 function tenantPolicy(name: string, workspaceId: AnyPgColumn) {
-  const predicate = sql`${workspaceId} = nullif(current_setting('app.workspace_id', true), '')::uuid
-    and nullif(current_setting('app.actor_id', true), '')::uuid is not null`;
+  const predicate = sql`${workspaceId} = nullif(
+      (select current_setting('app.workspace_id', true)),
+      ''
+    )::uuid and nullif(
+      (select current_setting('app.actor_id', true)),
+      ''
+    )::uuid is not null`;
 
   return pgPolicy(name, {
     for: 'all',
@@ -49,6 +49,8 @@ function tenantPolicy(name: string, workspaceId: AnyPgColumn) {
 
 const createdAt = () =>
   timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull();
+
+const membershipStatusList = sql.raw(membershipStatuses.map((status) => `'${status}'`).join(', '));
 
 /** Global workspace registry: the sole non-tenant table in this migration. */
 export const workspaces = appSchema.table('workspaces', {
@@ -66,18 +68,42 @@ export const memberships = appSchema
       workspaceId: uuid('workspace_id')
         .notNull()
         .references(() => workspaces.id, { onDelete: 'cascade' }),
-      userId: uuid('user_id').notNull(),
+      userId: uuid('user_id'),
+      invitedEmail: text('invited_email'),
       membershipType: membershipType('membership_type').notNull(),
       status: text('status').notNull(),
+      acceptedAt: timestamp('accepted_at', { withTimezone: true, mode: 'date' }),
+      revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'date' }),
       createdAt: createdAt(),
     },
     (table) => [
       unique('memberships_workspace_id_id_unique').on(table.workspaceId, table.id),
       unique('memberships_workspace_id_user_id_unique').on(table.workspaceId, table.userId),
+      uniqueIndex('memberships_workspace_pending_email_unique')
+        .on(table.workspaceId, sql`lower(${table.invitedEmail})`)
+        .where(sql`${table.status} = 'pending'`),
       index('memberships_workspace_id_status_idx').on(
         table.workspaceId,
         table.status,
         table.userId,
+      ),
+      index('memberships_user_id_status_workspace_id_idx').on(
+        table.userId,
+        table.status,
+        table.workspaceId,
+      ),
+      check('memberships_status_check', sql`${table.status} in (${membershipStatusList})`),
+      check(
+        'memberships_identity_state_check',
+        sql`(
+          ${table.status} = 'pending'
+          and ${table.userId} is null
+          and ${table.invitedEmail} is not null
+        ) or (
+          ${table.status} = 'active'
+          and ${table.userId} is not null
+          and ${table.invitedEmail} is null
+        ) or ${table.status} = 'revoked'`,
       ),
       tenantPolicy('memberships_tenant_policy', table.workspaceId),
     ],
@@ -167,6 +193,7 @@ export const membershipPermissions = appSchema
         .references(() => workspaces.id, { onDelete: 'cascade' }),
       membershipId: uuid('membership_id').notNull(),
       permissionId: uuid('permission_id').notNull(),
+      effect: permissionEffect('effect').default('allow').notNull(),
       createdAt: createdAt(),
     },
     (table) => [

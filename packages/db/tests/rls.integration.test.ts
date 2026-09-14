@@ -4,6 +4,7 @@ import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 
 import { createDatabaseClient, type DatabaseClient } from '../src/index.js';
 import { applyMigrations } from '../src/migrations.js';
+import { seedDatabase, STAFF_SEED_IDS } from '../src/seed.js';
 
 function getDisposableTestDatabaseUrl(): string | undefined {
   const migrationUrl = process.env.TEST_MIGRATION_DATABASE_URL;
@@ -48,6 +49,7 @@ databaseTest('tenant RLS and transaction-pool context', () => {
     if (!migrationUrl) throw new Error('TEST_MIGRATION_DATABASE_URL is required');
 
     await applyMigrations({ connectionString: migrationUrl, ssl: false });
+    await seedDatabase({ connectionString: migrationUrl, ssl: false });
     admin = postgres(migrationUrl, { max: 1, prepare: false, ssl: false });
 
     // Synthetic CI-only password. Production role passwords are provisioned
@@ -232,5 +234,107 @@ databaseTest('tenant RLS and transaction-pool context', () => {
     expect(first).toEqual({ actorId: ACTOR_A, pid: first?.pid, workspaceId: WORKSPACE_A });
     expect(between).toHaveLength(0);
     expect(second).toEqual({ actorId: ACTOR_B, pid: first?.pid, workspaceId: WORKSPACE_B });
+  });
+
+  test('synthetic seed creates two deliberately named isolated workspaces with owner in both', async () => {
+    const workspaces = await admin<{ id: string; name: string; slug: string }[]>`
+      select id, slug, name
+      from app.workspaces
+      where id in (${STAFF_SEED_IDS.siteWorkspace}, ${STAFF_SEED_IDS.demoWorkspace})
+      order by slug
+    `;
+    expect(workspaces).toEqual([
+      {
+        id: STAFF_SEED_IDS.demoWorkspace,
+        slug: 'demo-2',
+        name: 'Maple Demo Sandbox',
+      },
+      {
+        id: STAFF_SEED_IDS.siteWorkspace,
+        slug: 'site-1',
+        name: 'Northern Arrival Mobile',
+      },
+    ]);
+
+    const ownerMemberships = await admin`
+      select workspace_id
+      from app.memberships
+      where user_id = ${STAFF_SEED_IDS.ownerActor} and status = 'active'
+    `;
+    expect(ownerMemberships).toHaveLength(2);
+
+    const siteStaffWorkspaces = await tenantDatabase.withActorTx(STAFF_SEED_IDS.siteActor, (tx) =>
+      tx.execute(sql`select workspace_slug from app.list_staff_workspaces()`),
+    );
+    const demoStaffWorkspaces = await tenantDatabase.withActorTx(STAFF_SEED_IDS.demoActor, (tx) =>
+      tx.execute(sql`select workspace_slug from app.list_staff_workspaces()`),
+    );
+    expect(siteStaffWorkspaces).toEqual([{ workspace_slug: 'site-1' }]);
+    expect(demoStaffWorkspaces).toEqual([{ workspace_slug: 'demo-2' }]);
+  });
+
+  test('restricted bootstrap lists only the server-verified actor active memberships', async () => {
+    const ownerWorkspaces = await tenantDatabase.withActorTx(STAFF_SEED_IDS.ownerActor, (tx) =>
+      tx.execute<{ workspaceSlug: string }>(sql`
+          select workspace_slug as "workspaceSlug"
+          from app.list_staff_workspaces()
+          order by workspace_slug
+        `),
+    );
+    expect(ownerWorkspaces).toEqual([{ workspaceSlug: 'demo-2' }, { workspaceSlug: 'site-1' }]);
+
+    const noContext = await runtimeSql`select workspace_slug from app.list_staff_workspaces()`;
+    expect(noContext).toHaveLength(0);
+  });
+
+  test('first verified login accepts only matching pending invitations and audits the change', async () => {
+    const invitedActor = '20000000-0000-4000-8000-000000000199';
+    const invitationId = '30000000-0000-4000-8000-000000000199';
+    const requestId = '70000000-0000-4000-8000-000000000199';
+    await admin`
+      insert into app.memberships (
+        id, workspace_id, invited_email, membership_type, status
+      ) values (
+        ${invitationId},
+        ${STAFF_SEED_IDS.siteWorkspace},
+        'invited@example.test',
+        'staff',
+        'pending'
+      )
+    `;
+
+    const [accepted] = await tenantDatabase.withActorTx(invitedActor, (tx) =>
+      tx.execute<{ count: number }>(sql`
+        select app.accept_staff_invitations('invited@example.test', ${requestId}) as count
+      `),
+    );
+    expect(accepted).toEqual({ count: 1 });
+
+    const [membership] = await admin<
+      { invited_email: string | null; status: string; user_id: string | null }[]
+    >`
+      select user_id, invited_email, status
+      from app.memberships
+      where id = ${invitationId}
+    `;
+    expect(membership).toEqual({
+      user_id: invitedActor,
+      invited_email: null,
+      status: 'active',
+    });
+
+    const [audit] = await admin<{ action: string; request_id: string }[]>`
+      select action, request_id
+      from app.audit_events
+      where entity_id = ${invitationId}
+    `;
+    expect(audit).toEqual({ action: 'membership.accepted', request_id: requestId });
+
+    const [acceptedAgain] = await tenantDatabase.withActorTx(invitedActor, (tx) =>
+      tx.execute<{ count: number }>(sql`
+        select app.accept_staff_invitations('invited@example.test', ${requestId}) as count
+      `),
+    );
+    expect(acceptedAgain).toEqual({ count: 0 });
   });
 });

@@ -1,16 +1,21 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@canadian-plans/ui';
 
-export default function SettingsPage() {
+import { StaffInviteForm } from '../../../../components/staff-invite-form';
+
+export default async function SettingsPage({ params }: { params: Promise<{ workspace: string }> }) {
+  const { workspace } = await params;
   return (
     <Card>
       <CardHeader>
         <CardTitle asChild>
           <h1>Settings</h1>
         </CardTitle>
-        <CardDescription>No data yet — this is a placeholder route.</CardDescription>
+        <CardDescription>
+          Workspace access is enforced by the backend on every request.
+        </CardDescription>
       </CardHeader>
-      <CardContent className="text-sm text-muted-foreground">
-        Workspace and staff settings land once the backend settings endpoints exist.
+      <CardContent>
+        <StaffInviteForm workspaceSlug={workspace} />
       </CardContent>
     </Card>
   );

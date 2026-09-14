@@ -22,6 +22,7 @@ export type TenantTransaction = Parameters<Parameters<Database['transaction']>[0
 
 export interface DatabaseClient {
   db: Database;
+  withActorTx<T>(actorId: string, fn: (tx: TenantTransaction) => Promise<T> | T): Promise<T>;
   withTenantTx<T>(ctx: TenantContext, fn: (tx: TenantTransaction) => Promise<T> | T): Promise<T>;
   close(): Promise<void>;
 }
@@ -45,6 +46,11 @@ export function createDatabaseClient(options: DatabaseClientOptions): DatabaseCl
 
   return {
     db,
+    withActorTx: (actorId, fn) =>
+      db.transaction(async (tx) => {
+        await tx.execute(sql`select set_config('app.actor_id', ${actorId}, true)`);
+        return fn(tx);
+      }),
     withTenantTx: (ctx, fn) =>
       db.transaction(async (tx) => {
         // set_config(..., true) is PostgreSQL's parameter-safe equivalent of
@@ -88,4 +94,12 @@ export function withTenantTx<T>(
   fn: (tx: TenantTransaction) => Promise<T> | T,
 ): Promise<T> {
   return getDefaultClient().withTenantTx(ctx, fn);
+}
+
+/** Runs the narrow pre-tenant staff bootstrap functions as a verified actor. */
+export function withActorTx<T>(
+  actorId: string,
+  fn: (tx: TenantTransaction) => Promise<T> | T,
+): Promise<T> {
+  return getDefaultClient().withActorTx(actorId, fn);
 }
