@@ -12,8 +12,9 @@ import {
   orderFulfilmentStatusSchema,
   paymentStateSchema,
 } from './domain';
-import { orderSummarySchema } from './orders';
+import { orderConsentSchema, orderSummarySchema } from './orders';
 import { chargeComponentSchema } from './quotes';
+import { commercialOfferSchema } from './catalogue';
 
 /**
  * Staff order processing — `GET/PATCH /workspaces/:id/orders`. Caller: staff
@@ -44,6 +45,9 @@ export const orderHistoryEntrySchema = z.object({
   at: isoDateTimeSchema,
   actorId: z.uuid(),
   action: z.string().min(1).max(64),
+  fromStatus: orderFulfilmentStatusSchema.nullable(),
+  toStatus: orderFulfilmentStatusSchema,
+  recordVersion: z.int().positive(),
   note: z.string().max(2000).optional(),
 });
 export type OrderHistoryEntry = z.infer<typeof orderHistoryEntrySchema>;
@@ -53,15 +57,17 @@ export type OrderHistoryEntry = z.infer<typeof orderHistoryEntrySchema>;
  * or price changes never alter it. Prices come only from this snapshot.
  */
 export const orderSnapshotSchema = z.object({
+  quoteId: z.uuid(),
   productId: z.uuid(),
   offerVersionId: z.uuid(),
+  offer: commercialOfferSchema,
+  currency: z.string().regex(/^[A-Z]{3}$/),
   charges: z.array(chargeComponentSchema),
   total: moneySchema,
   amountPayableToday: moneySchema,
   paymentRequired: z.boolean(),
   documentChecklist: z.array(documentChecklistKeySchema),
   termsVersion: z.string().min(1).max(64),
-  form: versionedFormSchema(z.record(z.string(), z.unknown())),
 });
 export type OrderSnapshot = z.infer<typeof orderSnapshotSchema>;
 
@@ -69,6 +75,10 @@ export const orderDetailSchema = orderSummarySchema.extend({
   assigneeId: z.uuid().nullable(),
   partnerCode: z.string().max(64).nullable(),
   snapshot: orderSnapshotSchema,
+  payload: versionedFormSchema(z.record(z.string(), z.unknown())),
+  // Consent captured at submission (invariant 11). Staff-only: never exposed on
+  // the public summary. Nullable for orders that predate the consent column.
+  consent: orderConsentSchema.nullable(),
   history: z.array(orderHistoryEntrySchema),
 });
 export type OrderDetail = z.infer<typeof orderDetailSchema>;
@@ -88,6 +98,12 @@ export type GetWorkspaceOrderResponse = z.infer<typeof getWorkspaceOrderResponse
 const withExpectedVersion = { expectedVersion: z.int().nonnegative() };
 
 export const patchWorkspaceOrderRequestSchema = z.discriminatedUnion('action', [
+  z.object({
+    action: z.literal('transition'),
+    toStatus: orderFulfilmentStatusSchema,
+    reason: z.string().min(1).max(2000).optional(),
+    ...withExpectedVersion,
+  }),
   z.object({ action: z.literal('assign'), assigneeId: z.uuid(), ...withExpectedVersion }),
   z.object({
     action: z.literal('note'),

@@ -287,6 +287,138 @@ history must survive product withdrawal and attempted deletion.
 No policy change. Both relationships retain the existing workspace-scoped RLS
 and composite foreign-key enforcement.
 
+## 0010_unknown_stingray.sql
+
+Task: T10
+
+Date: 2026-09-16
+
+### Change
+
+- Added tenant-scoped `catalogue_sync_events` (deduplicated durable Sanity inbox),
+  `catalogue_sync_leases` (expiring `(workspace, product_key)` leases), and
+  `catalogue_sync_state` (last attempt/success/error for staff visibility).
+- Added tenant-scoped `quotes`, linked by composite foreign keys to the draft,
+  product, and exact immutable offer version. Charges, payment setting,
+  document checklist, terms version, expiry and revocation are persisted;
+  T12 adds `consumed_by_order_id` after orders exist.
+- Extended `product_availability` with the current immutable version pointer
+  and last-sync time. Added `(workspace_id, product_id, id)` uniqueness to
+  `offer_versions` so availability and quotes cannot pair a product with
+  another product's version.
+
+### Why
+
+T10 requires signed durable webhook intake, per-product serialization,
+out-of-order convergence, an observable reconciliation state, and quotes that
+remain tied to the validated CMS payload used to create their immutable
+version. Withdrawal changes mutable availability/quote revocation; it never
+edits offer history.
+
+### RLS
+
+All four new tenant tables use the standard fail-closed workspace/actor policy,
+with RLS enabled and forced. `app_runtime` has only the operations used by the
+inbox processor, lease manager, status writer and quote revocation flow;
+`offer_versions` retains its prior `SELECT, INSERT`-only grant.
+
+## 0011_lovely_blur.sql
+
+Task: T12
+
+Date: 2026-09-16
+
+### Change
+
+- Added tenant-scoped `orders` with independently constrained fulfilment,
+  payment, delivery and archive state, optimistic versioning, immutable
+  commercial snapshot, versioned form payload, partner attribution and a
+  non-guessable workspace-unique reference.
+- Added `order_status_history`, `order_amendments`,
+  `order_change_requests`, `idempotency_keys`, `outbox_jobs`,
+  `dispatch_records`, and `payment_records` with composite tenant foreign keys.
+- Extended `quotes` with paired `consumed_by_order_id` / `consumed_at` fields
+  and a workspace-scoped order foreign key.
+- Enforced one order per `(workspace_id, lead_id)` and one submission claim per
+  `(workspace_id, scope, key_hash)` in Postgres.
+- Added an update trigger that rejects changes to submitted order identity,
+  reference, snapshot, payload, partner attribution and submission timestamps;
+  operational state remains mutable only through transition functions.
+- Added an idempotency trigger that freezes the scoped key identity and makes a
+  completed stored outcome immutable.
+
+### Why
+
+REQ 14/18/19 and invariants 5–7/9 require immutable submitted commercial
+history, exact retry outcomes before quote revalidation, database-enforced
+single-order guarantees, transactional follow-up jobs, and independent order
+state dimensions with audited transitions.
+
+### RLS
+
+Every new tenant table uses the fail-closed workspace/actor policy with RLS
+enabled and forced. Runtime grants omit DELETE from orders and their history;
+the submission path receives only the SELECT/INSERT/UPDATE operations it uses.
+
+## 0012_dashing_bug.sql
+
+Task: T15
+
+Date: 2026-09-16
+
+### Change
+
+- Extended the existing `outbox_jobs` table with stable message IDs, payload
+  versions, persisted lease ownership/expiry, last-attempt timestamps,
+  provider IDs, bounded outcomes, and an explicit uncertain-delivery state.
+- Added `outbox_job_alerts` for terminal and uncertain delivery alerts without
+  recreating the order-owned outbox table.
+- Added lease, attempt, payload-version, and status constraints. In-flight rows
+  from the pre-lease schema are safely returned to pending during migration.
+
+### Why
+
+Invariant 7 and T15 require durable at-least-once processing: an atomic claim,
+provider work after commit, a separately committed outcome, stable provider
+deduplication, bounded retry, and visible terminal failures.
+
+### RLS
+
+The alert table has tenant policy, forced RLS, and only SELECT/INSERT/UPDATE
+runtime grants. Existing forced RLS on `outbox_jobs` remains unchanged; every
+runner operation supplies both workspace and scheduler actor transaction
+context.
+
+## 0013_order_consent.sql
+
+Task: T12 (gap G2)
+
+Date: 2026-09-16
+
+### Change
+
+- Added a nullable `consent` jsonb column to `orders`, guarded by
+  `orders_consent_object_check` (`consent is null or jsonb_typeof(consent) =
+'object'`) so any stored value is an object. Nullable keeps the migration
+  additive for orders that predate the column; the submission path always
+  writes it going forward.
+- Extended `prevent_order_submission_mutation` (via `CREATE OR REPLACE`) so a
+  submitted order's `consent` is immutable alongside its identity, snapshot,
+  payload and partner attribution.
+
+### Why
+
+Invariant 11 (CASL) requires the terms version, marketing opt-in and marketing
+consent version accepted at capture to be recorded and preserved. The
+submission previously stored only the form and terms version, dropping the
+marketing consent the request carried.
+
+### RLS
+
+None — `orders` already has the fail-closed tenant policy with forced RLS and
+runtime grants unchanged. The added trigger clause protects consent under the
+same immutability guarantee as the rest of the submitted order.
+
 Each future entry follows this shape:
 
 ```

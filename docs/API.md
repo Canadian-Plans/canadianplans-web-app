@@ -202,8 +202,11 @@ the versioned form payload, and consent — never browser-supplied prices.
 One tenant transaction first resolves a completed idempotency outcome and
 returns it before inspecting the consumed/expired quote. A new submission
 validates the draft and quote, claims the scoped key, freezes the commercial
-snapshot, creates the order/history, consumes the quote, marks the lead
-submitted, and commits the acknowledgement-email and analytics outbox jobs.
+snapshot, records the accepted consent (terms version, marketing opt-in and
+marketing consent version — invariant 11), creates the order/history, consumes
+the quote, marks the lead submitted, and commits the acknowledgement-email and
+analytics outbox jobs. The stored consent is immutable once written, under the
+same submission-immutability trigger that freezes the snapshot.
 
 A submitted draft keeps its grant only so the exact-retry lookup above can
 return the stored order; the grant no longer authorises editing the draft
@@ -227,6 +230,11 @@ edges are rejected, cancellation requires a reason, and every accepted edge
 writes status history plus an audit event. Dispatch/activation remain gated by
 unresolved production prerequisites. Partnered activation returns
 `feature_not_ready` until T19 can create its commission atomically.
+
+The order detail this endpoint (and `GET .../orders/{orderId}`) returns carries
+the consent captured at submission. Consent is exposed on the staff order
+detail only, never on the public order summary; it is `null` for orders that
+predate the consent column.
 
 ### `POST /api/v1/webhooks/sanity`
 

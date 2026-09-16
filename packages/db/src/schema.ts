@@ -1,14 +1,18 @@
 import { sql } from 'drizzle-orm';
 import {
+  deliveryStates,
   leadStatuses,
   membershipStatuses,
+  orderStatuses,
   partnerStatuses,
+  paymentStates,
   permissionEffects,
   staffPermissionNames,
   staffRoleNames,
 } from '@canadian-plans/types';
 import {
   check,
+  boolean,
   foreignKey,
   index,
   integer,
@@ -57,6 +61,9 @@ const createdAt = () =>
 const membershipStatusList = sql.raw(membershipStatuses.map((status) => `'${status}'`).join(', '));
 const partnerStatusList = sql.raw(partnerStatuses.map((status) => `'${status}'`).join(', '));
 const leadStatusList = sql.raw(leadStatuses.map((status) => `'${status}'`).join(', '));
+const orderStatusList = sql.raw(orderStatuses.map((status) => `'${status}'`).join(', '));
+const paymentStateList = sql.raw(paymentStates.map((state) => `'${state}'`).join(', '));
+const deliveryStateList = sql.raw(deliveryStates.map((state) => `'${state}'`).join(', '));
 
 /** Global workspace registry: the sole non-tenant table in this migration. */
 export const workspaces = appSchema.table('workspaces', {
@@ -319,6 +326,11 @@ export const offerVersions = appSchema
         table.productId,
         table.contentHash,
       ),
+      unique('offer_versions_workspace_product_id_unique').on(
+        table.workspaceId,
+        table.productId,
+        table.id,
+      ),
       foreignKey({
         name: 'offer_versions_workspace_product_fk',
         columns: [table.workspaceId, table.productId],
@@ -349,7 +361,9 @@ export const productAvailability = appSchema
       workspaceId: uuid('workspace_id')
         .notNull()
         .references(() => workspaces.id, { onDelete: 'cascade' }),
+      currentOfferVersionId: uuid('current_offer_version_id'),
       revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'date' }),
+      lastSyncedAt: timestamp('last_synced_at', { withTimezone: true, mode: 'date' }),
     },
     (table) => [
       foreignKey({
@@ -357,8 +371,104 @@ export const productAvailability = appSchema
         columns: [table.workspaceId, table.productId],
         foreignColumns: [products.workspaceId, products.id],
       }).onDelete('cascade'),
+      foreignKey({
+        name: 'product_availability_workspace_current_version_fk',
+        columns: [table.workspaceId, table.productId, table.currentOfferVersionId],
+        foreignColumns: [offerVersions.workspaceId, offerVersions.productId, offerVersions.id],
+      }),
       tenantPolicy('product_availability_tenant_policy', table.workspaceId),
     ],
+  )
+  .enableRLS();
+
+/** Durable, tenant-scoped Sanity webhook inbox. Payloads are retained only as
+ * delivery evidence/selectors; commercial fields are always re-fetched. */
+export const catalogueSyncEvents = appSchema
+  .table(
+    'catalogue_sync_events',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      selector: text('selector').notNull(),
+      providerAccount: text('provider_account').notNull(),
+      deliveryId: text('delivery_id').notNull(),
+      documentId: text('document_id').notNull(),
+      payload: jsonb('payload').notNull(),
+      status: text('status').default('pending').notNull(),
+      attempts: integer('attempts').default(0).notNull(),
+      errorCode: text('error_code'),
+      cmsRevisionId: text('cms_revision_id'),
+      occurredAt: timestamp('occurred_at', { withTimezone: true, mode: 'date' }),
+      processedAt: timestamp('processed_at', { withTimezone: true, mode: 'date' }),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+        .defaultNow()
+        .notNull(),
+    },
+    (table) => [
+      unique('catalogue_sync_events_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('catalogue_sync_events_delivery_unique').on(
+        table.workspaceId,
+        table.providerAccount,
+        table.deliveryId,
+      ),
+      check(
+        'catalogue_sync_events_status_check',
+        sql`${table.status} in ('pending', 'processing', 'completed', 'failed', 'ignored')`,
+      ),
+      index('catalogue_sync_events_workspace_status_created_idx').on(
+        table.workspaceId,
+        table.status,
+        table.createdAt,
+      ),
+      tenantPolicy('catalogue_sync_events_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/** Short database-backed lease; process memory is not durable on Vercel. */
+export const catalogueSyncLeases = appSchema
+  .table(
+    'catalogue_sync_leases',
+    {
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      productKey: text('product_key').notNull(),
+      ownerId: uuid('owner_id').notNull(),
+      expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+        .defaultNow()
+        .notNull(),
+    },
+    (table) => [
+      primaryKey({ columns: [table.workspaceId, table.productKey] }),
+      index('catalogue_sync_leases_workspace_expires_idx').on(table.workspaceId, table.expiresAt),
+      tenantPolicy('catalogue_sync_leases_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/** One operational summary row per workspace for the read-only admin view. */
+export const catalogueSyncState = appSchema
+  .table(
+    'catalogue_sync_state',
+    {
+      workspaceId: uuid('workspace_id')
+        .primaryKey()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      lastAttemptAt: timestamp('last_attempt_at', { withTimezone: true, mode: 'date' }),
+      lastSuccessAt: timestamp('last_success_at', { withTimezone: true, mode: 'date' }),
+      lastErrorCode: text('last_error_code'),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+        .defaultNow()
+        .notNull(),
+    },
+    (table) => [tenantPolicy('catalogue_sync_state_tenant_policy', table.workspaceId)],
   )
   .enableRLS();
 
@@ -445,6 +555,465 @@ export const draftGrants = appSchema
       }).onDelete('cascade'),
       index('draft_grants_workspace_id_lead_id_idx').on(table.workspaceId, table.leadId),
       tenantPolicy('draft_grants_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/** Immutable-at-submission order envelope. Commercial details live in snapshot. */
+export const orders = appSchema
+  .table(
+    'orders',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      reference: text('reference').notNull(),
+      leadId: uuid('lead_id').notNull(),
+      status: text('status').notNull(),
+      paymentState: text('payment_state').notNull(),
+      deliveryState: text('delivery_state').notNull(),
+      archivedAt: timestamp('archived_at', { withTimezone: true, mode: 'date' }),
+      assigneeId: uuid('assignee_id'),
+      version: integer('version').default(1).notNull(),
+      snapshot: jsonb('snapshot').notNull(),
+      payload: jsonb('payload').notNull(),
+      consent: jsonb('consent'),
+      partnerId: uuid('partner_id'),
+      submittedAt: timestamp('submitted_at', { withTimezone: true, mode: 'date' }).notNull(),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+        .defaultNow()
+        .notNull(),
+    },
+    (table) => [
+      unique('orders_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('orders_workspace_reference_unique').on(table.workspaceId, table.reference),
+      unique('orders_workspace_lead_unique').on(table.workspaceId, table.leadId),
+      foreignKey({
+        name: 'orders_workspace_lead_fk',
+        columns: [table.workspaceId, table.leadId],
+        foreignColumns: [leads.workspaceId, leads.id],
+      }),
+      foreignKey({
+        name: 'orders_workspace_assignee_fk',
+        columns: [table.workspaceId, table.assigneeId],
+        foreignColumns: [memberships.workspaceId, memberships.id],
+      }),
+      foreignKey({
+        name: 'orders_workspace_partner_fk',
+        columns: [table.workspaceId, table.partnerId],
+        foreignColumns: [partners.workspaceId, partners.id],
+      }),
+      check('orders_status_check', sql`${table.status} in (${orderStatusList})`),
+      check('orders_payment_state_check', sql`${table.paymentState} in (${paymentStateList})`),
+      check('orders_delivery_state_check', sql`${table.deliveryState} in (${deliveryStateList})`),
+      check('orders_version_positive_check', sql`${table.version} > 0`),
+      check('orders_snapshot_object_check', sql`jsonb_typeof(${table.snapshot}) = 'object'`),
+      check('orders_payload_object_check', sql`jsonb_typeof(${table.payload}) = 'object'`),
+      check(
+        'orders_consent_object_check',
+        sql`${table.consent} is null or jsonb_typeof(${table.consent}) = 'object'`,
+      ),
+      index('orders_workspace_status_submitted_idx').on(
+        table.workspaceId,
+        table.status,
+        table.submittedAt,
+      ),
+      index('orders_workspace_assignee_idx').on(table.workspaceId, table.assigneeId),
+      index('orders_workspace_partner_idx').on(table.workspaceId, table.partnerId),
+      tenantPolicy('orders_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/** A 15-minute, server-authoritative commercial snapshot tied to one draft. */
+export const quotes = appSchema
+  .table(
+    'quotes',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      draftId: uuid('draft_id').notNull(),
+      productId: uuid('product_id').notNull(),
+      offerVersionId: uuid('offer_version_id').notNull(),
+      currency: text('currency').notNull(),
+      charges: jsonb('charges').notNull(),
+      totalAmountMinor: integer('total_amount_minor').notNull(),
+      amountPayableTodayMinor: integer('amount_payable_today_minor').notNull(),
+      paymentRequired: boolean('payment_required').notNull(),
+      documentChecklist: text('document_checklist').array().notNull(),
+      termsVersion: text('terms_version').notNull(),
+      expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
+      revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'date' }),
+      consumedByOrderId: uuid('consumed_by_order_id'),
+      consumedAt: timestamp('consumed_at', { withTimezone: true, mode: 'date' }),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+        .defaultNow()
+        .notNull(),
+    },
+    (table) => [
+      unique('quotes_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('quotes_workspace_consumed_order_unique').on(
+        table.workspaceId,
+        table.consumedByOrderId,
+      ),
+      foreignKey({
+        name: 'quotes_workspace_draft_fk',
+        columns: [table.workspaceId, table.draftId],
+        foreignColumns: [leads.workspaceId, leads.id],
+      }),
+      foreignKey({
+        name: 'quotes_workspace_product_fk',
+        columns: [table.workspaceId, table.productId],
+        foreignColumns: [products.workspaceId, products.id],
+      }),
+      foreignKey({
+        name: 'quotes_workspace_product_offer_version_fk',
+        columns: [table.workspaceId, table.productId, table.offerVersionId],
+        foreignColumns: [offerVersions.workspaceId, offerVersions.productId, offerVersions.id],
+      }),
+      foreignKey({
+        name: 'quotes_workspace_consumed_order_fk',
+        columns: [table.workspaceId, table.consumedByOrderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }),
+      check('quotes_currency_check', sql`${table.currency} ~ '^[A-Z]{3}$'`),
+      check('quotes_charges_array_check', sql`jsonb_typeof(${table.charges}) = 'array'`),
+      check('quotes_total_nonnegative_check', sql`${table.totalAmountMinor} >= 0`),
+      check('quotes_payable_today_nonnegative_check', sql`${table.amountPayableTodayMinor} >= 0`),
+      check(
+        'quotes_consumption_pair_check',
+        sql`(${table.consumedByOrderId} is null) = (${table.consumedAt} is null)`,
+      ),
+      index('quotes_workspace_draft_created_idx').on(
+        table.workspaceId,
+        table.draftId,
+        table.createdAt,
+      ),
+      index('quotes_workspace_product_expires_idx').on(
+        table.workspaceId,
+        table.productId,
+        table.expiresAt,
+      ),
+      tenantPolicy('quotes_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+export const orderStatusHistory = appSchema
+  .table(
+    'order_status_history',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      orderId: uuid('order_id').notNull(),
+      actorId: uuid('actor_id').notNull(),
+      fromStatus: text('from_status'),
+      toStatus: text('to_status').notNull(),
+      orderVersion: integer('order_version').notNull(),
+      reason: text('reason'),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('order_status_history_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'order_status_history_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }).onDelete('cascade'),
+      check(
+        'order_status_history_from_status_check',
+        sql`${table.fromStatus} is null or ${table.fromStatus} in (${orderStatusList})`,
+      ),
+      check('order_status_history_to_status_check', sql`${table.toStatus} in (${orderStatusList})`),
+      check('order_status_history_version_positive_check', sql`${table.orderVersion} > 0`),
+      index('order_status_history_workspace_order_created_idx').on(
+        table.workspaceId,
+        table.orderId,
+        table.createdAt,
+      ),
+      tenantPolicy('order_status_history_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+export const orderAmendments = appSchema
+  .table(
+    'order_amendments',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      orderId: uuid('order_id').notNull(),
+      actorId: uuid('actor_id').notNull(),
+      reason: text('reason').notNull(),
+      patch: jsonb('patch').notNull(),
+      before: jsonb('before').notNull(),
+      after: jsonb('after').notNull(),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('order_amendments_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'order_amendments_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }).onDelete('cascade'),
+      index('order_amendments_workspace_order_created_idx').on(
+        table.workspaceId,
+        table.orderId,
+        table.createdAt,
+      ),
+      tenantPolicy('order_amendments_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+export const orderChangeRequests = appSchema
+  .table(
+    'order_change_requests',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      orderId: uuid('order_id').notNull(),
+      requestedBy: uuid('requested_by').notNull(),
+      payload: jsonb('payload').notNull(),
+      status: text('status').default('pending').notNull(),
+      resolvedBy: uuid('resolved_by'),
+      resolvedAt: timestamp('resolved_at', { withTimezone: true, mode: 'date' }),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('order_change_requests_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'order_change_requests_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }).onDelete('cascade'),
+      check(
+        'order_change_requests_status_check',
+        sql`${table.status} in ('pending', 'approved', 'rejected')`,
+      ),
+      index('order_change_requests_workspace_order_status_idx').on(
+        table.workspaceId,
+        table.orderId,
+        table.status,
+      ),
+      tenantPolicy('order_change_requests_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+export const idempotencyKeys = appSchema
+  .table(
+    'idempotency_keys',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      scope: text('scope').notNull(),
+      keyHash: text('key_hash').notNull(),
+      requestFingerprint: text('request_fingerprint').notNull(),
+      leadId: uuid('lead_id').notNull(),
+      orderId: uuid('order_id'),
+      responseReference: text('response_reference'),
+      status: text('status').default('pending').notNull(),
+      createdAt: createdAt(),
+      completedAt: timestamp('completed_at', { withTimezone: true, mode: 'date' }),
+    },
+    (table) => [
+      unique('idempotency_keys_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('idempotency_keys_workspace_scope_key_unique').on(
+        table.workspaceId,
+        table.scope,
+        table.keyHash,
+      ),
+      foreignKey({
+        name: 'idempotency_keys_workspace_lead_fk',
+        columns: [table.workspaceId, table.leadId],
+        foreignColumns: [leads.workspaceId, leads.id],
+      }),
+      foreignKey({
+        name: 'idempotency_keys_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }),
+      check('idempotency_keys_status_check', sql`${table.status} in ('pending', 'completed')`),
+      check(
+        'idempotency_keys_completion_check',
+        sql`(${table.status} = 'pending' and ${table.orderId} is null and ${table.responseReference} is null and ${table.completedAt} is null) or (${table.status} = 'completed' and ${table.orderId} is not null and ${table.responseReference} is not null and ${table.completedAt} is not null)`,
+      ),
+      index('idempotency_keys_workspace_order_idx').on(table.workspaceId, table.orderId),
+      tenantPolicy('idempotency_keys_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+export const outboxJobs = appSchema
+  .table(
+    'outbox_jobs',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      jobType: text('job_type').notNull(),
+      dedupeKey: text('dedupe_key').notNull(),
+      messageId: uuid('message_id').defaultRandom().notNull(),
+      payloadVersion: integer('payload_version').default(1).notNull(),
+      payload: jsonb('payload').notNull(),
+      status: text('status').default('pending').notNull(),
+      attempts: integer('attempts').default(0).notNull(),
+      availableAt: timestamp('available_at', { withTimezone: true, mode: 'date' })
+        .defaultNow()
+        .notNull(),
+      lockedAt: timestamp('locked_at', { withTimezone: true, mode: 'date' }),
+      leaseOwnerId: uuid('lease_owner_id'),
+      leaseExpiresAt: timestamp('lease_expires_at', { withTimezone: true, mode: 'date' }),
+      lastAttemptAt: timestamp('last_attempt_at', { withTimezone: true, mode: 'date' }),
+      completedAt: timestamp('completed_at', { withTimezone: true, mode: 'date' }),
+      uncertainAt: timestamp('uncertain_at', { withTimezone: true, mode: 'date' }),
+      lastErrorCode: text('last_error_code'),
+      providerId: text('provider_id'),
+      outcome: jsonb('outcome'),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+        .defaultNow()
+        .notNull(),
+    },
+    (table) => [
+      unique('outbox_jobs_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('outbox_jobs_workspace_type_dedupe_unique').on(
+        table.workspaceId,
+        table.jobType,
+        table.dedupeKey,
+      ),
+      check(
+        'outbox_jobs_status_check',
+        sql`${table.status} in ('pending', 'processing', 'completed', 'failed', 'uncertain')`,
+      ),
+      check('outbox_jobs_attempts_check', sql`${table.attempts} >= 0`),
+      check('outbox_jobs_payload_version_check', sql`${table.payloadVersion} > 0`),
+      check(
+        'outbox_jobs_lease_check',
+        sql`(${table.status} = 'processing' and ${table.leaseOwnerId} is not null and ${table.leaseExpiresAt} is not null and ${table.lockedAt} is not null) or (${table.status} <> 'processing' and ${table.leaseOwnerId} is null and ${table.leaseExpiresAt} is null)`,
+      ),
+      index('outbox_jobs_workspace_status_available_idx').on(
+        table.workspaceId,
+        table.status,
+        table.availableAt,
+      ),
+      tenantPolicy('outbox_jobs_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+export const outboxJobAlerts = appSchema
+  .table(
+    'outbox_job_alerts',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      jobId: uuid('job_id').notNull(),
+      alertCode: text('alert_code').notNull(),
+      resolvedAt: timestamp('resolved_at', { withTimezone: true, mode: 'date' }),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('outbox_job_alerts_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'outbox_job_alerts_workspace_job_fk',
+        columns: [table.workspaceId, table.jobId],
+        foreignColumns: [outboxJobs.workspaceId, outboxJobs.id],
+      }).onDelete('cascade'),
+      index('outbox_job_alerts_workspace_unresolved_idx').on(
+        table.workspaceId,
+        table.resolvedAt,
+        table.createdAt,
+      ),
+      tenantPolicy('outbox_job_alerts_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+export const dispatchRecords = appSchema
+  .table(
+    'dispatch_records',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      orderId: uuid('order_id').notNull(),
+      actorId: uuid('actor_id').notNull(),
+      courier: text('courier').notNull(),
+      trackingReference: text('tracking_reference'),
+      dispatchedAt: timestamp('dispatched_at', { withTimezone: true, mode: 'date' }).notNull(),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('dispatch_records_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'dispatch_records_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }).onDelete('cascade'),
+      index('dispatch_records_workspace_order_idx').on(table.workspaceId, table.orderId),
+      tenantPolicy('dispatch_records_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+export const paymentRecords = appSchema
+  .table(
+    'payment_records',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      orderId: uuid('order_id').notNull(),
+      actorId: uuid('actor_id').notNull(),
+      fromState: text('from_state').notNull(),
+      toState: text('to_state').notNull(),
+      method: text('method'),
+      paymentReference: text('payment_reference'),
+      amountMinor: integer('amount_minor'),
+      currency: text('currency'),
+      recordedAt: timestamp('recorded_at', { withTimezone: true, mode: 'date' }).notNull(),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('payment_records_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'payment_records_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }).onDelete('cascade'),
+      check('payment_records_from_state_check', sql`${table.fromState} in (${paymentStateList})`),
+      check('payment_records_to_state_check', sql`${table.toState} in (${paymentStateList})`),
+      check(
+        'payment_records_amount_check',
+        sql`${table.amountMinor} is null or ${table.amountMinor} >= 0`,
+      ),
+      index('payment_records_workspace_order_recorded_idx').on(
+        table.workspaceId,
+        table.orderId,
+        table.recordedAt,
+      ),
+      tenantPolicy('payment_records_tenant_policy', table.workspaceId),
     ],
   )
   .enableRLS();
@@ -546,8 +1115,21 @@ export const schema = {
   products,
   offerVersions,
   productAvailability,
+  catalogueSyncEvents,
+  catalogueSyncLeases,
+  catalogueSyncState,
   leads,
   draftGrants,
+  orders,
+  quotes,
+  orderStatusHistory,
+  orderAmendments,
+  orderChangeRequests,
+  idempotencyKeys,
+  outboxJobs,
+  outboxJobAlerts,
+  dispatchRecords,
+  paymentRecords,
   serviceCredentials,
   rateLimitBuckets,
   auditEvents,
@@ -563,8 +1145,21 @@ export type Partner = typeof partners.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type OfferVersion = typeof offerVersions.$inferSelect;
 export type ProductAvailability = typeof productAvailability.$inferSelect;
+export type CatalogueSyncEvent = typeof catalogueSyncEvents.$inferSelect;
+export type CatalogueSyncLease = typeof catalogueSyncLeases.$inferSelect;
+export type CatalogueSyncState = typeof catalogueSyncState.$inferSelect;
 export type Lead = typeof leads.$inferSelect;
 export type DraftGrant = typeof draftGrants.$inferSelect;
+export type Order = typeof orders.$inferSelect;
+export type Quote = typeof quotes.$inferSelect;
+export type OrderStatusHistory = typeof orderStatusHistory.$inferSelect;
+export type OrderAmendment = typeof orderAmendments.$inferSelect;
+export type OrderChangeRequest = typeof orderChangeRequests.$inferSelect;
+export type IdempotencyKey = typeof idempotencyKeys.$inferSelect;
+export type OutboxJob = typeof outboxJobs.$inferSelect;
+export type OutboxJobAlert = typeof outboxJobAlerts.$inferSelect;
+export type DispatchRecord = typeof dispatchRecords.$inferSelect;
+export type PaymentRecord = typeof paymentRecords.$inferSelect;
 export type ServiceCredential = typeof serviceCredentials.$inferSelect;
 export type RateLimitBucket = typeof rateLimitBuckets.$inferSelect;
 export type AuditEvent = typeof auditEvents.$inferSelect;

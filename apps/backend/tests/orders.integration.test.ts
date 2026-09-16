@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import postgres from 'postgres';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createDatabaseClient, type DatabaseClient } from '@canadian-plans/db';
@@ -170,12 +171,30 @@ databaseDescribe('orders database transaction', () => {
         (select count(*)::int from app.quotes where id = ${QUOTE} and consumed_by_order_id is not null) as consumed
     `;
     expect(counts).toEqual({ orders: 1, jobs: 2, history: 1, consumed: 1 });
+
+    // Consent (invariant 11) is stored exactly as the request carried it.
+    const [consentRow] = await admin<{ consent: unknown }[]>`
+      select consent from app.orders where workspace_id = ${WORKSPACE} and lead_id = ${LEAD}
+    `;
+    expect(consentRow?.consent).toEqual(requestBody.consent);
+
     await expect(
       admin`
         update app.orders
         set snapshot = jsonb_set(snapshot, '{termsVersion}', '"changed"'::jsonb)
         where workspace_id = ${WORKSPACE} and lead_id = ${LEAD}
       `,
+    ).rejects.toMatchObject({ code: '23514' });
+
+    // The runtime role holds UPDATE on orders for status transitions, but the
+    // submission-immutability trigger freezes consent for it too.
+    await expect(
+      clientA.withTenantTx({ workspaceId: WORKSPACE, actorId: ACTOR }, (tx) =>
+        tx.execute(
+          sql`update app.orders set consent = '{}'::jsonb
+              where workspace_id = ${WORKSPACE} and lead_id = ${LEAD}`,
+        ),
+      ),
     ).rejects.toMatchObject({ code: '23514' });
   });
 

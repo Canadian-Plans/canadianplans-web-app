@@ -2755,6 +2755,29 @@
                           "required": ["schemaVersion", "payload"],
                           "additionalProperties": false
                         },
+                        "consent": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "termsVersion": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 64
+                                },
+                                "marketingOptIn": { "type": "boolean" },
+                                "marketingConsentVersion": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 64
+                                }
+                              },
+                              "required": ["termsVersion", "marketingOptIn"],
+                              "additionalProperties": false
+                            },
+                            { "type": "null" }
+                          ]
+                        },
                         "history": {
                           "type": "array",
                           "items": {
@@ -2836,6 +2859,7 @@
                         "partnerCode",
                         "snapshot",
                         "payload",
+                        "consent",
                         "history"
                       ],
                       "additionalProperties": false
@@ -3299,6 +3323,29 @@
                           "required": ["schemaVersion", "payload"],
                           "additionalProperties": false
                         },
+                        "consent": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "termsVersion": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 64
+                                },
+                                "marketingOptIn": { "type": "boolean" },
+                                "marketingConsentVersion": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 64
+                                }
+                              },
+                              "required": ["termsVersion", "marketingOptIn"],
+                              "additionalProperties": false
+                            },
+                            { "type": "null" }
+                          ]
+                        },
                         "history": {
                           "type": "array",
                           "items": {
@@ -3380,6 +3427,7 @@
                         "partnerCode",
                         "snapshot",
                         "payload",
+                        "consent",
                         "history"
                       ],
                       "additionalProperties": false
