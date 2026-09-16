@@ -205,6 +205,13 @@ export function createOrderRouter(dependencies: WebsiteRouteDependencies): Route
           sendDomainError(res, req.id, 'draft_already_submitted', 409);
           return;
         }
+        if (outcome.status === 'reference_collision') {
+          // Generating a fresh non-guessable reference resolves this; it is a
+          // transient save failure, not a client conflict.
+          res.setHeader('retry-after', '2');
+          sendDomainError(res, req.id, 'persistence_unavailable', 503, { retryable: true });
+          return;
+        }
         if (outcome.status === 'checkout_disabled') {
           sendDomainError(res, req.id, 'priced_checkout_disabled', 503);
           return;

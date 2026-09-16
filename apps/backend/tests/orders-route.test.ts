@@ -114,4 +114,14 @@ describe('POST /api/v1/orders', () => {
       'draft_already_submitted',
     );
   });
+
+  it('maps an exhausted reference collision to a retryable 503, not a 409', async () => {
+    const baseUrl = await start(async () => ({ status: 'reference_collision' }));
+    const response = await post(baseUrl);
+    expect(response.status).toBe(503);
+    expect(response.headers.get('retry-after')).toBe('2');
+    const error = apiErrorResponseSchema.parse(await response.json());
+    expect(error.error.code).toBe('persistence_unavailable');
+    expect(error.error.details).toEqual({ retryable: true });
+  });
 });
