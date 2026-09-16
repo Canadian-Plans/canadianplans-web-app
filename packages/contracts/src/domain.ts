@@ -34,6 +34,14 @@ export const archiveStateSchema = z.enum(['active', 'archived']);
 export type ArchiveState = z.infer<typeof archiveStateSchema>;
 
 /**
+ * Partner lifecycle (T4P): `pending` review → `approved` to earn commission on
+ * referred orders, or `suspended` without losing history. Only an `approved`
+ * partner's referral code resolves for lead attribution (T11).
+ */
+export const partnerStatusSchema = z.enum(['pending', 'approved', 'suspended']);
+export type PartnerStatus = z.infer<typeof partnerStatusSchema>;
+
+/**
  * Commission state machine (PLATFORM_CONTEXT.md §4): earned → carrier_paid →
  * partner_paid. Phase A records earned and carrier_paid; partner_paid stays
  * disabled while OPEN_INPUTS #18 is unresolved.

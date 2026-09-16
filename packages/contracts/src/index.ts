@@ -43,6 +43,7 @@ export {
   documentParentTypeSchema,
   invoiceStatusSchema,
   orderFulfilmentStatusSchema,
+  partnerStatusSchema,
   paymentStateSchema,
   type ArchiveState,
   type CommissionState,
@@ -52,6 +53,7 @@ export {
   type DocumentParentType,
   type InvoiceStatus,
   type OrderFulfilmentStatus,
+  type PartnerStatus,
   type PaymentState,
 } from './domain';
 
@@ -104,6 +106,7 @@ export {
 // Request families
 export {
   attributionSchema,
+  consentVersionSchema,
   createLeadRequestSchema,
   createLeadResponseSchema,
   draftGrantSchema,
@@ -111,9 +114,11 @@ export {
   leadFormSchema,
   leadStatusSchema,
   leadSummarySchema,
+  rawAttributionSchema,
   updateLeadRequestSchema,
   updateLeadResponseSchema,
   type Attribution,
+  type ConsentVersion,
   type CreateLeadRequest,
   type CreateLeadResponse,
   type DraftGrant,
@@ -121,9 +126,19 @@ export {
   type LeadForm,
   type LeadStatus,
   type LeadSummary,
+  type RawAttribution,
   type UpdateLeadRequest,
   type UpdateLeadResponse,
 } from './leads';
+
+export {
+  leadListItemSchema,
+  listWorkspaceLeadsQuerySchema,
+  listWorkspaceLeadsResponseSchema,
+  type LeadListItem,
+  type ListWorkspaceLeadsQuery,
+  type ListWorkspaceLeadsResponse,
+} from './workspace-leads';
 
 export {
   chargeComponentSchema,
@@ -194,11 +209,13 @@ export {
   invoiceSchema,
   partnerInvoiceRequestSchema,
   partnerInvoiceResponseSchema,
+  partnerSchema,
   type ChangeCommissionStateRequest,
   type ChangeCommissionStateResponse,
   type CommissionLine,
   type Invoice,
   type InvoiceLine,
+  type Partner,
   type PartnerInvoiceRequest,
   type PartnerInvoiceResponse,
 } from './partners';

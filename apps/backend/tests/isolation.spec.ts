@@ -4,12 +4,13 @@ import { createServer, type Server } from 'node:http';
 import { sql } from 'drizzle-orm';
 import postgres from 'postgres';
 import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
-import { apiErrorResponseSchema } from '@canadian-plans/contracts';
+import { apiErrorResponseSchema, createLeadResponseSchema } from '@canadian-plans/contracts';
 import { createDatabaseClient, type DatabaseClient } from '@canadian-plans/db';
 
 import { createApp } from '../src/app.js';
 import { SupabaseStaffSessionVerifier, type VerifiedStaffSession } from '../src/auth/session.js';
 import { MachineRegistry, type MachineRegistryConfig } from '../src/machines/registry.js';
+import { DatabaseLeadStore } from '../src/leads/store.js';
 import { DatabaseStaffStore } from '../src/staff/store.js';
 import { generateServiceSecret, hashServiceSecret } from '../src/website/credential.js';
 import { DatabaseWebsiteCredentialStore } from '../src/website/store.js';
@@ -99,7 +100,10 @@ databaseTest('Phase A tenant isolation gate', () => {
   beforeAll(async () => {
     if (!migrationUrl) throw new Error('TEST_MIGRATION_DATABASE_URL is required');
     admin = postgres(migrationUrl, { max: 1, prepare: false, ssl: false });
-    await admin.unsafe(`ALTER ROLE app_runtime PASSWORD '${RUNTIME_PASSWORD}'`);
+    await admin.begin(async (tx) => {
+      await tx`select pg_advisory_xact_lock(745284914)`;
+      await tx.unsafe(`ALTER ROLE app_runtime PASSWORD '${RUNTIME_PASSWORD}'`);
+    });
     await admin`delete from app.workspaces where id in (${WORKSPACE_A}, ${WORKSPACE_B})`;
     await admin`
       insert into app.workspaces (id, slug, name)
@@ -173,6 +177,7 @@ databaseTest('Phase A tenant isolation gate', () => {
         sessionVerifier: new SupabaseStaffSessionVerifier(),
         store: new DatabaseStaffStore(database),
         credentialStore,
+        leadStore: new DatabaseLeadStore(database),
       },
       website: {
         auth: {
@@ -180,6 +185,7 @@ databaseTest('Phase A tenant isolation gate', () => {
           rateLimit: database.rateLimitHit,
           botCheck: () => true,
         },
+        leads: { store: new DatabaseLeadStore(database) },
       },
     }).listen(0);
     await new Promise<void>((resolve) => server.once('listening', resolve));
@@ -290,10 +296,14 @@ databaseTest('Phase A tenant isolation gate', () => {
         host: 'isolation-b.example.test',
         origin: 'https://isolation-b.example.test',
       },
-      body: JSON.stringify({ workspace_id: WORKSPACE_B, workspaceId: WORKSPACE_B }),
+      body: JSON.stringify({
+        workspace_id: WORKSPACE_B,
+        workspaceId: WORKSPACE_B,
+        consentVersion: 'terms-2026-09',
+      }),
     });
-    expect(website.status).toBe(202);
-    expect(await website.json()).toMatchObject({ workspaceId: WORKSPACE_A });
+    expect(website.status).toBe(201);
+    expect(await website.json()).toMatchObject({ lead: { workspaceId: WORKSPACE_A } });
 
     const escalation = await fetch(
       `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE_B}/service-credentials`,
@@ -310,6 +320,39 @@ databaseTest('Phase A tenant isolation gate', () => {
     expect(escalation.status).toBe(403);
     expect(apiErrorResponseSchema.parse(await escalation.json()).error.code).toBe(
       'permission_denied',
+    );
+  });
+
+  test('website and staff identities cannot cross workspace boundaries for leads', async () => {
+    const created = await fetch(`${baseUrl}/api/v1/website/leads`, {
+      method: 'POST',
+      headers: { ...bearer(WEBSITE_SECRET_A), 'content-type': 'application/json' },
+      body: JSON.stringify({ consentVersion: 'terms-2026-09' }),
+    });
+    expect(created.status).toBe(201);
+    const createdBody = createLeadResponseSchema.parse(await created.json());
+
+    const foreignUpdate = await fetch(`${baseUrl}/api/v1/website/leads/${createdBody.lead.id}`, {
+      method: 'PATCH',
+      headers: {
+        ...bearer(FOREIGN_WEBSITE_SECRET),
+        'content-type': 'application/json',
+        'x-draft-grant': createdBody.draftGrant.token,
+      },
+      body: JSON.stringify({ contact: { fullName: 'Cross Workspace' } }),
+    });
+    expect(foreignUpdate.status).toBe(401);
+    expect(apiErrorResponseSchema.parse(await foreignUpdate.json()).error.code).toBe(
+      'draft_not_found',
+    );
+
+    const foreignStaffList = await fetch(
+      `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE_A}/leads`,
+      { headers: bearer('viewer-forged-role') },
+    );
+    expect(foreignStaffList.status).toBe(403);
+    expect(apiErrorResponseSchema.parse(await foreignStaffList.json()).error.code).toBe(
+      'membership_missing',
     );
   });
 

@@ -10,6 +10,8 @@ import { sendWebsiteError } from '../http/website-errors.js';
 import { hashServiceSecret, parseCredentialSecret } from './credential.js';
 
 export interface WebsiteContext {
+  /** The credential's own row id — used as `actorId` for its tenant writes (no human actor exists). */
+  credentialId: string;
   workspaceId: string;
   callerType: 'website';
   scopes: readonly WebsiteScopeName[];
@@ -117,6 +119,7 @@ export function requireWebsiteCredential(deps: WebsiteAuthDependencies): Request
       }
 
       req.websiteContext = {
+        credentialId: resolution.credentialId,
         workspaceId: resolution.workspaceId,
         callerType: 'website',
         scopes: resolution.scopes.filter((scope): scope is WebsiteScopeName =>

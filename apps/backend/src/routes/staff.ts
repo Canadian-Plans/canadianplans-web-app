@@ -2,6 +2,7 @@ import { Router, type Request } from 'express';
 import {
   createServiceCredentialRequestSchema,
   inviteStaffRequestSchema,
+  listWorkspaceLeadsQuerySchema,
 } from '@canadian-plans/contracts';
 import { z } from 'zod';
 
@@ -12,6 +13,7 @@ import {
 } from '../auth/session.js';
 import { sendStaffAuthError } from '../http/staff-errors.js';
 import { sendWebsiteError } from '../http/website-errors.js';
+import { DatabaseLeadStore, type LeadStore } from '../leads/store.js';
 import { createAuthorize, denyReasonOf } from '../staff/authorization.js';
 import { DatabaseStaffStore, type StaffStore } from '../staff/store.js';
 import { generateServiceSecret } from '../website/credential.js';
@@ -25,6 +27,7 @@ export interface StaffRouteDependencies {
   sessionVerifier: StaffSessionVerifier;
   store: StaffStore;
   credentialStore: WebsiteCredentialStore;
+  leadStore: LeadStore;
 }
 
 export function createDefaultStaffRouteDependencies(): StaffRouteDependencies {
@@ -32,6 +35,7 @@ export function createDefaultStaffRouteDependencies(): StaffRouteDependencies {
     sessionVerifier: new SupabaseStaffSessionVerifier(),
     store: new DatabaseStaffStore(),
     credentialStore: new DatabaseWebsiteCredentialStore(),
+    leadStore: new DatabaseLeadStore(),
   };
 }
 
@@ -115,6 +119,43 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
           .map((permission) => permission.name),
         requestId: req.id,
       });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.get('/workspaces/:workspaceId/leads', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const query = listWorkspaceLeadsQuerySchema.safeParse(req.query);
+    if (!workspaceId.success || !query.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+
+    try {
+      const actor = session(req);
+      const authorize = createAuthorize({
+        accessStore: dependencies.store,
+        assuranceLevel: actor.assuranceLevel,
+      });
+      const decision = await authorize({
+        actorId: actor.actorId,
+        workspaceId: workspaceId.data,
+        action: 'workspace.read',
+      });
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+
+      const result = await dependencies.leadStore.listLeads({
+        workspaceId: workspaceId.data,
+        actorId: actor.actorId,
+        status: query.data.status,
+        page: query.data.page,
+        pageSize: query.data.pageSize,
+      });
+      res.json({ leads: result.leads, page: result.page, requestId: req.id });
     } catch {
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }

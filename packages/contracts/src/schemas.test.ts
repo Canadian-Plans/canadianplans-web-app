@@ -18,6 +18,7 @@ import {
   finalizeUploadRequestSchema,
   finalizeUploadResponseSchema,
   getWorkspaceOrderResponseSchema,
+  listWorkspaceLeadsResponseSchema,
   listWorkspaceOrdersResponseSchema,
   partnerInvoiceRequestSchema,
   partnerInvoiceResponseSchema,
@@ -82,12 +83,16 @@ const cases: ReadonlyArray<readonly [string, z.ZodType, unknown]> = [
     { error: { code: 'not_found', message: 'x', requestId: UUID_C } },
   ],
   ['versionedForm', versionedFormSchema(webhookDeliveryRequestSchema), form],
-  ['createLeadRequest', createLeadRequestSchema, { contact: { email: 'a@b.co' }, form }],
+  [
+    'createLeadRequest',
+    createLeadRequestSchema,
+    { contact: { email: 'a@b.co' }, form, consentVersion: 'terms-2026-09' },
+  ],
   [
     'createLeadResponse',
     createLeadResponseSchema,
     {
-      lead: { id: UUID_A, workspaceId: UUID_B, status: 'draft', updatedAt: NOW },
+      lead: { id: UUID_A, workspaceId: UUID_B, status: 'incomplete', updatedAt: NOW },
       draftGrant: { token: 'grant', expiresAt: NOW },
       requestId: UUID_C,
     },
@@ -97,7 +102,29 @@ const cases: ReadonlyArray<readonly [string, z.ZodType, unknown]> = [
     'updateLeadResponse',
     updateLeadResponseSchema,
     {
-      lead: { id: UUID_A, workspaceId: UUID_B, status: 'draft', updatedAt: NOW },
+      lead: { id: UUID_A, workspaceId: UUID_B, status: 'incomplete', updatedAt: NOW },
+      requestId: UUID_C,
+    },
+  ],
+  [
+    'listWorkspaceLeadsResponse',
+    listWorkspaceLeadsResponseSchema,
+    {
+      leads: [
+        {
+          id: UUID_A,
+          workspaceId: UUID_B,
+          status: 'incomplete',
+          contact: { email: 'a@b.co' },
+          source: 'utm:google/cpc',
+          attribution: { utmSource: 'google', utmMedium: 'cpc' },
+          selectedOfferVersionId: null,
+          consentVersion: 'terms-2026-09',
+          createdAt: NOW,
+          updatedAt: NOW,
+        },
+      ],
+      page: { page: 1, pageSize: 25, total: 1 },
       requestId: UUID_C,
     },
   ],

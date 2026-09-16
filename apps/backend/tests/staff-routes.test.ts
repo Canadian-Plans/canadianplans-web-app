@@ -3,14 +3,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   apiErrorResponseSchema,
   inviteStaffResponseSchema,
+  listWorkspaceLeadsResponseSchema,
   staffWorkspaceAccessResponseSchema,
   staffWorkspacesResponseSchema,
+  type LeadListItem,
   type StaffWorkspace,
 } from '@canadian-plans/contracts';
 
 import { createApp } from '../src/app.js';
 import type { StaffSessionVerifier, VerifiedStaffSession } from '../src/auth/session.js';
 import type { StaffAccessSnapshot } from '../src/staff/authorization.js';
+import type { ListLeadsInput, LeadStore } from '../src/leads/store.js';
 import type {
   BootstrapStaffInput,
   InviteStaffInput,
@@ -31,6 +34,36 @@ const ACTOR = '20000000-0000-4000-8000-000000000001';
 const WORKSPACE = '10000000-0000-4000-8000-000000000001';
 const MEMBERSHIP = '30000000-0000-4000-8000-000000000001';
 const INVITATION = '30000000-0000-4000-8000-000000000002';
+
+const sampleLead: LeadListItem = {
+  id: '90000000-0000-4000-8000-000000000001',
+  workspaceId: WORKSPACE,
+  status: 'incomplete',
+  contact: { email: 'jane@example.test' },
+  source: 'utm:google/cpc',
+  attribution: { utmSource: 'google', utmMedium: 'cpc' },
+  selectedOfferVersionId: null,
+  consentVersion: 'terms-2026-09',
+  createdAt: '2026-09-14T00:00:00.000Z',
+  updatedAt: '2026-09-14T00:00:00.000Z',
+};
+
+class MemoryLeadStore implements LeadStore {
+  readonly listLeadsCalls: ListLeadsInput[] = [];
+
+  createLead: LeadStore['createLead'] = () => {
+    throw new Error('not used in these staff-route tests');
+  };
+
+  updateLead: LeadStore['updateLead'] = () => {
+    throw new Error('not used in these staff-route tests');
+  };
+
+  async listLeads(input: ListLeadsInput) {
+    this.listLeadsCalls.push(input);
+    return { leads: [sampleLead], page: { page: 1, pageSize: 25, total: 1 } };
+  }
+}
 
 const workspace: StaffWorkspace = {
   id: WORKSPACE,
@@ -71,6 +104,7 @@ let server: Server;
 let baseUrl: string;
 let verifier: TokenVerifier;
 let store: MemoryStaffStore;
+let leadStore: MemoryLeadStore;
 
 beforeEach(async () => {
   verifier = new TokenVerifier();
@@ -85,8 +119,14 @@ beforeEach(async () => {
     assuranceLevel: 'aal2',
   });
   store = new MemoryStaffStore();
+  leadStore = new MemoryLeadStore();
   server = createApp({
-    staff: { sessionVerifier: verifier, store, credentialStore: noopCredentialStore },
+    staff: {
+      sessionVerifier: verifier,
+      store,
+      credentialStore: noopCredentialStore,
+      leadStore,
+    },
   }).listen(0);
   await new Promise<void>((resolve) => server.once('listening', resolve));
   const address = server.address();
@@ -182,5 +222,44 @@ describe('protected staff routes', () => {
     expect(response.status).toBe(201);
     expect(inviteStaffResponseSchema.parse(await response.json()).status).toBe('pending');
     expect(store.inviteStaff).toHaveBeenCalledOnce();
+  });
+
+  it('lists leads for any active member, with attribution, and applies the status filter', async () => {
+    const response = await fetch(
+      `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/leads?status=incomplete`,
+      { headers: { authorization: 'Bearer aal1-token' } },
+    );
+    expect(response.status).toBe(200);
+    const body = listWorkspaceLeadsResponseSchema.parse(await response.json());
+    expect(body.leads).toEqual([sampleLead]);
+    expect(leadStore.listLeadsCalls).toEqual([
+      {
+        workspaceId: WORKSPACE,
+        actorId: ACTOR,
+        status: 'incomplete',
+        page: undefined,
+        pageSize: undefined,
+      },
+    ]);
+  });
+
+  it('denies a revoked member the leads list', async () => {
+    store.access = { ...store.access, status: 'revoked' };
+    const response = await fetch(`${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/leads`, {
+      headers: { authorization: 'Bearer aal1-token' },
+    });
+    expect(response.status).toBe(403);
+    expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe(
+      'membership_revoked',
+    );
+  });
+
+  it('rejects an unknown status filter value', async () => {
+    const response = await fetch(
+      `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/leads?status=archived`,
+      { headers: { authorization: 'Bearer aal1-token' } },
+    );
+    expect(response.status).toBe(400);
+    expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe('invalid_request');
   });
 });

@@ -48,6 +48,7 @@ import {
   patchWorkspaceOrderRequestSchema,
   patchWorkspaceOrderResponseSchema,
 } from './workspace-orders';
+import { listWorkspaceLeadsQuerySchema, listWorkspaceLeadsResponseSchema } from './workspace-leads';
 import { webhookAckResponseSchema, webhookDeliveryRequestSchema } from './webhooks';
 
 /**
@@ -180,6 +181,18 @@ export const endpoints: readonly EndpointDef[] = [
     auth: 'staff',
     successStatus: 200,
     response: revokeServiceCredentialResponseSchema,
+  },
+
+  // Staff — leads
+  {
+    operationId: 'listWorkspaceLeads',
+    method: 'GET',
+    path: '/api/v1/staff/workspaces/{workspaceId}/leads',
+    summary: 'List leads in a workspace, with attribution.',
+    auth: 'staff',
+    successStatus: 200,
+    query: listWorkspaceLeadsQuerySchema,
+    response: listWorkspaceLeadsResponseSchema,
   },
 
   // Staff — order processing

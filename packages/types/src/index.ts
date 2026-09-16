@@ -29,6 +29,23 @@ export const membershipStatuses = tuple('pending', 'active', 'revoked');
 export type MembershipStatus = (typeof membershipStatuses)[number];
 
 /**
+ * A partner (referral agency) starts `pending` review, becomes `approved` to
+ * earn commission on referred orders, and can be `suspended` without losing
+ * its history (T4P; commissions/invoices land with T19).
+ */
+export const partnerStatuses = tuple('pending', 'approved', 'suspended');
+export type PartnerStatus = (typeof partnerStatuses)[number];
+
+/**
+ * A lead is `incomplete` while the customer is still filling in the form
+ * (repeated saves update the same row) and becomes `submitted` once it
+ * converts to an order (T12). There is no separate "abandoned" state — an
+ * incomplete lead that is never resumed simply stays incomplete.
+ */
+export const leadStatuses = tuple('incomplete', 'submitted');
+export type LeadStatus = (typeof leadStatuses)[number];
+
+/**
  * Scopes a storefront service credential may hold. The public website may only
  * create/resume its own drafts and request quotes/orders/uploads/tracking; it
  * can never list records or take a staff action (PLATFORM_CONTEXT.md §5).

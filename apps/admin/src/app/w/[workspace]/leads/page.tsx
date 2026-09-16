@@ -1,16 +1,21 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@canadian-plans/ui';
 
-export default function LeadsPage() {
+import { LeadsList } from '../../../../components/leads-list';
+
+export default async function LeadsPage({ params }: { params: Promise<{ workspace: string }> }) {
+  const { workspace } = await params;
   return (
     <Card>
       <CardHeader>
         <CardTitle asChild>
           <h1>Leads</h1>
         </CardTitle>
-        <CardDescription>No data yet — this is a placeholder route.</CardDescription>
+        <CardDescription>
+          Draft plan applications captured from the website, with their attribution.
+        </CardDescription>
       </CardHeader>
-      <CardContent className="text-sm text-muted-foreground">
-        Draft leads and their resume state land once the backend leads endpoints exist.
+      <CardContent>
+        <LeadsList workspaceSlug={workspace} />
       </CardContent>
     </Card>
   );

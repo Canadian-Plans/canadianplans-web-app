@@ -237,7 +237,7 @@ Read REQUIREMENTS.md REQ 16–17, 34, 35 and IMPLEMENTATION_PLAN.md §7.
 
 Task: implement leads in apps/backend (leads module).
 - Tables: leads (workspace_id, status incomplete|submitted, contact fields, selected_offer_version_id nullable, payload JSONB {schemaVersion}, attribution JSONB {utm_*, referrer, landing_page, partner_code}, consent_version, timestamps), draft_grants (lead_id, token hash, expires_at, revoked_at).
-- POST /api/v1/leads creates a lead + grant (website credential required); PATCH /api/v1/leads/:id requires the grant. Repeated saves update the same lead. Called only on explicit steps, no keystroke capture.
+- POST /api/v1/website/leads creates a lead + grant (website credential required); PATCH /api/v1/website/leads/:id requires the grant. Repeated saves update the same lead. Called only on explicit steps, no keystroke capture.
 - A partner_code matching an active partner for that workspace links; unknown codes stored + flagged, not linked.
 Tests: forged grant fails; grant from another lead fails; expired grant fails; attribution uses an allowlist and bounds; strips unknown/query/token/contact fields and overlong values; referrer reduced to approved origin and landing route to a known template, never arbitrary raw paths; consent_version required.
 Admin: /w/[workspace]/leads list with source column + "incomplete" filter (via backend).

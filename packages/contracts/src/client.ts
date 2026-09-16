@@ -93,6 +93,11 @@ import {
   type PatchWorkspaceOrderRequest,
   type PatchWorkspaceOrderResponse,
 } from './workspace-orders';
+import {
+  listWorkspaceLeadsResponseSchema,
+  type ListWorkspaceLeadsQuery,
+  type ListWorkspaceLeadsResponse,
+} from './workspace-leads';
 
 /**
  * The one typed backend client, consumed by both admin (staff session as the
@@ -192,6 +197,10 @@ export interface BackendClient {
     invite(workspaceId: string, body: InviteStaffRequest): Promise<InviteStaffResponse>;
     revokeMembership(workspaceId: string, membershipId: string): Promise<RevokeStaffResponse>;
     listServiceCredentials(workspaceId: string): Promise<ListServiceCredentialsResponse>;
+    listLeads(
+      workspaceId: string,
+      query?: ListWorkspaceLeadsQuery,
+    ): Promise<ListWorkspaceLeadsResponse>;
     createServiceCredential(
       workspaceId: string,
       body: CreateServiceCredentialRequest,
@@ -396,6 +405,13 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           method: 'GET',
           path: `/api/v1/staff/workspaces/${encode(workspaceId)}/service-credentials`,
           responseSchema: listServiceCredentialsResponseSchema,
+        }),
+      listLeads: (workspaceId, query) =>
+        call({
+          method: 'GET',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/leads`,
+          query: { status: query?.status, page: query?.page, pageSize: query?.pageSize },
+          responseSchema: listWorkspaceLeadsResponseSchema,
         }),
       createServiceCredential: (workspaceId, body) =>
         call({
