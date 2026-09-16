@@ -47,7 +47,7 @@ CORS (PLATFORM_CONTEXT §4b, invariant 2).
 - **Staff** (`/api/v1/staff/*`): `Authorization: Bearer <Supabase access token>`.
   Verified with Supabase Auth on every request; membership, roles and
   permissions are re-read from Postgres. See the T5 codes above.
-- **Website** (`/api/v1/website/*`): `Authorization: Bearer cplsk_<secret>`. The
+- **Website** (`/api/v1/website/*`, `/api/v1/quotes`, and `/api/v1/orders`): `Authorization: Bearer cplsk_<secret>`. The
   backend hashes the secret (SHA-256) and resolves it through the SECURITY
   DEFINER `app.resolve_website_credential` bootstrap function to a workspace,
   scopes and revocation status. A credential may hold only these scopes:
@@ -177,6 +177,94 @@ acknowledges the authenticated, scoped context.
 - `403`: `scope_denied`, `caller_forbidden`
 - `429`: `rate_limited` (with `Retry-After`)
 
+### `POST /api/v1/quotes`
+
+Website credential with `quotes:create` plus `X-Draft-Grant`. Body contains
+only `{ leadId, productId, form? }`; it never contains a price. The backend
+verifies the draft, takes the product lease, reads and validates the current
+published Sanity offer outside a transaction, hashes it canonically, then
+atomically selects/inserts that exact immutable version and creates a 15-minute
+quote.
+
+- `201`: `{ quote, requestId }`
+- `401`: `draft_not_found` / `draft_expired`
+- `409`: `offer_unavailable`
+- `503`: `unpriced_lead_required` with
+  `details.canSaveUnpricedLead = true`, or `priced_checkout_disabled` while
+  OPEN_INPUTS #14 is unresolved
+
+### `POST /api/v1/orders`
+
+Website credential with `orders:create`, `X-Draft-Grant`, and a bounded
+`Idempotency-Key`. The body contains `quoteId`, the accepted terms version,
+the versioned form payload, and consent — never browser-supplied prices.
+
+One tenant transaction first resolves a completed idempotency outcome and
+returns it before inspecting the consumed/expired quote. A new submission
+validates the draft and quote, claims the scoped key, freezes the commercial
+snapshot, creates the order/history, consumes the quote, marks the lead
+submitted, and commits the acknowledgement-email and analytics outbox jobs.
+
+A submitted draft keeps its grant only so the exact-retry lookup above can
+return the stored order; the grant no longer authorises editing the draft
+(`PATCH /api/v1/website/leads/{leadId}` returns `409 draft_already_submitted`).
+
+- `201`: newly committed order or completed retry with the same stored order
+  reference
+- `401`: `draft_not_found` / `draft_expired`
+- `404`: `quote_not_found`
+- `409`: idempotency, quote, terms, one-order-per-draft, or
+  `draft_already_submitted` conflict
+- `503`: `persistence_unavailable`, `details.retryable = true`, and
+  `Retry-After`, or `priced_checkout_disabled` while OPEN_INPUTS #14 remains
+  unresolved; no success response is emitted
+
+### `PATCH /api/v1/staff/workspaces/{workspaceId}/orders/{orderId}`
+
+Orders/Owner transition endpoint. Every status transition carries
+`expectedVersion`; a stale version returns `409 version_conflict`. Illegal
+edges are rejected, cancellation requires a reason, and every accepted edge
+writes status history plus an audit event. Dispatch/activation remain gated by
+unresolved production prerequisites. Partnered activation returns
+`feature_not_ready` until T19 can create its commission atomically.
+
+### `POST /api/v1/webhooks/sanity`
+
+Raw-body endpoint. Requires `X-Webhook-Selector`, `X-Provider-Account`, Sanity's
+`sanity-webhook-signature`, and `idempotency-key`. The selector is untrusted
+until the server-only registry verifies the timestamped HMAC and matching
+provider account. A valid delivery is durably deduplicated in the tenant inbox
+and acknowledged `200`; the body is only a document selector, never commercial
+authority.
+
+### `GET /api/v1/staff/workspaces/{workspaceId}/catalogue`
+
+Any staff member with `workspace.read` can view the read-only last sync
+attempt/success/error, recent event errors, and each product's current immutable
+offer version. Catalogue editing remains in Sanity.
+
+### `GET /api/v1/staff/workspaces/{workspaceId}/jobs`
+
+Staff with `workspace.read` can view pending, processing, failed, and uncertain
+outbox deliveries for that workspace. The response includes `canRetry`, derived
+from the same live `integration.manage` authorization decision used by the
+mutation endpoint.
+
+### `POST /api/v1/staff/workspaces/{workspaceId}/jobs/{jobId}/retry`
+
+Requires `integration.manage` (the `integration_management` individual
+permission or an allowed role, with explicit deny winning). Only definitively
+failed jobs can be requeued; uncertain deliveries must be reconciled first.
+
+### `GET /api/internal/jobs/run`
+
+Backend-only Vercel Cron route, scheduled every minute on a Pro production
+deployment. Vercel supplies `Authorization: Bearer <CRON_SECRET>`; the secret
+and configured selector resolve through the server-only scheduler registry to
+an actor, `outbox:run` scope, and an explicit workspace set. Preview
+deployments are rejected. An equivalent authenticated `POST` supports manual
+staging checks.
+
 ## Staff permission matrix
 
 `workspace.read` is non-privileged so an authenticated Owner/Finance actor can
@@ -186,7 +274,7 @@ below requires verified `aal2`.
 | Role     | Matrix actions                                        |
 | -------- | ----------------------------------------------------- |
 | owner    | every T5 action                                       |
-| orders   | `workspace.read`                                      |
+| orders   | `workspace.read`, `order.manage`                      |
 | partners | `workspace.read`                                      |
 | finance  | `workspace.read`, `financial.read`, `invoice.approve` |
 | content  | `workspace.read`                                      |

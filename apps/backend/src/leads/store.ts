@@ -1,9 +1,8 @@
-import { and, desc, eq, isNull, sql } from 'drizzle-orm';
+import { and, desc, eq, isNotNull, isNull, sql } from 'drizzle-orm';
 import {
   auditEvents,
   draftGrants,
   leads,
-  offerVersions,
   partners,
   productAvailability,
   withTenantTx,
@@ -47,7 +46,8 @@ export interface CreateLeadResult {
 export type UpdateLeadOutcome =
   | { status: 'updated'; lead: LeadSummary }
   | { status: 'grant_invalid' }
-  | { status: 'grant_expired' };
+  | { status: 'grant_expired' }
+  | { status: 'draft_submitted' };
 
 export interface UpdateLeadInput {
   workspaceId: string;
@@ -132,7 +132,7 @@ async function findActivePartnerId(
       ),
     )
     .limit(1);
-  return row?.id;
+  return row?.id ?? undefined;
 }
 
 /** Sanitizes attribution and returns the durable link for an approved partner code. */
@@ -157,19 +157,18 @@ async function resolveOfferVersionId(
   productId: string,
 ): Promise<string | undefined> {
   const [row] = await tx
-    .select({ id: offerVersions.id })
-    .from(offerVersions)
-    .innerJoin(productAvailability, eq(productAvailability.productId, offerVersions.productId))
+    .select({ id: productAvailability.currentOfferVersionId })
+    .from(productAvailability)
     .where(
       and(
-        eq(offerVersions.workspaceId, workspaceId),
-        eq(offerVersions.productId, productId),
+        eq(productAvailability.workspaceId, workspaceId),
+        eq(productAvailability.productId, productId),
         isNull(productAvailability.revokedAt),
+        isNotNull(productAvailability.currentOfferVersionId),
       ),
     )
-    .orderBy(desc(offerVersions.createdAt))
     .limit(1);
-  return row?.id;
+  return row?.id ?? undefined;
 }
 
 export class DatabaseLeadStore implements LeadStore {
@@ -248,14 +247,20 @@ export class DatabaseLeadStore implements LeadStore {
         const tokenHash = hashDraftGrantToken(input.grantToken);
         // Matching on lead_id AND token_hash together means a real grant that
         // simply belongs to a *different* lead is indistinguishable from a
-        // forged token — both resolve to zero rows.
+        // forged token — both resolve to zero rows. Joining the lead lets a
+        // submitted draft be rejected before any write, without a second query.
         const [grant] = await tx
           .select({
             id: draftGrants.id,
             expiresAt: draftGrants.expiresAt,
             revokedAt: draftGrants.revokedAt,
+            leadStatus: leads.status,
           })
           .from(draftGrants)
+          .innerJoin(
+            leads,
+            and(eq(leads.workspaceId, draftGrants.workspaceId), eq(leads.id, draftGrants.leadId)),
+          )
           .where(
             and(
               eq(draftGrants.workspaceId, input.workspaceId),
@@ -269,6 +274,10 @@ export class DatabaseLeadStore implements LeadStore {
         if (grant.revokedAt !== null || grant.expiresAt.getTime() <= Date.now()) {
           return { status: 'grant_expired' };
         }
+        // A submitted draft's grant survives only for the exact-retry order
+        // lookup (orders/store.ts). It must not authorise further edits to the
+        // lead's contact, form, attribution or partner link (T12).
+        if (grant.leadStatus !== 'incomplete') return { status: 'draft_submitted' };
 
         const updates: Partial<typeof leads.$inferInsert> = { updatedAt: new Date() };
         if (input.contact) {

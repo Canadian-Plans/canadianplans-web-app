@@ -63,6 +63,7 @@ class FakeLeadStore implements LeadStore {
     const grant = this.grants.get(input.grantToken);
     if (!grant || grant.leadId !== input.leadId) return { status: 'grant_invalid' };
     if (grant.revoked || grant.expiresAt <= Date.now()) return { status: 'grant_expired' };
+    if (this.leadStatus.get(input.leadId) !== 'incomplete') return { status: 'draft_submitted' };
     return {
       status: 'updated',
       lead: {
@@ -246,6 +247,20 @@ describe('PATCH /api/v1/website/leads/:leadId', () => {
     );
     expect(response.status).toBe(401);
     expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe('draft_expired');
+  });
+
+  it('rejects an edit to a submitted draft with 409 draft_already_submitted', async () => {
+    leadStore.leadStatus.set(LEAD_A, 'submitted');
+    const response = await request(
+      'PATCH',
+      `/api/v1/website/leads/${LEAD_A}`,
+      { 'x-draft-grant': VALID_GRANT_A },
+      { contact: { fullName: 'Too late' } },
+    );
+    expect(response.status).toBe(409);
+    expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe(
+      'draft_already_submitted',
+    );
   });
 
   it('updates the same lead on repeated saves with a valid grant', async () => {

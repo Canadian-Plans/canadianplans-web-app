@@ -5,6 +5,7 @@ import { applyMigrations } from '@canadian-plans/db/migrations';
 import { TEST_RUNTIME_PASSWORD, setTestRuntimePassword } from '@canadian-plans/db/test-helpers';
 
 import { hashDraftGrantToken } from '../src/leads/token.js';
+import { DatabaseLeadStore } from '../src/leads/store.js';
 import { OrderService } from '../src/orders/service.js';
 import { DatabaseOrderStore } from '../src/orders/store.js';
 
@@ -201,5 +202,52 @@ databaseDescribe('orders database transaction', () => {
         body: { ...requestBody, form: { schemaVersion: 1, payload: { changed: true } } },
       }),
     ).toEqual({ status: 'idempotency_conflict' });
+  });
+
+  it('rejects a lead PATCH after submission without touching the row or audit log, yet still serves the order retry', async () => {
+    type LeadProbe = { fullName: string | null; updatedAt: Date; audits: number };
+    const probe = () => admin<LeadProbe[]>`
+      select
+        full_name as "fullName",
+        updated_at as "updatedAt",
+        (select count(*)::int from app.audit_events
+           where workspace_id = ${WORKSPACE} and entity = 'lead' and entity_id = ${LEAD}) as audits
+      from app.leads where id = ${LEAD}
+    `;
+    const [before] = await probe();
+
+    const leadStore = new DatabaseLeadStore(clientA);
+    const rejected = await leadStore.updateLead({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      requestId: REQUEST,
+      leadId: LEAD,
+      grantToken: GRANT,
+      contact: { fullName: 'Edited after submission' },
+      attribution: { partnerCode: 'SNEAKY' },
+    });
+    expect(rejected).toEqual({ status: 'draft_submitted' });
+
+    const [after] = await probe();
+    expect(after?.fullName).toBeNull();
+    expect(after?.updatedAt.getTime()).toBe(before?.updatedAt.getTime());
+    expect(after?.audits).toBe(before?.audits);
+
+    const orderService = new OrderService(
+      new DatabaseOrderStore(clientA),
+      'honour_until_expiry',
+      () => NOW,
+      () => 'CP-UNUSED-RETRY',
+    );
+    expect(
+      await orderService.submit({
+        workspaceId: WORKSPACE,
+        actorId: ACTOR,
+        requestId: REQUEST,
+        grantToken: GRANT,
+        idempotencyKey: 'orders-integration-key',
+        body: requestBody,
+      }),
+    ).toMatchObject({ status: 'existing' });
   });
 });
