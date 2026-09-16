@@ -1,6 +1,6 @@
 import type { Server } from 'node:http';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { apiErrorResponseSchema } from '@canadian-plans/contracts';
+import { apiErrorResponseSchema, createLeadResponseSchema } from '@canadian-plans/contracts';
 import type {
   RateLimitInput,
   RateLimitResult,
@@ -9,17 +9,25 @@ import type {
 
 import { createApp } from '../src/app.js';
 import type { StaffSessionVerifier } from '../src/auth/session.js';
+import type {
+  CreateLeadInput,
+  CreateLeadResult,
+  LeadStore,
+  UpdateLeadOutcome,
+} from '../src/leads/store.js';
 import type { StaffStore } from '../src/staff/store.js';
 import type { WebsiteCredentialStore } from '../src/website/store.js';
 import { generateServiceSecret } from '../src/website/credential.js';
 
 const WORKSPACE = '10000000-0000-4000-8000-000000000101';
+const CREDENTIAL = '80000000-0000-4000-8000-000000000201';
 
 // A valid, well-formed credential secret and its stored hash.
 const { secret: VALID_SECRET, secretHash: VALID_HASH } = generateServiceSecret();
 
 class FakeCredentialResolver {
   resolution: WebsiteCredentialResolution | undefined = {
+    credentialId: CREDENTIAL,
     workspaceId: WORKSPACE,
     scopes: ['leads:write', 'quotes:create'],
     revoked: false,
@@ -46,12 +54,39 @@ class FakeRateLimiter {
   };
 }
 
+/** Records every call so a test can assert what the route handed to the store, without a real database. */
+class FakeLeadStore implements LeadStore {
+  readonly createCalls: CreateLeadInput[] = [];
+
+  async createLead(input: CreateLeadInput): Promise<CreateLeadResult> {
+    this.createCalls.push(input);
+    return {
+      lead: {
+        id: '90000000-0000-4000-8000-000000000001',
+        workspaceId: input.workspaceId,
+        status: 'incomplete',
+        updatedAt: '2026-09-14T00:00:00.000Z',
+      },
+      grant: { token: 'cpldg_test', expiresAt: '2026-10-14T00:00:00.000Z' },
+    };
+  }
+
+  async updateLead(): Promise<UpdateLeadOutcome> {
+    throw new Error('not used in these auth tests');
+  }
+
+  async listLeads() {
+    return { leads: [], page: { page: 1, pageSize: 25, total: 0 } };
+  }
+}
+
 // Staff dependencies exist only so the app mounts; the staff verifier rejects
 // any bearer that is not a known Supabase token (a website credential is not).
 const staffOnly: {
   sessionVerifier: StaffSessionVerifier;
   store: StaffStore;
   credentialStore: WebsiteCredentialStore;
+  leadStore: LeadStore;
 } = {
   sessionVerifier: { verify: async () => undefined },
   store: {
@@ -69,12 +104,22 @@ const staffOnly: {
     listCredentials: async () => [],
     revokeCredential: async () => ({ status: 'not_found' }),
   },
+  leadStore: {
+    createLead: async () => {
+      throw new Error('unused');
+    },
+    updateLead: async () => {
+      throw new Error('unused');
+    },
+    listLeads: async () => ({ leads: [], page: { page: 1, pageSize: 25, total: 0 } }),
+  },
 };
 
 let server: Server;
 let baseUrl: string;
 let resolver: FakeCredentialResolver;
 let limiter: FakeRateLimiter;
+let leadStore: FakeLeadStore;
 let admitted: boolean;
 let admissionFailure: boolean;
 
@@ -86,9 +131,12 @@ function post(path: string, headers: Record<string, string>, body?: unknown) {
   });
 }
 
+const VALID_LEAD_BODY = { consentVersion: 'terms-2026-09' };
+
 beforeEach(async () => {
   resolver = new FakeCredentialResolver();
   limiter = new FakeRateLimiter();
+  leadStore = new FakeLeadStore();
   admitted = true;
   admissionFailure = false;
   server = createApp({
@@ -102,6 +150,7 @@ beforeEach(async () => {
           return admitted;
         },
       },
+      leads: { store: leadStore },
     },
   }).listen(0);
   await new Promise<void>((resolve) => server.once('listening', resolve));
@@ -143,10 +192,10 @@ describe('public website credential authentication', () => {
           await post(
             '/api/v1/website/leads',
             { authorization: `Bearer ${VALID_SECRET}`, 'x-forwarded-for': address },
-            {},
+            VALID_LEAD_BODY,
           )
         ).status,
-      ).toBe(202);
+      ).toBe(201);
     }
     const buckets = limiter.inputs
       .filter((input) => input.bucketKey.startsWith('ip:'))
@@ -179,7 +228,12 @@ describe('public website credential authentication', () => {
   });
 
   it('denies a revoked credential', async () => {
-    resolver.resolution = { workspaceId: WORKSPACE, scopes: ['leads:write'], revoked: true };
+    resolver.resolution = {
+      credentialId: CREDENTIAL,
+      workspaceId: WORKSPACE,
+      scopes: ['leads:write'],
+      revoked: true,
+    };
     const response = await post(
       '/api/v1/website/leads',
       { authorization: `Bearer ${VALID_SECRET}` },
@@ -195,14 +249,23 @@ describe('public website credential authentication', () => {
     const response = await post(
       '/api/v1/website/leads',
       { authorization: `Bearer ${VALID_SECRET}` },
-      { workspace_id: '10000000-0000-4000-8000-0000000000ff', email: 'x@example.test' },
+      { ...VALID_LEAD_BODY, workspace_id: '10000000-0000-4000-8000-0000000000ff' },
     );
-    expect(response.status).toBe(202);
-    expect(await response.json()).toMatchObject({ workspaceId: WORKSPACE, callerType: 'website' });
+    expect(response.status).toBe(201);
+    const body = createLeadResponseSchema.parse(await response.json());
+    expect(body.lead.workspaceId).toBe(WORKSPACE);
+    expect(leadStore.createCalls).toHaveLength(1);
+    expect(leadStore.createCalls[0]?.workspaceId).toBe(WORKSPACE);
+    expect(leadStore.createCalls[0]?.actorId).toBe(CREDENTIAL);
   });
 
   it('denies a credential that lacks the required scope', async () => {
-    resolver.resolution = { workspaceId: WORKSPACE, scopes: ['tracking:otp'], revoked: false };
+    resolver.resolution = {
+      credentialId: CREDENTIAL,
+      workspaceId: WORKSPACE,
+      scopes: ['tracking:otp'],
+      revoked: false,
+    };
     const response = await post(
       '/api/v1/website/leads',
       { authorization: `Bearer ${VALID_SECRET}` },

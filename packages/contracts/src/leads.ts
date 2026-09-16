@@ -1,17 +1,23 @@
 import { z } from 'zod';
 
+import { leadStatuses } from '@canadian-plans/types';
+
 import { isoDateTimeSchema, requestIdSchema, versionedFormSchema } from './common';
 
 /**
- * Lead capture and resume — `POST /leads`, `PATCH /leads/:id`.
- * Caller: website credential (`leads:write`) plus, on resume, a draft grant.
- * No handler here; A2 implements persistence.
+ * Lead capture and resume — `POST /api/v1/website/leads`,
+ * `PATCH /api/v1/website/leads/:id` (T11). Caller: website credential
+ * (`leads:write`) plus, on resume, the `X-Draft-Grant` header. Attribution is
+ * always the backend's sanitized, allowlisted snapshot (REQ 35) — a caller
+ * cannot make an arbitrary field or value land in storage.
  */
 
 /**
- * Attribution captured from the landing URL. Stored in a bounded, sanitized
- * form and never forwarded raw to analytics or logs (invariant 12). Every
- * field is optional and length-capped.
+ * Sanitized, allowlisted attribution as stored and returned (REQ 35). Every
+ * field is optional and length-capped. `partnerCode` is kept verbatim
+ * whenever present, whether or not it matched an active partner;
+ * `partnerCodeMatched` records which happened without ever linking an
+ * unrecognized code (T4P/T11 — "unknown codes stored + flagged, not linked").
  */
 export const attributionSchema = z.object({
   utmSource: z.string().max(120).optional(),
@@ -20,10 +26,21 @@ export const attributionSchema = z.object({
   utmTerm: z.string().max(120).optional(),
   utmContent: z.string().max(120).optional(),
   partnerCode: z.string().max(64).optional(),
+  partnerCodeMatched: z.boolean().optional(),
   landingPath: z.string().max(512).optional(),
   referrerHost: z.string().max(253).optional(),
 });
 export type Attribution = z.infer<typeof attributionSchema>;
+
+/**
+ * Attribution exactly as submitted — an arbitrary object, not yet sanitized.
+ * The backend allowlists, bounds and reduces it to `attributionSchema` before
+ * anything is persisted; a caller cannot make an unknown field, an overlong
+ * value or an arbitrary path land in storage; approved referrer URLs are
+ * reduced to their hostname (REQ 35).
+ */
+export const rawAttributionSchema = z.record(z.string(), z.unknown());
+export type RawAttribution = z.infer<typeof rawAttributionSchema>;
 
 /** Customer contact fields. International — any country and phone format is accepted (§7). */
 export const leadContactSchema = z.object({
@@ -45,8 +62,16 @@ export type LeadContact = z.infer<typeof leadContactSchema>;
 export const leadFormSchema = versionedFormSchema(z.record(z.string(), z.unknown()));
 export type LeadForm = z.infer<typeof leadFormSchema>;
 
-export const leadStatusSchema = z.enum(['draft', 'converted', 'abandoned']);
+/**
+ * `incomplete` while the customer is still filling in the form (repeated
+ * saves update the same row); `submitted` once it converts to an order (T12).
+ */
+export const leadStatusSchema = z.enum(leadStatuses);
 export type LeadStatus = z.infer<typeof leadStatusSchema>;
+
+/** The consent/disclosure version accepted at lead save (REQ 34) — recorded, never inferred. */
+export const consentVersionSchema = z.string().min(1).max(64);
+export type ConsentVersion = z.infer<typeof consentVersionSchema>;
 
 export const leadSummarySchema = z.object({
   id: z.uuid(),
@@ -67,10 +92,11 @@ export const draftGrantSchema = z.object({
 export type DraftGrant = z.infer<typeof draftGrantSchema>;
 
 export const createLeadRequestSchema = z.object({
-  attribution: attributionSchema.optional(),
+  attribution: rawAttributionSchema.optional(),
   contact: leadContactSchema.optional(),
   form: leadFormSchema.optional(),
   productId: z.uuid().optional(),
+  consentVersion: consentVersionSchema,
 });
 export type CreateLeadRequest = z.infer<typeof createLeadRequestSchema>;
 
@@ -84,7 +110,9 @@ export type CreateLeadResponse = z.infer<typeof createLeadResponseSchema>;
 export const updateLeadRequestSchema = z.object({
   contact: leadContactSchema.optional(),
   form: leadFormSchema.optional(),
-  attribution: attributionSchema.optional(),
+  attribution: rawAttributionSchema.optional(),
+  productId: z.uuid().optional(),
+  consentVersion: consentVersionSchema.optional(),
 });
 export type UpdateLeadRequest = z.infer<typeof updateLeadRequestSchema>;
 

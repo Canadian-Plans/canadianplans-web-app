@@ -43,6 +43,34 @@
       "when": 1789391743046,
       "tag": "0005_reinvitation",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789500213492,
+      "tag": "0006_square_vindicator",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1789501025034,
+      "tag": "0007_stormy_infant_terrible",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1789502211677,
+      "tag": "0008_first_garia",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1789506245896,
+      "tag": "0009_brainy_revanche",
+      "breakpoints": true
     }
   ]
 }

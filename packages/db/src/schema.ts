@@ -1,6 +1,8 @@
 import { sql } from 'drizzle-orm';
 import {
+  leadStatuses,
   membershipStatuses,
+  partnerStatuses,
   permissionEffects,
   staffPermissionNames,
   staffRoleNames,
@@ -53,6 +55,8 @@ const createdAt = () =>
   timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull();
 
 const membershipStatusList = sql.raw(membershipStatuses.map((status) => `'${status}'`).join(', '));
+const partnerStatusList = sql.raw(partnerStatuses.map((status) => `'${status}'`).join(', '));
+const leadStatusList = sql.raw(leadStatuses.map((status) => `'${status}'`).join(', '));
 
 /** Global workspace registry: the sole non-tenant table in this migration. */
 export const workspaces = appSchema.table('workspaces', {
@@ -224,6 +228,227 @@ export const membershipPermissions = appSchema
   )
   .enableRLS();
 
+/**
+ * Referral agencies. T4P provides only identity, lifecycle state and the
+ * referral code; T19 extends this same table with commission rules/lines and
+ * invoices, so nothing here anticipates that shape.
+ */
+export const partners = appSchema
+  .table(
+    'partners',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      name: text('name').notNull(),
+      referralCode: text('referral_code').notNull(),
+      status: text('status').notNull(),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('partners_workspace_id_id_unique').on(table.workspaceId, table.id),
+      uniqueIndex('partners_workspace_id_referral_code_unique').on(
+        table.workspaceId,
+        sql`lower(${table.referralCode})`,
+      ),
+      index('partners_workspace_id_status_idx').on(table.workspaceId, table.status),
+      check('partners_status_check', sql`${table.status} in (${partnerStatusList})`),
+      tenantPolicy('partners_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Product identity (T10A). Keyed by the CMS's stable `productKey` (never the
+ * Sanity `_id`, `title` or `slug` — see `product` in
+ * packages/contracts/src/cms/schema-types.ts). T10 owns creating these rows
+ * during catalogue sync; this table only anchors workspace ownership.
+ */
+export const products = appSchema
+  .table(
+    'products',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      productKey: text('product_key').notNull(),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('products_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('products_workspace_id_product_key_unique').on(table.workspaceId, table.productKey),
+      tenantPolicy('products_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Immutable commercial-content snapshots for a product (T10A;
+ * IMPLEMENTATION_PLAN.md §6 "Offer synchronisation"). `content` is the exact
+ * validated commercial payload T10's sync copies from the published CMS
+ * offer document; `contentHash` is T10's canonical hash of that same payload,
+ * unique per product so re-syncing unchanged content never creates a
+ * duplicate version. `cmsDocumentId`/`cmsRevisionId` are provenance only —
+ * nullable (synthetic/test fixtures have none) and excluded from the
+ * uniqueness key, so reconfirming a version from a later CMS revision never
+ * forces a new row. Rows are never updated or deleted: `app_runtime` is
+ * granted only SELECT/INSERT, the same immutability enforcement already used
+ * for `audit_events`.
+ */
+export const offerVersions = appSchema
+  .table(
+    'offer_versions',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      productId: uuid('product_id').notNull(),
+      content: jsonb('content').notNull(),
+      contentHash: text('content_hash').notNull(),
+      cmsDocumentId: text('cms_document_id'),
+      cmsRevisionId: text('cms_revision_id'),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('offer_versions_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('offer_versions_workspace_product_content_hash_unique').on(
+        table.workspaceId,
+        table.productId,
+        table.contentHash,
+      ),
+      foreignKey({
+        name: 'offer_versions_workspace_product_fk',
+        columns: [table.workspaceId, table.productId],
+        foreignColumns: [products.workspaceId, products.id],
+      }),
+      index('offer_versions_workspace_id_product_id_created_at_idx').on(
+        table.workspaceId,
+        table.productId,
+        table.createdAt,
+      ),
+      tenantPolicy('offer_versions_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Mutable availability/revocation state, kept separate from immutable
+ * `offer_versions` so unpublishing a product never edits offer history
+ * (IMPLEMENTATION_PLAN.md §6). One row per product; `revokedAt` null means
+ * available for new quotes, matching the `revokedAt` convention already used
+ * by `memberships` and `service_credentials`.
+ */
+export const productAvailability = appSchema
+  .table(
+    'product_availability',
+    {
+      productId: uuid('product_id').primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'date' }),
+    },
+    (table) => [
+      foreignKey({
+        name: 'product_availability_workspace_product_fk',
+        columns: [table.workspaceId, table.productId],
+        foreignColumns: [products.workspaceId, products.id],
+      }).onDelete('cascade'),
+      tenantPolicy('product_availability_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * A prospective customer's in-progress plan application (T11; REQ 16/17).
+ * `incomplete` while the customer is still filling in the form — repeated
+ * saves update this same row via its draft grant; `submitted` once it
+ * converts to an order (T12). Contact fields are individually nullable since
+ * they are captured progressively. `payload` is the versioned form
+ * (`{schemaVersion, payload}`); `attribution` is the bounded, allowlisted
+ * UTM/referrer/landing-page/partner-code snapshot the backend sanitizes
+ * before it is ever written (REQ 35) — never raw request data.
+ */
+export const leads = appSchema
+  .table(
+    'leads',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      status: text('status').notNull(),
+      fullName: text('full_name'),
+      email: text('email'),
+      phone: text('phone'),
+      countryCode: text('country_code'),
+      partnerId: uuid('partner_id'),
+      selectedOfferVersionId: uuid('selected_offer_version_id'),
+      payload: jsonb('payload'),
+      attribution: jsonb('attribution').notNull().default({}),
+      consentVersion: text('consent_version').notNull(),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+        .defaultNow()
+        .notNull(),
+    },
+    (table) => [
+      unique('leads_workspace_id_id_unique').on(table.workspaceId, table.id),
+      check('leads_status_check', sql`${table.status} in (${leadStatusList})`),
+      foreignKey({
+        name: 'leads_workspace_partner_fk',
+        columns: [table.workspaceId, table.partnerId],
+        foreignColumns: [partners.workspaceId, partners.id],
+      }),
+      foreignKey({
+        name: 'leads_workspace_offer_version_fk',
+        columns: [table.workspaceId, table.selectedOfferVersionId],
+        foreignColumns: [offerVersions.workspaceId, offerVersions.id],
+      }),
+      index('leads_workspace_id_status_idx').on(table.workspaceId, table.status),
+      index('leads_workspace_id_updated_at_idx').on(table.workspaceId, table.updatedAt),
+      tenantPolicy('leads_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * A scoped bearer token letting an anonymous visitor resume their own draft
+ * lead (glossary; T11). Verified within the already-established website
+ * tenant context — unlike the service credential itself, this never needs a
+ * pre-tenant lookup. `revokedAt` is unused by this task (no revoke endpoint
+ * yet) but reserved for the future deletion/withdrawal path.
+ */
+export const draftGrants = appSchema
+  .table(
+    'draft_grants',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      leadId: uuid('lead_id').notNull(),
+      tokenHash: text('token_hash').notNull(),
+      expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
+      revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'date' }),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('draft_grants_token_hash_unique').on(table.tokenHash),
+      foreignKey({
+        name: 'draft_grants_workspace_lead_fk',
+        columns: [table.workspaceId, table.leadId],
+        foreignColumns: [leads.workspaceId, leads.id],
+      }).onDelete('cascade'),
+      index('draft_grants_workspace_id_lead_id_idx').on(table.workspaceId, table.leadId),
+      tenantPolicy('draft_grants_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
 export const serviceCredentials = appSchema
   .table(
     'service_credentials',
@@ -317,6 +542,12 @@ export const schema = {
   membershipRoles,
   permissions,
   membershipPermissions,
+  partners,
+  products,
+  offerVersions,
+  productAvailability,
+  leads,
+  draftGrants,
   serviceCredentials,
   rateLimitBuckets,
   auditEvents,
@@ -328,6 +559,12 @@ export type Role = typeof roles.$inferSelect;
 export type MembershipRole = typeof membershipRoles.$inferSelect;
 export type Permission = typeof permissions.$inferSelect;
 export type MembershipPermission = typeof membershipPermissions.$inferSelect;
+export type Partner = typeof partners.$inferSelect;
+export type Product = typeof products.$inferSelect;
+export type OfferVersion = typeof offerVersions.$inferSelect;
+export type ProductAvailability = typeof productAvailability.$inferSelect;
+export type Lead = typeof leads.$inferSelect;
+export type DraftGrant = typeof draftGrants.$inferSelect;
 export type ServiceCredential = typeof serviceCredentials.$inferSelect;
 export type RateLimitBucket = typeof rateLimitBuckets.$inferSelect;
 export type AuditEvent = typeof auditEvents.$inferSelect;

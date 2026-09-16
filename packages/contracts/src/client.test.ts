@@ -49,15 +49,23 @@ describe('createBackendClient transport', () => {
 
   it('serialises a JSON body with content-type on writes', async () => {
     const { client, calls } = harness(201, {
-      lead: { id: UUID, workspaceId: UUID, status: 'draft', updatedAt: '2026-09-14T00:00:00.000Z' },
+      lead: {
+        id: UUID,
+        workspaceId: UUID,
+        status: 'incomplete',
+        updatedAt: '2026-09-14T00:00:00.000Z',
+      },
       draftGrant: { token: 't', expiresAt: '2026-09-14T00:00:00.000Z' },
       requestId: UUID,
     });
-    await client.leads.create({ contact: { email: 'a@b.co' } });
+    await client.leads.create({ contact: { email: 'a@b.co' }, consentVersion: 'terms-2026-09' });
     const call = calls[0];
     expect(call?.method).toBe('POST');
     expect(call?.headers.get('content-type')).toBe('application/json');
-    expect(JSON.parse(call?.body ?? '{}')).toEqual({ contact: { email: 'a@b.co' } });
+    expect(JSON.parse(call?.body ?? '{}')).toEqual({
+      contact: { email: 'a@b.co' },
+      consentVersion: 'terms-2026-09',
+    });
   });
 
   it('attaches the draft grant and idempotency key as headers on order submission', async () => {

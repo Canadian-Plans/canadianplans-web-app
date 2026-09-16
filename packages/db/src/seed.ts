@@ -14,6 +14,19 @@ export const STAFF_SEED_IDS = {
   demoStaffMembership: '30000000-0000-4000-8000-000000000104',
 };
 
+export const PARTNER_SEED_IDS = {
+  siteApprovedPartner: '80000000-0000-4000-8000-000000000101',
+  siteSuspendedPartner: '80000000-0000-4000-8000-000000000102',
+  sitePendingPartner: '80000000-0000-4000-8000-000000000103',
+};
+
+export const CATALOGUE_SEED_IDS = {
+  siteStarterProduct: '90000000-0000-4000-8000-000000000101',
+  siteStarterOfferVersion: '91000000-0000-4000-8000-000000000101',
+  siteUnlimitedProduct: '90000000-0000-4000-8000-000000000102',
+  siteUnlimitedOfferVersion: '91000000-0000-4000-8000-000000000102',
+};
+
 export interface SeedDatabaseOptions {
   connectionString: string;
   ssl?: 'require' | false;
@@ -99,6 +112,86 @@ export async function seedDatabase(options: SeedDatabaseOptions): Promise<void> 
           on conflict (workspace_id, membership_id, role_id) do nothing
         `;
       }
+
+      // Synthetic referral agencies for site-1 only, one per T4P lifecycle state.
+      await tx`
+        insert into app.partners (id, workspace_id, name, referral_code, status)
+        values
+          (${PARTNER_SEED_IDS.siteApprovedPartner}, ${STAFF_SEED_IDS.siteWorkspace}, 'Maple Leaf Referrals', 'MAPLE10', 'approved'),
+          (${PARTNER_SEED_IDS.siteSuspendedPartner}, ${STAFF_SEED_IDS.siteWorkspace}, 'Northline Agents', 'NORTHLINE', 'suspended'),
+          (${PARTNER_SEED_IDS.sitePendingPartner}, ${STAFF_SEED_IDS.siteWorkspace}, 'Harbourfront Mobility', 'HARBOUR5', 'pending')
+        on conflict (id) do update
+        set name = excluded.name, referral_code = excluded.referral_code, status = excluded.status
+      `;
+
+      // Synthetic site-1 catalogue (T10A): two products, one current offer
+      // version each, one available and one withdrawn. Never updated once
+      // inserted — offer_versions is immutable — so this is `do nothing`.
+      await tx`
+        insert into app.products (id, workspace_id, product_key)
+        values
+          (${CATALOGUE_SEED_IDS.siteStarterProduct}, ${STAFF_SEED_IDS.siteWorkspace}, 'starter-5gb'),
+          (${CATALOGUE_SEED_IDS.siteUnlimitedProduct}, ${STAFF_SEED_IDS.siteWorkspace}, 'unlimited-plus')
+        on conflict (id) do nothing
+      `;
+
+      const starterContent = JSON.stringify({
+        name: 'Starter 5GB (TEST)',
+        currency: 'CAD',
+        recurringChargeAmountMinor: 2999,
+        oneTimeFees: [],
+        amountPayableTodayMinor: 2999,
+        paymentRequired: true,
+        documentChecklist: ['passport'],
+        eligibility: 'TEST fixture — synthetic data only.',
+        availability: 'TEST fixture — available across Canada.',
+        billingParty: 'Canadian Plans',
+        specs: { carrier: 'TEST Carrier', dataAllowance: '5GB' },
+      });
+      const unlimitedContent = JSON.stringify({
+        name: 'Unlimited Plus (TEST)',
+        currency: 'CAD',
+        recurringChargeAmountMinor: 5999,
+        oneTimeFees: [{ label: 'SIM kit', amountMinor: 500 }],
+        amountPayableTodayMinor: 6499,
+        paymentRequired: true,
+        documentChecklist: ['passport', 'visa'],
+        eligibility: 'TEST fixture — synthetic data only.',
+        availability: 'TEST fixture — withdrawn from sale.',
+        billingParty: 'Canadian Plans',
+        specs: { carrier: 'TEST Carrier', dataAllowance: 'Unlimited' },
+      });
+      await tx`
+        insert into app.offer_versions (
+          id, workspace_id, product_id, content, content_hash
+        )
+        values
+          (
+            ${CATALOGUE_SEED_IDS.siteStarterOfferVersion},
+            ${STAFF_SEED_IDS.siteWorkspace},
+            ${CATALOGUE_SEED_IDS.siteStarterProduct},
+            ${starterContent}::jsonb,
+            'sha256:test-starter-5gb-v1'
+          ),
+          (
+            ${CATALOGUE_SEED_IDS.siteUnlimitedOfferVersion},
+            ${STAFF_SEED_IDS.siteWorkspace},
+            ${CATALOGUE_SEED_IDS.siteUnlimitedProduct},
+            ${unlimitedContent}::jsonb,
+            'sha256:test-unlimited-plus-v1'
+          )
+        on conflict (id) do nothing
+      `;
+
+      // Starter stays available; Unlimited Plus is a synthetic withdrawn fixture.
+      await tx`
+        insert into app.product_availability (product_id, workspace_id, revoked_at)
+        values
+          (${CATALOGUE_SEED_IDS.siteStarterProduct}, ${STAFF_SEED_IDS.siteWorkspace}, null),
+          (${CATALOGUE_SEED_IDS.siteUnlimitedProduct}, ${STAFF_SEED_IDS.siteWorkspace}, now())
+        on conflict (product_id) do update
+        set revoked_at = excluded.revoked_at
+      `;
     });
   } finally {
     await client.end();

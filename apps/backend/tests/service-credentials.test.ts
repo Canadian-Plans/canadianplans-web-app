@@ -11,6 +11,7 @@ import { createApp } from '../src/app.js';
 import type { StaffSessionVerifier, VerifiedStaffSession } from '../src/auth/session.js';
 import type { StaffAccessSnapshot } from '../src/staff/authorization.js';
 import type { StaffStore } from '../src/staff/store.js';
+import type { LeadStore } from '../src/leads/store.js';
 import type {
   CreateCredentialInput,
   ServiceCredentialRecord,
@@ -74,6 +75,16 @@ class MemoryCredentialStore implements WebsiteCredentialStore {
   }
 }
 
+const noopLeadStore: LeadStore = {
+  createLead: async () => {
+    throw new Error('not used in these service-credential tests');
+  },
+  updateLead: async () => {
+    throw new Error('not used in these service-credential tests');
+  },
+  listLeads: async () => ({ leads: [], page: { page: 1, pageSize: 25, total: 0 } }),
+};
+
 let server: Server;
 let baseUrl: string;
 let verifier: TokenVerifier;
@@ -96,7 +107,9 @@ beforeEach(async () => {
   });
   store = new MemoryStaffStore();
   credentialStore = new MemoryCredentialStore();
-  server = createApp({ staff: { sessionVerifier: verifier, store, credentialStore } }).listen(0);
+  server = createApp({
+    staff: { sessionVerifier: verifier, store, credentialStore, leadStore: noopLeadStore },
+  }).listen(0);
   await new Promise<void>((resolve) => server.once('listening', resolve));
   const address = server.address();
   if (address === null || typeof address === 'string') throw new Error('expected TCP server');

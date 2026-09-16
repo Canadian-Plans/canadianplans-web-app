@@ -21,6 +21,8 @@ export type Database = PostgresJsDatabase<typeof schema>;
 export type TenantTransaction = Parameters<Parameters<Database['transaction']>[0]>[0];
 
 export interface WebsiteCredentialResolution {
+  /** The credential's own row id — used as `actorId` for its tenant writes (no human actor exists). */
+  credentialId: string;
   workspaceId: string;
   scopes: string[];
   revoked: boolean;
@@ -48,6 +50,7 @@ export interface DatabaseClient {
 
 interface CredentialRow {
   [key: string]: unknown;
+  id: string;
   workspaceId: string;
   scopes: string[];
   revoked: boolean;
@@ -102,6 +105,7 @@ export function createDatabaseClient(options: DatabaseClientOptions): DatabaseCl
     resolveWebsiteCredential: async (secretHash) => {
       const rows = await db.execute<CredentialRow>(sql`
         select
+          id,
           workspace_id as "workspaceId",
           scopes,
           revoked
@@ -109,7 +113,12 @@ export function createDatabaseClient(options: DatabaseClientOptions): DatabaseCl
       `);
       const row = rows[0];
       return row
-        ? { workspaceId: row.workspaceId, scopes: row.scopes, revoked: row.revoked }
+        ? {
+            credentialId: row.id,
+            workspaceId: row.workspaceId,
+            scopes: row.scopes,
+            revoked: row.revoked,
+          }
         : undefined;
     },
     rateLimitHit: async ({ bucketKey, windowSeconds, maxCount }) => {

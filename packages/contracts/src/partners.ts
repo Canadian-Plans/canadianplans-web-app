@@ -1,7 +1,22 @@
 import { z } from 'zod';
 
 import { isoDateTimeSchema, moneySchema, requestIdSchema } from './common';
-import { commissionStateSchema, invoiceStatusSchema } from './domain';
+import { commissionStateSchema, invoiceStatusSchema, partnerStatusSchema } from './domain';
+
+/**
+ * Partner identity (T4P). `referralCode` is unique per workspace and is what
+ * T11 matches against a lead's `partner_code`. Commission rules/lines and
+ * invoices land with T19 — this shape stays minimal until then.
+ */
+export const partnerSchema = z.object({
+  id: z.uuid(),
+  workspaceId: z.uuid(),
+  name: z.string().min(1),
+  referralCode: z.string().min(1),
+  status: partnerStatusSchema,
+  createdAt: isoDateTimeSchema,
+});
+export type Partner = z.infer<typeof partnerSchema>;
 
 /**
  * Partner commissions and invoices —

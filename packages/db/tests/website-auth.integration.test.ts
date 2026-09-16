@@ -47,7 +47,10 @@ databaseTest('website credential and rate-limit bootstrap', () => {
     await applyMigrations({ connectionString: migrationUrl, ssl: false });
     await seedDatabase({ connectionString: migrationUrl, ssl: false });
     admin = postgres(migrationUrl, { max: 1, prepare: false, ssl: false });
-    await admin.unsafe(`ALTER ROLE app_runtime PASSWORD '${TEST_RUNTIME_PASSWORD}'`);
+    await admin.begin(async (tx) => {
+      await tx`select pg_advisory_xact_lock(745284914)`;
+      await tx.unsafe(`ALTER ROLE app_runtime PASSWORD '${TEST_RUNTIME_PASSWORD}'`);
+    });
 
     await admin`
       insert into app.workspaces (id, slug, name)
@@ -87,10 +90,20 @@ databaseTest('website credential and rate-limit bootstrap', () => {
   test('resolves an active credential to its own workspace and scopes without tenant context', async () => {
     const resolution = await tenantDatabase.resolveWebsiteCredential(sha256(ACTIVE_SECRET));
     expect(resolution).toEqual({
+      credentialId: expect.any(String),
       workspaceId: WORKSPACE,
       scopes: ['leads:write', 'quotes:create'],
       revoked: false,
     });
+  });
+
+  test('credential resolution remains executable only by the runtime role', async () => {
+    const [privileges] = await admin<{ public_execute: boolean; runtime_execute: boolean }[]>`
+      select
+        has_function_privilege('public', 'app.resolve_website_credential(text)', 'execute') as public_execute,
+        has_function_privilege('app_runtime', 'app.resolve_website_credential(text)', 'execute') as runtime_execute
+    `;
+    expect(privileges).toEqual({ public_execute: false, runtime_execute: true });
   });
 
   test('reports a revoked credential as revoked', async () => {

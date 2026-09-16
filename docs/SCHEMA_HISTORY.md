@@ -138,6 +138,155 @@ and row locking serialize concurrent acceptance. Existing SECURITY DEFINER,
 empty search path and restricted EXECUTE grants are retained; no broader RLS
 policy or application grant is added.
 
+## 0006_square_vindicator.sql
+
+Task: T4P
+
+Date: 2026-09-16
+
+### Change
+
+- New tenant table `app.partners` (referral agencies): `name`, `referral_code`,
+  `status` constrained to `pending`/`approved`/`suspended`, `created_at`.
+- `(workspace_id, id)` unique constraint (so T19's commission/invoice tables can
+  compose-FK to a partner without recreating this table) and a case-insensitive
+  `(workspace_id, lower(referral_code))` unique index so a referral code is
+  unique per workspace but reusable across workspaces. Workspace-leading index
+  on `status` for admin listing/lookup.
+- Extended the non-production synthetic seed with one `approved`, one
+  `suspended` and one `pending` partner for `site-1`.
+
+### Why
+
+T4P is the partner schema prerequisite for T11 (lead referral-code attribution)
+and T19 (commissions/invoices). Keeping this table minimal and stable lets T19
+extend it with composite foreign keys instead of recreating it.
+
+### RLS
+
+Added the standard `partners_tenant_policy` (`FOR ALL`, scoped to
+`app.workspace_id`/`app.actor_id`, fail-closed) and forced RLS, following the
+same shape as every other tenant table. `app_runtime` is granted
+`SELECT, INSERT, UPDATE, DELETE` on `app.partners`, matching the original
+tenant-table grant in `0000_cheerful_vermin.sql`.
+
+## 0007_stormy_infant_terrible.sql
+
+Task: T10A
+
+Date: 2026-09-16
+
+### Change
+
+- New tenant table `app.products`: workspace ownership plus `product_key`,
+  the stable CMS identifier from the `product` document
+  (`packages/contracts/src/cms/schema-types.ts`); unique per workspace.
+- New tenant table `app.offer_versions`: immutable commercial-content
+  snapshots. `content` (jsonb) plus `content_hash`, unique on
+  `(workspace_id, product_id, content_hash)` so re-syncing unchanged content
+  never creates a duplicate version. `cms_document_id`/`cms_revision_id` are
+  nullable CMS revision provenance, kept out of the uniqueness key so
+  reconfirming a version from a later revision is not a new row.
+- New tenant table `app.product_availability`: one mutable row per product
+  (`product_id` primary key) with a nullable `revoked_at`, kept separate from
+  the immutable version history so unpublishing never edits it.
+- `(workspace_id, id)` unique constraints on `products`/`offer_versions` so
+  T11 can add a composite `(workspace_id, offer_version_id)` foreign key
+  without recreating either table.
+
+### Why
+
+T10A is the catalogue schema prerequisite for T11 (leads/quotes reference an
+offer version) and T10 (catalogue sync, which owns computing the content hash
+and writing these rows). IMPLEMENTATION_PLAN.md §6 "Offer synchronisation"
+requires uniqueness on workspace + product + content hash and separate
+mutable availability/revocation records so an unpublish never rewrites
+immutable history.
+
+### RLS
+
+Added the standard `products_tenant_policy`, `offer_versions_tenant_policy`
+and `product_availability_tenant_policy` (`FOR ALL`, scoped to
+`app.workspace_id`/`app.actor_id`, fail-closed) and forced RLS on all three.
+`app_runtime` is granted `SELECT, INSERT, UPDATE, DELETE` on `products` and
+`product_availability`, but only `SELECT, INSERT` on `offer_versions` — the
+same immutability enforcement already used for `audit_events` — so no
+application code path can update or delete a published version.
+
+## 0008_first_garia.sql
+
+Task: T11
+
+Date: 2026-09-16
+
+### Change
+
+- New tenant table `app.leads`: `status` constrained to `incomplete`/`submitted`,
+  individually nullable contact fields, `selected_offer_version_id` (composite
+  FK to `offer_versions`), `payload` jsonb (the versioned form), `attribution`
+  jsonb (defaults to `{}`, always the backend's sanitized snapshot — never raw
+  request data), `consent_version`, and a mutable `updated_at` (repeated saves
+  update the same row). `(workspace_id, id)` unique so `draft_grants` — and any
+  future table — can compose-FK to a lead.
+- New tenant table `app.draft_grants`: `lead_id` (composite FK to `leads`,
+  cascade), a globally unique `token_hash`, `expires_at`, and a reserved
+  `revoked_at` (no revoke endpoint yet).
+- `app.resolve_website_credential` now also returns the credential's own `id`.
+  The website flow has no human Supabase actor, so every tenant policy's
+  `app.actor_id IS NOT NULL` predicate needs something else non-null; the
+  service credential's own id — the one verified identity that exists at that
+  point — is now used as `actorId` for its tenant writes. The migration drops
+  the previous function signature before recreating it because PostgreSQL does
+  not allow `CREATE OR REPLACE FUNCTION` to change OUT parameters.
+
+### Why
+
+T11 (leads and draft grants; REQ 16/17/34/35). A prospective customer's draft
+must survive across requests without any account, be resumable only by its own
+grant, and never leak cross-workspace even though multiple workspaces can
+share the same attribution values. The `resolve_website_credential` change is
+the minimal fix needed to give the leads module _any_ non-null actor id to run
+`withTenantTx` with — without it, no website-originated tenant write could
+ever satisfy the existing RLS predicate.
+
+### RLS
+
+Added the standard `leads_tenant_policy` and `draft_grants_tenant_policy`
+(`FOR ALL`, scoped to `app.workspace_id`/`app.actor_id`, fail-closed) and
+forced RLS on both, with the usual `SELECT, INSERT, UPDATE, DELETE` grant to
+`app_runtime`. `resolve_website_credential` remains the sole pre-tenant read
+path and is otherwise unchanged (still one secret-hash lookup, still
+`SECURITY DEFINER` with an empty search path); a draft grant itself is always
+resolved _inside_ an already-established tenant context, so it needed no
+SECURITY DEFINER function of its own.
+
+## 0009_brainy_revanche.sql
+
+Task: T10A/T11 review repair
+
+Date: 2026-09-16
+
+### Change
+
+- Added nullable `leads.partner_id` with a composite
+  `(workspace_id, partner_id)` foreign key to `partners`. Approved codes now
+  persist the partner identity; unknown, suspended and foreign-workspace codes
+  remain recorded in bounded attribution but leave `partner_id` null.
+- Changed the `offer_versions` product foreign key from cascading delete to
+  `NO ACTION`, preventing runtime product deletion from removing immutable
+  commercial history.
+
+### Why
+
+REQ 31 requires referred leads to carry the partner ID so T12 can copy it to
+the order without resolving a mutable referral code again. Immutable offer
+history must survive product withdrawal and attempted deletion.
+
+### RLS
+
+No policy change. Both relationships retain the existing workspace-scoped RLS
+and composite foreign-key enforcement.
+
 Each future entry follows this shape:
 
 ```

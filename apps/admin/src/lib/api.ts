@@ -7,6 +7,8 @@ import {
   type InviteStaffRequest,
   type InviteStaffResponse,
   type ListServiceCredentialsResponse,
+  type ListWorkspaceLeadsQuery,
+  type ListWorkspaceLeadsResponse,
   type RevokeServiceCredentialResponse,
   type RevokeStaffResponse,
   type StaffWorkspaceAccessResponse,
@@ -81,4 +83,12 @@ export async function revokeServiceCredential(
   credentialId: string,
 ): Promise<RevokeServiceCredentialResponse> {
   return client(accessToken).staff.revokeServiceCredential(workspaceId, credentialId);
+}
+
+export async function getStaffLeads(
+  accessToken: string,
+  workspaceId: string,
+  query?: ListWorkspaceLeadsQuery,
+): Promise<ListWorkspaceLeadsResponse> {
+  return client(accessToken).staff.listLeads(workspaceId, query);
 }

@@ -54,7 +54,10 @@ databaseTest('tenant RLS and transaction-pool context', () => {
 
     // Synthetic CI-only password. Production role passwords are provisioned
     // outside migrations and are never committed.
-    await admin.unsafe(`ALTER ROLE app_runtime PASSWORD '${TEST_RUNTIME_PASSWORD}'`);
+    await admin.begin(async (tx) => {
+      await tx`select pg_advisory_xact_lock(745284914)`;
+      await tx.unsafe(`ALTER ROLE app_runtime PASSWORD '${TEST_RUNTIME_PASSWORD}'`);
+    });
 
     await admin`
       insert into app.workspaces (id, slug, name)
