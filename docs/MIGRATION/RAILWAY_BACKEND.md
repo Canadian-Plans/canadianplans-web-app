@@ -341,28 +341,22 @@ egress IPs on Hobby.
 
 ---
 
-## 11. Residency — **[OWNER] decision required**
+## 11. Residency — DECIDED (option a), 18 September 2026
 
-`PLATFORM_CONTEXT.md:113` records: _"region = Canada for the **database and
-functions**"_. Railway cannot satisfy that for compute.
+**The owner has accepted non-Canadian backend compute.** `PLATFORM_CONTEXT.md`
+and ADR 0004 are updated accordingly; this is no longer a blocker on any phase.
 
-Note this invariant is **already violated today**:
+Context recorded for anyone revisiting this: `PLATFORM_CONTEXT.md` previously
+read _"region = Canada for the **database and functions**"_, which Railway
+cannot satisfy for compute (US West, US East, EU West, Southeast Asia only).
+That invariant was **already violated before this migration** —
+`apps/backend/vercel.json` pinned `"regions": ["sfo1"]` (San Francisco), and the
+Supabase project is in `us-west-2` with `ca-central-1` recorded as required — so
+Railway did not break a guarantee that was actually being held.
 
-- `apps/backend/vercel.json` pins `"regions": ["sfo1"]` — San Francisco.
-- `docs/ENV.md:17` records that the one Supabase project is in `us-west-2`, with
-  `ca-central-1` noted as required.
-
-So Railway does not break a guarantee currently held. The owner must record one
-of:
-
-- **(a)** Accept non-Canadian compute. Then amend `PLATFORM_CONTEXT.md:113`, and
-  T21's privacy policy must state the actual region. Also fix or remove the
-  now-misleading `sfo1` pin.
-- **(b)** Canada is a hard requirement. Then **stop this migration** — the answer
-  is Vercel Pro with a Canadian region, and the Supabase project must move to
-  `ca-central-1`.
-
-Do not proceed past Phase 6 without this recorded.
+T21's privacy policy must state the real regions (Railway US West compute,
+Supabase `us-west-2` database), not an aspirational Canadian one. Moving the
+Supabase project to `ca-central-1` remains open and separate from this decision.
 
 ---
 

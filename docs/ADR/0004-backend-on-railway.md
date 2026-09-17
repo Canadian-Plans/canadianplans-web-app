@@ -68,26 +68,39 @@ then a URL change, not a redeploy, and no data migration is involved. The Vercel
 files (`vercel.json`, `src/vercelHandler.ts`, `api/index.ts`) are deliberately
 retained until a separate post-cutover change removes them.
 
-## Residency — PENDING OWNER DECISION
+## Residency — DECIDED (option a), 18 September 2026
 
-`PLATFORM_CONTEXT.md` records "region = Canada for the **database and
-functions**". Railway cannot satisfy the compute half of that: it has no Canadian
-region (US West, US East, EU West, Southeast Asia only).
+**The owner accepts non-Canadian backend compute.** Recorded in this session;
+supersedes the pending state this ADR shipped with.
 
-This is **already violated today**: `apps/backend/vercel.json` pins
+`PLATFORM_CONTEXT.md` previously recorded "region = Canada for the **database
+and functions**". Railway cannot satisfy the compute half — it has no Canadian
+region (US West, US East, EU West, Southeast Asia only). The backend service runs
+in **US West**, chosen to sit beside the Supabase project rather than across the
+continent from it.
+
+Context that made this a small change rather than a large one: the invariant was
+**already violated before this migration**. `apps/backend/vercel.json` pinned
 `"regions": ["sfo1"]` (San Francisco), and the single Supabase project is in
-`us-west-2` with `ca-central-1` noted as required. Railway therefore does not
-break a guarantee currently held — but the owner must record one of:
+`us-west-2`, with `ca-central-1` recorded as required. No Canadian-region
+infrastructure has ever existed for this project, so Railway breaks no guarantee
+that was actually being held.
 
-- **(a)** Accept non-Canadian compute. Then amend the `PLATFORM_CONTEXT.md`
-  region decision, and T21's privacy policy must state the actual region. The
-  now-misleading `sfo1` pin must be fixed or removed.
-- **(b)** Canada is a hard requirement. Then **stop this migration** — the answer
-  is Vercel Pro with a Canadian region, and the Supabase project must move to
-  `ca-central-1`.
+### What this decision commits to
 
-**No provisioning or cutover may proceed past this point until the owner records
-the decision.** The executor implemented Phases 0–6 with this section pending.
+- **Data at rest** (Supabase Postgres, customer records, identity documents)
+  currently sits in `us-west-2`. This decision covers compute; it does not, by
+  itself, approve leaving the database outside Canada permanently. Moving the
+  Supabase project to `ca-central-1` remains open and is tracked separately.
+- **T21's privacy policy must state the actual regions** — backend compute in
+  Railway US West, database in Supabase `us-west-2` — and not claim Canadian
+  residency. This is a hard prerequisite for T21, not a nice-to-have.
+- `PLATFORM_CONTEXT.md` §7 is amended to match.
+- The misleading `sfo1` pin in `apps/backend/vercel.json` is removed with the
+  rest of the Vercel backend surface in Phase 10; until then it is accurate
+  about where the Vercel backend actually runs.
+
+Provisioning and cutover may now proceed.
 
 ## Why admin and site-1 stay on Vercel
 
