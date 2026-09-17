@@ -74,7 +74,9 @@ async function alertTerminalJobs(
       and(
         eq(outboxJobs.workspaceId, workspaceId),
         sql`${outboxJobs.attempts} >= ${maxAttempts}`,
-        sql`(${outboxJobs.status} = 'pending' or (${outboxJobs.status} = 'processing' and ${outboxJobs.leaseExpiresAt} <= ${now}))`,
+        // A `Date` interpolated straight into a raw fragment reaches the driver
+        // unencoded, so timestamps are passed as ISO strings here.
+        sql`(${outboxJobs.status} = 'pending' or (${outboxJobs.status} = 'processing' and ${outboxJobs.leaseExpiresAt} <= ${now.toISOString()}))`,
       ),
     )
     .returning({ id: outboxJobs.id });
@@ -112,8 +114,8 @@ export class DatabaseOutboxStore implements OutboxStore, JobAdminStore {
             where workspace_id = ${input.workspaceId}
               and attempts < ${input.maxAttempts}
               and (
-                (status = 'pending' and available_at <= ${input.now})
-                or (status = 'processing' and lease_expires_at <= ${input.now})
+                (status = 'pending' and available_at <= ${input.now.toISOString()})
+                or (status = 'processing' and lease_expires_at <= ${input.now.toISOString()})
               )
             order by available_at asc, created_at asc
             for update skip locked
@@ -122,11 +124,11 @@ export class DatabaseOutboxStore implements OutboxStore, JobAdminStore {
           update app.outbox_jobs as jobs
           set status = 'processing',
               attempts = jobs.attempts + 1,
-              locked_at = ${input.now},
-              last_attempt_at = ${input.now},
+              locked_at = ${input.now.toISOString()},
+              last_attempt_at = ${input.now.toISOString()},
               lease_owner_id = ${input.leaseOwnerId},
-              lease_expires_at = ${input.leaseExpiresAt},
-              updated_at = ${input.now}
+              lease_expires_at = ${input.leaseExpiresAt.toISOString()},
+              updated_at = ${input.now.toISOString()}
           from claimable
           where jobs.id = claimable.id
             and jobs.workspace_id = ${input.workspaceId}

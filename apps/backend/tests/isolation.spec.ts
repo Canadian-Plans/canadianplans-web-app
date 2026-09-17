@@ -398,8 +398,16 @@ databaseTest('Phase A tenant isolation gate', () => {
       ],
       schedulers: [],
     };
-    const registry = new MachineRegistry(config);
-    const signature = createHmac('sha256', webhookSecret).update(rawBody).digest('hex');
+    // A fixed clock keeps the signed timestamp inside Sanity's freshness
+    // window; the registry verifies `t=<seconds>,v1=<base64url>` over
+    // `timestamp.rawBody`, so a plain hex HMAC is rejected as an invalid
+    // signature before the account check this test targets is reached.
+    const nowMs = Date.parse('2026-09-16T00:00:00.000Z');
+    const registry = new MachineRegistry(config, () => nowMs);
+    const timestamp = String(nowMs / 1_000);
+    const signature = `t=${timestamp},v1=${createHmac('sha256', webhookSecret)
+      .update(`${timestamp}.${rawBody}`)
+      .digest('base64url')}`;
 
     expect(
       registry.resolveWebhook({

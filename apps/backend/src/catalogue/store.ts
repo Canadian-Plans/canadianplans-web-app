@@ -430,17 +430,21 @@ export class DatabaseCatalogueStore implements CatalogueStore {
     ttlMs: number,
   ) {
     return this.database.withTenantTx({ workspaceId, actorId }, async (tx) => {
+      // A `Date` interpolated straight into a raw fragment reaches the driver
+      // unencoded and fails to bind, so timestamps are passed as ISO strings.
+      const expiresAt = new Date(now.getTime() + ttlMs).toISOString();
+      const nowIso = now.toISOString();
       const rows = await tx.execute<{ ownerId: string }>(sql`
         insert into app.catalogue_sync_leases (
           workspace_id, product_key, owner_id, expires_at, created_at, updated_at
         ) values (
-          ${workspaceId}, ${productKey}, ${ownerId}, ${new Date(now.getTime() + ttlMs)}, ${now}, ${now}
+          ${workspaceId}, ${productKey}, ${ownerId}, ${expiresAt}, ${nowIso}, ${nowIso}
         )
         on conflict (workspace_id, product_key) do update
           set owner_id = excluded.owner_id,
               expires_at = excluded.expires_at,
               updated_at = excluded.updated_at
-          where app.catalogue_sync_leases.expires_at <= ${now}
+          where app.catalogue_sync_leases.expires_at <= ${nowIso}
              or app.catalogue_sync_leases.owner_id = ${ownerId}
         returning owner_id as "ownerId"
       `);

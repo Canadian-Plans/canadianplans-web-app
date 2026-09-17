@@ -166,6 +166,21 @@ async function submitInTransaction(
     .limit(1);
   if (prior) return existingOutcome(tx, input, prior);
 
+  // Claim the quote row first, without joins. A bare `FOR UPDATE` on the
+  // joined read below would also lock `offer_versions` and `leads`, and
+  // `app_runtime` deliberately holds no UPDATE privilege on the immutable
+  // `offer_versions` snapshot (schema.ts), so that lock fails outright.
+  // Postgres also rejects a schema-qualified `FOR UPDATE OF "app"."quotes"`,
+  // so the lock is taken here on the quote alone. It is the only row this
+  // submission mutates, and holding it serializes concurrent retries.
+  const [lockedQuote] = await tx
+    .select({ id: quotes.id })
+    .from(quotes)
+    .where(and(eq(quotes.workspaceId, input.workspaceId), eq(quotes.id, input.body.quoteId)))
+    .limit(1)
+    .for('update');
+  if (!lockedQuote) return { status: 'quote_not_found' };
+
   const [quote] = await tx
     .select({
       id: quotes.id,
@@ -195,9 +210,8 @@ async function submitInTransaction(
     )
     .innerJoin(leads, and(eq(leads.workspaceId, quotes.workspaceId), eq(leads.id, quotes.draftId)))
     .where(and(eq(quotes.workspaceId, input.workspaceId), eq(quotes.id, input.body.quoteId)))
-    .limit(1)
-    .for('update');
-  if (!quote) return { status: 'quote_not_found' };
+    .limit(1);
+  if (!quote) throw new Error('quote_join_missing');
 
   // A concurrent request with this key may have committed while this request
   // waited on the quote row lock. Resolve that stored outcome before looking

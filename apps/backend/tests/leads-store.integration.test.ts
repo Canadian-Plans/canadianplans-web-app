@@ -85,12 +85,17 @@ databaseTest('DatabaseLeadStore (T11)', () => {
         (${OFFER_VERSION_WITHDRAWN}, ${WORKSPACE}, ${PRODUCT_WITHDRAWN}, '{"name": "Withdrawn"}'::jsonb, 'sha256:ci-leads-withdrawn')
       on conflict (id) do nothing
     `;
+    // `resolveOfferVersionId` reads the availability pointer, so the available
+    // product must point at its offer version; the withdrawn one resolves to
+    // null on `revoked_at` regardless.
     await admin`
-      insert into app.product_availability (product_id, workspace_id, revoked_at)
+      insert into app.product_availability (product_id, workspace_id, current_offer_version_id, revoked_at)
       values
-        (${PRODUCT_AVAILABLE}, ${WORKSPACE}, null),
-        (${PRODUCT_WITHDRAWN}, ${WORKSPACE}, now())
-      on conflict (product_id) do update set revoked_at = excluded.revoked_at
+        (${PRODUCT_AVAILABLE}, ${WORKSPACE}, ${OFFER_VERSION_AVAILABLE}, null),
+        (${PRODUCT_WITHDRAWN}, ${WORKSPACE}, null, now())
+      on conflict (product_id) do update set
+        current_offer_version_id = excluded.current_offer_version_id,
+        revoked_at = excluded.revoked_at
     `;
 
     const runtimeUrl = new URL(migrationUrl);

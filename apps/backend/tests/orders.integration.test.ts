@@ -91,11 +91,14 @@ databaseDescribe('orders database transaction', () => {
       values (${LEAD}, ${WORKSPACE}, 'incomplete', 'terms-1')
       on conflict (id) do update set status = 'incomplete'
     `;
+    // `DatabaseLeadStore` validates grant expiry against the real clock while
+    // order submission uses the injected `NOW`, so this grant must be valid
+    // relative to the wall clock or the lead-PATCH test ages out.
     await admin`
       insert into app.draft_grants (
         workspace_id, lead_id, token_hash, expires_at
       ) values (
-        ${WORKSPACE}, ${LEAD}, ${hashDraftGrantToken(GRANT)}, ${new Date(NOW.getTime() + 3_600_000)}
+        ${WORKSPACE}, ${LEAD}, ${hashDraftGrantToken(GRANT)}, ${new Date(Date.now() + 24 * 3_600_000)}
       ) on conflict (token_hash) do nothing
     `;
     await admin`
@@ -187,7 +190,8 @@ databaseDescribe('orders database transaction', () => {
     ).rejects.toMatchObject({ code: '23514' });
 
     // The runtime role holds UPDATE on orders for status transitions, but the
-    // submission-immutability trigger freezes consent for it too.
+    // submission-immutability trigger freezes consent for it too. Drizzle
+    // wraps the driver error, so the SQLSTATE is on `cause`.
     await expect(
       clientA.withTenantTx({ workspaceId: WORKSPACE, actorId: ACTOR }, (tx) =>
         tx.execute(
@@ -195,7 +199,7 @@ databaseDescribe('orders database transaction', () => {
               where workspace_id = ${WORKSPACE} and lead_id = ${LEAD}`,
         ),
       ),
-    ).rejects.toMatchObject({ code: '23514' });
+    ).rejects.toMatchObject({ cause: { code: '23514' } });
   });
 
   it('returns the stored result after quote expiry and conflicts on a changed payload', async () => {
