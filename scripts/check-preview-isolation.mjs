@@ -4,10 +4,17 @@ import { fileURLToPath } from 'node:url';
 
 const sha256Fingerprint = /^sha256:[0-9a-f]{64}$/;
 const allowedStatuses = new Set(['not_provisioned', 'provisioned']);
+const allowedPlatforms = new Set(['vercel', 'railway']);
 const forbiddenKey = /^(secret|token|password|connectionString|url|endpoint)$/i;
 
 function fail(message) {
   throw new Error(`Preview isolation inventory: ${message}`);
+}
+
+function requirePlatform(value, label) {
+  if (!allowedPlatforms.has(value)) {
+    fail(`${label} needs platform "vercel" or "railway"`);
+  }
 }
 
 export function validatePreviewIsolation(inventory, expected = {}) {
@@ -42,7 +49,7 @@ export function validatePreviewIsolation(inventory, expected = {}) {
     ? inventory.productionResourceFingerprints
     : fail('productionResourceFingerprints must be an array');
   const production = new Set();
-  const productionKinds = new Set();
+  const productionKeys = new Set();
 
   const catalogKeys = new Set();
   if (catalog.length === 0 || deployments.length === 0)
@@ -51,6 +58,7 @@ export function validatePreviewIsolation(inventory, expected = {}) {
     if (!entry?.deployment || !entry?.name || !entry?.resourceKind) {
       fail('each credential catalog entry needs deployment, name and resourceKind');
     }
+    requirePlatform(entry.platform, `credential ${entry.deployment}:${entry.name}`);
     const key = `${entry.deployment}:${entry.name}`;
     if (catalogKeys.has(key)) fail(`duplicate credential catalog entry ${key}`);
     catalogKeys.add(key);
@@ -63,8 +71,9 @@ export function validatePreviewIsolation(inventory, expected = {}) {
     if (!entry?.kind || !sha256Fingerprint.test(entry?.immutableIdFingerprint ?? '')) {
       fail('production resource fingerprints must be redacted SHA-256 values');
     }
-    production.add(entry.immutableIdFingerprint);
-    productionKinds.add(entry.kind);
+    requirePlatform(entry.platform, `production fingerprint ${entry.kind}`);
+    production.add(`${entry.platform}:${entry.immutableIdFingerprint}`);
+    productionKeys.add(`${entry.platform}:${entry.kind}`);
   }
 
   const resourceById = new Map();
@@ -72,13 +81,14 @@ export function validatePreviewIsolation(inventory, expected = {}) {
     if (!resource?.id || !resource?.provider || !resource?.kind) {
       fail('each preview resource needs id, provider and kind');
     }
+    requirePlatform(resource.platform, `resource ${resource.id}`);
     if (!sha256Fingerprint.test(resource.immutableIdFingerprint ?? '')) {
       fail(`${resource.id} needs a SHA-256 fingerprint of a provider-issued immutable ID`);
     }
     if (resource.environment !== 'preview' && resource.environment !== 'non_production') {
       fail(`${resource.id} is not marked preview/non_production`);
     }
-    if (production.has(resource.immutableIdFingerprint)) {
+    if (production.has(`${resource.platform}:${resource.immutableIdFingerprint}`)) {
       fail(`${resource.id} matches a production resource fingerprint`);
     }
     if (resourceById.has(resource.id)) fail(`duplicate resource id ${resource.id}`);
@@ -97,6 +107,11 @@ export function validatePreviewIsolation(inventory, expected = {}) {
     );
     if (catalogEntry.resourceKind !== resource.kind) {
       fail(`binding ${key} targets ${resource.kind}, expected ${catalogEntry.resourceKind}`);
+    }
+    if (catalogEntry.platform !== resource.platform) {
+      fail(
+        `binding ${key} crosses platforms (${catalogEntry.platform} credential, ${resource.platform} resource)`,
+      );
     }
     bindingKeys.add(key);
   }
@@ -153,8 +168,8 @@ export function validatePreviewIsolation(inventory, expected = {}) {
 
   if (bindings.length > 0) {
     for (const resource of resources) {
-      if (!productionKinds.has(resource.kind)) {
-        fail(`${resource.id} has no same-kind production fingerprint for comparison`);
+      if (!productionKeys.has(`${resource.platform}:${resource.kind}`)) {
+        fail(`${resource.id} has no same-platform production fingerprint for comparison`);
       }
     }
   }

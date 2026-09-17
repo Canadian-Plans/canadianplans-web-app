@@ -18,82 +18,98 @@
     {
       "deployment": "backend",
       "name": "TURNSTILE_SECRET_KEY",
-      "resourceKind": "turnstile"
+      "resourceKind": "turnstile",
+      "platform": "railway"
     },
     {
       "deployment": "backend",
       "name": "DATABASE_URL",
-      "resourceKind": "postgres"
+      "resourceKind": "postgres",
+      "platform": "railway"
     },
     {
       "deployment": "backend",
       "name": "SUPABASE_ANON_KEY",
-      "resourceKind": "supabase-auth"
+      "resourceKind": "supabase-auth",
+      "platform": "railway"
     },
     {
       "deployment": "backend",
       "name": "MACHINE_REGISTRY_JSON",
-      "resourceKind": "machine-registry"
+      "resourceKind": "machine-registry",
+      "platform": "railway"
     },
     {
       "deployment": "backend",
       "name": "CRON_SECRET",
-      "resourceKind": "machine-scheduler"
+      "resourceKind": "machine-scheduler",
+      "platform": "railway"
     },
     {
       "deployment": "backend",
       "name": "R2_ACCESS_KEY_ID",
-      "resourceKind": "r2"
+      "resourceKind": "r2",
+      "platform": "railway"
     },
     {
       "deployment": "backend",
       "name": "R2_SECRET_ACCESS_KEY",
-      "resourceKind": "r2"
+      "resourceKind": "r2",
+      "platform": "railway"
     },
     {
       "deployment": "backend",
       "name": "SANITY_API_TOKEN",
-      "resourceKind": "sanity"
+      "resourceKind": "sanity",
+      "platform": "railway"
     },
     {
       "deployment": "backend",
       "name": "AWS_ACCESS_KEY_ID",
-      "resourceKind": "email"
+      "resourceKind": "email",
+      "platform": "railway"
     },
     {
       "deployment": "backend",
       "name": "AWS_SECRET_ACCESS_KEY",
-      "resourceKind": "email"
+      "resourceKind": "email",
+      "platform": "railway"
     },
     {
       "deployment": "backend",
       "name": "SENTRY_AUTH_TOKEN",
-      "resourceKind": "error-tracking"
+      "resourceKind": "error-tracking",
+      "platform": "railway"
     },
     {
       "deployment": "admin",
       "name": "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-      "resourceKind": "supabase-auth"
+      "resourceKind": "supabase-auth",
+      "platform": "vercel"
     },
     {
       "deployment": "admin",
       "name": "SENTRY_AUTH_TOKEN",
-      "resourceKind": "error-tracking"
+      "resourceKind": "error-tracking",
+      "platform": "vercel"
     },
     {
       "deployment": "site-1",
       "name": "SITE_1_SERVICE_CREDENTIAL",
-      "resourceKind": "backend-api"
+      "resourceKind": "backend-api",
+      "platform": "vercel"
     },
     {
       "deployment": "site-1",
       "name": "SANITY_API_TOKEN",
-      "resourceKind": "sanity"
+      "resourceKind": "sanity",
+      "platform": "vercel"
     },
     {
       "deployment": "site-1",
       "name": "SENTRY_AUTH_TOKEN",
-      "resourceKind": "error-tracking"
+      "resourceKind": "error-tracking",
+      "platform": "vercel"
     }
   ],
   "previewDeployments": [
