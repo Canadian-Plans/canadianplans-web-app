@@ -2,8 +2,16 @@
 
 The backend production deployment exposes `GET /api/internal/jobs/run` for
 Vercel Cron and an equivalent authenticated `POST` for manual staging checks.
-`vercel.json` schedules the GET every minute. This cadence requires a Vercel Pro
-project.
+
+The `crons` entry that schedules the GET every minute is **deliberately absent
+from `apps/backend/vercel.json` for now**: a sub-daily cron expression fails the
+whole deployment at deploy time while the project is on the Hobby plan
+("Hobby accounts are limited to daily cron jobs" — this exact failure took the
+backend deployment down when the entry first shipped). T10B re-adds the entry
+(`{"path": "/api/internal/jobs/run", "schedule": "* * * * *"}`, plus the
+five-minute catalogue sync cron) once the dedicated staging Vercel project on
+Pro exists. Until then the authenticated `POST` below is the only invocation
+path; nothing else changes about the route.
 
 ## Configuration
 
