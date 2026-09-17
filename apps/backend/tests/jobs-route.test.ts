@@ -2,6 +2,7 @@ import type { Server } from 'node:http';
 import express from 'express';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { loadDeploymentEnvironment } from '../src/config/deployment.js';
 import { MachineRegistry } from '../src/machines/registry.js';
 import { requestId } from '../src/requestId.js';
 import { createJobsRouter } from '../src/routes/jobs.js';
@@ -92,6 +93,30 @@ describe('/api/internal/jobs/run', () => {
 
   it('refuses to schedule work on a preview deployment', async () => {
     const { run, url } = await setup({ environment: 'preview' });
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${SECRET}` },
+    });
+    expect(response.status).toBe(403);
+    expect(run).not.toHaveBeenCalled();
+  });
+
+  it('refuses a preview deployment resolved from DEPLOYMENT_ENV', async () => {
+    const { run, url } = await setup({
+      environment: loadDeploymentEnvironment({ DEPLOYMENT_ENV: 'preview' }),
+    });
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${SECRET}` },
+    });
+    expect(response.status).toBe(403);
+    expect(run).not.toHaveBeenCalled();
+  });
+
+  it('honours the VERCEL_ENV fallback when DEPLOYMENT_ENV is unset', async () => {
+    const { run, url } = await setup({
+      environment: loadDeploymentEnvironment({ VERCEL_ENV: 'preview' }),
+    });
     const response = await fetch(url, {
       method: 'POST',
       headers: { authorization: `Bearer ${SECRET}` },

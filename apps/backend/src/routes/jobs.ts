@@ -1,6 +1,7 @@
 import { OutboxRunner, type OutboxRunSummary } from '@canadian-plans/jobs';
 import { Router, type RequestHandler } from 'express';
 
+import { loadDeploymentEnvironment } from '../config/deployment.js';
 import { sendStaffAuthError } from '../http/staff-errors.js';
 import { sendWebsiteError } from '../http/website-errors.js';
 import { createOutboxJobHandlers } from '../jobs/providers.js';
@@ -27,7 +28,7 @@ export function createDefaultJobsRouteDependencies(): JobsRouteDependencies {
     registry: loadMachineRegistry(),
     run: (input) => runner.run(input),
     selector: process.env.JOB_RUNNER_SELECTOR,
-    deploymentEnvironment: process.env.VERCEL_ENV,
+    deploymentEnvironment: loadDeploymentEnvironment(),
   };
 }
 
@@ -36,12 +37,13 @@ function bearerSecret(value: string | undefined): string | undefined {
   return match?.[1];
 }
 
-/** Authenticated Vercel Cron entry point. No tenant is discovered through the database. */
+/** Authenticated scheduled entry point. No tenant is discovered through the database. */
 export function createJobsRouter(dependencies: JobsRouteDependencies): Router {
   const router = Router();
   const runJobs: RequestHandler = async (req, res) => {
-    // Vercel invokes cron only for production deployments. This additional
-    // guard prevents a copied URL/secret from making a preview a scheduler.
+    // This guard prevents a copied URL/secret from making a preview deployment
+    // act as a scheduler. It is platform-neutral: `DEPLOYMENT_ENV` on Railway,
+    // with `VERCEL_ENV` still honoured as the fallback during cutover (D6).
     if (dependencies.deploymentEnvironment === 'preview') {
       sendWebsiteError(res, req.id, 'machine_unknown', 403);
       return;
@@ -71,8 +73,8 @@ export function createJobsRouter(dependencies: JobsRouteDependencies): Router {
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   };
-  // Vercel Cron issues GET. POST remains available for an authenticated manual
-  // staging invocation of the identical path.
+  // The scheduler issues GET. POST remains available for an authenticated
+  // manual staging invocation of the identical path.
   router.get('/run', runJobs);
   router.post('/run', runJobs);
   return router;
