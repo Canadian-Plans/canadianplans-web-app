@@ -70,6 +70,32 @@ Incident review and reconciliation therefore still see what the provider
 reported, even after a retry; a later successful attempt overwrites the
 evidence with its own provider result.
 
+## Confirm the scheduler actually started (required after every deploy)
+
+**The scheduler fails open.** If `ENABLE_SCHEDULER=1` but the registry entry,
+selector or `CRON_SECRET` is wrong, the service still boots, still passes its
+health check and still serves the API — it just never runs a job. Order
+acknowledgement emails and analytics events then stop silently. This is
+deliberate: a job-configuration fault must not take order intake down with it.
+The cost is that nothing alerts on it yet, so an operator must confirm it.
+
+After every deploy that changes `ENABLE_SCHEDULER`, `CRON_SECRET`,
+either selector, or `MACHINE_REGISTRY_JSON`, check the service logs:
+
+- A start-up failure logs once with `route=scheduler` and a bounded
+  `scheduler_*` code (`scheduler_selector_missing`, `scheduler_secret_missing`,
+  `scheduler_identity_invalid`, `scheduler_scope_missing`,
+  `scheduler_preview_refused`). Any of these means **no jobs are running.**
+- A healthy deployment shows outbox activity within ~70 seconds of boot
+  (10s start-up delay + 60s interval + jitter) and catalogue sync within
+  ~5 minutes.
+
+If in doubt, drive the manual check below: a 200 proves the identity and scope
+are correct, which is the same resolution the scheduler performs.
+
+T25 (observability and alerts) must add an alert for this; until it lands, this
+manual check is the only detection.
+
 Manual staging check:
 
 ```text

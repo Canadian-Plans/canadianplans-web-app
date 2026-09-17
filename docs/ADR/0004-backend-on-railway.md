@@ -114,6 +114,25 @@ run loop and no sub-daily schedule. The migration is intentionally two-platform.
   field names used here were verified against Railway's current schema; a future
   change should migrate the file.
 
+## Known limitation — the scheduler fails open
+
+When `ENABLE_SCHEDULER=1` but the scheduler cannot resolve a valid identity, the
+process logs a bounded `scheduler_*` code and continues serving HTTP without a
+scheduler. This is deliberate: a job-scheduling misconfiguration must not take
+order intake down with it. The trade is that the service looks healthy while no
+jobs run, and nothing alerts on that today.
+
+Detection is currently a manual post-deploy log check
+(`docs/RUNBOOKS/outbox-jobs.md`). T25 must replace it with an alert. The
+alternative — surfacing scheduler state on `/api/v1/health` — was rejected for
+now because the health response is contract-bound and Railway restarts on a
+failing health check, which would turn a job-config error into a restart loop.
+
+Shutdown has a related bound: the hard timeout (25s, inside Railway's 30s drain)
+is shorter than a runner's own 120s deadline, so a long run is still cut off at
+shutdown. That is safe rather than graceful — the outbox claims work under a
+lease which simply expires and is reclaimed — but it is not a full drain.
+
 ## References
 
 [Migration plan](../MIGRATION/RAILWAY_BACKEND.md) §3, §8–§13 ·

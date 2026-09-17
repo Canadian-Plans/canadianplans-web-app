@@ -5,8 +5,11 @@
  * (the service sets `RAILWAY_DEPLOYMENT_DRAINING_SECONDS=30` so the platform
  * waits). Without this sequence an in-flight order submission, or a claimed
  * outbox job holding a live lease, would be killed mid-flight. The steps are
- * ordered: stop accepting connections, let the scheduler's in-flight run
- * finish, then close the database pool.
+ * ordered: stop accepting connections and let the scheduler's in-flight run
+ * finish (concurrently — neither waits on the other), then close the database
+ * pool. A run longer than the hard timeout is still cut off; that is safe
+ * because the outbox claims work under a lease that simply expires and is
+ * reclaimed, but it is not a full drain.
  *
  * The handler is dependency-injected so it can be tested without spawning a
  * process or registering real signals.
@@ -48,8 +51,16 @@ export function createShutdownHandler(dependencies: ShutdownDependencies): () =>
     started = true;
     const timer = setTimeout(() => finish(0), dependencies.timeoutMs ?? 25_000);
     try {
-      await new Promise<void>((resolve) => dependencies.server.close(() => resolve()));
-      if (dependencies.scheduler) await dependencies.scheduler.stop();
+      // HTTP draining and scheduler draining are independent, so they run
+      // concurrently. Node's `server.close()` resolves only once every keep-alive
+      // connection has idled out (5s by default) and that must not eat into the
+      // scheduler's share of the shutdown budget, which is already shorter than a
+      // runner's own 120s deadline. Both use the database, so the pool is closed
+      // only after both have finished.
+      await Promise.all([
+        new Promise<void>((resolve) => dependencies.server.close(() => resolve())),
+        dependencies.scheduler ? dependencies.scheduler.stop() : Promise.resolve(),
+      ]);
       await dependencies.closeDatabase();
     } finally {
       clearTimeout(timer);

@@ -2,6 +2,14 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createShutdownHandler } from '../src/shutdown.js';
 
+function createDeferred(): { promise: Promise<void>; resolve: () => void } {
+  let resolve: () => void = () => undefined;
+  const promise = new Promise<void>((settle) => {
+    resolve = settle;
+  });
+  return { promise, resolve };
+}
+
 describe('createShutdownHandler', () => {
   afterEach(() => {
     vi.useRealTimers();
@@ -43,6 +51,46 @@ describe('createShutdownHandler', () => {
     releaseScheduler();
     await running;
     expect(calls).toEqual(['close', 'stop', 'closeDatabase', 'exit:0']);
+  });
+
+  it('drains the scheduler without waiting for HTTP connections to close', async () => {
+    const calls: string[] = [];
+    let releaseServer: () => void = () => undefined;
+    const schedulerStopped = createDeferred();
+
+    const handler = createShutdownHandler({
+      // A keep-alive connection that has not idled out yet: Node holds the
+      // close callback until it does. The scheduler must not wait on this.
+      server: {
+        close: (callback) => {
+          calls.push('close:start');
+          releaseServer = () => callback();
+        },
+      },
+      scheduler: {
+        stop: async () => {
+          calls.push('stop');
+          schedulerStopped.resolve();
+        },
+      },
+      closeDatabase: async () => {
+        calls.push('closeDatabase');
+      },
+      exit: (code) => {
+        calls.push(`exit:${code}`);
+      },
+    });
+
+    const running = handler();
+    // The scheduler finishes while the server is still draining.
+    await schedulerStopped.promise;
+    expect(calls).toEqual(['close:start', 'stop']);
+    // The pool must still be open until HTTP has drained too.
+    expect(calls).not.toContain('closeDatabase');
+
+    releaseServer();
+    await running;
+    expect(calls).toEqual(['close:start', 'stop', 'closeDatabase', 'exit:0']);
   });
 
   it('runs the sequence once when signalled twice', async () => {
