@@ -56,13 +56,17 @@ export function createSanityWebhookRouter(dependencies: SanityWebhookDependencie
     try {
       payload = JSON.parse(req.body.toString('utf8'));
     } catch {
-      sendWebsiteError(res, req.id, 'machine_signature_invalid', 401);
+      // The signature already verified, so this is a malformed request body,
+      // not an authentication failure.
+      sendDomainError(res, req.id, 'invalid_request', 400);
       return;
     }
     const inboxPayload = z.record(z.string(), z.unknown()).safeParse(payload);
     const parsed = sanityDeliverySchema.safeParse(payload);
     if (!parsed.success || !inboxPayload.success) {
-      sendWebsiteError(res, req.id, 'machine_signature_invalid', 401);
+      // Signed but ungrammatical payload: reject as a bad request, not as a
+      // signature failure. Log nothing here; the payload is not trusted.
+      sendDomainError(res, req.id, 'invalid_request', 400);
       return;
     }
 
@@ -71,6 +75,9 @@ export function createSanityWebhookRouter(dependencies: SanityWebhookDependencie
     try {
       const accepted = await dependencies.store.acceptEvent({
         workspaceId: resolution.workspaceId,
+        // The verified machine identity is the durable actor for this inbox row
+        // and for every later drain write of it.
+        actorId: resolution.actorId,
         selector: resolution.selector,
         providerAccount: resolution.providerAccount,
         deliveryId,

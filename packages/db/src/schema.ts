@@ -395,6 +395,8 @@ export const catalogueSyncEvents = appSchema
       providerAccount: text('provider_account').notNull(),
       deliveryId: text('delivery_id').notNull(),
       documentId: text('document_id').notNull(),
+      /** Verified machine actor that ingested the delivery; reused for later drain writes. */
+      actorId: uuid('actor_id').notNull(),
       payload: jsonb('payload').notNull(),
       status: text('status').default('pending').notNull(),
       attempts: integer('attempts').default(0).notNull(),

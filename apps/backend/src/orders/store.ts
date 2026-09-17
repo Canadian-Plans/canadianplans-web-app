@@ -131,6 +131,21 @@ async function grantForLead(
   return row;
 }
 
+/**
+ * How long a completed idempotency key keeps serving its stored order on a
+ * retry. Inside the window invariant 6 holds — the retry returns the existing
+ * order before re-checking the now consumed/expired quote — because a client
+ * that lost the response, or the network between it and the backend, may
+ * legitimately resend the same key. Outside it the cached response is no longer
+ * honoured by the prior-key path, so a lapsed draft grant can never be replayed
+ * indefinitely. Twenty-four hours is a caching/technical bound, not a business
+ * SLA: it is far longer than any client retry (seconds to minutes) and far
+ * shorter than the order's own retention (PLATFORM_CONTEXT.md §4b retention is
+ * not defined here). A caller reusing the key after the window gets the honest
+ * `draft_expired`, never a fresh order and never a duplicate.
+ */
+export const ORDER_RETRY_WINDOW_MS = 24 * 60 * 60 * 1_000;
+
 async function existingOutcome(
   tx: TenantTransaction,
   input: SubmitOrderStoreInput,
@@ -141,8 +156,18 @@ async function existingOutcome(
   if (row.requestFingerprint !== input.requestFingerprint) {
     return { status: 'idempotency_conflict' };
   }
-  if (row.status !== 'completed' || !row.orderId || !row.responseReference) {
+  if (
+    row.status !== 'completed' ||
+    !row.orderId ||
+    !row.responseReference ||
+    row.completedAt === null
+  ) {
     throw new Error('incomplete_idempotency_claim');
+  }
+  // A completed key always has `completedAt` (schema check), so the retry
+  // window is measured from the moment the stored order was created.
+  if (input.now.getTime() - row.completedAt.getTime() > ORDER_RETRY_WINDOW_MS) {
+    return { status: 'draft_expired' };
   }
   const order = await loadOrder(tx, input.workspaceId, row.orderId);
   if (order.reference !== row.responseReference) throw new Error('idempotency_outcome_mismatch');
@@ -165,6 +190,21 @@ async function submitInTransaction(
     )
     .limit(1);
   if (prior) return existingOutcome(tx, input, prior);
+
+  // Claim the quote row first, without joins. A bare `FOR UPDATE` on the
+  // joined read below would also lock `offer_versions` and `leads`, and
+  // `app_runtime` deliberately holds no UPDATE privilege on the immutable
+  // `offer_versions` snapshot (schema.ts), so that lock fails outright.
+  // Postgres also rejects a schema-qualified `FOR UPDATE OF "app"."quotes"`,
+  // so the lock is taken here on the quote alone. It is the only row this
+  // submission mutates, and holding it serializes concurrent retries.
+  const [lockedQuote] = await tx
+    .select({ id: quotes.id })
+    .from(quotes)
+    .where(and(eq(quotes.workspaceId, input.workspaceId), eq(quotes.id, input.body.quoteId)))
+    .limit(1)
+    .for('update');
+  if (!lockedQuote) return { status: 'quote_not_found' };
 
   const [quote] = await tx
     .select({
@@ -195,9 +235,8 @@ async function submitInTransaction(
     )
     .innerJoin(leads, and(eq(leads.workspaceId, quotes.workspaceId), eq(leads.id, quotes.draftId)))
     .where(and(eq(quotes.workspaceId, input.workspaceId), eq(quotes.id, input.body.quoteId)))
-    .limit(1)
-    .for('update');
-  if (!quote) return { status: 'quote_not_found' };
+    .limit(1);
+  if (!quote) throw new Error('quote_join_missing');
 
   // A concurrent request with this key may have committed while this request
   // waited on the quote row lock. Resolve that stored outcome before looking

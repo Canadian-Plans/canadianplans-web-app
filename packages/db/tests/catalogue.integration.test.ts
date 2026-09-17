@@ -112,9 +112,9 @@ databaseTest('catalogue tables (T10A)', () => {
     `;
     await admin`
       insert into app.catalogue_sync_events (
-        id, workspace_id, selector, provider_account, delivery_id, document_id, payload
+        id, workspace_id, actor_id, selector, provider_account, delivery_id, document_id, payload
       ) values (
-        ${EVENT_A}, ${WORKSPACE_A}, 'test-selector', 'test-account',
+        ${EVENT_A}, ${WORKSPACE_A}, ${ACTOR_A}, 'test-selector', 'test-account',
         'test-delivery-21', 'sanity-offer-21', '{"documentId":"sanity-offer-21"}'::jsonb
       )
       on conflict (id) do nothing

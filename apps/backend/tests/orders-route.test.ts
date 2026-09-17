@@ -1,6 +1,6 @@
 import type { Server } from 'node:http';
 import express from 'express';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { apiErrorResponseSchema } from '@canadian-plans/contracts';
 
 import { requestId } from '../src/requestId.js';
@@ -86,8 +86,9 @@ describe('POST /api/v1/orders', () => {
   }
 
   it('returns a retryable 503 and never success when persistence is unavailable', async () => {
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
     const baseUrl = await start(async () => {
-      throw new Error('database unavailable');
+      throw Object.assign(new Error('database unavailable'), { code: 'ECONNREFUSED' });
     });
     const response = await post(baseUrl);
     expect(response.status).toBe(503);
@@ -95,6 +96,35 @@ describe('POST /api/v1/orders', () => {
     const error = apiErrorResponseSchema.parse(await response.json());
     expect(error.error.code).toBe('persistence_unavailable');
     expect(error.error.details).toEqual({ retryable: true });
+    expect(log).toHaveBeenCalled();
+  });
+
+  it('treats a drizzle-wrapped SQLSTATE 08 driver failure as retryable', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const driverError = Object.assign(new Error('driver unavailable'), { code: '08006' });
+    const baseUrl = await start(async () => {
+      throw new Error('Failed query', { cause: driverError });
+    });
+    const response = await post(baseUrl);
+    expect(response.status).toBe(503);
+    expect(response.headers.get('retry-after')).toBe('2');
+    const error = apiErrorResponseSchema.parse(await response.json());
+    expect(error.error.code).toBe('persistence_unavailable');
+    expect(error.error.details).toEqual({ retryable: true });
+  });
+
+  it('returns a non-retryable 500 for a non-connection logic error', async () => {
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const baseUrl = await start(async () => {
+      throw new Error('unexpected logic bug');
+    });
+    const response = await post(baseUrl);
+    expect(response.status).toBe(500);
+    expect(response.headers.get('retry-after')).toBeNull();
+    const error = apiErrorResponseSchema.parse(await response.json());
+    expect(error.error.code).toBe('internal_error');
+    expect(error.error.details).toBeUndefined();
+    expect(log).toHaveBeenCalled();
   });
 
   it('maps a conflicting payload under a completed key to 409', async () => {

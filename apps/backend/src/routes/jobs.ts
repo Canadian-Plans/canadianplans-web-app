@@ -1,13 +1,9 @@
-import { FakeAnalyticsAdapter, FakeEmailAdapter } from '@canadian-plans/adapters';
-import {
-  OutboxRunner,
-  createJobHandlerRegistry,
-  type OutboxRunSummary,
-} from '@canadian-plans/jobs';
+import { OutboxRunner, type OutboxRunSummary } from '@canadian-plans/jobs';
 import { Router, type RequestHandler } from 'express';
 
 import { sendStaffAuthError } from '../http/staff-errors.js';
 import { sendWebsiteError } from '../http/website-errors.js';
+import { createOutboxJobHandlers } from '../jobs/providers.js';
 import { DatabaseOutboxStore } from '../jobs/store.js';
 import { loadMachineRegistry, type MachineRegistry } from '../machines/registry.js';
 
@@ -25,10 +21,7 @@ export function createDefaultJobsRouteDependencies(): JobsRouteDependencies {
   const store = new DatabaseOutboxStore();
   const runner = new OutboxRunner({
     store,
-    handlers: createJobHandlerRegistry({
-      email: new FakeEmailAdapter(),
-      analytics: new FakeAnalyticsAdapter(),
-    }),
+    handlers: createOutboxJobHandlers(),
   });
   return {
     registry: loadMachineRegistry(),

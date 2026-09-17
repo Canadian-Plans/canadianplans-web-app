@@ -419,6 +419,35 @@ None — `orders` already has the fail-closed tenant policy with forced RLS and
 runtime grants unchanged. The added trigger clause protects consent under the
 same immutability guarantee as the rest of the submitted order.
 
+## 0014_concerned_karen_page.sql
+
+Task: T10/T12/T15 review (G22)
+
+Date: 2026-09-17
+
+### Change
+
+- Added `app.catalogue_sync_events.actor_id` (`uuid NOT NULL`), the verified
+  machine actor that ingested each webhook delivery. The migration adds the
+  column nullable, backfills every existing row with its own `id` — the actor
+  the pre-change code used — then enforces `NOT NULL`, so it is safe on a
+  populated database.
+- New ingest writes the registry entry's `actorId`, and every later drain or
+  manual sync write reuses the actor persisted on the inbox row.
+
+### Why
+
+G22 requires stable attribution for catalogue writes. Deriving the actor from
+the event id or a fresh random UUID per pass would attribute a sync to an
+identity that no longer corresponds to the verified machine credential, and
+would change on every retry.
+
+### RLS
+
+No RLS predicate change. The column is added to an existing tenant table whose
+fail-closed workspace/actor policy and forced RLS are unchanged; every write
+still runs inside `withTenantTx` with a non-null actor.
+
 Each future entry follows this shape:
 
 ```

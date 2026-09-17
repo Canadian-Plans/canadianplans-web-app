@@ -45,7 +45,12 @@ export interface OutboxStore {
 export type JobHandlerResult =
   | { status: 'completed'; providerId: string; detail?: Record<string, unknown> }
   | { status: 'uncertain'; errorCode: string };
-export type JobHandler = (job: ClaimedJob) => Promise<JobHandlerResult>;
+/**
+ * Handlers receive an abort signal for the runner's per-handler timeout. It is
+ * optional so existing handlers stay valid; providers that accept an
+ * `AbortSignal` should forward it so a timed-out call is actually cancelled.
+ */
+export type JobHandler = (job: ClaimedJob, signal?: AbortSignal) => Promise<JobHandlerResult>;
 export type JobHandlerRegistry = ReadonlyMap<string, JobHandler>;
 
 export class JobHandlerError extends Error {
@@ -56,6 +61,31 @@ export class JobHandlerError extends Error {
     super(code);
     this.name = 'JobHandlerError';
   }
+}
+
+/** Raised internally when the runner's per-handler timeout fires. */
+class HandlerTimeoutError extends Error {
+  constructor() {
+    super('handler_timeout');
+    this.name = 'HandlerTimeoutError';
+  }
+}
+
+/**
+ * A registry whose every registered handler fails permanently with one code.
+ * Used when no provider adapter is configured (for example a production
+ * deployment without real email/analytics credentials): the job is recorded as
+ * failed so it is visible in admin instead of silently invoking a fake.
+ */
+export function createFailingJobHandlerRegistry(errorCode: string): JobHandlerRegistry {
+  const safe = safeErrorCode(errorCode, 'provider_not_configured');
+  const handlers: [string, JobHandler][] = outboxJobTypes.map((jobType) => [
+    jobType,
+    async () => {
+      throw new JobHandlerError(safe, false);
+    },
+  ]);
+  return new Map(handlers);
 }
 
 const acknowledgementPayloadSchema = z
@@ -137,6 +167,10 @@ export interface OutboxRunnerOptions {
   leaseMs?: number;
   baseBackoffMs?: number;
   maxBackoffMs?: number;
+  /** Per-handler abort timeout in milliseconds; `0` disables the bound. */
+  handlerTimeoutMs?: number;
+  /** Wall-clock budget after which no further batches are claimed; `0` disables. */
+  runDeadlineMs?: number;
   now?: () => Date;
   random?: () => number;
   leaseId?: () => string;
@@ -159,6 +193,8 @@ export class OutboxRunner {
   private readonly leaseMs: number;
   private readonly baseBackoffMs: number;
   private readonly maxBackoffMs: number;
+  private readonly handlerTimeoutMs: number;
+  private readonly runDeadlineMs: number;
   private readonly now: () => Date;
   private readonly random: () => number;
   private readonly leaseId: () => string;
@@ -169,6 +205,8 @@ export class OutboxRunner {
     this.leaseMs = options.leaseMs ?? 60_000;
     this.baseBackoffMs = options.baseBackoffMs ?? 5_000;
     this.maxBackoffMs = options.maxBackoffMs ?? 15 * 60_000;
+    this.handlerTimeoutMs = options.handlerTimeoutMs ?? 30_000;
+    this.runDeadlineMs = options.runDeadlineMs ?? 120_000;
     this.now = options.now ?? (() => new Date());
     this.random = options.random ?? Math.random;
     this.leaseId = options.leaseId ?? (() => crypto.randomUUID());
@@ -192,7 +230,13 @@ export class OutboxRunner {
       leaseLost: 0,
     };
 
+    const deadline =
+      this.runDeadlineMs > 0 ? this.now().getTime() + this.runDeadlineMs : Number.POSITIVE_INFINITY;
+
     for (const workspaceId of workspaceIds) {
+      // Once the run deadline passes, stop claiming new batches. Jobs already
+      // claimed under a lease are still handled and recorded.
+      if (this.now().getTime() >= deadline) break;
       const claimedAt = this.now();
       const jobs = await this.options.store.claim({
         workspaceId,
@@ -228,10 +272,25 @@ export class OutboxRunner {
   private async handle(job: ClaimedJob): Promise<JobOutcome> {
     const handler = this.options.handlers.get(job.jobType);
     if (!handler) return { status: 'failed', errorCode: 'handler_not_registered' };
+    const controller = new AbortController();
+    const aborted = new Promise<never>((_resolve, reject) => {
+      controller.signal.addEventListener('abort', () => reject(new HandlerTimeoutError()), {
+        once: true,
+      });
+    });
+    const timer =
+      this.handlerTimeoutMs > 0
+        ? setTimeout(() => controller.abort(), this.handlerTimeoutMs)
+        : undefined;
     try {
-      const result = await handler(job);
+      const result = await Promise.race([handler(job, controller.signal), aborted]);
       return result;
     } catch (error) {
+      // A timeout means the provider may already have acted, so the safe
+      // outcome is uncertain (manual reconciliation), never a silent retry.
+      if (error instanceof HandlerTimeoutError) {
+        return { status: 'uncertain', errorCode: 'handler_timeout' };
+      }
       const known = error instanceof JobHandlerError;
       const errorCode = known ? safeErrorCode(error.code, 'handler_error') : 'provider_error';
       if ((known && !error.retryable) || job.attempts >= this.maxAttempts) {
@@ -245,6 +304,8 @@ export class OutboxRunner {
             retryDelayMs(job.attempts, this.random, this.baseBackoffMs, this.maxBackoffMs),
         ),
       };
+    } finally {
+      if (timer) clearTimeout(timer);
     }
   }
 }

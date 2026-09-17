@@ -14,6 +14,21 @@ import type { CatalogueStore, PrepareQuoteResult, QuoteUseResult } from './store
 
 const DEFAULT_QUOTE_TTL_MS = 15 * 60 * 1_000;
 const DEFAULT_LEASE_TTL_MS = 30 * 1_000;
+const DEFAULT_DRAIN_LIMIT = 25;
+/** A failed event is drained again only while its attempt count is below this bound. */
+export const DEFAULT_MAX_EVENT_ATTEMPTS = 5;
+
+export interface DrainEventsFailure {
+  eventId: string;
+  errorCode: string;
+}
+
+export interface DrainEventsResult {
+  listed: number;
+  processed: number;
+  failed: number;
+  failures: readonly DrainEventsFailure[];
+}
 
 export interface CatalogueProvider {
   account: string;
@@ -181,9 +196,13 @@ export class CatalogueService {
 
   /** Manual T10 handler. T10B registers this same idempotent handler with the scheduler. */
   async processEvent(workspaceId: string, eventId: string): Promise<void> {
-    const actorId = eventId;
-    const event = await this.store.getEvent(workspaceId, actorId, eventId);
+    // The inbox row is read with the event id only as the non-null RLS read
+    // token; every write below uses the ingest actor persisted on the event, so
+    // a later drain keeps the original machine attribution (never a random UUID
+    // and never the event id).
+    const event = await this.store.getEvent(workspaceId, eventId, eventId);
     if (!event || event.status === 'completed' || event.status === 'ignored') return;
+    const actorId = event.actorId;
     await this.store.markEvent(workspaceId, actorId, eventId, 'processing');
     const attemptedAt = this.now();
     let productKey: string | undefined;
@@ -261,8 +280,49 @@ export class CatalogueService {
     }
   }
 
-  /** Manual reconciliation. Missing webhook deliveries converge to this published snapshot. */
-  async reconcile(workspaceId: string, actorId = randomUUID()): Promise<void> {
+  /**
+   * Drains a bounded batch of drainable inbox events — pending ones plus failed
+   * ones still below the attempt bound — by calling {@link processEvent} for each
+   * in order. A failing event is recorded and skipped so one poison delivery
+   * cannot block the queue, which matches how a scheduler must run unattended.
+   * The `actorId` argument scopes the listing read; each event's sync writes use
+   * the actor persisted at ingest, so a drain never re-attributes an event.
+   * T10B schedules this together with `reconcile` under the existing
+   * `reconcile:run` machine scope.
+   */
+  async drainEvents(
+    workspaceId: string,
+    actorId: string,
+    limit = DEFAULT_DRAIN_LIMIT,
+  ): Promise<DrainEventsResult> {
+    const events = await this.store.listDrainableEvents(
+      workspaceId,
+      actorId,
+      DEFAULT_MAX_EVENT_ATTEMPTS,
+      limit,
+    );
+    const failures: DrainEventsFailure[] = [];
+    let processed = 0;
+    for (const event of events) {
+      try {
+        await this.processEvent(workspaceId, event.id);
+        processed += 1;
+      } catch (error) {
+        failures.push({ eventId: event.id, errorCode: safeFailureCode(error, 'drain_failed') });
+      }
+    }
+    return { listed: events.length, processed, failed: failures.length, failures };
+  }
+
+  /**
+   * Manual reconciliation. Missing webhook deliveries converge to this published
+   * snapshot. `listPublished()` is the authoritative read for the whole pass and
+   * is called exactly once; the per-product post-lease re-fetch belongs to
+   * {@link processEvent} (ADR 0003), where a late webhook must not overwrite a
+   * newer published state. The caller supplies a registry-backed scheduler
+   * `actorId` — this method never invents one.
+   */
+  async reconcile(workspaceId: string, actorId: string): Promise<void> {
     const attemptedAt = this.now();
     try {
       const provider = this.resolveProvider(workspaceId);
@@ -286,29 +346,17 @@ export class CatalogueService {
         );
         if (!leased) continue;
         try {
-          const current = await provider.catalogue.fetchPublishedByDocumentId(offer.documentId);
-          if (!current) {
-            await this.store.withdrawProduct(
-              workspaceId,
-              actorId,
-              productKey,
-              this.withdrawalPolicy,
-              this.now(),
-            );
-          } else {
-            if (current.commercial.productKey !== productKey) {
-              throw new Error('product_key_changed');
-            }
-            await this.store.persistPublished({
-              workspaceId,
-              actorId,
-              content: current.commercial,
-              contentHash: commercialContentHash(current.commercial),
-              documentId: current.documentId,
-              revisionId: current.revisionId,
-              syncedAt: this.now(),
-            });
-          }
+          // Persist the listed snapshot itself; reconcile does no second CMS
+          // read for the same product.
+          await this.store.persistPublished({
+            workspaceId,
+            actorId,
+            content: offer.commercial,
+            contentHash: commercialContentHash(offer.commercial),
+            documentId: offer.documentId,
+            revisionId: offer.revisionId,
+            syncedAt: this.now(),
+          });
           await provider.revalidator.revalidate(productKey);
         } finally {
           await this.store.releaseLease(workspaceId, actorId, productKey, ownerId);

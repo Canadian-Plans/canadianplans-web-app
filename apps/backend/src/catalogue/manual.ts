@@ -11,6 +11,9 @@ const argumentsSchema = z.discriminatedUnion('action', [
   z.object({ action: z.literal('reconcile'), workspaceId: z.uuid() }),
 ]);
 
+/** Printed when no single scheduler identity authorizes a manual reconcile. */
+const RECONCILE_ACTOR_UNAVAILABLE = 'reconcile_actor_unavailable';
+
 async function main(): Promise<void> {
   const [action, workspaceId, eventId] = process.argv.slice(2);
   const args = argumentsSchema.parse(
@@ -37,7 +40,12 @@ async function main(): Promise<void> {
     if (args.action === 'process-event') {
       await service.processEvent(args.workspaceId, args.eventId);
     } else {
-      await service.reconcile(args.workspaceId);
+      // Reconcile writes catalogue state, so it must run as a real registry
+      // identity rather than a synthetic UUID. Fail closed when no single
+      // non-revoked scheduler entry authorizes this workspace for the scope.
+      const identity = registry.schedulerForWorkspace(args.workspaceId, 'reconcile:run');
+      if (!identity) throw new Error(RECONCILE_ACTOR_UNAVAILABLE);
+      await service.reconcile(args.workspaceId, identity.actorId);
     }
   } finally {
     await database.close();
@@ -45,7 +53,12 @@ async function main(): Promise<void> {
 }
 
 void main().catch((error: unknown) => {
-  const code = error instanceof z.ZodError ? 'invalid_arguments' : 'catalogue_job_failed';
+  const code =
+    error instanceof z.ZodError
+      ? 'invalid_arguments'
+      : error instanceof Error && error.message === RECONCILE_ACTOR_UNAVAILABLE
+        ? RECONCILE_ACTOR_UNAVAILABLE
+        : 'catalogue_job_failed';
   process.stderr.write(`${code}\n`);
   process.exitCode = 1;
 });

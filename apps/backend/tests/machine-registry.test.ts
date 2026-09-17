@@ -12,6 +12,7 @@ const WORKSPACE_B = '10000000-0000-4000-8000-000000000102';
 const WEBHOOK_SECRET = 'webhook-verification-secret-0001';
 const SCHEDULER_SECRET = 'scheduler-shared-secret-000000001';
 const SCHEDULER_ACTOR = '10000000-0000-4000-8000-000000000199';
+const WEBHOOK_ACTOR = '10000000-0000-4000-8000-000000000198';
 
 const config: MachineRegistryConfig = {
   webhooks: [
@@ -20,6 +21,7 @@ const config: MachineRegistryConfig = {
       provider: 'sanity',
       providerAccount: 'acct_site1',
       workspaceId: WORKSPACE_A,
+      actorId: WEBHOOK_ACTOR,
       verificationSecret: WEBHOOK_SECRET,
       revoked: false,
     },
@@ -28,6 +30,7 @@ const config: MachineRegistryConfig = {
       provider: 'sanity',
       providerAccount: 'acct_old',
       workspaceId: WORKSPACE_A,
+      actorId: WEBHOOK_ACTOR,
       verificationSecret: WEBHOOK_SECRET,
       revoked: true,
     },
@@ -68,6 +71,7 @@ describe('machine webhook resolution', () => {
       provider: 'sanity',
       workspaceId: WORKSPACE_A,
       providerAccount: 'acct_site1',
+      actorId: WEBHOOK_ACTOR,
     });
   });
 
@@ -172,6 +176,56 @@ describe('machine scheduler resolution', () => {
   });
 });
 
+describe('scheduler identity lookup for offline tooling', () => {
+  const reconcileScheduler: MachineRegistryConfig['schedulers'][number] = {
+    selector: 'reconcile-runner',
+    secret: 'reconcile-secret-000000000000001',
+    actorId: SCHEDULER_ACTOR,
+    workspaceIds: [WORKSPACE_A],
+    scopes: ['reconcile:run'],
+    revoked: false,
+  };
+  const reconcileConfig: MachineRegistryConfig = {
+    webhooks: [],
+    schedulers: [reconcileScheduler],
+  };
+
+  it('returns the registry actor for a workspace the identity authorizes with the scope', () => {
+    const local = new MachineRegistry(reconcileConfig);
+    expect(local.schedulerForWorkspace(WORKSPACE_A, 'reconcile:run')).toEqual({
+      selector: 'reconcile-runner',
+      actorId: SCHEDULER_ACTOR,
+    });
+  });
+
+  it('returns undefined without a matching scope or workspace', () => {
+    const local = new MachineRegistry(reconcileConfig);
+    expect(local.schedulerForWorkspace(WORKSPACE_A, 'outbox:run')).toBeUndefined();
+    expect(local.schedulerForWorkspace(WORKSPACE_B, 'reconcile:run')).toBeUndefined();
+  });
+
+  it('ignores revoked identities and fails closed on ambiguity', () => {
+    const revoked = new MachineRegistry({
+      webhooks: [],
+      schedulers: [{ ...reconcileScheduler, revoked: true }],
+    });
+    expect(revoked.schedulerForWorkspace(WORKSPACE_A, 'reconcile:run')).toBeUndefined();
+
+    const ambiguous = new MachineRegistry({
+      webhooks: [],
+      schedulers: [
+        reconcileScheduler,
+        {
+          ...reconcileScheduler,
+          selector: 'reconcile-runner-two',
+          secret: 'reconcile-secret-000000000000002',
+        },
+      ],
+    });
+    expect(ambiguous.schedulerForWorkspace(WORKSPACE_A, 'reconcile:run')).toBeUndefined();
+  });
+});
+
 describe('registry loading', () => {
   it('produces a deny-all registry when no configuration is provided', () => {
     const empty = loadMachineRegistry('');
@@ -194,5 +248,23 @@ describe('registry loading', () => {
 
   it('rejects structurally invalid registry JSON', () => {
     expect(() => loadMachineRegistry(JSON.stringify({ webhooks: [{ selector: 'x' }] }))).toThrow();
+  });
+
+  it('rejects a webhook entry that omits the required actorId', () => {
+    expect(() =>
+      loadMachineRegistry(
+        JSON.stringify({
+          webhooks: [
+            {
+              selector: 'sanity-site-1',
+              provider: 'sanity',
+              providerAccount: 'acct_site1',
+              workspaceId: WORKSPACE_A,
+              verificationSecret: WEBHOOK_SECRET,
+            },
+          ],
+        }),
+      ),
+    ).toThrow();
   });
 });

@@ -20,6 +20,12 @@ const webhookEntrySchema = z.object({
   provider: z.string().min(1),
   providerAccount: z.string().min(1),
   workspaceId: z.uuid(),
+  /**
+   * The verified machine actor recorded for this integration's tenant writes.
+   * Required so a webhook ingest (and every later drain of it) is attributed to
+   * a stable registry identity rather than the event id or a random UUID.
+   */
+  actorId: z.uuid(),
   verificationSecret: z.string().min(16),
   sanity: z
     .object({
@@ -64,6 +70,7 @@ export type WebhookResolution =
       provider: string;
       workspaceId: string;
       providerAccount: string;
+      actorId: string;
     }
   | MachineFailure;
 
@@ -209,6 +216,7 @@ export class MachineRegistry {
       provider: entry.provider,
       workspaceId: entry.workspaceId,
       providerAccount: entry.providerAccount,
+      actorId: entry.actorId,
     };
   }
 
@@ -230,6 +238,28 @@ export class MachineRegistry {
       providerAccount: entry.providerAccount,
       ...entry.sanity,
     };
+  }
+
+  /**
+   * Internal read-only lookup for offline/ops tooling that must act as a
+   * scheduler machine identity without replaying a scheduler secret (the manual
+   * `catalogue:job -- reconcile` handler). Returns the identity only when
+   * exactly one non-revoked scheduler entry both authorizes the workspace and
+   * holds `scope`; zero or several matches fail closed, so a caller can never
+   * pick a synthetic or guessed actor.
+   */
+  schedulerForWorkspace(
+    workspaceId: string,
+    scope: MachineScopeName,
+  ): { selector: string; actorId: string } | undefined {
+    const matches = [...this.schedulers.values()].filter(
+      (entry) =>
+        !entry.revoked && entry.workspaceIds.includes(workspaceId) && entry.scopes.includes(scope),
+    );
+    if (matches.length !== 1) return undefined;
+    const entry = matches[0];
+    if (!entry) return undefined;
+    return { selector: entry.selector, actorId: entry.actorId };
   }
 
   resolveScheduler(input: ResolveSchedulerInput): SchedulerResolution {
