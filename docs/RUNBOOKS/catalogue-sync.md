@@ -7,10 +7,9 @@ payloads into tickets or logs.
 ## Safe manual invocation
 
 Webhook receipt only commits a tenant-scoped inbox row and returns `200`.
-The scheduled route (`GET`/`POST /api/internal/catalogue/sync`, T10B) runs the
-same handlers, but its `crons` entry is not deployed yet (see "Scheduling
-boundary"). Until then, run the handlers manually from the repository with the
-target UUIDs:
+The in-process scheduler runs the same handlers every 300 seconds on the backend
+service (see "Scheduling boundary"). For a manual pass, run the handlers from the
+repository with the target UUIDs:
 
 ```powershell
 pnpm --filter backend catalogue:job -- process-event <workspace-uuid> <event-uuid>
@@ -69,25 +68,24 @@ availability by changing historical rows.
 
 ## Scheduling boundary
 
-T10B registers these handlers with T15's authenticated cron surface at
-`/api/internal/catalogue/sync`. For every workspace in the verified scheduler
-identity's explicit set, in registry order, the route runs one bounded
-`drainEvents` pass and then `reconcile` using the registry entry's `actorId`; it
-never discovers a tenant through the database and refuses preview deployments.
-It requires the existing `reconcile:run` scope, selected by
+T10B runs these handlers on the backend's **in-process scheduler** (Railway; ADR 0004) every 300 seconds when `ENABLE_SCHEDULER=1`, and via the authenticated
+`GET`/`POST /api/internal/catalogue/sync` routes for manual invocation. For every
+workspace in the verified scheduler identity's explicit set, in registry order,
+the pass runs one bounded `drainEvents` and then `reconcile` using the registry
+entry's `actorId`; it never discovers a tenant through the database and refuses
+preview deployments. It requires the existing `reconcile:run` scope, selected by
 `CATALOGUE_SYNC_SELECTOR` (`docs/ENV.md`) — no new scope and no schema migration.
 A workspace whose drain or reconcile fails is recorded with a bounded error code
 and the pass continues, so one poison workspace cannot stall the schedule. A
 120-second run deadline stops starting new workspaces while work already in
-flight is still recorded, so a slow CMS cannot exceed the serverless limit.
+flight is still recorded, and a tick is skipped while a run is still in flight.
 
-The five-minute `crons` entry (`*/5 * * * *`) is **not** in
-`apps/backend/vercel.json` yet: a sub-daily cron expression fails the whole
-deployment on the Hobby plan, exactly as the one-minute outbox entry did before
-it was removed. It is added together with the outbox entry once a Pro,
-non-preview deployment exists (`docs/RUNBOOKS/outbox-jobs.md`). Until then the
-route is reachable only by the authenticated manual POST above, so the hosted
-staging check (G30) remains unrecorded — see `docs/EVIDENCE/T10-T12-T15.md`.
+The scheduler is in-process because Railway cron has a five-minute floor and no
+minute-level precision guarantee, and because a sub-daily Vercel cron expression
+failed the whole backend deployment on the Hobby plan
+(`docs/RUNBOOKS/outbox-jobs.md`). The hosted check (G30) is still unrecorded; it
+is closed only with real Railway-scheduler evidence in Phase 8
+(`docs/EVIDENCE/T10-T12-T15.md`).
 
 One drain pass lists the workspace's pending events plus failed events still
 below the bounded maximum attempt count, in deterministic `createdAt` then `id`

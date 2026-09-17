@@ -1,34 +1,31 @@
 # Outbox jobs
 
-The backend production deployment exposes `GET /api/internal/jobs/run` for
-Vercel Cron and an equivalent authenticated `POST` for manual staging checks.
+The backend production deployment runs the outbox on an **in-process scheduler**
+(Railway; ADR 0004): `OutboxRunner.run` fires every 60 seconds from the service
+itself when `ENABLE_SCHEDULER=1`, and skips a tick while the previous run is
+still in flight. The scheduler resolves its actor and explicit workspace set from
+the server-only machine registry (`JOB_RUNNER_SELECTOR` + `CRON_SECRET`), exactly
+as the HTTP route does, and never scans the database for tenants.
 
-The `crons` entry that schedules the GET every minute is **deliberately absent
-from `apps/backend/vercel.json` for now**: a sub-daily cron expression fails the
-whole deployment at deploy time while the project is on the Hobby plan
-("Hobby accounts are limited to daily cron jobs" — this exact failure took the
-backend deployment down when the entry first shipped). T10B re-adds the entry
-(`{"path": "/api/internal/jobs/run", "schedule": "* * * * *"}`, plus the
-five-minute catalogue sync cron) once the dedicated staging Vercel project on
-Pro exists. Until then the authenticated `POST` below is the only invocation
-path; nothing else changes about the route.
+`GET /api/internal/jobs/run` and its equivalent authenticated `POST` remain for
+manual invocation and staging checks. The GET is no longer driven by a Vercel
+`crons` entry: Railway cron has a five-minute floor and no minute-level precision
+guarantee, which is why the schedule moved in-process.
 
-The same boundary applies to the T10B catalogue sync route,
-`GET /api/internal/catalogue/sync`, which drains the catalogue inbox and
-reconciles each authorized workspace at a five-minute cadence
-(`docs/RUNBOOKS/catalogue-sync.md`). Its route is implemented and tested; only
-the `crons` entry is pending the same Pro, non-preview deployment.
+The same scheduler runs the T10B catalogue sync every 300 seconds under the
+`reconcile:run` scope (`docs/RUNBOOKS/catalogue-sync.md`).
 
 ## Configuration
 
-Set `CRON_SECRET`, `JOB_RUNNER_SELECTOR`, and `MACHINE_REGISTRY_JSON` only on the
-backend production environment. `CRON_SECRET` must match the selected scheduler
-entry. The entry must contain a UUID `actorId`, `outbox:run`, and the explicit
-workspace UUIDs that this deployment may process. Do not put a catch-all tenant
-identity or a privileged database URL on the scheduler. The catalogue sync route
-uses a separate `CATALOGUE_SYNC_SELECTOR` entry holding the existing
-`reconcile:run` scope (documented in `docs/ENV.md`); its `secret` is the same
-`CRON_SECRET`.
+Set `CRON_SECRET`, `JOB_RUNNER_SELECTOR`, `CATALOGUE_SYNC_SELECTOR`,
+`ENABLE_SCHEDULER`, and `MACHINE_REGISTRY_JSON` only on the backend production
+environment. `CRON_SECRET` must match the selected scheduler entry. The entry must
+contain a UUID `actorId`, `outbox:run`, and the explicit workspace UUIDs that this
+deployment may process. Do not put a catch-all tenant identity or a privileged
+database URL on the scheduler. Because the registry rejects duplicate active
+scheduler secrets, one `CRON_SECRET` means a single entry holding both
+`outbox:run` and `reconcile:run`, with both selectors pointing at it (documented
+in `docs/ENV.md`).
 
 Provider adapters are selected explicitly. Set `OUTBOX_ADAPTERS=fake` on local and
 automated non-production deployments that should exercise the in-memory email and
@@ -38,11 +35,11 @@ deployment, or any deployment without the explicit opt-in, registers handlers th
 fail permanently with `provider_not_configured`. The claimed job is recorded as
 failed and appears in admin rather than completing with a fake provider id.
 
-Vercel sends `Authorization: Bearer $CRON_SECRET`. The route rejects preview
-deployments even if a secret is accidentally copied. Validate scheduling on the
-dedicated staging Vercel project's **production deployment**, never on a pull
-request preview. T0 must provision that project before this external check can
-be recorded.
+The route authenticates `Authorization: Bearer $CRON_SECRET` and rejects preview
+deployments even if a secret is accidentally copied (`DEPLOYMENT_ENV` /
+`VERCEL_ENV` is `preview`). The in-process scheduler refuses to start under the
+same condition. Validate scheduling on a non-preview deployment, never on a pull
+request preview.
 
 ## Processing and recovery
 

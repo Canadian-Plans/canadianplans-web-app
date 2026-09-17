@@ -325,30 +325,31 @@ failed jobs can be requeued; uncertain deliveries must be reconciled first.
 
 ### `GET /api/internal/jobs/run`
 
-Backend-only Vercel Cron route, scheduled every minute on a Pro production
-deployment. Vercel supplies `Authorization: Bearer <CRON_SECRET>`; the secret
-and configured selector resolve through the server-only scheduler registry to
-an actor, `outbox:run` scope, and an explicit workspace set. Preview
-deployments are rejected. An equivalent authenticated `POST` supports manual
-staging checks.
+Backend-only internal route. On the Railway service the in-process scheduler runs
+the equivalent `OutboxRunner.run` every 60 seconds (ADR 0004); this HTTP route
+remains the authenticated manual invocation path. It uses
+`Authorization: Bearer <CRON_SECRET>`; the secret and configured selector resolve
+through the server-only scheduler registry to an actor, `outbox:run` scope, and an
+explicit workspace set. Preview deployments are rejected. An equivalent
+authenticated `POST` is accepted.
 
 ### `GET /api/internal/catalogue/sync`
 
-Backend-only Vercel Cron route for catalogue sync (T10B), intended to run every
-five minutes on a Pro production deployment in addition to the outbox cron
-above. Vercel supplies `Authorization: Bearer <CRON_SECRET>`; the secret and the
-configured `CATALOGUE_SYNC_SELECTOR` resolve through the server-only scheduler
-registry to an actor, the existing `reconcile:run` scope, and an explicit
-workspace set. Preview deployments are rejected, and no tenant is discovered
-through the database. For each authorized workspace, in registry order, the
-route drains the catalogue inbox (`CatalogueService.drainEvents`, one bounded
-pass) and then reconciles against the published CMS snapshot using the registry
-actor. A failed workspace records a bounded error code and the pass continues; a
-120-second run deadline stops starting new workspaces while work already in
-flight is still recorded. The response reports bounded counters
-(`workspaces`, `listed`, `processed`, `drainFailed`, `reconciled`, `failures`)
-and contains no PII. An equivalent authenticated `POST` supports manual staging
-checks.
+Backend-only internal route for catalogue sync (T10B). On the Railway service the
+in-process scheduler runs the equivalent pass every 300 seconds (ADR 0004); this
+HTTP route remains the authenticated manual invocation path. It uses
+`Authorization: Bearer <CRON_SECRET>`; the secret and the configured
+`CATALOGUE_SYNC_SELECTOR` resolve through the server-only scheduler registry to an
+actor, the existing `reconcile:run` scope, and an explicit workspace set. Preview
+deployments are rejected, and no tenant is discovered through the database. For
+each authorized workspace, in registry order, the pass drains the catalogue inbox
+(`CatalogueService.drainEvents`, one bounded pass) and then reconciles against the
+published CMS snapshot using the registry actor. A failed workspace records a
+bounded error code and the pass continues; a 120-second run deadline stops
+starting new workspaces while work already in flight is still recorded, and a
+tick is skipped while a run is still in flight. The response reports bounded
+counters (`workspaces`, `listed`, `processed`, `drainFailed`, `reconciled`,
+`failures`) and contains no PII. An equivalent authenticated `POST` is accepted.
 
 ## Staff permission matrix
 
