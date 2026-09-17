@@ -19,6 +19,7 @@ import { DatabaseCatalogueStore, type CatalogueStore } from '../catalogue/store.
 import { DatabaseLeadStore, type LeadStore } from '../leads/store.js';
 import { DatabaseOutboxStore, type JobAdminStore } from '../jobs/store.js';
 import { DatabaseOrderQueryStore, type OrderQueryStore } from '../orders/query-store.js';
+import { loadOperationalTransitionsEnabled } from '../orders/transitions-config.js';
 import {
   DatabaseOrderTransitionStore,
   type OrderTransitionStore,
@@ -52,7 +53,10 @@ export function createDefaultStaffRouteDependencies(): StaffRouteDependencies {
     leadStore: new DatabaseLeadStore(),
     catalogueStore: new DatabaseCatalogueStore(),
     orderQueryStore: new DatabaseOrderQueryStore(),
-    orderTransitionStore: new DatabaseOrderTransitionStore(),
+    orderTransitionStore: new DatabaseOrderTransitionStore(
+      undefined,
+      loadOperationalTransitionsEnabled(),
+    ),
     jobStore: new DatabaseOutboxStore(),
   };
 }

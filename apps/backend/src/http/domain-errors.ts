@@ -28,6 +28,7 @@ const messages: Partial<Record<ApiErrorCode, string>> = {
   illegal_transition: 'That order status transition is not allowed.',
   cancellation_reason_required: 'A cancellation reason is required.',
   feature_not_ready: 'This order action is not enabled yet.',
+  invalid_request: 'The request body is invalid.',
   internal_error: 'An internal error occurred.',
 };
 

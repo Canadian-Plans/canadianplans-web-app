@@ -9,6 +9,7 @@ import {
 import { z } from 'zod';
 
 import { sendDomainError } from '../http/domain-errors.js';
+import { isConnectionLevelError, logRequestError } from '../http/logger.js';
 import { CatalogueService, providerResolverFromRegistry } from '../catalogue/service.js';
 import { loadQuoteWithdrawalPolicy } from '../catalogue/policy.js';
 import { DatabaseCatalogueStore } from '../catalogue/store.js';
@@ -217,9 +218,32 @@ export function createOrderRouter(dependencies: WebsiteRouteDependencies): Route
           return;
         }
         sendDomainError(res, req.id, 'conflict', 409);
-      } catch {
-        res.setHeader('retry-after', '2');
-        sendDomainError(res, req.id, 'persistence_unavailable', 503, { retryable: true });
+      } catch (error) {
+        // Only a genuine connection/availability failure is retryable. A logic
+        // bug or an unparsable snapshot must surface as a non-retryable 500
+        // instead of being masked as transient, and every failure is logged
+        // with only scrubbed identifiers (PLATFORM_CONTEXT.md invariant 12).
+        const workspaceId = req.websiteContext?.workspaceId;
+        if (isConnectionLevelError(error)) {
+          logRequestError({
+            requestId: req.id,
+            workspaceId,
+            route: '/api/v1/orders',
+            code: 'persistence_unavailable',
+            flag: 'retryable',
+          });
+          res.setHeader('retry-after', '2');
+          sendDomainError(res, req.id, 'persistence_unavailable', 503, { retryable: true });
+          return;
+        }
+        logRequestError({
+          requestId: req.id,
+          workspaceId,
+          route: '/api/v1/orders',
+          code: 'internal_error',
+          flag: 'not_retryable',
+        });
+        sendDomainError(res, req.id, 'internal_error', 500);
       }
     },
   );

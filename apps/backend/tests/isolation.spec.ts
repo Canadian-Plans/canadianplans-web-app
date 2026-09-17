@@ -392,6 +392,7 @@ databaseTest('Phase A tenant isolation gate', () => {
           provider: 'sanity',
           providerAccount: 'project-a',
           workspaceId: WORKSPACE_A,
+          actorId: '20000000-0000-4000-8000-0000000000a1',
           verificationSecret: webhookSecret,
           revoked: false,
         },

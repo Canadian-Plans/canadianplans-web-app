@@ -271,8 +271,10 @@ export class DatabaseOutboxStore implements OutboxStore, JobAdminStore {
             completedAt: null,
             uncertainAt: null,
             lastErrorCode: null,
-            providerId: null,
-            outcome: null,
+            // The previous attempt's provider evidence (`providerId`/`outcome`)
+            // is deliberately preserved: an operator requeue must not erase what
+            // the provider already reported, which incident review and any
+            // follow-up reconciliation rely on. Only the attempt state is reset.
             updatedAt: now,
           })
           .where(

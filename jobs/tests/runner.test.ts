@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
   JobHandlerError,
@@ -24,6 +24,10 @@ const job = (overrides: Partial<ClaimedJob> = {}): ClaimedJob => ({
 });
 
 describe('outbox runner', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('uses scoped claims, calls a provider after claim resolves, then records the outcome', async () => {
     const calls: string[] = [];
     const claimed = job();
@@ -107,6 +111,76 @@ describe('outbox runner', () => {
       { status: 'failed', errorCode: 'handler_not_registered' },
       { status: 'failed', errorCode: 'timeout' },
     ]);
+  });
+
+  it('aborts a handler past the per-handler timeout and records uncertain', async () => {
+    vi.useFakeTimers();
+    const outcomes: JobOutcome[] = [];
+    let signal: AbortSignal | undefined;
+    const claimed = job({ jobType: 'slow_provider' });
+    const store: OutboxStore = {
+      claim: vi.fn(async () => [claimed]),
+      recordOutcome: vi.fn(async ({ outcome }) => {
+        outcomes.push(outcome);
+        return 'recorded' as const;
+      }),
+    };
+    const runner = new OutboxRunner({
+      store,
+      handlers: new Map([
+        [
+          'slow_provider',
+          (_claimed, abortSignal) => {
+            signal = abortSignal;
+            return new Promise<never>(() => undefined);
+          },
+        ],
+      ]),
+      handlerTimeoutMs: 1_000,
+    });
+
+    const pending = runner.run({
+      authorizedWorkspaceIds: [claimed.workspaceId],
+      actorId: crypto.randomUUID(),
+    });
+    await vi.advanceTimersByTimeAsync(1_000);
+    await pending;
+
+    // A timeout may have already reached the provider, so it is uncertain
+    // rather than an automatic retry.
+    expect(outcomes).toEqual([{ status: 'uncertain', errorCode: 'handler_timeout' }]);
+    expect(signal?.aborted).toBe(true);
+  });
+
+  it('stops claiming new batches after the run deadline', async () => {
+    let clockMs = 0;
+    const claim = vi.fn(async () => {
+      clockMs += 600;
+      return [];
+    });
+    const store: OutboxStore = {
+      claim,
+      recordOutcome: vi.fn(async () => 'recorded' as const),
+    };
+    const runner = new OutboxRunner({
+      store,
+      handlers: new Map(),
+      runDeadlineMs: 1_000,
+      now: () => new Date(clockMs),
+    });
+
+    await runner.run({
+      authorizedWorkspaceIds: [
+        '11111111-1111-4111-8111-111111111111',
+        '22222222-2222-4222-8222-222222222222',
+        '33333333-3333-4333-8333-333333333333',
+      ],
+      actorId: crypto.randomUUID(),
+    });
+
+    // Two claims land before the 1000ms budget (clock reaches 1200); the third
+    // workspace is never claimed.
+    expect(claim).toHaveBeenCalledTimes(2);
   });
 
   it('counts a lost lease instead of the outcome, and does not count it as completed', async () => {

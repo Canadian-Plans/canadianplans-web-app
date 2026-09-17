@@ -43,6 +43,14 @@ databaseTest('database outbox store', () => {
         (${WORKSPACE_B}, 'ci-outbox-b', 'CI Outbox B')
       on conflict (id) do nothing
     `;
+    // Alerts are append-only history and are not deduplicated, while the job
+    // rows below keep their ids across reruns. Clear this file's alert rows so
+    // a repeat run on a persisted disposable database still asserts exactly one
+    // failure alert for the fixed jobs.
+    await admin`
+      delete from app.outbox_job_alerts
+      where workspace_id in (${WORKSPACE_A}, ${WORKSPACE_B})
+    `;
     await admin`
       insert into app.outbox_jobs (workspace_id, job_type, dedupe_key, payload)
       values
@@ -242,5 +250,100 @@ databaseTest('database outbox store', () => {
       insert into app.outbox_jobs (workspace_id, job_type, dedupe_key, payload)
       values (${WORKSPACE_A}, 'analytics_order_submitted', 'order:a1', '{}'::jsonb)
     `).rejects.toMatchObject({ code: '23505' });
+  });
+
+  test('retry paths preserve the previous attempt’s provider evidence', async () => {
+    const EVIDENCE_WORKSPACE = '10000000-0000-4000-8000-000000000784';
+    await admin`
+      insert into app.workspaces (id, slug, name)
+      values (${EVIDENCE_WORKSPACE}, 'ci-outbox-evidence', 'CI Outbox Evidence')
+      on conflict (id) do nothing
+    `;
+    // A failed job can already carry the provider's evidence from a previous
+    // attempt; the schema ties `provider_id`/`outcome` to no status. An operator
+    // requeue must reset the attempt state without erasing that evidence.
+    const inserted = await admin<{ id: string }[]>`
+      insert into app.outbox_jobs (
+        workspace_id, job_type, dedupe_key, payload, status, attempts,
+        provider_id, outcome, last_error_code
+      ) values (
+        ${EVIDENCE_WORKSPACE}, 'analytics_order_submitted', 'order:evidence',
+        ${admin.json({ orderId: crypto.randomUUID() })}, 'failed', 3,
+        'provider-prior', ${admin.json({ messageId: 'msg-1' })}, 'provider_rejected'
+      )
+      on conflict (workspace_id, job_type, dedupe_key) do update set
+        status = 'failed',
+        attempts = 3,
+        provider_id = 'provider-prior',
+        outcome = ${admin.json({ messageId: 'msg-1' })},
+        last_error_code = 'provider_rejected'
+      returning id
+    `;
+    const jobId = inserted[0]?.id;
+    if (!jobId) throw new Error('failed to seed the evidence job');
+
+    expect(
+      await store.retry({
+        workspaceId: EVIDENCE_WORKSPACE,
+        actorId: ACTOR,
+        jobId,
+        requestId: crypto.randomUUID(),
+      }),
+    ).toBe('retried');
+
+    const requeued = await admin`
+      select status, attempts, provider_id, outcome, last_error_code
+      from app.outbox_jobs
+      where id = ${jobId}
+    `;
+    expect(requeued[0]).toMatchObject({
+      status: 'pending',
+      attempts: 0,
+      provider_id: 'provider-prior',
+      outcome: { messageId: 'msg-1' },
+      last_error_code: null,
+    });
+
+    // The runner-side retry branch must preserve the same evidence: claim the
+    // requeued job and record a retryable outcome, then read the row back.
+    const ownerId = crypto.randomUUID();
+    const now = new Date();
+    const claimed = await store.claim({
+      workspaceId: EVIDENCE_WORKSPACE,
+      actorId: ACTOR,
+      leaseOwnerId: ownerId,
+      limit: 1,
+      now,
+      leaseExpiresAt: new Date(now.getTime() + 60_000),
+      maxAttempts: 8,
+    });
+    expect(claimed).toHaveLength(1);
+    expect(
+      await store.recordOutcome({
+        workspaceId: EVIDENCE_WORKSPACE,
+        actorId: ACTOR,
+        jobId,
+        leaseOwnerId: ownerId,
+        outcome: {
+          status: 'retry',
+          errorCode: 'provider_rate_limited',
+          availableAt: new Date(now.getTime() + 5_000),
+        },
+        now,
+      }),
+    ).toBe('recorded');
+
+    const retriedAgain = await admin`
+      select status, attempts, provider_id, outcome, last_error_code
+      from app.outbox_jobs
+      where id = ${jobId}
+    `;
+    expect(retriedAgain[0]).toMatchObject({
+      status: 'pending',
+      attempts: 1,
+      provider_id: 'provider-prior',
+      outcome: { messageId: 'msg-1' },
+      last_error_code: 'provider_rate_limited',
+    });
   });
 });

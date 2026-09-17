@@ -13,6 +13,14 @@ entry. The entry must contain a UUID `actorId`, `outbox:run`, and the explicit
 workspace UUIDs that this deployment may process. Do not put a catch-all tenant
 identity or a privileged database URL on the scheduler.
 
+Provider adapters are selected explicitly. Set `OUTBOX_ADAPTERS=fake` on local and
+automated non-production deployments that should exercise the in-memory email and
+analytics fakes; the value is refused when `NODE_ENV=production`, so a fake is never
+used to deliver production mail. There is no implicit default: a production
+deployment, or any deployment without the explicit opt-in, registers handlers that
+fail permanently with `provider_not_configured`. The claimed job is recorded as
+failed and appears in admin rather than completing with a fake provider id.
+
 Vercel sends `Authorization: Bearer $CRON_SECRET`. The route rejects preview
 deployments even if a secret is accidentally copied. Validate scheduling on the
 dedicated staging Vercel project's **production deployment**, never on a pull
@@ -28,10 +36,25 @@ failure is then written in a second tenant transaction. Retries use capped
 exponential backoff with jitter; exhausted and uncertain deliveries create an
 alert record.
 
+Each handler is bounded by a per-handler abort timeout (default 30 seconds). A
+handler that exceeds it is recorded `uncertain` with `handler_timeout`, never
+retried automatically, because the provider may already have accepted the work;
+reconcile it before any resend. A run deadline (default 120 seconds) stops
+claiming new batches once it passes; jobs already claimed under a lease are still
+handled and recorded.
+
 Staff can inspect `/w/{workspace}/settings/jobs`. A staff member with
 `integration_management` can retry a definitively failed job. An uncertain job
 must be reconciled before any resend because the provider may already have
 accepted it. Fake adapters deduplicate using the stable outbox `message_id`.
+
+An operator requeue of a definitively failed job preserves the previous
+attempt's provider evidence — the stored `provider_id` and `outcome` — and
+resets only the attempt and lease state (status back to `pending`, attempts to
+0, availability, lease fields, and the completion/uncertain timestamps).
+Incident review and reconciliation therefore still see what the provider
+reported, even after a retry; a later successful attempt overwrites the
+evidence with its own provider result.
 
 Manual staging check:
 

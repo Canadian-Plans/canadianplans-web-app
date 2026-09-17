@@ -16,6 +16,14 @@ request. Do not automate a body rewrite. `503 persistence_unavailable` is safe
 to retry with the same key and body; it is never evidence that an order was
 saved or that a success page may be shown.
 
+The prior-key path is bounded by a fixed retry window, `ORDER_RETRY_WINDOW_MS`
+(24 hours), measured from the completed key's `completedAt`. Inside the window
+the stored order is returned before the backend re-checks the now consumed or
+expired quote (PLATFORM_CONTEXT invariant 6). Outside it the retry is no longer
+honoured by the prior-key path and returns `draft_expired`, rather than
+replaying a lapsed draft grant forever. The window is a caching/technical bound,
+not a business SLA, and the stored order itself is unaffected.
+
 ## Verification
 
 For a synthetic submission, verify exactly one row for the lead in `orders`,
@@ -30,3 +38,10 @@ Status changes must use the transition service with `expectedVersion`; never
 write `orders.status` directly. Production dispatch and activation remain
 disabled until OPEN_INPUTS #15/#19 are resolved. Partnered activation remains
 disabled until T19 can commit the activation and commission line together.
+
+T14/T16 may exercise dispatch and activation synthetically outside production by
+setting the TEST-only `ORDER_OPERATIONAL_TRANSITIONS` flag (`1` or `true`). The
+backend loader ignores it whenever `NODE_ENV=production`, so it can never enable
+these transitions on a production deployment. See `docs/ENV.md` and OPEN_INPUTS
+#15 for the prerequisites that must be decided before production dispatch or
+activation is enabled.

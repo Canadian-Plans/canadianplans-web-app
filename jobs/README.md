@@ -4,6 +4,12 @@ Backend-invoked outbox orchestration and provider handlers. The runner receives 
 tenant-scoped store from `apps/backend`; it never imports the database or discovers
 tenants itself. The backend scheduler registry supplies the explicit workspace set.
 
+Each handler runs under a per-handler abort timeout (the signal is passed as the
+handler's optional second argument) and the whole run stops claiming new batches
+after a run deadline. A timeout is recorded `uncertain` with `handler_timeout`.
+`createFailingJobHandlerRegistry(code)` builds a registry whose handlers fail
+permanently with one code, used when no provider adapter is configured.
+
 Ordinary handlers receive database operations from backend-owned orchestration;
 `jobs/**` has no blanket database-import exemption. Any future offline migration,
 backup, restore or database-test entry point must have its exact file path added to

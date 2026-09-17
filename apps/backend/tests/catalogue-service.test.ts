@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest';
 import type { PublishedOffer, Quote } from '@canadian-plans/contracts';
 import type { SanityCatalogue, SiteRevalidator } from '@canadian-plans/adapters';
 
-import { CatalogueService, type CatalogueProvider } from '../src/catalogue/service.js';
+import {
+  CatalogueService,
+  DEFAULT_MAX_EVENT_ATTEMPTS,
+  type CatalogueProvider,
+} from '../src/catalogue/service.js';
 import type {
   AcceptedSyncEventInput,
   CatalogueStore,
@@ -15,6 +19,8 @@ import { commercialContentHash } from '../src/catalogue/canonical.js';
 
 const WORKSPACE = '10000000-0000-4000-8000-000000000401';
 const ACTOR = '20000000-0000-4000-8000-000000000401';
+/** Ingest actor stored on an event; deliberately different from `ACTOR` and the event id. */
+const EVENT_ACTOR = '20000000-0000-4000-8000-000000000402';
 const PRODUCT = '30000000-0000-4000-8000-000000000401';
 const DRAFT = '40000000-0000-4000-8000-000000000401';
 const GRANT = 'cpldg_valid-catalogue-grant-0001';
@@ -47,16 +53,22 @@ function offer(amount: number, revisionId = `rev-${amount}`): PublishedOffer {
 class FakeProvider implements SanityCatalogue {
   current: PublishedOffer | undefined = offer(3_500);
   fail = false;
+  listPublishedCalls = 0;
+  fetchPublishedByDocumentIdCalls = 0;
+  fetchPublishedByProductKeyCalls = 0;
 
   async fetchPublishedByDocumentId() {
+    this.fetchPublishedByDocumentIdCalls += 1;
     if (this.fail) throw new Error('cms_outage');
     return this.current;
   }
   async fetchPublishedByProductKey() {
+    this.fetchPublishedByProductKeyCalls += 1;
     if (this.fail) throw new Error('cms_outage');
     return this.current;
   }
   async listPublished() {
+    this.listPublishedCalls += 1;
     if (this.fail) throw new Error('cms_outage');
     return this.current ? [this.current] : [];
   }
@@ -86,6 +98,20 @@ class MemoryCatalogueStore implements CatalogueStore {
   readonly leases = new Map<string, string>();
   /** Revisions recorded on the event row by `markEvent`, keyed by event id. */
   readonly eventRevisions = new Map<string, string | undefined>();
+  /** Attempt count incremented by `markEvent('processing')`, keyed by event id. */
+  readonly eventAttempts = new Map<string, number>();
+  /** Drain ordering key; a test may overwrite it to force out-of-order rows. */
+  readonly eventCreatedAt = new Map<string, Date>();
+  /** Event ids in the order `processEvent` moved them to `processing`. */
+  readonly processingOrder: string[] = [];
+  /** Actors passed to `markEvent`, in call order. */
+  readonly markEventActors: string[] = [];
+  /** Actors passed to `persistPublished`, in call order. */
+  readonly persistActors: string[] = [];
+  /** Product keys persisted at least once; reconcile withdraws known keys absent from the CMS list. */
+  readonly knownProductKeys = new Set<string>();
+  /** Product keys passed to `withdrawProduct`, in call order. */
+  readonly withdrawnKeys: string[] = [];
   currentVersionId: string | undefined;
   syncError: string | undefined;
   private versionCounter = 0;
@@ -102,33 +128,62 @@ class MemoryCatalogueStore implements CatalogueStore {
     this.events.set(eventId, {
       id: eventId,
       workspaceId: input.workspaceId,
+      actorId: input.actorId,
       selector: input.selector,
       providerAccount: input.providerAccount,
       documentId: input.documentId,
       status: 'pending',
     });
+    this.eventAttempts.set(eventId, 0);
+    this.eventCreatedAt.set(eventId, new Date(Date.UTC(2026, 0, 1) + this.events.size * 1_000));
     return { eventId, duplicate: false };
   }
   async getEvent(_workspaceId: string, _actorId: string, eventId: string) {
     return this.events.get(eventId);
   }
+  async listDrainableEvents(
+    workspaceId: string,
+    _actorId: string,
+    maxAttempts: number,
+    limit: number,
+  ) {
+    return [...this.events.values()]
+      .filter((event) => event.workspaceId === workspaceId)
+      .filter((event) => {
+        if (event.status === 'pending') return true;
+        if (event.status !== 'failed') return false;
+        return (this.eventAttempts.get(event.id) ?? 0) < maxAttempts;
+      })
+      .sort((left, right) => {
+        const leftAt = this.eventCreatedAt.get(left.id)?.getTime() ?? 0;
+        const rightAt = this.eventCreatedAt.get(right.id)?.getTime() ?? 0;
+        if (leftAt !== rightAt) return leftAt - rightAt;
+        return left.id.localeCompare(right.id);
+      })
+      .slice(0, limit);
+  }
   async markEvent(
     _workspaceId: string,
-    _actorId: string,
+    actorId: string,
     eventId: string,
     status: 'processing' | 'completed' | 'failed' | 'ignored',
     _errorCode?: string,
     revisionId?: string,
   ) {
+    this.markEventActors.push(actorId);
     const event = this.events.get(eventId);
     if (event) this.events.set(eventId, { ...event, status });
+    if (status === 'processing') {
+      this.eventAttempts.set(eventId, (this.eventAttempts.get(eventId) ?? 0) + 1);
+      this.processingOrder.push(eventId);
+    }
     this.eventRevisions.set(eventId, revisionId);
   }
   async productKeyByDocumentId() {
     return this.versions.size > 0 ? 'rogers-sim-5gb' : undefined;
   }
   async listProductKeys() {
-    return this.versions.size > 0 ? ['rogers-sim-5gb'] : [];
+    return [...this.knownProductKeys];
   }
   async acquireLease(_workspaceId: string, _actorId: string, productKey: string, ownerId: string) {
     if (this.leases.has(productKey)) return false;
@@ -139,6 +194,8 @@ class MemoryCatalogueStore implements CatalogueStore {
     if (this.leases.get(productKey) === ownerId) this.leases.delete(productKey);
   }
   async persistPublished(input: PersistPublishedInput) {
+    this.persistActors.push(input.actorId);
+    this.knownProductKeys.add(input.content.productKey);
     let stored = this.versions.get(input.contentHash);
     const createdVersion = stored === undefined;
     if (!stored) {
@@ -155,9 +212,10 @@ class MemoryCatalogueStore implements CatalogueStore {
   async withdrawProduct(
     _workspaceId: string,
     _actorId: string,
-    _productKey: string,
+    productKey: string,
     policy: QuoteWithdrawalPolicy,
   ) {
+    this.withdrawnKeys.push(productKey);
     this.currentVersionId = undefined;
     if (policy === 'immediate') {
       for (const stored of this.quotes.values()) stored.revoked = true;
@@ -263,6 +321,7 @@ async function issue(service: CatalogueService) {
 async function enqueue(store: MemoryCatalogueStore, deliveryId = 'delivery-1') {
   return store.acceptEvent({
     workspaceId: WORKSPACE,
+    actorId: EVENT_ACTOR,
     selector: 'sanity-site-1',
     providerAccount: 'project-site-1',
     deliveryId,
@@ -285,6 +344,21 @@ describe('catalogue sync and quote consistency', () => {
     expect(store.versions.size).toBe(1);
     expect(store.versions.has(commercialContentHash(offer(5_000).commercial))).toBe(true);
     expect(store.events.get(first.eventId)?.status).toBe('completed');
+  });
+
+  it('attributes the sync writes to the persisted ingest actor, not the event id', async () => {
+    const { store, sanity, service } = harness();
+    sanity.current = offer(5_000, 'attribution');
+    const event = await enqueue(store, 'delivery-attribution');
+
+    await service.processEvent(WORKSPACE, event.eventId);
+
+    expect(store.persistActors.length).toBeGreaterThan(0);
+    expect(store.persistActors).toEqual(store.persistActors.map(() => EVENT_ACTOR));
+    expect(store.markEventActors).toEqual(store.markEventActors.map(() => EVENT_ACTOR));
+    // Neither the event id nor the drain actor leaks into a sync write.
+    expect(store.persistActors).not.toContain(event.eventId);
+    expect(store.persistActors).not.toContain(ACTOR);
   });
 
   it('converges on the current CMS document when two revisions are processed in reverse order', async () => {
@@ -411,5 +485,92 @@ describe('catalogue sync and quote consistency', () => {
     await service.reconcile(WORKSPACE, ACTOR);
     expect(store.versions.size).toBe(1);
     expect(revalidator.calls).toEqual(['rogers-sim-5gb']);
+  });
+
+  it('reconciles from one published snapshot with no per-product CMS re-fetch', async () => {
+    const { store, sanity, revalidator, service } = harness();
+    // A product the store already knows, but which the current list omits,
+    // must be withdrawn by the same pass.
+    const legacy = offer(1_200, 'legacy-rev');
+    legacy.commercial.productKey = 'legacy-sim';
+    await store.persistPublished({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      content: legacy.commercial,
+      contentHash: commercialContentHash(legacy.commercial),
+      documentId: legacy.documentId,
+      revisionId: legacy.revisionId,
+      syncedAt: new Date('2026-09-15T00:00:00.000Z'),
+    });
+    sanity.current = offer(3_500, 'current-rev');
+
+    await service.reconcile(WORKSPACE, ACTOR);
+
+    // The single authoritative snapshot replaces the old N+1 per-product read.
+    expect(sanity.listPublishedCalls).toBe(1);
+    expect(sanity.fetchPublishedByDocumentIdCalls).toBe(0);
+    expect(sanity.fetchPublishedByProductKeyCalls).toBe(0);
+    // Listed content is persisted, and the known-but-absent product withdrawn.
+    expect(store.versions.has(commercialContentHash(offer(3_500).commercial))).toBe(true);
+    expect(store.withdrawnKeys).toEqual(['legacy-sim']);
+    expect(revalidator.calls).toEqual(['rogers-sim-5gb', 'legacy-sim']);
+  });
+
+  it('drains pending and retry-eligible failed events in createdAt order', async () => {
+    const { store, service } = harness();
+    const retryable = await enqueue(store, 'delivery-retryable');
+    const pending = await enqueue(store, 'delivery-pending');
+    const exhausted = await enqueue(store, 'delivery-exhausted');
+    await store.markEvent(WORKSPACE, ACTOR, retryable.eventId, 'failed');
+    await store.markEvent(WORKSPACE, ACTOR, exhausted.eventId, 'failed');
+    store.eventAttempts.set(retryable.eventId, DEFAULT_MAX_EVENT_ATTEMPTS - 1);
+    store.eventAttempts.set(exhausted.eventId, DEFAULT_MAX_EVENT_ATTEMPTS);
+    // Force a createdAt order different from insertion order so the assertion
+    // fails unless the drain actually honours the deterministic ordering.
+    store.eventCreatedAt.set(retryable.eventId, new Date('2026-01-02T00:00:00.000Z'));
+    store.eventCreatedAt.set(pending.eventId, new Date('2026-01-01T00:00:00.000Z'));
+    store.eventCreatedAt.set(exhausted.eventId, new Date('2026-01-03T00:00:00.000Z'));
+
+    const result = await service.drainEvents(WORKSPACE, ACTOR);
+
+    // The failed event at the attempt bound is excluded, so only two are listed.
+    expect(result).toEqual({ listed: 2, processed: 2, failed: 0, failures: [] });
+    expect(store.processingOrder).toEqual([pending.eventId, retryable.eventId]);
+    expect(store.events.get(pending.eventId)?.status).toBe('completed');
+    expect(store.events.get(retryable.eventId)?.status).toBe('completed');
+    expect(store.events.get(exhausted.eventId)?.status).toBe('failed');
+  });
+
+  it('records a failing event and keeps draining the remaining backlog', async () => {
+    const { store, service } = harness();
+    const first = await enqueue(store, 'delivery-fails');
+    const second = await enqueue(store, 'delivery-succeeds');
+    const failing = store.events.get(first.eventId);
+    if (!failing) throw new Error('missing event');
+    // A provider-account mismatch makes exactly this event fail inside
+    // processEvent without needing a CMS outage for the whole drain.
+    store.events.set(first.eventId, { ...failing, providerAccount: 'project-other' });
+
+    const result = await service.drainEvents(WORKSPACE, ACTOR);
+
+    expect(result.listed).toBe(2);
+    expect(result.processed).toBe(1);
+    expect(result.failed).toBe(1);
+    expect(result.failures).toEqual([{ eventId: first.eventId, errorCode: 'provider_mismatch' }]);
+    expect(store.processingOrder).toEqual([first.eventId, second.eventId]);
+    expect(store.events.get(first.eventId)?.status).toBe('failed');
+    expect(store.events.get(second.eventId)?.status).toBe('completed');
+  });
+
+  it('bounds a drain pass to the requested limit', async () => {
+    const { store, service } = harness();
+    await enqueue(store, 'delivery-1');
+    await enqueue(store, 'delivery-2');
+
+    const result = await service.drainEvents(WORKSPACE, ACTOR, 1);
+
+    expect(result.listed).toBe(1);
+    expect(result.processed).toBe(1);
+    expect(store.processingOrder).toHaveLength(1);
   });
 });

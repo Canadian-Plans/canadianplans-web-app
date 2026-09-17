@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { and, desc, eq, isNotNull, isNull, sql } from 'drizzle-orm';
+import { and, desc, eq, isNotNull, isNull, lt, or, sql } from 'drizzle-orm';
 import {
   catalogueSyncEvents,
   catalogueSyncLeases,
@@ -33,6 +33,8 @@ const defaultDatabase: CatalogueDatabase = { withTenantTx };
 
 export interface AcceptedSyncEventInput {
   workspaceId: string;
+  /** Verified machine actor that ingested the delivery; drives every later drain write. */
+  actorId: string;
   selector: string;
   providerAccount: string;
   deliveryId: string;
@@ -44,6 +46,8 @@ export interface AcceptedSyncEventInput {
 export interface SyncEventRecord {
   id: string;
   workspaceId: string;
+  /** Persisted ingest actor, reused by `processEvent` so drain attribution is stable. */
+  actorId: string;
   selector: string;
   providerAccount: string;
   documentId: string;
@@ -231,6 +235,18 @@ export interface CatalogueStore {
     actorId: string,
     eventId: string,
   ): Promise<SyncEventRecord | undefined>;
+  /**
+   * Bounded drain selection for one workspace: pending events plus failed events
+   * whose `attempts` is still below `maxAttempts`, ordered by `createdAt` then
+   * `id`. `processing` rows are intentionally excluded so an in-flight event is
+   * not picked up twice by a second drain.
+   */
+  listDrainableEvents(
+    workspaceId: string,
+    actorId: string,
+    maxAttempts: number,
+    limit: number,
+  ): Promise<readonly SyncEventRecord[]>;
   markEvent(
     workspaceId: string,
     actorId: string,
@@ -300,9 +316,11 @@ export class DatabaseCatalogueStore implements CatalogueStore {
   constructor(private readonly database: CatalogueDatabase = defaultDatabase) {}
 
   async acceptEvent(input: AcceptedSyncEventInput) {
+    // The row id is random; the tenant actor is the verified machine identity
+    // passed in, never the event id or a random UUID.
     const eventId = randomUUID();
     return this.database.withTenantTx(
-      { workspaceId: input.workspaceId, actorId: eventId },
+      { workspaceId: input.workspaceId, actorId: input.actorId },
       async (tx) => {
         const inserted = await tx
           .insert(catalogueSyncEvents)
@@ -339,6 +357,7 @@ export class DatabaseCatalogueStore implements CatalogueStore {
         .select({
           id: catalogueSyncEvents.id,
           workspaceId: catalogueSyncEvents.workspaceId,
+          actorId: catalogueSyncEvents.actorId,
           selector: catalogueSyncEvents.selector,
           providerAccount: catalogueSyncEvents.providerAccount,
           documentId: catalogueSyncEvents.documentId,
@@ -353,6 +372,44 @@ export class DatabaseCatalogueStore implements CatalogueStore {
         )
         .limit(1);
       return event;
+    });
+  }
+
+  async listDrainableEvents(
+    workspaceId: string,
+    actorId: string,
+    maxAttempts: number,
+    limit: number,
+  ): Promise<readonly SyncEventRecord[]> {
+    return this.database.withTenantTx({ workspaceId, actorId }, async (tx) => {
+      // Bounded, deterministic selection for a single drain pass. The
+      // (workspace_id, status, created_at) index backs the ordered scan.
+      const rows = await tx
+        .select({
+          id: catalogueSyncEvents.id,
+          workspaceId: catalogueSyncEvents.workspaceId,
+          actorId: catalogueSyncEvents.actorId,
+          selector: catalogueSyncEvents.selector,
+          providerAccount: catalogueSyncEvents.providerAccount,
+          documentId: catalogueSyncEvents.documentId,
+          status: catalogueSyncEvents.status,
+        })
+        .from(catalogueSyncEvents)
+        .where(
+          and(
+            eq(catalogueSyncEvents.workspaceId, workspaceId),
+            or(
+              eq(catalogueSyncEvents.status, 'pending'),
+              and(
+                eq(catalogueSyncEvents.status, 'failed'),
+                lt(catalogueSyncEvents.attempts, maxAttempts),
+              ),
+            ),
+          ),
+        )
+        .orderBy(catalogueSyncEvents.createdAt, catalogueSyncEvents.id)
+        .limit(limit);
+      return rows;
     });
   }
 

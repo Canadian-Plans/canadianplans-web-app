@@ -1,10 +1,12 @@
+import { createHmac } from 'node:crypto';
 import postgres from 'postgres';
-import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
 import { createDatabaseClient, type DatabaseClient } from '@canadian-plans/db';
 import { applyMigrations } from '@canadian-plans/db/migrations';
 import type { PublishedOffer } from '@canadian-plans/contracts';
 import type { SanityCatalogue, SiteRevalidator } from '@canadian-plans/adapters';
 
+import { MachineRegistry } from '../src/machines/registry.js';
 import { DatabaseCatalogueStore } from '../src/catalogue/store.js';
 import { CatalogueService, type CatalogueProvider } from '../src/catalogue/service.js';
 
@@ -32,6 +34,9 @@ const WORKSPACE = '10000000-0000-4000-8000-000000000451';
 const PROVIDER_ACCOUNT = 'project-catalogue-sync';
 const DOCUMENT = 'sanity-sync-offer-1';
 const PRODUCT_KEY = 'sync-integration-plan';
+const MACHINE_ACTOR = '20000000-0000-4000-8000-000000000452';
+const WEBHOOK_SECRET = 'catalogue-sync-webhook-secret-0001';
+const NOW_MS = Date.parse('2026-09-16T00:00:00.000Z');
 
 function offer(amount: number, revisionId: string): PublishedOffer {
   return {
@@ -119,6 +124,7 @@ databaseDescribe('catalogue sync convergence', () => {
   async function deliver(deliveryId: string): Promise<string> {
     const accepted = await store.acceptEvent({
       workspaceId: WORKSPACE,
+      actorId: MACHINE_ACTOR,
       selector: 'site-1-sanity',
       providerAccount: PROVIDER_ACCOUNT,
       deliveryId,
@@ -158,6 +164,7 @@ databaseDescribe('catalogue sync convergence', () => {
     const deliveryId = 'delivery-replayed-451';
     const first = await store.acceptEvent({
       workspaceId: WORKSPACE,
+      actorId: MACHINE_ACTOR,
       selector: 'site-1-sanity',
       providerAccount: PROVIDER_ACCOUNT,
       deliveryId,
@@ -166,6 +173,7 @@ databaseDescribe('catalogue sync convergence', () => {
     });
     const replay = await store.acceptEvent({
       workspaceId: WORKSPACE,
+      actorId: MACHINE_ACTOR,
       selector: 'site-1-sanity',
       providerAccount: PROVIDER_ACCOUNT,
       deliveryId,
@@ -250,5 +258,72 @@ databaseDescribe('catalogue sync convergence', () => {
     expect(state?.revoked_at).not.toBeNull();
     expect(state?.cms_revision_id).toBeNull();
     expect(await versionCount()).toBe(versionsBeforeStale);
+  });
+
+  test('attributes the inbox and sync writes to the registry machine actor', async () => {
+    const registry = new MachineRegistry(
+      {
+        webhooks: [
+          {
+            selector: 'site-1-sanity',
+            provider: 'sanity',
+            providerAccount: PROVIDER_ACCOUNT,
+            workspaceId: WORKSPACE,
+            actorId: MACHINE_ACTOR,
+            verificationSecret: WEBHOOK_SECRET,
+            revoked: false,
+          },
+        ],
+        schedulers: [],
+      },
+      () => NOW_MS,
+    );
+    const body = JSON.stringify({ documentId: DOCUMENT });
+    const timestamp = String(NOW_MS / 1_000);
+    const signature = `t=${timestamp},v1=${createHmac('sha256', WEBHOOK_SECRET)
+      .update(`${timestamp}.${body}`)
+      .digest('base64url')}`;
+    const resolution = registry.resolveWebhook({
+      selector: 'site-1-sanity',
+      expectedProvider: 'sanity',
+      providerAccount: PROVIDER_ACCOUNT,
+      signature,
+      rawBody: body,
+    });
+    expect(resolution.ok).toBe(true);
+    if (!resolution.ok) return;
+    // The verified machine identity is the actor the route threads into the inbox.
+    expect(resolution.actorId).toBe(MACHINE_ACTOR);
+
+    const accepted = await store.acceptEvent({
+      workspaceId: WORKSPACE,
+      actorId: resolution.actorId,
+      selector: resolution.selector,
+      providerAccount: resolution.providerAccount,
+      deliveryId: 'delivery-actor-attribution',
+      documentId: DOCUMENT,
+      payload: { documentId: DOCUMENT },
+    });
+
+    // Inbox DB assertion: the row stores the registry actor, never the event id.
+    const inbox = await admin<{ actor_id: string }[]>`
+      select actor_id from app.catalogue_sync_events where id = ${accepted.eventId}
+    `;
+    expect(inbox[0]?.actor_id).toBe(MACHINE_ACTOR);
+    expect(inbox[0]?.actor_id).not.toBe(accepted.eventId);
+
+    // Sync DB assertion: the drain-time write is attributed to that same actor.
+    const persistSpy = vi.spyOn(store, 'persistPublished');
+    catalogue.current = offer(8_800, 'attribution-r1');
+    await service.processEvent(WORKSPACE, accepted.eventId);
+    const persisted = persistSpy.mock.calls[0]?.[0];
+    expect(persisted?.actorId).toBe(MACHINE_ACTOR);
+    expect(persisted?.actorId).not.toBe(accepted.eventId);
+
+    const after = await admin<{ status: string; actor_id: string }[]>`
+      select status, actor_id from app.catalogue_sync_events where id = ${accepted.eventId}
+    `;
+    expect(after[0]?.status).toBe('completed');
+    expect(after[0]?.actor_id).toBe(MACHINE_ACTOR);
   });
 });

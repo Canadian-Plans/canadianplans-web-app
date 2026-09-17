@@ -2,18 +2,26 @@ import { createHmac } from 'node:crypto';
 import type { Server } from 'node:http';
 import express from 'express';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { apiErrorResponseSchema } from '@canadian-plans/contracts';
 
 import { MachineRegistry } from '../src/machines/registry.js';
 import { requestId } from '../src/requestId.js';
 import { createSanityWebhookRouter } from '../src/routes/sanity-webhook.js';
 
 const WORKSPACE = '10000000-0000-4000-8000-000000000451';
+const WEBHOOK_ACTOR = '20000000-0000-4000-8000-000000000451';
 const SECRET = 'sanity-webhook-secret-for-tests';
 const NOW = Date.parse('2026-09-16T00:00:00.000Z');
 const TIMESTAMP = String(NOW / 1_000);
 
 function signature(body: string): string {
   return `t=${TIMESTAMP},v1=${createHmac('sha256', SECRET)
+    .update(`${TIMESTAMP}.${body}`)
+    .digest('base64url')}`;
+}
+
+function wrongSignature(body: string): string {
+  return `t=${TIMESTAMP},v1=${createHmac('sha256', 'not-the-registered-secret')
     .update(`${TIMESTAMP}.${body}`)
     .digest('base64url')}`;
 }
@@ -33,6 +41,7 @@ describe('POST /api/v1/webhooks/sanity', () => {
             provider: 'sanity',
             providerAccount: 'project-site-1',
             workspaceId: WORKSPACE,
+            actorId: WEBHOOK_ACTOR,
             verificationSecret: SECRET,
             revoked: false,
           },
@@ -70,8 +79,12 @@ describe('POST /api/v1/webhooks/sanity', () => {
     await new Promise<void>((resolve) => server.close(() => resolve()));
   });
 
-  async function post(providerAccount: string, overrides: { signature?: string } = {}) {
-    const body = JSON.stringify({ documentId: 'sanity-offer-1', ignoredPrice: 1 });
+  async function post(
+    providerAccount: string,
+    overrides: { signature?: string; body?: string } = {},
+  ) {
+    const body =
+      overrides.body ?? JSON.stringify({ documentId: 'sanity-offer-1', ignoredPrice: 1 });
     return fetch(`${baseUrl}/api/v1/webhooks/sanity`, {
       method: 'POST',
       headers: {
@@ -91,6 +104,7 @@ describe('POST /api/v1/webhooks/sanity', () => {
     expect(accepted).toHaveLength(1);
     expect(accepted[0]).toMatchObject({
       workspaceId: WORKSPACE,
+      actorId: WEBHOOK_ACTOR,
       providerAccount: 'project-site-1',
       documentId: 'sanity-offer-1',
     });
@@ -128,5 +142,31 @@ describe('POST /api/v1/webhooks/sanity', () => {
     expect(await response.json()).toMatchObject({
       error: { code: 'machine_signature_invalid' },
     });
+  });
+
+  it('rejects a correctly shaped but wrong signature with the signature error and 401', async () => {
+    const body = JSON.stringify({ documentId: 'sanity-offer-1', ignoredPrice: 1 });
+    const response = await post('project-site-1', { signature: wrongSignature(body) });
+    expect(response.status).toBe(401);
+    expect(accepted).toHaveLength(0);
+    expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe(
+      'machine_signature_invalid',
+    );
+  });
+
+  it('returns 400 invalid_request for a signed but malformed JSON body', async () => {
+    const response = await post('project-site-1', { body: '{"documentId": "sanity-offer-1"' });
+    expect(response.status).toBe(400);
+    expect(accepted).toHaveLength(0);
+    expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe('invalid_request');
+  });
+
+  it('returns 400 invalid_request for a signed but malformed payload', async () => {
+    const response = await post('project-site-1', {
+      body: JSON.stringify({ documentId: '' }),
+    });
+    expect(response.status).toBe(400);
+    expect(accepted).toHaveLength(0);
+    expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe('invalid_request');
   });
 });

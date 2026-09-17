@@ -66,6 +66,7 @@ const noopCatalogueStore: CatalogueStore = {
     throw new Error('not used in these staff-route tests');
   },
   getEvent: async () => undefined,
+  listDrainableEvents: async () => [],
   markEvent: async () => undefined,
   productKeyByDocumentId: async () => undefined,
   listProductKeys: async () => [],

@@ -8,7 +8,7 @@ import { TEST_RUNTIME_PASSWORD, setTestRuntimePassword } from '@canadian-plans/d
 import { hashDraftGrantToken } from '../src/leads/token.js';
 import { DatabaseLeadStore } from '../src/leads/store.js';
 import { OrderService } from '../src/orders/service.js';
-import { DatabaseOrderStore } from '../src/orders/store.js';
+import { DatabaseOrderStore, ORDER_RETRY_WINDOW_MS } from '../src/orders/store.js';
 
 function disposableDatabaseUrl(): string | undefined {
   const url = process.env.TEST_MIGRATION_DATABASE_URL;
@@ -38,6 +38,13 @@ const ROLLBACK_GRANT = 'cpldg_database-integration-rollback-grant';
 const FOREIGN_WORKSPACE = '10000000-0000-4000-8000-000000000614';
 const FOREIGN_ACTOR = '20000000-0000-4000-8000-000000000614';
 const NOW = new Date('2026-09-16T12:00:00.000Z');
+// G16 retry-window fixture: a completed key whose `completedAt` the injected
+// clock can move past the fixed window.
+const RETRY_LEAD = '50000000-0000-4000-8000-000000000615';
+const RETRY_QUOTE = '60000000-0000-4000-8000-000000000615';
+const RETRY_REQUEST = '70000000-0000-4000-8000-000000000615';
+const RETRY_GRANT = 'cpldg_database-integration-retry-window-grant';
+const RETRY_NOW = new Date('2026-09-20T12:00:00.000Z');
 
 const offer = {
   productKey: 'integration-plan',
@@ -193,6 +200,42 @@ databaseDescribe('orders database transaction', () => {
       insert into app.workspaces (id, slug, name)
       values (${FOREIGN_WORKSPACE}, 'orders-integration-foreign', 'Orders Integration Foreign')
       on conflict (id) do nothing
+    `;
+    // G16: a fresh lead/quote/grant/key, seeded once, whose completed key is
+    // retried from both sides of the fixed retry window.
+    await admin`
+      insert into app.leads (id, workspace_id, status, consent_version)
+      values (${RETRY_LEAD}, ${WORKSPACE}, 'incomplete', 'terms-1')
+      on conflict (id) do update set status = 'incomplete'
+    `;
+    await admin`
+      insert into app.draft_grants (
+        workspace_id, lead_id, token_hash, expires_at
+      ) values (
+        ${WORKSPACE}, ${RETRY_LEAD}, ${hashDraftGrantToken(RETRY_GRANT)},
+        ${new Date(RETRY_NOW.getTime() + 24 * 3_600_000)}
+      ) on conflict (token_hash) do nothing
+    `;
+    await admin`
+      insert into app.quotes (
+        id, workspace_id, draft_id, product_id, offer_version_id, currency,
+        charges, total_amount_minor, amount_payable_today_minor, payment_required,
+        document_checklist, terms_version, expires_at
+      ) values (
+        ${RETRY_QUOTE}, ${WORKSPACE}, ${RETRY_LEAD}, ${PRODUCT}, ${OFFER}, 'CAD',
+        ${admin.json([
+          {
+            code: 'recurring',
+            label: 'Recurring charge',
+            amount: { amountMinor: 4500, currency: 'CAD' },
+          },
+        ])},
+        4500, 0, false, array['passport'], 'terms-1', ${new Date(RETRY_NOW.getTime() + 900_000)}
+      ) on conflict (id) do update set
+        consumed_by_order_id = null,
+        consumed_at = null,
+        revoked_at = null,
+        expires_at = excluded.expires_at
     `;
 
     const runtimeUrl = new URL(databaseUrl);
@@ -495,5 +538,43 @@ databaseDescribe('orders database transaction', () => {
         `),
     );
     expect(seen[0]).toEqual({ orders: 0, keys: 0, outbox: 0 });
+  });
+
+  it('honours a completed-key retry only inside the fixed window after completion', async () => {
+    let clock = RETRY_NOW;
+    const orderService = new OrderService(
+      new DatabaseOrderStore(clientA),
+      'honour_until_expiry',
+      () => clock,
+      () => 'CP-RETRY-WINDOW',
+    );
+    const input = {
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      requestId: RETRY_REQUEST,
+      grantToken: RETRY_GRANT,
+      idempotencyKey: 'orders-integration-retry-window-key',
+      body: { ...requestBody, quoteId: RETRY_QUOTE },
+    };
+    expect(await orderService.submit(input)).toMatchObject({ status: 'created' });
+
+    // Just inside the window the stored order is still returned even though its
+    // quote is now consumed (invariant 6).
+    clock = new Date(RETRY_NOW.getTime() + ORDER_RETRY_WINDOW_MS - 1);
+    expect(await orderService.submit(input)).toMatchObject({ status: 'existing' });
+
+    // Just outside it the prior-key path no longer honours the retry, and it
+    // reports the lapse honestly rather than creating or duplicating an order.
+    clock = new Date(RETRY_NOW.getTime() + ORDER_RETRY_WINDOW_MS + 1);
+    expect(await orderService.submit(input)).toEqual({ status: 'draft_expired' });
+
+    const [state] = await admin<{ orders: number; keys: number }[]>`
+      select
+        (select count(*)::int from app.orders
+           where workspace_id = ${WORKSPACE} and lead_id = ${RETRY_LEAD}) as orders,
+        (select count(*)::int from app.idempotency_keys
+           where workspace_id = ${WORKSPACE} and lead_id = ${RETRY_LEAD}) as keys
+    `;
+    expect(state).toEqual({ orders: 1, keys: 1 });
   });
 });
