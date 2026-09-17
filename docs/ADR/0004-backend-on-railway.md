@@ -113,7 +113,9 @@ run loop and no sub-daily schedule. The migration is intentionally two-platform.
 ## Consequences
 
 - Scheduled work no longer depends on a Pro Vercel plan or a special staging
-  project; G30 can be closed with real Railway-scheduler evidence in Phase 8.
+  project. **G30 is closed (18 September 2026)** — the scheduler was observed
+  ticking unprompted on its own timer on the deployed Railway service, against
+  the real production database; see `docs/EVIDENCE/T10-T12-T15.md`.
 - `DEPLOYMENT_ENV` (`production` | `preview` | `development`) is the
   platform-neutral environment signal, with `VERCEL_ENV` as a fallback during the
   cutover window. The preview guard is unchanged and still fail-closed.
