@@ -52,7 +52,7 @@ export function AppSidebar({ workspace }: { workspace: string }) {
               <SidebarMenu>
                 {NAV_ITEMS.map(({ section, label, icon: Icon }) => {
                   const href = `/w/${workspace}/${section}`;
-                  const isActive = pathname === href;
+                  const isActive = pathname === href || pathname.startsWith(`${href}/`);
 
                   return (
                     <SidebarMenuItem key={section}>

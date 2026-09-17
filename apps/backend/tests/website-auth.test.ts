@@ -26,6 +26,7 @@ const CREDENTIAL = '80000000-0000-4000-8000-000000000201';
 const { secret: VALID_SECRET, secretHash: VALID_HASH } = generateServiceSecret();
 
 class FakeCredentialResolver {
+  unavailable = false;
   resolution: WebsiteCredentialResolution | undefined = {
     credentialId: CREDENTIAL,
     workspaceId: WORKSPACE,
@@ -33,8 +34,10 @@ class FakeCredentialResolver {
     revoked: false,
   };
 
-  resolve = async (secretHash: string): Promise<WebsiteCredentialResolution | undefined> =>
-    secretHash === VALID_HASH ? this.resolution : undefined;
+  resolve = async (secretHash: string): Promise<WebsiteCredentialResolution | undefined> => {
+    if (this.unavailable) throw new Error('database unavailable');
+    return secretHash === VALID_HASH ? this.resolution : undefined;
+  };
 }
 
 /** In-memory fixed-window limiter mirroring the SQL function's semantics. */
@@ -225,6 +228,20 @@ describe('public website credential authentication', () => {
     expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe(
       'invalid_credential',
     );
+  });
+
+  it('returns retryable 503 when credential persistence is unavailable', async () => {
+    resolver.unavailable = true;
+    const response = await post(
+      '/api/v1/website/leads',
+      { authorization: `Bearer ${VALID_SECRET}` },
+      VALID_LEAD_BODY,
+    );
+    expect(response.status).toBe(503);
+    expect(response.headers.get('retry-after')).toBe('2');
+    const body = apiErrorResponseSchema.parse(await response.json());
+    expect(body.error.code).toBe('persistence_unavailable');
+    expect(body.error.details).toEqual({ retryable: true });
   });
 
   it('denies a revoked credential', async () => {

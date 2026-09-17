@@ -51,9 +51,8 @@ export type Quote = z.infer<typeof quoteSchema>;
  * identified by its grant header, the workspace by the credential.
  */
 export const createQuoteRequestSchema = z.object({
-  leadId: z.uuid().optional(),
+  leadId: z.uuid(),
   productId: z.uuid(),
-  offerVersionId: z.uuid().optional(),
   form: versionedFormSchema(z.record(z.string(), z.unknown())).optional(),
 });
 export type CreateQuoteRequest = z.infer<typeof createQuoteRequestSchema>;

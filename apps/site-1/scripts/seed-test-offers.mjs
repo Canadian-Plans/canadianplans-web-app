@@ -1,7 +1,7 @@
 // SPIKE-free, reusable fixture seeder — not a spike. Idempotent: reruns
 // replace the same documents rather than duplicating them.
 //
-// Seeds one stable product and 3 illustrative TEST offers (OPEN_INPUTS #3-6:
+// Seeds 3 stable products and 3 illustrative TEST offers (OPEN_INPUTS #3-6:
 // real Rogers plan names/prices are unresolved; these are clearly labelled
 // TEST fixtures, never real pricing). Refuses to run against any dataset
 // whose name does not contain "test", so this can never touch production
@@ -24,16 +24,18 @@ assert.ok(
 
 const client = createClient({ projectId, dataset, token, apiVersion, useCdn: false });
 
-const PRODUCT_ID = 'test-product-rogers-sim';
-
-const product = {
-  _id: PRODUCT_ID,
+const products = [
+  ['5gb', '5GB'],
+  ['10gb', '10GB'],
+  ['unlimited', 'Unlimited'],
+].map(([key, label]) => ({
+  _id: `test-product-rogers-${key}`,
   _type: 'product',
-  productKey: 'rogers-sim',
-  title: 'Rogers SIM (TEST)',
-  slug: { _type: 'slug', current: 'rogers-sim-test' },
+  productKey: `rogers-sim-${key}`,
+  title: `[TEST] Rogers ${label} Illustrative Plan`,
+  slug: { _type: 'slug', current: `rogers-${key}-test` },
   type: 'sim',
-};
+}));
 
 function testContractTerms(text) {
   return [
@@ -47,6 +49,7 @@ function testContractTerms(text) {
 
 function testOffer({
   id,
+  productKey,
   name,
   recurringChargeAmountMinor,
   amountPayableTodayMinor,
@@ -55,7 +58,7 @@ function testOffer({
   return {
     _id: id,
     _type: 'offer',
-    product: { _type: 'reference', _ref: PRODUCT_ID },
+    product: { _type: 'reference', _ref: `test-product-rogers-${productKey}` },
     name,
     currency: 'CAD',
     recurringChargeAmountMinor,
@@ -76,6 +79,7 @@ function testOffer({
     contractTerms: testContractTerms(
       'TEST FIXTURE — illustrative contract terms, not for real use.',
     ),
+    termsVersion: 'test-terms-2026-09',
     specs: { carrier: 'Rogers (TEST)', dataAllowance },
   };
 }
@@ -83,6 +87,7 @@ function testOffer({
 const offers = [
   testOffer({
     id: 'test-offer-rogers-5gb',
+    productKey: '5gb',
     name: '[TEST] Rogers 5GB Illustrative Plan',
     recurringChargeAmountMinor: 3500,
     amountPayableTodayMinor: 4500,
@@ -90,6 +95,7 @@ const offers = [
   }),
   testOffer({
     id: 'test-offer-rogers-10gb',
+    productKey: '10gb',
     name: '[TEST] Rogers 10GB Illustrative Plan',
     recurringChargeAmountMinor: 5000,
     amountPayableTodayMinor: 6000,
@@ -97,6 +103,7 @@ const offers = [
   }),
   testOffer({
     id: 'test-offer-rogers-unlimited',
+    productKey: 'unlimited',
     name: '[TEST] Rogers Unlimited Illustrative Plan',
     recurringChargeAmountMinor: 8000,
     amountPayableTodayMinor: 9000,
@@ -104,10 +111,11 @@ const offers = [
   }),
 ];
 
-const transaction = client.transaction().createOrReplace(product);
+const transaction = client.transaction();
+for (const product of products) transaction.createOrReplace(product);
 for (const offer of offers) transaction.createOrReplace(offer);
 await transaction.commit();
 
 console.info(
-  `Seeded 1 TEST product and ${offers.length} TEST offers into ${projectId}/${dataset}.`,
+  `Seeded ${products.length} TEST products and ${offers.length} TEST offers into ${projectId}/${dataset}.`,
 );

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --env-file-if-exists=.env.local --import tsx --watch src/server.ts",
+    "catalogue:job": "tsx src/catalogue/manual.ts",
     "build": "tsup && node scripts/write-vercel-handler-dts.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
@@ -13,6 +14,7 @@
     "@canadian-plans/adapters": "workspace:*",
     "@canadian-plans/contracts": "workspace:*",
     "@canadian-plans/db": "workspace:*",
+    "@canadian-plans/jobs": "workspace:*",
     "@canadian-plans/types": "workspace:*",
     "@supabase/supabase-js": "2.116.0",
     "drizzle-orm": "catalog:",

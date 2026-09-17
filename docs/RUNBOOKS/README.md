@@ -12,7 +12,9 @@ production recovery rehearsal.
 | Runbook | Added by |
 |---|---|
 | Staff onboarding and removal | T5 |
-| CMS publishing and price-error handling | T9/T10 |
+| [CMS publishing and price-error handling](catalogue-sync.md) | T9/T10 |
+| [Order submission integrity and retry handling](orders.md) | T12 |
+| [Outbox jobs](outbox-jobs.md) | T15 |
 | Failed-email recovery | T18 |
 | Dispatch and activation | T14/T19 |
 | Commission and invoice month-end | T19 |

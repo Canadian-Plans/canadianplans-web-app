@@ -38,6 +38,9 @@ const PRODUCT_A = '90000000-0000-4000-8000-000000000021';
 const PRODUCT_A2 = '90000000-0000-4000-8000-000000000023';
 const PRODUCT_B = '90000000-0000-4000-8000-000000000022';
 const OFFER_VERSION_A1 = '91000000-0000-4000-8000-000000000021';
+const LEAD_A = '92000000-0000-4000-8000-000000000021';
+const QUOTE_A = '93000000-0000-4000-8000-000000000021';
+const EVENT_A = '94000000-0000-4000-8000-000000000021';
 const SHARED_CONTENT_HASH = 'sha256:shared-test-hash';
 const TEST_RUNTIME_PASSWORD = 'local_ci_runtime_password';
 
@@ -89,6 +92,32 @@ databaseTest('catalogue tables (T10A)', () => {
       insert into app.product_availability (product_id, workspace_id, revoked_at)
       values (${PRODUCT_A}, ${WORKSPACE_A}, null)
       on conflict (product_id) do nothing
+    `;
+    await admin`
+      insert into app.leads (id, workspace_id, status, consent_version)
+      values (${LEAD_A}, ${WORKSPACE_A}, 'incomplete', 'test-terms-1')
+      on conflict (id) do nothing
+    `;
+    await admin`
+      insert into app.quotes (
+        id, workspace_id, draft_id, product_id, offer_version_id, currency,
+        charges, total_amount_minor, amount_payable_today_minor,
+        payment_required, document_checklist, terms_version, expires_at
+      ) values (
+        ${QUOTE_A}, ${WORKSPACE_A}, ${LEAD_A}, ${PRODUCT_A}, ${OFFER_VERSION_A1}, 'CAD',
+        '[{"code":"recurring","label":"Recurring","amount":{"amountMinor":3500,"currency":"CAD"}}]'::jsonb,
+        3500, 0, false, array['passport'], 'test-terms-1', now() + interval '15 minutes'
+      )
+      on conflict (id) do nothing
+    `;
+    await admin`
+      insert into app.catalogue_sync_events (
+        id, workspace_id, selector, provider_account, delivery_id, document_id, payload
+      ) values (
+        ${EVENT_A}, ${WORKSPACE_A}, 'test-selector', 'test-account',
+        'test-delivery-21', 'sanity-offer-21', '{"documentId":"sanity-offer-21"}'::jsonb
+      )
+      on conflict (id) do nothing
     `;
 
     const runtimeUrl = new URL(migrationUrl);
@@ -289,5 +318,37 @@ databaseTest('catalogue tables (T10A)', () => {
     await admin`
       update app.product_availability set revoked_at = null where product_id = ${PRODUCT_A}
     `;
+  });
+
+  test('quotes enforce the exact workspace/product/immutable-version relationship', async () => {
+    await expect(
+      admin`
+        insert into app.quotes (
+          workspace_id, draft_id, product_id, offer_version_id, currency,
+          charges, total_amount_minor, amount_payable_today_minor,
+          payment_required, document_checklist, terms_version, expires_at
+        ) values (
+          ${WORKSPACE_A}, ${LEAD_A}, ${PRODUCT_A2}, ${OFFER_VERSION_A1}, 'CAD',
+          '[]'::jsonb, 0, 0, false, array[]::text[], 'test-terms-1', now() + interval '15 minutes'
+        )
+      `,
+    ).rejects.toMatchObject({ code: '23503' });
+  });
+
+  test('new inbox and quote rows are invisible under a foreign or missing tenant context', async () => {
+    const foreignQuotes = await tenantDatabase.withTenantTx(
+      { workspaceId: WORKSPACE_B, actorId: ACTOR_B },
+      (tx) => tx.execute(sql`select id from app.quotes where id = ${QUOTE_A}`),
+    );
+    expect(foreignQuotes).toHaveLength(0);
+
+    const noContext = await runtimeSql`select id from app.quotes where id = ${QUOTE_A}`;
+    expect(noContext).toHaveLength(0);
+
+    const foreignInbox = await tenantDatabase.withTenantTx(
+      { workspaceId: WORKSPACE_B, actorId: ACTOR_B },
+      (tx) => tx.execute(sql`select id from app.catalogue_sync_events where id = ${EVENT_A}`),
+    );
+    expect(foreignInbox).toHaveLength(0);
   });
 });

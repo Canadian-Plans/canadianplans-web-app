@@ -32,7 +32,10 @@ proxy trust policy must be narrowly verified before enabling public traffic.
 - `API_BASE_URL`
 - `NEXT_PUBLIC_API_BASE_URL`
 - `ADMIN_ORIGIN` — backend-only exact admin origin allowed for browser API calls; defaults to `http://localhost:3000` in local development
-- `MACHINE_REGISTRY_JSON` — backend-only server-only integration registry (PLATFORM_CONTEXT §4b): JSON mapping webhook selectors to `{ provider, providerAccount, workspaceId, verificationSecret }` and scheduler selectors to `{ secret, workspaceIds, scopes }`; deployment configuration set through the owner's release process, never customer data. Unset means a deny-all registry. Staging and production registries and secrets are separate.
+- `MACHINE_REGISTRY_JSON` — backend-only server-only integration registry (PLATFORM_CONTEXT §4b). A Sanity webhook entry maps `{ selector, provider: "sanity", providerAccount, workspaceId, verificationSecret, sanity: { projectId, dataset, apiVersion?, readToken?, revalidateUrl, revalidateSecret } }`; scheduler entries map `{ selector, secret, actorId, workspaceIds, scopes }`. `actorId` is the UUID written into tenant transaction context for scheduler work. Unset means deny-all. Configure Sanity's custom `X-Webhook-Selector` and `X-Provider-Account` headers to match the entry; secrets and environment registries remain separate.
+- `CRON_SECRET` — Vercel Cron bearer secret for the backend production deployment. It must equal the `secret` on the selected scheduler registry entry and must not be exposed to preview deployments.
+- `JOB_RUNNER_SELECTOR` — backend-only selector for the scheduler registry entry used by Vercel Cron. The entry must have `outbox:run`, an explicit `actorId`, and the complete authorized workspace UUID set.
+- `QUOTE_WITHDRAWAL_POLICY` — `immediate` or `honour_until_expiry`. This is a **TEST policy only** while OPEN_INPUTS #14 is unresolved. Unset/unknown becomes `unresolved` and disables priced checkout; do not set it in production until the owner records the decision.
 
 ## Supabase
 
@@ -77,6 +80,7 @@ future public actions must bind their own expected action explicitly.
 - `SANITY_API_VERSION`
 - `SANITY_API_TOKEN`
 - `SITE_1_SANITY_PREVIEW_TOKEN` — site-1-scoped, read-only viewer token for editor draft preview only; never `NEXT_PUBLIC_*`
+- `SITE_1_REVALIDATE_SECRET` — site-1 server-only bearer secret accepted only by `/api/revalidate/catalogue`; must match the registry entry's `sanity.revalidateSecret`
 
 ## AWS SES
 

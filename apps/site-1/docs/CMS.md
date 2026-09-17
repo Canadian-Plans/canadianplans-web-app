@@ -61,7 +61,7 @@ how a page assembles a plan comparison from published offers.
 
 Every field REQ 12 requires — currency, recurring charge, one-time fees,
 amount payable today, `paymentRequired`, `documentChecklist`, eligibility,
-availability, billing party, contract terms, and specs — is
+availability, billing party, contract terms, `termsVersion`, and specs — is
 `Rule.required()` on the `offer` type. Studio refuses to **publish** a
 document with a failing required field (it can still be saved as an
 incomplete draft), which is what makes "an incomplete offer fails
@@ -93,6 +93,13 @@ schema — Studio's validation API cannot safely perform a live cross-document
 uniqueness lookup at authoring time. The backend catalogue sync enforces
 uniqueness as a database constraint (workspace, product, content hash) and
 is the actual source of truth for "this product identifier is stable."
+
+For T10, configure a GROQ-powered webhook whose signed JSON projection is
+`{"documentId": _id}`. Set custom `X-Webhook-Selector` and
+`X-Provider-Account` headers to the matching server-only registry entry. The
+backend validates Sanity's `sanity-webhook-signature` against the raw body,
+stores the delivery by `idempotency-key`, and then re-fetches the published
+document; no price or terms from the webhook body are used.
 
 ## Draft preview — editor-only, allowlisted, no caching
 
@@ -128,10 +135,12 @@ this doc's allowlist is where that route list is kept in sync.
 Real Rogers plan names, prices, payment requirements and document checklists
 are unresolved (OPEN_INPUTS #3–#6). Until the owner answers them, this
 website's Sanity project keeps a **`test`** dataset, separate from
-`production`, holding one product and 3 illustrative offers, each clearly
+`production`, holding 3 products and 3 illustrative offers, each clearly
 labelled `(TEST)` / `[TEST]` in every editorial field:
 
-- `test-product-rogers-sim` — SIM product, `productKey: rogers-sim`
+- `test-product-rogers-5gb`, `test-product-rogers-10gb`, and
+  `test-product-rogers-unlimited` — one stable product identity per selectable
+  plan, with matching `rogers-sim-*` product keys
 - `test-offer-rogers-5gb`, `test-offer-rogers-10gb`,
   `test-offer-rogers-unlimited` — illustrative prices, `paymentRequired:
 false`, `documentChecklist: ["passport"]`

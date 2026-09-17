@@ -9,11 +9,11 @@ import {
 } from './domain';
 
 /**
- * Order submission — `POST /orders`. Caller: website credential
+ * Order submission — `POST /api/v1/orders`. Caller: website credential
  * (`orders:create`) + draft grant + idempotency key (the `Idempotency-Key`
  * header, not a body field). Submission freezes a full commercial snapshot
  * (invariant 5) and is idempotent per scoped key (invariant 6). No handler
- * here; A2 implements the transaction.
+ * and the backend commits the entire submission in one transaction.
  */
 
 /** Consent captured at submission (CASL — invariant 11). Terms/marketing recorded with versions. */

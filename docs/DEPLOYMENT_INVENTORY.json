@@ -37,6 +37,11 @@
     },
     {
       "deployment": "backend",
+      "name": "CRON_SECRET",
+      "resourceKind": "machine-scheduler"
+    },
+    {
+      "deployment": "backend",
       "name": "R2_ACCESS_KEY_ID",
       "resourceKind": "r2"
     },

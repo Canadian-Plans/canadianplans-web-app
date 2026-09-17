@@ -60,6 +60,30 @@ export {
 export { healthResponseSchema, type HealthResponse } from './health';
 
 export {
+  adminJobSchema,
+  adminJobStatusSchema,
+  listWorkspaceJobsResponseSchema,
+  retryWorkspaceJobResponseSchema,
+  type AdminJob,
+  type AdminJobStatus,
+  type ListWorkspaceJobsResponse,
+  type RetryWorkspaceJobResponse,
+} from './jobs';
+
+export {
+  catalogueOfferStatusSchema,
+  catalogueStatusResponseSchema,
+  catalogueSyncErrorSchema,
+  commercialOfferSchema,
+  publishedOfferSchema,
+  type CatalogueOfferStatus,
+  type CatalogueStatusResponse,
+  type CatalogueSyncError,
+  type CommercialOffer,
+  type PublishedOffer,
+} from './catalogue';
+
+export {
   apiErrorCodeSchema,
   apiErrorResponseSchema,
   apiErrorSchema,

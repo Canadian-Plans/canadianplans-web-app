@@ -14,8 +14,10 @@ import { requestIdSchema } from './common';
 export const webhookProviderSchema = z.enum(['sanity', 'email']);
 export type WebhookProvider = z.infer<typeof webhookProviderSchema>;
 
-/** The raw provider payload, typed only as a JSON object; its shape is provider-specific. */
-export const webhookDeliveryRequestSchema = z.record(z.string(), z.unknown());
+/** Signed Sanity projection. `documentId` is only a re-fetch selector, never commercial data. */
+export const webhookDeliveryRequestSchema = z
+  .object({ documentId: z.string().min(1).max(512) })
+  .catchall(z.unknown());
 export type WebhookDeliveryRequest = z.infer<typeof webhookDeliveryRequestSchema>;
 
 /** Durable acknowledgement: the event was persisted to the inbox, not that it was processed. */

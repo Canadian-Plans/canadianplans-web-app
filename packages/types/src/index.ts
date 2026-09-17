@@ -45,6 +45,24 @@ export type PartnerStatus = (typeof partnerStatuses)[number];
 export const leadStatuses = tuple('incomplete', 'submitted');
 export type LeadStatus = (typeof leadStatuses)[number];
 
+/** Independent order state dimensions (PLATFORM_CONTEXT invariant 9). */
+export const orderStatuses = tuple(
+  'submitted',
+  'in_progress',
+  'awaiting_customer',
+  'ready_for_delivery',
+  'dispatched',
+  'activated',
+  'cancelled',
+);
+export type OrderStatus = (typeof orderStatuses)[number];
+
+export const paymentStates = tuple('not_required', 'pending', 'paid');
+export type PaymentState = (typeof paymentStates)[number];
+
+export const deliveryStates = tuple('none', 'dispatched');
+export type DeliveryState = (typeof deliveryStates)[number];
+
 /**
  * Scopes a storefront service credential may hold. The public website may only
  * create/resume its own drafts and request quotes/orders/uploads/tracking; it

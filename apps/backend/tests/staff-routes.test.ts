@@ -21,6 +21,8 @@ import type {
   StaffStore,
 } from '../src/staff/store.js';
 import type { WebsiteCredentialStore } from '../src/website/store.js';
+import type { OrderQueryStore } from '../src/orders/query-store.js';
+import type { OrderTransitionStore } from '../src/orders/transitions.js';
 
 const noopCredentialStore: WebsiteCredentialStore = {
   createCredential: async () => {
@@ -28,6 +30,14 @@ const noopCredentialStore: WebsiteCredentialStore = {
   },
   listCredentials: async () => [],
   revokeCredential: async () => ({ status: 'not_found' }),
+};
+
+const conflictTransitionStore: OrderTransitionStore = {
+  transition: async () => ({ status: 'version_conflict' }),
+};
+
+const noopOrderQueryStore: OrderQueryStore = {
+  getOrder: async () => undefined,
 };
 
 const ACTOR = '20000000-0000-4000-8000-000000000001';
@@ -126,6 +136,8 @@ beforeEach(async () => {
       store,
       credentialStore: noopCredentialStore,
       leadStore,
+      orderTransitionStore: conflictTransitionStore,
+      orderQueryStore: noopOrderQueryStore,
     },
   }).listen(0);
   await new Promise<void>((resolve) => server.once('listening', resolve));
@@ -139,6 +151,27 @@ afterEach(async () => {
 });
 
 describe('protected staff routes', () => {
+  it('returns 409 when an order transition expectedVersion is stale', async () => {
+    const orderId = '80000000-0000-4000-8000-000000000001';
+    const response = await fetch(
+      `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/orders/${orderId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          authorization: 'Bearer aal1-token',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'transition',
+          toStatus: 'in_progress',
+          expectedVersion: 1,
+        }),
+      },
+    );
+    expect(response.status).toBe(409);
+    expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe('version_conflict');
+  });
+
   it('rejects malformed JSON with the shared safe error envelope', async () => {
     const response = await fetch(`${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/invitations`, {
       method: 'POST',

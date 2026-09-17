@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { deliveryStates, orderStatuses, paymentStates } from '@canadian-plans/types';
 
 /**
  * API-surface vocabularies shared across the order, partner, upload and
@@ -12,21 +13,15 @@ import { z } from 'zod';
  */
 
 /** Fulfilment dimension. Staff transitions: assign / note / remind / dispatch / activate (§7). */
-export const orderFulfilmentStatusSchema = z.enum([
-  'received',
-  'processing',
-  'dispatched',
-  'activated',
-  'cancelled',
-]);
+export const orderFulfilmentStatusSchema = z.enum(orderStatuses);
 export type OrderFulfilmentStatus = z.infer<typeof orderFulfilmentStatusSchema>;
 
 /** Payment dimension. Manual/flagged at launch; per-offer `paymentRequired` decides `not_required`. */
-export const paymentStateSchema = z.enum(['not_required', 'unpaid', 'paid']);
+export const paymentStateSchema = z.enum(paymentStates);
 export type PaymentState = z.infer<typeof paymentStateSchema>;
 
 /** Delivery dimension. Manual courier, recorded in admin (§7 decisions). */
-export const deliveryStateSchema = z.enum(['pending', 'dispatched', 'delivered']);
+export const deliveryStateSchema = z.enum(deliveryStates);
 export type DeliveryState = z.infer<typeof deliveryStateSchema>;
 
 /** Archive dimension. Independent of fulfilment (invariant 9). */

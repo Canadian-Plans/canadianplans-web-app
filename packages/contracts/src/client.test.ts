@@ -73,13 +73,13 @@ describe('createBackendClient transport', () => {
       id: UUID,
       workspaceId: UUID,
       reference: 'CP-1',
-      fulfilmentStatus: 'received',
+      fulfilmentStatus: 'submitted',
       paymentState: 'not_required',
-      deliveryState: 'pending',
+      deliveryState: 'none',
       archiveState: 'active',
       total: { amountMinor: 0, currency: 'CAD' },
       amountPayableToday: { amountMinor: 0, currency: 'CAD' },
-      recordVersion: 0,
+      recordVersion: 1,
       createdAt: '2026-09-14T00:00:00.000Z',
       updatedAt: '2026-09-14T00:00:00.000Z',
     };
@@ -94,6 +94,7 @@ describe('createBackendClient transport', () => {
       { draftGrant: 'grant-token', idempotencyKey: 'idem-1' },
     );
     const call = calls[0];
+    expect(call?.url).toBe('https://api.example.test/api/v1/orders');
     expect(call?.headers.get('x-draft-grant')).toBe('grant-token');
     expect(call?.headers.get('idempotency-key')).toBe('idem-1');
   });

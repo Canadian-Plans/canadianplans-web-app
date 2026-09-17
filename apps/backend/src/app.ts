@@ -9,13 +9,27 @@ import {
 } from './routes/staff.js';
 import {
   createDefaultWebsiteRouteDependencies,
+  createOrderRouter,
+  createQuoteRouter,
   createWebsiteRouter,
   type WebsiteRouteDependencies,
 } from './routes/website.js';
+import {
+  createDefaultSanityWebhookDependencies,
+  createSanityWebhookRouter,
+  type SanityWebhookDependencies,
+} from './routes/sanity-webhook.js';
+import {
+  createDefaultJobsRouteDependencies,
+  createJobsRouter,
+  type JobsRouteDependencies,
+} from './routes/jobs.js';
 
 export interface CreateAppOptions {
   staff?: StaffRouteDependencies;
   website?: WebsiteRouteDependencies;
+  sanityWebhook?: SanityWebhookDependencies;
+  jobs?: JobsRouteDependencies;
 }
 
 function adminCors(): RequestHandler {
@@ -26,7 +40,7 @@ function adminCors(): RequestHandler {
       res.setHeader('access-control-allow-origin', allowedOrigin);
       res.setHeader('vary', 'Origin');
       res.setHeader('access-control-allow-headers', 'authorization, content-type, x-request-id');
-      res.setHeader('access-control-allow-methods', 'GET, POST, DELETE, OPTIONS');
+      res.setHeader('access-control-allow-methods', 'GET, POST, PATCH, DELETE, OPTIONS');
     }
     if (req.method === 'OPTIONS') {
       res.sendStatus(origin === allowedOrigin ? 204 : 403);
@@ -52,18 +66,27 @@ export function createApp(options: CreateAppOptions = {}): Express {
 
   app.use(requestId);
   app.use(adminCors());
+  app.use(
+    '/api/v1/webhooks/sanity',
+    express.raw({ type: 'application/json', limit: '64kb' }),
+    createSanityWebhookRouter(options.sanityWebhook ?? createDefaultSanityWebhookDependencies()),
+  );
   app.use(express.json({ limit: '64kb' }));
   app.get('/api/v1/health', getHealth);
+  app.use(
+    '/api/internal/jobs',
+    createJobsRouter(options.jobs ?? createDefaultJobsRouteDependencies()),
+  );
   app.use(
     '/api/v1/staff',
     createStaffRouter(options.staff ?? createDefaultStaffRouteDependencies()),
   );
   // Public storefront surface. Server-to-server, so CORS does not apply and is
   // never treated as authentication; the service credential is the only proof.
-  app.use(
-    '/api/v1/website',
-    createWebsiteRouter(options.website ?? createDefaultWebsiteRouteDependencies()),
-  );
+  const websiteDependencies = options.website ?? createDefaultWebsiteRouteDependencies();
+  app.use('/api/v1', createQuoteRouter(websiteDependencies));
+  app.use('/api/v1', createOrderRouter(websiteDependencies));
+  app.use('/api/v1/website', createWebsiteRouter(websiteDependencies));
   app.use(invalidBodyError);
 
   return app;

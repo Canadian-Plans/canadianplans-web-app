@@ -3,6 +3,7 @@ import {
   createServiceCredentialRequestSchema,
   inviteStaffRequestSchema,
   listWorkspaceLeadsQuerySchema,
+  patchWorkspaceOrderRequestSchema,
 } from '@canadian-plans/contracts';
 import { z } from 'zod';
 
@@ -12,8 +13,17 @@ import {
   type StaffSessionVerifier,
 } from '../auth/session.js';
 import { sendStaffAuthError } from '../http/staff-errors.js';
+import { sendDomainError } from '../http/domain-errors.js';
 import { sendWebsiteError } from '../http/website-errors.js';
+import { DatabaseCatalogueStore, type CatalogueStore } from '../catalogue/store.js';
 import { DatabaseLeadStore, type LeadStore } from '../leads/store.js';
+import { DatabaseOutboxStore, type JobAdminStore } from '../jobs/store.js';
+import { DatabaseOrderQueryStore, type OrderQueryStore } from '../orders/query-store.js';
+import {
+  DatabaseOrderTransitionStore,
+  type OrderTransitionStore,
+  type TransitionOrderInput,
+} from '../orders/transitions.js';
 import { createAuthorize, denyReasonOf } from '../staff/authorization.js';
 import { DatabaseStaffStore, type StaffStore } from '../staff/store.js';
 import { generateServiceSecret } from '../website/credential.js';
@@ -28,6 +38,10 @@ export interface StaffRouteDependencies {
   store: StaffStore;
   credentialStore: WebsiteCredentialStore;
   leadStore: LeadStore;
+  catalogueStore?: CatalogueStore;
+  orderQueryStore?: OrderQueryStore;
+  orderTransitionStore?: OrderTransitionStore;
+  jobStore?: JobAdminStore;
 }
 
 export function createDefaultStaffRouteDependencies(): StaffRouteDependencies {
@@ -36,6 +50,10 @@ export function createDefaultStaffRouteDependencies(): StaffRouteDependencies {
     store: new DatabaseStaffStore(),
     credentialStore: new DatabaseWebsiteCredentialStore(),
     leadStore: new DatabaseLeadStore(),
+    catalogueStore: new DatabaseCatalogueStore(),
+    orderQueryStore: new DatabaseOrderQueryStore(),
+    orderTransitionStore: new DatabaseOrderTransitionStore(),
+    jobStore: new DatabaseOutboxStore(),
   };
 }
 
@@ -156,6 +174,218 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         pageSize: query.data.pageSize,
       });
       res.json({ leads: result.leads, page: result.page, requestId: req.id });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.get('/workspaces/:workspaceId/catalogue', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    if (!workspaceId.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const actor = session(req);
+      const authorize = createAuthorize({
+        accessStore: dependencies.store,
+        assuranceLevel: actor.assuranceLevel,
+      });
+      const decision = await authorize({
+        actorId: actor.actorId,
+        workspaceId: workspaceId.data,
+        action: 'workspace.read',
+      });
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.catalogueStore) {
+        sendStaffAuthError(res, req.id, 'internal_error', 500);
+        return;
+      }
+      res.json(
+        await dependencies.catalogueStore.catalogueStatus(workspaceId.data, actor.actorId, req.id),
+      );
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.get('/workspaces/:workspaceId/jobs', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    if (!workspaceId.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const actor = session(req);
+      const authorize = createAuthorize({
+        accessStore: dependencies.store,
+        assuranceLevel: actor.assuranceLevel,
+      });
+      const decision = await authorize({
+        actorId: actor.actorId,
+        workspaceId: workspaceId.data,
+        action: 'workspace.read',
+      });
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.jobStore) {
+        sendStaffAuthError(res, req.id, 'internal_error', 500);
+        return;
+      }
+      const jobs = await dependencies.jobStore.listActive(workspaceId.data, actor.actorId);
+      const retryDecision = await authorize({
+        actorId: actor.actorId,
+        workspaceId: workspaceId.data,
+        action: 'integration.manage',
+      });
+      res.json({
+        jobs: jobs.map((job) => ({
+          ...job,
+          availableAt: job.availableAt.toISOString(),
+          leaseExpiresAt: job.leaseExpiresAt?.toISOString() ?? null,
+          createdAt: job.createdAt.toISOString(),
+          updatedAt: job.updatedAt.toISOString(),
+        })),
+        canRetry: retryDecision.allowed,
+        requestId: req.id,
+      });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.post('/workspaces/:workspaceId/jobs/:jobId/retry', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const jobId = z.uuid().safeParse(req.params['jobId']);
+    if (!workspaceId.success || !jobId.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const actor = session(req);
+      const authorize = createAuthorize({
+        accessStore: dependencies.store,
+        assuranceLevel: actor.assuranceLevel,
+      });
+      const decision = await authorize({
+        actorId: actor.actorId,
+        workspaceId: workspaceId.data,
+        action: 'integration.manage',
+      });
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.jobStore) {
+        sendStaffAuthError(res, req.id, 'internal_error', 500);
+        return;
+      }
+      const outcome = await dependencies.jobStore.retry({
+        workspaceId: workspaceId.data,
+        actorId: actor.actorId,
+        jobId: jobId.data,
+        requestId: req.id,
+      });
+      if (outcome === 'not_found') {
+        sendDomainError(res, req.id, 'job_not_found', 404);
+        return;
+      }
+      if (outcome === 'not_failed') {
+        sendDomainError(res, req.id, 'job_not_retryable', 409);
+        return;
+      }
+      res.json({ jobId: jobId.data, status: 'pending', requestId: req.id });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.patch('/workspaces/:workspaceId/orders/:orderId', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const orderId = z.uuid().safeParse(req.params['orderId']);
+    const body = patchWorkspaceOrderRequestSchema.safeParse(req.body);
+    if (!workspaceId.success || !orderId.success || !body.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const actor = session(req);
+      const authorize = createAuthorize({
+        accessStore: dependencies.store,
+        assuranceLevel: actor.assuranceLevel,
+      });
+      const decision = await authorize({
+        actorId: actor.actorId,
+        workspaceId: workspaceId.data,
+        action: 'order.manage',
+      });
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.orderTransitionStore || !dependencies.orderQueryStore) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+
+      let transition: Pick<TransitionOrderInput, 'toStatus' | 'reason'> | undefined;
+      if (body.data.action === 'transition') {
+        transition = { toStatus: body.data.toStatus, reason: body.data.reason };
+      } else if (body.data.action === 'dispatch') {
+        transition = { toStatus: 'dispatched' };
+      } else if (body.data.action === 'activate') {
+        transition = { toStatus: 'activated' };
+      } else if (body.data.action === 'cancel') {
+        transition = { toStatus: 'cancelled', reason: body.data.reason };
+      }
+      if (!transition) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+
+      const outcome = await dependencies.orderTransitionStore.transition({
+        workspaceId: workspaceId.data,
+        actorId: actor.actorId,
+        requestId: req.id,
+        orderId: orderId.data,
+        expectedVersion: body.data.expectedVersion,
+        ...transition,
+      });
+      if (outcome.status === 'not_found') {
+        sendDomainError(res, req.id, 'order_not_found', 404);
+        return;
+      }
+      if (outcome.status === 'version_conflict') {
+        sendDomainError(res, req.id, 'version_conflict', 409);
+        return;
+      }
+      if (outcome.status === 'illegal_transition') {
+        sendDomainError(res, req.id, 'illegal_transition', 409);
+        return;
+      }
+      if (outcome.status === 'cancellation_reason_required') {
+        sendDomainError(res, req.id, 'cancellation_reason_required', 400);
+        return;
+      }
+      if (outcome.status === 'feature_not_ready') {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const order = await dependencies.orderQueryStore.getOrder(
+        workspaceId.data,
+        actor.actorId,
+        orderId.data,
+      );
+      if (!order) {
+        sendDomainError(res, req.id, 'order_not_found', 404);
+        return;
+      }
+      res.json({ order, requestId: req.id });
     } catch {
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }

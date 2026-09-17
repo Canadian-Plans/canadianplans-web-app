@@ -11,6 +11,7 @@ const WORKSPACE_A = '10000000-0000-4000-8000-000000000101';
 const WORKSPACE_B = '10000000-0000-4000-8000-000000000102';
 const WEBHOOK_SECRET = 'webhook-verification-secret-0001';
 const SCHEDULER_SECRET = 'scheduler-shared-secret-000000001';
+const SCHEDULER_ACTOR = '10000000-0000-4000-8000-000000000199';
 
 const config: MachineRegistryConfig = {
   webhooks: [
@@ -35,6 +36,7 @@ const config: MachineRegistryConfig = {
     {
       selector: 'outbox-runner',
       secret: SCHEDULER_SECRET,
+      actorId: SCHEDULER_ACTOR,
       workspaceIds: [WORKSPACE_A],
       scopes: ['outbox:run'],
       revoked: false,
@@ -42,9 +44,15 @@ const config: MachineRegistryConfig = {
   ],
 };
 
-const registry = new MachineRegistry(config);
+const NOW_MS = Date.parse('2026-09-16T00:00:00.000Z');
+const registry = new MachineRegistry(config, () => NOW_MS);
 const rawBody = JSON.stringify({ event: 'offer.published', id: 'offer_1' });
-const validSignature = createHmac('sha256', WEBHOOK_SECRET).update(rawBody).digest('hex');
+const timestamp = String(NOW_MS / 1_000);
+const sign = (secret: string, body = rawBody) =>
+  `t=${timestamp},v1=${createHmac('sha256', secret)
+    .update(`${timestamp}.${body}`)
+    .digest('base64url')}`;
+const validSignature = sign(WEBHOOK_SECRET);
 
 describe('machine webhook resolution', () => {
   it('resolves a registered webhook with a valid signature and matching account', () => {
@@ -54,7 +62,13 @@ describe('machine webhook resolution', () => {
       signature: validSignature,
       rawBody,
     });
-    expect(result).toEqual({ ok: true, workspaceId: WORKSPACE_A, providerAccount: 'acct_site1' });
+    expect(result).toEqual({
+      ok: true,
+      selector: 'sanity-site-1',
+      provider: 'sanity',
+      workspaceId: WORKSPACE_A,
+      providerAccount: 'acct_site1',
+    });
   });
 
   it('fails closed on an unknown selector', () => {
@@ -73,7 +87,7 @@ describe('machine webhook resolution', () => {
       registry.resolveWebhook({
         selector: 'sanity-retired',
         providerAccount: 'acct_old',
-        signature: createHmac('sha256', WEBHOOK_SECRET).update(rawBody).digest('hex'),
+        signature: sign(WEBHOOK_SECRET),
         rawBody,
       }),
     ).toEqual({ ok: false, reason: 'machine_unknown' });
@@ -84,7 +98,7 @@ describe('machine webhook resolution', () => {
       registry.resolveWebhook({
         selector: 'sanity-site-1',
         providerAccount: 'acct_site1',
-        signature: createHmac('sha256', 'wrong-secret').update(rawBody).digest('hex'),
+        signature: sign('wrong-secret'),
         rawBody,
       }),
     ).toEqual({ ok: false, reason: 'machine_signature_invalid' });
@@ -133,6 +147,7 @@ describe('machine scheduler resolution', () => {
     });
     expect(result.ok).toBe(true);
     if (!result.ok) return;
+    expect(result.actorId).toBe(SCHEDULER_ACTOR);
     expect(result.workspaceIds).toEqual([WORKSPACE_A]);
     expect(result.hasScope('outbox:run')).toBe(true);
     expect(result.hasScope('reconcile:run')).toBe(false);

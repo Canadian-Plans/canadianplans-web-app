@@ -1,0 +1,304 @@
+import {
+  auditEvents,
+  outboxJobAlerts,
+  outboxJobs,
+  withTenantTx,
+  type DatabaseClient,
+  type TenantTransaction,
+} from '@canadian-plans/db';
+import type { ClaimedJob, JobOutcome, OutboxStore } from '@canadian-plans/jobs';
+import { and, asc, eq, inArray, sql } from 'drizzle-orm';
+
+interface ClaimedRow {
+  [key: string]: unknown;
+  id: string;
+  workspaceId: string;
+  jobType: string;
+  messageId: string;
+  payloadVersion: number;
+  payload: unknown;
+  attempts: number;
+  leaseOwnerId: string;
+}
+
+export interface AdminJob {
+  id: string;
+  jobType: string;
+  status: 'pending' | 'processing' | 'failed' | 'uncertain';
+  attempts: number;
+  availableAt: Date;
+  leaseExpiresAt: Date | null;
+  lastErrorCode: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface JobAdminStore {
+  listActive(workspaceId: string, actorId: string): Promise<AdminJob[]>;
+  retry(input: {
+    workspaceId: string;
+    actorId: string;
+    jobId: string;
+    requestId: string;
+  }): Promise<'retried' | 'not_found' | 'not_failed'>;
+}
+
+function adminJobStatus(value: string): AdminJob['status'] {
+  switch (value) {
+    case 'pending':
+    case 'processing':
+    case 'failed':
+    case 'uncertain':
+      return value;
+    default:
+      throw new Error('Unexpected active outbox status.');
+  }
+}
+
+async function alertTerminalJobs(
+  tx: TenantTransaction,
+  workspaceId: string,
+  maxAttempts: number,
+  now: Date,
+): Promise<void> {
+  const exhausted = await tx
+    .update(outboxJobs)
+    .set({
+      status: 'failed',
+      lastErrorCode: 'max_attempts_exhausted',
+      leaseOwnerId: null,
+      leaseExpiresAt: null,
+      updatedAt: now,
+    })
+    .where(
+      and(
+        eq(outboxJobs.workspaceId, workspaceId),
+        sql`${outboxJobs.attempts} >= ${maxAttempts}`,
+        sql`(${outboxJobs.status} = 'pending' or (${outboxJobs.status} = 'processing' and ${outboxJobs.leaseExpiresAt} <= ${now}))`,
+      ),
+    )
+    .returning({ id: outboxJobs.id });
+  if (exhausted.length > 0) {
+    await tx.insert(outboxJobAlerts).values(
+      exhausted.map(({ id }) => ({
+        workspaceId,
+        jobId: id,
+        alertCode: 'max_attempts_exhausted',
+      })),
+    );
+  }
+}
+
+export class DatabaseOutboxStore implements OutboxStore, JobAdminStore {
+  constructor(private readonly database: Pick<DatabaseClient, 'withTenantTx'> = { withTenantTx }) {}
+
+  async claim(input: {
+    workspaceId: string;
+    actorId: string;
+    leaseOwnerId: string;
+    limit: number;
+    leaseExpiresAt: Date;
+    now: Date;
+    maxAttempts: number;
+  }): Promise<ClaimedJob[]> {
+    return this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: input.actorId },
+      async (tx) => {
+        await alertTerminalJobs(tx, input.workspaceId, input.maxAttempts, input.now);
+        const rows = await tx.execute<ClaimedRow>(sql`
+          with claimable as (
+            select id
+            from app.outbox_jobs
+            where workspace_id = ${input.workspaceId}
+              and attempts < ${input.maxAttempts}
+              and (
+                (status = 'pending' and available_at <= ${input.now})
+                or (status = 'processing' and lease_expires_at <= ${input.now})
+              )
+            order by available_at asc, created_at asc
+            for update skip locked
+            limit ${input.limit}
+          )
+          update app.outbox_jobs as jobs
+          set status = 'processing',
+              attempts = jobs.attempts + 1,
+              locked_at = ${input.now},
+              last_attempt_at = ${input.now},
+              lease_owner_id = ${input.leaseOwnerId},
+              lease_expires_at = ${input.leaseExpiresAt},
+              updated_at = ${input.now}
+          from claimable
+          where jobs.id = claimable.id
+            and jobs.workspace_id = ${input.workspaceId}
+          returning jobs.id,
+                    jobs.workspace_id as "workspaceId",
+                    jobs.job_type as "jobType",
+                    jobs.message_id as "messageId",
+                    jobs.payload_version as "payloadVersion",
+                    jobs.payload,
+                    jobs.attempts,
+                    jobs.lease_owner_id as "leaseOwnerId"
+        `);
+        return [...rows];
+      },
+    );
+  }
+
+  async recordOutcome(input: {
+    workspaceId: string;
+    actorId: string;
+    jobId: string;
+    leaseOwnerId: string;
+    outcome: JobOutcome;
+    now: Date;
+  }): Promise<'recorded' | 'lease_lost'> {
+    return this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: input.actorId },
+      async (tx) => {
+        const common = {
+          leaseOwnerId: null,
+          leaseExpiresAt: null,
+          updatedAt: input.now,
+        };
+        const update =
+          input.outcome.status === 'completed'
+            ? {
+                ...common,
+                status: 'completed',
+                completedAt: input.now,
+                lastErrorCode: null,
+                providerId: input.outcome.providerId,
+                outcome: input.outcome.detail ?? {},
+              }
+            : input.outcome.status === 'retry'
+              ? {
+                  ...common,
+                  status: 'pending',
+                  availableAt: input.outcome.availableAt,
+                  lastErrorCode: input.outcome.errorCode,
+                }
+              : input.outcome.status === 'uncertain'
+                ? {
+                    ...common,
+                    status: 'uncertain',
+                    uncertainAt: input.now,
+                    lastErrorCode: input.outcome.errorCode,
+                  }
+                : {
+                    ...common,
+                    status: 'failed',
+                    lastErrorCode: input.outcome.errorCode,
+                  };
+        const updated = await tx
+          .update(outboxJobs)
+          .set(update)
+          .where(
+            and(
+              eq(outboxJobs.workspaceId, input.workspaceId),
+              eq(outboxJobs.id, input.jobId),
+              eq(outboxJobs.status, 'processing'),
+              eq(outboxJobs.leaseOwnerId, input.leaseOwnerId),
+            ),
+          )
+          .returning({ id: outboxJobs.id });
+        if (updated.length === 0) return 'lease_lost';
+        if (input.outcome.status === 'failed' || input.outcome.status === 'uncertain') {
+          await tx.insert(outboxJobAlerts).values({
+            workspaceId: input.workspaceId,
+            jobId: input.jobId,
+            alertCode: input.outcome.errorCode,
+          });
+        }
+        return 'recorded';
+      },
+    );
+  }
+
+  async listActive(workspaceId: string, actorId: string): Promise<AdminJob[]> {
+    return this.database.withTenantTx({ workspaceId, actorId }, async (tx) => {
+      const rows = await tx
+        .select({
+          id: outboxJobs.id,
+          jobType: outboxJobs.jobType,
+          status: outboxJobs.status,
+          attempts: outboxJobs.attempts,
+          availableAt: outboxJobs.availableAt,
+          leaseExpiresAt: outboxJobs.leaseExpiresAt,
+          lastErrorCode: outboxJobs.lastErrorCode,
+          createdAt: outboxJobs.createdAt,
+          updatedAt: outboxJobs.updatedAt,
+        })
+        .from(outboxJobs)
+        .where(
+          and(
+            eq(outboxJobs.workspaceId, workspaceId),
+            inArray(outboxJobs.status, ['pending', 'processing', 'failed', 'uncertain']),
+          ),
+        )
+        .orderBy(asc(outboxJobs.status), asc(outboxJobs.availableAt));
+      return rows.map((row) => ({ ...row, status: adminJobStatus(row.status) }));
+    });
+  }
+
+  async retry(input: {
+    workspaceId: string;
+    actorId: string;
+    jobId: string;
+    requestId: string;
+  }): Promise<'retried' | 'not_found' | 'not_failed'> {
+    return this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: input.actorId },
+      async (tx) => {
+        const existing = await tx
+          .select({ status: outboxJobs.status })
+          .from(outboxJobs)
+          .where(and(eq(outboxJobs.workspaceId, input.workspaceId), eq(outboxJobs.id, input.jobId)))
+          .limit(1);
+        if (!existing[0]) return 'not_found';
+        if (existing[0].status !== 'failed') return 'not_failed';
+        const now = new Date();
+        await tx
+          .update(outboxJobs)
+          .set({
+            status: 'pending',
+            attempts: 0,
+            availableAt: now,
+            lockedAt: null,
+            leaseOwnerId: null,
+            leaseExpiresAt: null,
+            completedAt: null,
+            uncertainAt: null,
+            lastErrorCode: null,
+            providerId: null,
+            outcome: null,
+            updatedAt: now,
+          })
+          .where(
+            and(eq(outboxJobs.workspaceId, input.workspaceId), eq(outboxJobs.id, input.jobId)),
+          );
+        await tx
+          .update(outboxJobAlerts)
+          .set({ resolvedAt: now })
+          .where(
+            and(
+              eq(outboxJobAlerts.workspaceId, input.workspaceId),
+              eq(outboxJobAlerts.jobId, input.jobId),
+              sql`${outboxJobAlerts.resolvedAt} is null`,
+            ),
+          );
+        await tx.insert(auditEvents).values({
+          workspaceId: input.workspaceId,
+          actorId: input.actorId,
+          actorLabel: 'staff',
+          action: 'outbox_job.retry',
+          entity: 'outbox_job',
+          entityId: input.jobId,
+          before: { status: 'failed' },
+          after: { status: 'pending', attempts: 0 },
+          requestId: input.requestId,
+        });
+        return 'retried';
+      },
+    );
+  }
+}

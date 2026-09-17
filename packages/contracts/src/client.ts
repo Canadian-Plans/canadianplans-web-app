@@ -1,7 +1,14 @@
 import type { z } from 'zod';
+import { catalogueStatusResponseSchema, type CatalogueStatusResponse } from './catalogue';
 
 import { createDownloadLinkResponseSchema, type CreateDownloadLinkResponse } from './files';
 import { healthResponseSchema, type HealthResponse } from './health';
+import {
+  listWorkspaceJobsResponseSchema,
+  retryWorkspaceJobResponseSchema,
+  type ListWorkspaceJobsResponse,
+  type RetryWorkspaceJobResponse,
+} from './jobs';
 import {
   createLeadRequestSchema,
   createLeadResponseSchema,
@@ -201,6 +208,9 @@ export interface BackendClient {
       workspaceId: string,
       query?: ListWorkspaceLeadsQuery,
     ): Promise<ListWorkspaceLeadsResponse>;
+    catalogue(workspaceId: string): Promise<CatalogueStatusResponse>;
+    listJobs(workspaceId: string): Promise<ListWorkspaceJobsResponse>;
+    retryJob(workspaceId: string, jobId: string): Promise<RetryWorkspaceJobResponse>;
     createServiceCredential(
       workspaceId: string,
       body: CreateServiceCredentialRequest,
@@ -313,7 +323,7 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
       create: (body, opts) =>
         call({
           method: 'POST',
-          path: '/api/v1/website/quotes',
+          path: '/api/v1/quotes',
           body: createQuoteRequestSchema.parse(body),
           headers: { 'x-draft-grant': opts.draftGrant },
           responseSchema: createQuoteResponseSchema,
@@ -324,7 +334,7 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
       submit: (body, opts) =>
         call({
           method: 'POST',
-          path: '/api/v1/website/orders',
+          path: '/api/v1/orders',
           body: submitOrderRequestSchema.parse(body),
           headers: { 'x-draft-grant': opts.draftGrant, 'idempotency-key': opts.idempotencyKey },
           responseSchema: submitOrderResponseSchema,
@@ -412,6 +422,24 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           path: `/api/v1/staff/workspaces/${encode(workspaceId)}/leads`,
           query: { status: query?.status, page: query?.page, pageSize: query?.pageSize },
           responseSchema: listWorkspaceLeadsResponseSchema,
+        }),
+      catalogue: (workspaceId) =>
+        call({
+          method: 'GET',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/catalogue`,
+          responseSchema: catalogueStatusResponseSchema,
+        }),
+      listJobs: (workspaceId) =>
+        call({
+          method: 'GET',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/jobs`,
+          responseSchema: listWorkspaceJobsResponseSchema,
+        }),
+      retryJob: (workspaceId, jobId) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/jobs/${encode(jobId)}/retry`,
+          responseSchema: retryWorkspaceJobResponseSchema,
         }),
       createServiceCredential: (workspaceId, body) =>
         call({

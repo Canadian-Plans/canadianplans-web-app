@@ -1,0 +1,86 @@
+import { FakeAnalyticsAdapter, FakeEmailAdapter } from '@canadian-plans/adapters';
+import {
+  OutboxRunner,
+  createJobHandlerRegistry,
+  type OutboxRunSummary,
+} from '@canadian-plans/jobs';
+import { Router, type RequestHandler } from 'express';
+
+import { sendStaffAuthError } from '../http/staff-errors.js';
+import { sendWebsiteError } from '../http/website-errors.js';
+import { DatabaseOutboxStore } from '../jobs/store.js';
+import { loadMachineRegistry, type MachineRegistry } from '../machines/registry.js';
+
+export interface JobsRouteDependencies {
+  registry: MachineRegistry;
+  run(input: {
+    authorizedWorkspaceIds: readonly string[];
+    actorId: string;
+  }): Promise<OutboxRunSummary>;
+  selector?: string;
+  deploymentEnvironment?: string;
+}
+
+export function createDefaultJobsRouteDependencies(): JobsRouteDependencies {
+  const store = new DatabaseOutboxStore();
+  const runner = new OutboxRunner({
+    store,
+    handlers: createJobHandlerRegistry({
+      email: new FakeEmailAdapter(),
+      analytics: new FakeAnalyticsAdapter(),
+    }),
+  });
+  return {
+    registry: loadMachineRegistry(),
+    run: (input) => runner.run(input),
+    selector: process.env.JOB_RUNNER_SELECTOR,
+    deploymentEnvironment: process.env.VERCEL_ENV,
+  };
+}
+
+function bearerSecret(value: string | undefined): string | undefined {
+  const match = /^Bearer ([^\s]+)$/.exec(value ?? '');
+  return match?.[1];
+}
+
+/** Authenticated Vercel Cron entry point. No tenant is discovered through the database. */
+export function createJobsRouter(dependencies: JobsRouteDependencies): Router {
+  const router = Router();
+  const runJobs: RequestHandler = async (req, res) => {
+    // Vercel invokes cron only for production deployments. This additional
+    // guard prevents a copied URL/secret from making a preview a scheduler.
+    if (dependencies.deploymentEnvironment === 'preview') {
+      sendWebsiteError(res, req.id, 'machine_unknown', 403);
+      return;
+    }
+    const selector = req.get('x-scheduler-selector') ?? dependencies.selector;
+    const secret = bearerSecret(req.get('authorization'));
+    if (!selector || !secret) {
+      sendWebsiteError(res, req.id, 'machine_unknown', 401);
+      return;
+    }
+    const identity = dependencies.registry.resolveScheduler({ selector, secret });
+    if (!identity.ok) {
+      sendWebsiteError(res, req.id, identity.reason, 401);
+      return;
+    }
+    if (!identity.hasScope('outbox:run')) {
+      sendWebsiteError(res, req.id, 'scope_denied', 403);
+      return;
+    }
+    try {
+      const summary = await dependencies.run({
+        authorizedWorkspaceIds: identity.workspaceIds,
+        actorId: identity.actorId,
+      });
+      res.json({ ...summary, requestId: req.id });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  };
+  // Vercel Cron issues GET. POST remains available for an authenticated manual
+  // staging invocation of the identical path.
+  router.get('/run', runJobs);
+  router.post('/run', runJobs);
+  return router;
+}

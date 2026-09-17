@@ -58,7 +58,7 @@ describe('OpenAPI generation', () => {
 
   it('documents the idempotency-key and draft-grant headers on order submission', () => {
     const paths = asObject(doc['paths']);
-    const submit = asObject(asObject(paths['/api/v1/website/orders'])['post']);
+    const submit = asObject(asObject(paths['/api/v1/orders'])['post']);
     const parameters = submit['parameters'];
     if (!Array.isArray(parameters)) {
       throw new Error('expected parameters array');

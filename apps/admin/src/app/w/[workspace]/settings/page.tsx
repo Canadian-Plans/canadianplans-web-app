@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@canadian-plans/ui';
+import Link from 'next/link';
 
 import { ServiceCredentialsManager } from '../../../../components/service-credentials-manager';
 import { StaffInviteForm } from '../../../../components/staff-invite-form';
@@ -16,6 +17,12 @@ export default async function SettingsPage({ params }: { params: Promise<{ works
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-10">
+        <Link className="text-sm font-medium underline" href={`/w/${workspace}/settings/catalogue`}>
+          View catalogue sync status
+        </Link>
+        <Link className="text-sm font-medium underline" href={`/w/${workspace}/settings/jobs`}>
+          View background jobs
+        </Link>
         <StaffInviteForm workspaceSlug={workspace} />
         <ServiceCredentialsManager workspaceSlug={workspace} />
       </CardContent>

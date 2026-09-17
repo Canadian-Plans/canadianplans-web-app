@@ -751,6 +751,13 @@ const offer = defineType({
       validation: (Rule) => Rule.required().min(1),
     }),
     defineField({
+      name: 'termsVersion',
+      title: 'Terms version',
+      description: 'Stable version accepted with the quote (for example terms-2026-09).',
+      type: 'string',
+      validation: (Rule) => Rule.required().max(64),
+    }),
+    defineField({
       name: 'specs',
       title: 'Specifications',
       type: 'object',

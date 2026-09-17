@@ -1,6 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "regions": ["sfo1"],
+  "crons": [
+    {
+      "path": "/api/internal/jobs/run",
+      "schedule": "* * * * *"
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",

@@ -7,6 +7,7 @@ import type {
 import { websiteScopeNames, type WebsiteScopeName } from '@canadian-plans/types';
 
 import { sendWebsiteError } from '../http/website-errors.js';
+import { sendDomainError } from '../http/domain-errors.js';
 import { hashServiceSecret, parseCredentialSecret } from './credential.js';
 
 export interface WebsiteContext {
@@ -128,7 +129,8 @@ export function requireWebsiteCredential(deps: WebsiteAuthDependencies): Request
       };
       next();
     } catch {
-      sendWebsiteError(res, req.id, 'invalid_credential', 401);
+      res.setHeader('retry-after', '2');
+      sendDomainError(res, req.id, 'persistence_unavailable', 503, { retryable: true });
     }
   };
 }

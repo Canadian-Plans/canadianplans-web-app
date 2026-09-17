@@ -3,12 +3,15 @@ import {
   createBackendClient,
   type CreateServiceCredentialRequest,
   type CreateServiceCredentialResponse,
+  type CatalogueStatusResponse,
   type HealthResponse,
   type InviteStaffRequest,
   type InviteStaffResponse,
   type ListServiceCredentialsResponse,
   type ListWorkspaceLeadsQuery,
   type ListWorkspaceLeadsResponse,
+  type ListWorkspaceJobsResponse,
+  type RetryWorkspaceJobResponse,
   type RevokeServiceCredentialResponse,
   type RevokeStaffResponse,
   type StaffWorkspaceAccessResponse,
@@ -91,4 +94,26 @@ export async function getStaffLeads(
   query?: ListWorkspaceLeadsQuery,
 ): Promise<ListWorkspaceLeadsResponse> {
   return client(accessToken).staff.listLeads(workspaceId, query);
+}
+
+export async function getCatalogueStatus(
+  accessToken: string,
+  workspaceId: string,
+): Promise<CatalogueStatusResponse> {
+  return client(accessToken).staff.catalogue(workspaceId);
+}
+
+export async function listWorkspaceJobs(
+  accessToken: string,
+  workspaceId: string,
+): Promise<ListWorkspaceJobsResponse> {
+  return client(accessToken).staff.listJobs(workspaceId);
+}
+
+export async function retryWorkspaceJob(
+  accessToken: string,
+  workspaceId: string,
+  jobId: string,
+): Promise<RetryWorkspaceJobResponse> {
+  return client(accessToken).staff.retryJob(workspaceId, jobId);
 }

@@ -7,3 +7,22 @@
  * browser bundle by accident.
  */
 export const ADAPTERS_PACKAGE_PLACEHOLDER = true as const;
+
+export {
+  FakeAnalyticsAdapter,
+  FakeEmailAdapter,
+  type AnalyticsAdapter,
+  type AnalyticsEvent,
+  type EmailAdapter,
+  type EmailMessage,
+  type ProviderDeliveryResult,
+} from './messaging.js';
+
+export {
+  HttpSiteRevalidator,
+  SanityCatalogueAdapter,
+  SanityProviderError,
+  type SanityCatalogue,
+  type SanityCatalogueConfig,
+  type SiteRevalidator,
+} from './sanity.js';

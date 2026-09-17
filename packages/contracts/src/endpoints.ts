@@ -1,4 +1,5 @@
 import type { z } from 'zod';
+import { catalogueStatusResponseSchema } from './catalogue';
 
 import { createDownloadLinkResponseSchema } from './files';
 import {
@@ -23,6 +24,7 @@ import {
 } from './partners';
 import { createExportRequestSchema, createExportResponseSchema } from './exports';
 import { healthResponseSchema } from './health';
+import { listWorkspaceJobsResponseSchema, retryWorkspaceJobResponseSchema } from './jobs';
 import {
   inviteStaffRequestSchema,
   inviteStaffResponseSchema,
@@ -100,9 +102,24 @@ const CUSTOMER_GRANT: EndpointHeader = {
   description: 'Scoped customer grant issued after order-tracking OTP verification.',
 };
 const WEBHOOK_SIGNATURE: EndpointHeader = {
-  name: 'X-Signature',
+  name: 'Sanity-Webhook-Signature',
   required: true,
-  description: 'Provider HMAC signature over the raw body, verified before any processing.',
+  description: 'Timestamped Sanity HMAC signature over the raw body.',
+};
+const WEBHOOK_SELECTOR: EndpointHeader = {
+  name: 'X-Webhook-Selector',
+  required: true,
+  description: 'Untrusted registry selector; context is derived only after signature verification.',
+};
+const PROVIDER_ACCOUNT: EndpointHeader = {
+  name: 'X-Provider-Account',
+  required: true,
+  description: 'Sanity project/account identifier that must match the registry entry.',
+};
+const DELIVERY_ID: EndpointHeader = {
+  name: 'Idempotency-Key',
+  required: true,
+  description: 'Sanity delivery identifier used to deduplicate the durable inbox.',
 };
 
 export const endpoints: readonly EndpointDef[] = [
@@ -193,6 +210,33 @@ export const endpoints: readonly EndpointDef[] = [
     successStatus: 200,
     query: listWorkspaceLeadsQuerySchema,
     response: listWorkspaceLeadsResponseSchema,
+  },
+  {
+    operationId: 'getCatalogueStatus',
+    method: 'GET',
+    path: '/api/v1/staff/workspaces/{workspaceId}/catalogue',
+    summary: 'Read catalogue sync state and current offer versions.',
+    auth: 'staff',
+    successStatus: 200,
+    response: catalogueStatusResponseSchema,
+  },
+  {
+    operationId: 'listWorkspaceJobs',
+    method: 'GET',
+    path: '/api/v1/staff/workspaces/{workspaceId}/jobs',
+    summary: 'List pending and failed workspace outbox jobs.',
+    auth: 'staff',
+    successStatus: 200,
+    response: listWorkspaceJobsResponseSchema,
+  },
+  {
+    operationId: 'retryWorkspaceJob',
+    method: 'POST',
+    path: '/api/v1/staff/workspaces/{workspaceId}/jobs/{jobId}/retry',
+    summary: 'Retry a failed workspace outbox job (integration management).',
+    auth: 'staff',
+    successStatus: 200,
+    response: retryWorkspaceJobResponseSchema,
   },
 
   // Staff — order processing
@@ -285,7 +329,7 @@ export const endpoints: readonly EndpointDef[] = [
   {
     operationId: 'createQuote',
     method: 'POST',
-    path: '/api/v1/website/quotes',
+    path: '/api/v1/quotes',
     summary: 'Issue a server-authoritative quote.',
     auth: 'website',
     successStatus: 201,
@@ -296,7 +340,7 @@ export const endpoints: readonly EndpointDef[] = [
   {
     operationId: 'submitOrder',
     method: 'POST',
-    path: '/api/v1/website/orders',
+    path: '/api/v1/orders',
     summary: 'Submit one final order; idempotent per scoped key.',
     auth: 'website',
     successStatus: 201,
@@ -358,12 +402,12 @@ export const endpoints: readonly EndpointDef[] = [
   {
     operationId: 'deliverWebhook',
     method: 'POST',
-    path: '/api/v1/webhooks/{provider}',
-    summary: 'Durable inbox for a signed provider event.',
+    path: '/api/v1/webhooks/sanity',
+    summary: 'Durable inbox for a signed Sanity event.',
     auth: 'machine',
-    successStatus: 202,
+    successStatus: 200,
     request: webhookDeliveryRequestSchema,
     response: webhookAckResponseSchema,
-    headers: [WEBHOOK_SIGNATURE],
+    headers: [WEBHOOK_SELECTOR, PROVIDER_ACCOUNT, WEBHOOK_SIGNATURE, DELIVERY_ID],
   },
 ];
