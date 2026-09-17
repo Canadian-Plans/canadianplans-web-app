@@ -1,16 +1,37 @@
 import {
   BackendError,
   createBackendClient,
+  type BulkAssignOrdersRequest,
+  type BulkAssignOrdersResponse,
+  type CreateOrderChangeRequestRequest,
+  type CreateOrderChangeRequestResponse,
+  type CreateOrderNoteRequest,
+  type CreateOrderReminderRequest,
+  type CreateOrderReminderResponse,
   type CreateServiceCredentialRequest,
   type CreateServiceCredentialResponse,
   type CatalogueStatusResponse,
+  type DeleteOrderReminderResponse,
+  type GetWorkspaceOrderResponse,
   type HealthResponse,
   type InviteStaffRequest,
   type InviteStaffResponse,
+  type ListAssignableMembersResponse,
+  type ListOrderNotesResponse,
   type ListServiceCredentialsResponse,
   type ListWorkspaceLeadsQuery,
   type ListWorkspaceLeadsResponse,
   type ListWorkspaceJobsResponse,
+  type ListWorkspaceOrdersQuery,
+  type ListWorkspaceOrdersResponse,
+  type PatchOrderArchiveRequest,
+  type PatchOrderAssigneeRequest,
+  type PatchWorkspaceOrderRequest,
+  type PatchWorkspaceOrderResponse,
+  type RecordOrderPaymentRequest,
+  type RecordOrderPaymentResponse,
+  type ResolveOrderChangeRequestRequest,
+  type ResolveOrderChangeRequestResponse,
   type RetryWorkspaceJobResponse,
   type RevokeServiceCredentialResponse,
   type RevokeStaffResponse,
@@ -116,4 +137,132 @@ export async function retryWorkspaceJob(
   jobId: string,
 ): Promise<RetryWorkspaceJobResponse> {
   return client(accessToken).staff.retryJob(workspaceId, jobId);
+}
+
+// ---- Order processing (T14). Every write is a backend endpoint; the admin
+// holds no transition, payment or amendment logic of its own. ----
+
+export async function listWorkspaceOrders(
+  accessToken: string,
+  workspaceId: string,
+  query?: ListWorkspaceOrdersQuery,
+): Promise<ListWorkspaceOrdersResponse> {
+  return client(accessToken).staff.listOrders(workspaceId, query);
+}
+
+export async function listOrderAssignees(
+  accessToken: string,
+  workspaceId: string,
+): Promise<ListAssignableMembersResponse> {
+  return client(accessToken).staff.listOrderAssignees(workspaceId);
+}
+
+export async function getWorkspaceOrder(
+  accessToken: string,
+  workspaceId: string,
+  orderId: string,
+): Promise<GetWorkspaceOrderResponse> {
+  return client(accessToken).staff.getOrder(workspaceId, orderId);
+}
+
+export async function patchWorkspaceOrder(
+  accessToken: string,
+  workspaceId: string,
+  orderId: string,
+  body: PatchWorkspaceOrderRequest,
+): Promise<PatchWorkspaceOrderResponse> {
+  return client(accessToken).staff.patchOrder(workspaceId, orderId, body);
+}
+
+export async function patchOrderAssignee(
+  accessToken: string,
+  workspaceId: string,
+  orderId: string,
+  body: PatchOrderAssigneeRequest,
+): Promise<PatchWorkspaceOrderResponse> {
+  return client(accessToken).staff.patchOrderAssignee(workspaceId, orderId, body);
+}
+
+export async function patchOrderArchive(
+  accessToken: string,
+  workspaceId: string,
+  orderId: string,
+  body: PatchOrderArchiveRequest,
+): Promise<PatchWorkspaceOrderResponse> {
+  return client(accessToken).staff.patchOrderArchive(workspaceId, orderId, body);
+}
+
+export async function bulkAssignOrders(
+  accessToken: string,
+  workspaceId: string,
+  body: BulkAssignOrdersRequest,
+): Promise<BulkAssignOrdersResponse> {
+  return client(accessToken).staff.bulkAssignOrders(workspaceId, body);
+}
+
+export async function listOrderNotes(
+  accessToken: string,
+  workspaceId: string,
+  orderId: string,
+): Promise<ListOrderNotesResponse> {
+  return client(accessToken).staff.listOrderNotes(workspaceId, orderId);
+}
+
+export async function createOrderNote(
+  accessToken: string,
+  workspaceId: string,
+  orderId: string,
+  body: CreateOrderNoteRequest,
+): Promise<ListOrderNotesResponse> {
+  return client(accessToken).staff.createOrderNote(workspaceId, orderId, body);
+}
+
+export async function createOrderReminder(
+  accessToken: string,
+  workspaceId: string,
+  orderId: string,
+  body: CreateOrderReminderRequest,
+): Promise<CreateOrderReminderResponse> {
+  return client(accessToken).staff.createOrderReminder(workspaceId, orderId, body);
+}
+
+export async function deleteOrderReminder(
+  accessToken: string,
+  workspaceId: string,
+  orderId: string,
+  reminderId: string,
+): Promise<DeleteOrderReminderResponse> {
+  return client(accessToken).staff.deleteOrderReminder(workspaceId, orderId, reminderId);
+}
+
+export async function createOrderChangeRequest(
+  accessToken: string,
+  workspaceId: string,
+  orderId: string,
+  body: CreateOrderChangeRequestRequest,
+): Promise<CreateOrderChangeRequestResponse> {
+  return client(accessToken).staff.createOrderChangeRequest(workspaceId, orderId, body);
+}
+
+export async function resolveOrderChangeRequest(
+  accessToken: string,
+  workspaceId: string,
+  orderId: string,
+  changeRequestId: string,
+  decision: 'approve' | 'reject',
+  body: ResolveOrderChangeRequestRequest,
+): Promise<ResolveOrderChangeRequestResponse> {
+  const staff = client(accessToken).staff;
+  return decision === 'approve'
+    ? staff.approveOrderChangeRequest(workspaceId, orderId, changeRequestId, body)
+    : staff.rejectOrderChangeRequest(workspaceId, orderId, changeRequestId, body);
+}
+
+export async function recordOrderPayment(
+  accessToken: string,
+  workspaceId: string,
+  orderId: string,
+  body: RecordOrderPaymentRequest,
+): Promise<RecordOrderPaymentResponse> {
+  return client(accessToken).staff.recordOrderPayment(workspaceId, orderId, body);
 }

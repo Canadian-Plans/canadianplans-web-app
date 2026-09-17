@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:e2e": "playwright test",
+    "test:e2e": "next build && playwright test",
     "test:security": "node scripts/verify-client-bundle.mjs",
     "seed:test-offers": "node scripts/seed-test-offers.mjs"
   },
@@ -24,7 +24,8 @@
     "react-dom": "19.3.0",
     "sanity": "catalog:",
     "server-only": "0.0.1",
-    "styled-components": "6.5.3"
+    "styled-components": "6.5.3",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@canadian-plans/config": "workspace:*",

@@ -90,21 +90,54 @@ import {
   type RevokeServiceCredentialResponse,
 } from './website-auth';
 import {
+  bulkAssignOrdersRequestSchema,
+  bulkAssignOrdersResponseSchema,
+  createOrderChangeRequestRequestSchema,
+  createOrderChangeRequestResponseSchema,
+  createOrderNoteRequestSchema,
+  createOrderReminderRequestSchema,
+  createOrderReminderResponseSchema,
+  deleteOrderReminderResponseSchema,
   getWorkspaceOrderResponseSchema,
+  listAssignableMembersResponseSchema,
+  listOrderNotesResponseSchema,
   listWorkspaceOrdersResponseSchema,
+  patchOrderArchiveRequestSchema,
+  patchOrderAssigneeRequestSchema,
   patchWorkspaceOrderRequestSchema,
   patchWorkspaceOrderResponseSchema,
+  recordOrderPaymentRequestSchema,
+  recordOrderPaymentResponseSchema,
+  resolveOrderChangeRequestRequestSchema,
+  resolveOrderChangeRequestResponseSchema,
+  type BulkAssignOrdersRequest,
+  type BulkAssignOrdersResponse,
+  type CreateOrderChangeRequestRequest,
+  type CreateOrderChangeRequestResponse,
+  type CreateOrderNoteRequest,
+  type CreateOrderReminderRequest,
+  type CreateOrderReminderResponse,
+  type DeleteOrderReminderResponse,
   type GetWorkspaceOrderResponse,
+  type ListAssignableMembersResponse,
+  type ListOrderNotesResponse,
   type ListWorkspaceOrdersQuery,
   type ListWorkspaceOrdersResponse,
+  type PatchOrderArchiveRequest,
+  type PatchOrderAssigneeRequest,
   type PatchWorkspaceOrderRequest,
   type PatchWorkspaceOrderResponse,
+  type RecordOrderPaymentRequest,
+  type RecordOrderPaymentResponse,
+  type ResolveOrderChangeRequestRequest,
+  type ResolveOrderChangeRequestResponse,
 } from './workspace-orders';
 import {
   listWorkspaceLeadsResponseSchema,
   type ListWorkspaceLeadsQuery,
   type ListWorkspaceLeadsResponse,
 } from './workspace-leads';
+import { listWebsiteOffersResponseSchema, type ListWebsiteOffersResponse } from './website-offers';
 
 /**
  * The one typed backend client, consumed by both admin (staff session as the
@@ -181,6 +214,9 @@ export interface BackendClient {
   quotes: {
     create(body: CreateQuoteRequest, options: { draftGrant: string }): Promise<CreateQuoteResponse>;
   };
+  offers: {
+    list(): Promise<ListWebsiteOffersResponse>;
+  };
   orders: {
     submit(
       body: SubmitOrderRequest,
@@ -223,12 +259,65 @@ export interface BackendClient {
       workspaceId: string,
       query?: ListWorkspaceOrdersQuery,
     ): Promise<ListWorkspaceOrdersResponse>;
+    listOrderAssignees(workspaceId: string): Promise<ListAssignableMembersResponse>;
     getOrder(workspaceId: string, orderId: string): Promise<GetWorkspaceOrderResponse>;
     patchOrder(
       workspaceId: string,
       orderId: string,
       body: PatchWorkspaceOrderRequest,
     ): Promise<PatchWorkspaceOrderResponse>;
+    patchOrderAssignee(
+      workspaceId: string,
+      orderId: string,
+      body: PatchOrderAssigneeRequest,
+    ): Promise<PatchWorkspaceOrderResponse>;
+    patchOrderArchive(
+      workspaceId: string,
+      orderId: string,
+      body: PatchOrderArchiveRequest,
+    ): Promise<PatchWorkspaceOrderResponse>;
+    bulkAssignOrders(
+      workspaceId: string,
+      body: BulkAssignOrdersRequest,
+    ): Promise<BulkAssignOrdersResponse>;
+    listOrderNotes(workspaceId: string, orderId: string): Promise<ListOrderNotesResponse>;
+    createOrderNote(
+      workspaceId: string,
+      orderId: string,
+      body: CreateOrderNoteRequest,
+    ): Promise<ListOrderNotesResponse>;
+    createOrderReminder(
+      workspaceId: string,
+      orderId: string,
+      body: CreateOrderReminderRequest,
+    ): Promise<CreateOrderReminderResponse>;
+    deleteOrderReminder(
+      workspaceId: string,
+      orderId: string,
+      reminderId: string,
+    ): Promise<DeleteOrderReminderResponse>;
+    createOrderChangeRequest(
+      workspaceId: string,
+      orderId: string,
+      body: CreateOrderChangeRequestRequest,
+    ): Promise<CreateOrderChangeRequestResponse>;
+    approveOrderChangeRequest(
+      workspaceId: string,
+      orderId: string,
+      changeRequestId: string,
+      body: ResolveOrderChangeRequestRequest,
+    ): Promise<ResolveOrderChangeRequestResponse>;
+    rejectOrderChangeRequest(
+      workspaceId: string,
+      orderId: string,
+      changeRequestId: string,
+      body: ResolveOrderChangeRequestRequest,
+    ): Promise<ResolveOrderChangeRequestResponse>;
+    recordOrderPayment(
+      workspaceId: string,
+      orderId: string,
+      body: RecordOrderPaymentRequest,
+    ): Promise<RecordOrderPaymentResponse>;
     changeCommissionState(
       workspaceId: string,
       partnerId: string,
@@ -327,6 +416,15 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           body: createQuoteRequestSchema.parse(body),
           headers: { 'x-draft-grant': opts.draftGrant },
           responseSchema: createQuoteResponseSchema,
+        }),
+    },
+
+    offers: {
+      list: () =>
+        call({
+          method: 'GET',
+          path: '/api/v1/website/offers',
+          responseSchema: listWebsiteOffersResponseSchema,
         }),
     },
 
@@ -463,10 +561,22 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
             paymentState: query?.paymentState,
             assigneeId: query?.assigneeId,
             partnerId: query?.partnerId,
+            partnerCode: query?.partnerCode,
+            source: query?.source,
+            submittedFrom: query?.submittedFrom,
+            submittedTo: query?.submittedTo,
+            archiveState: query?.archiveState,
+            search: query?.search,
             page: query?.page,
             pageSize: query?.pageSize,
           },
           responseSchema: listWorkspaceOrdersResponseSchema,
+        }),
+      listOrderAssignees: (workspaceId) =>
+        call({
+          method: 'GET',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/members`,
+          responseSchema: listAssignableMembersResponseSchema,
         }),
       getOrder: (workspaceId, orderId) =>
         call({
@@ -480,6 +590,81 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}`,
           body: patchWorkspaceOrderRequestSchema.parse(body),
           responseSchema: patchWorkspaceOrderResponseSchema,
+        }),
+      patchOrderAssignee: (workspaceId, orderId, body) =>
+        call({
+          method: 'PATCH',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/assignee`,
+          body: patchOrderAssigneeRequestSchema.parse(body),
+          responseSchema: patchWorkspaceOrderResponseSchema,
+        }),
+      patchOrderArchive: (workspaceId, orderId, body) =>
+        call({
+          method: 'PATCH',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/archive`,
+          body: patchOrderArchiveRequestSchema.parse(body),
+          responseSchema: patchWorkspaceOrderResponseSchema,
+        }),
+      bulkAssignOrders: (workspaceId, body) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/bulk-assign`,
+          body: bulkAssignOrdersRequestSchema.parse(body),
+          responseSchema: bulkAssignOrdersResponseSchema,
+        }),
+      listOrderNotes: (workspaceId, orderId) =>
+        call({
+          method: 'GET',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/notes`,
+          responseSchema: listOrderNotesResponseSchema,
+        }),
+      createOrderNote: (workspaceId, orderId, body) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/notes`,
+          body: createOrderNoteRequestSchema.parse(body),
+          responseSchema: listOrderNotesResponseSchema,
+        }),
+      createOrderReminder: (workspaceId, orderId, body) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/reminders`,
+          body: createOrderReminderRequestSchema.parse(body),
+          responseSchema: createOrderReminderResponseSchema,
+        }),
+      deleteOrderReminder: (workspaceId, orderId, reminderId) =>
+        call({
+          method: 'DELETE',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/reminders/${encode(reminderId)}`,
+          responseSchema: deleteOrderReminderResponseSchema,
+        }),
+      createOrderChangeRequest: (workspaceId, orderId, body) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/change-requests`,
+          body: createOrderChangeRequestRequestSchema.parse(body),
+          responseSchema: createOrderChangeRequestResponseSchema,
+        }),
+      approveOrderChangeRequest: (workspaceId, orderId, changeRequestId, body) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/change-requests/${encode(changeRequestId)}/approve`,
+          body: resolveOrderChangeRequestRequestSchema.parse(body),
+          responseSchema: resolveOrderChangeRequestResponseSchema,
+        }),
+      rejectOrderChangeRequest: (workspaceId, orderId, changeRequestId, body) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/change-requests/${encode(changeRequestId)}/reject`,
+          body: resolveOrderChangeRequestRequestSchema.parse(body),
+          responseSchema: resolveOrderChangeRequestResponseSchema,
+        }),
+      recordOrderPayment: (workspaceId, orderId, body) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/payments`,
+          body: recordOrderPaymentRequestSchema.parse(body),
+          responseSchema: recordOrderPaymentResponseSchema,
         }),
       changeCommissionState: (workspaceId, partnerId, body) =>
         call({

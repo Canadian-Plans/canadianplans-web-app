@@ -448,6 +448,49 @@ No RLS predicate change. The column is added to an existing tenant table whose
 fail-closed workspace/actor policy and forced RLS are unchanged; every write
 still runs inside `withTenantTx` with a non-null actor.
 
+## 0015_organic_roland_deschain.sql
+
+Task: T14
+
+Date: 2026-09-17
+
+### Change
+
+- Added `app.order_notes` (`workspace_id`, `order_id`, `author_id`, `body`,
+  `created_at`) as the append-only operational contact notes REQ 20 requires.
+  `body` is constrained to 1–2000 characters and the composite
+  `(workspace_id, order_id)` foreign key makes a note impossible to attach to
+  another workspace's order.
+- Added `app.order_reminders` (`workspace_id`, `order_id`, `created_by`,
+  `remind_at`, `note`, `created_at`) for scheduled follow-ups; `note` is
+  optional and length-bounded, and reminders are deletable so a follow-up can be
+  cancelled before T18's sending path re-checks customer status.
+- Both tables carry the mandatory `(workspace_id, id)` unique constraint,
+  workspace-leading indexes (`order_notes_workspace_order_created_idx`,
+  `order_reminders_workspace_order_remind_idx`,
+  `order_reminders_workspace_remind_at_idx`), the fail-closed tenant policy, and
+  forced RLS.
+- Grants: `app_runtime` receives `SELECT, INSERT` on `order_notes` (append-only)
+  and `SELECT, INSERT, DELETE` on `order_reminders`. The generated diff omitted
+  the `FORCE ROW LEVEL SECURITY` and `GRANT` statements, so both were added
+  explicitly, matching the 0011/0012 pattern.
+
+### Why
+
+T14's admin order journey includes notes and reminders (REQ 20), which
+IMPLEMENTATION_PLAN §4 places in the Operations record group. They are separate
+child records rather than columns on `orders` so adding a note or a reminder
+never races a concurrent status transition on the order envelope, and so the
+order's optimistic-concurrency version still guards the fields two people could
+otherwise overwrite.
+
+### RLS
+
+Both tables use the same `FOR ALL` policy for `app_runtime` comparing
+`workspace_id` to the transaction-local `app.workspace_id` and requiring a
+non-null `app.actor_id`, repeated in `WITH CHECK`. RLS is enabled **and forced**,
+so the table owner does not bypass it. Existing tenant tables are unchanged.
+
 Each future entry follows this shape:
 
 ```

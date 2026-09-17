@@ -250,7 +250,7 @@ databaseDescribe('order transition store against Postgres', () => {
     });
   });
 
-  test('dispatch needs the operational-transition flag and then sets the delivery state', async () => {
+  test('dispatch needs the operational-transition flag, courier details and then sets the delivery state', async () => {
     const gated = new DatabaseOrderTransitionStore(client, false, () => NOW);
     expect(
       await gated.transition({
@@ -260,14 +260,12 @@ databaseDescribe('order transition store against Postgres', () => {
         orderId: ORDER_DISPATCH,
         expectedVersion: 1,
         toStatus: 'dispatched',
+        dispatch: { courier: 'Canada Post', dispatchedAt: NOW },
       }),
     ).toEqual({ status: 'feature_not_ready' });
-    const [before] = await admin<{ status: string; delivery_state: string; version: number }[]>`
-      select status, delivery_state, version from app.orders where id = ${ORDER_DISPATCH}
-    `;
-    expect(before).toEqual({ status: 'ready_for_delivery', delivery_state: 'none', version: 1 });
 
     const operational = new DatabaseOrderTransitionStore(client, true, () => NOW);
+    // Courier details are mandatory: dispatch and its record are one write.
     expect(
       await operational.transition({
         workspaceId: WORKSPACE,
@@ -276,6 +274,27 @@ databaseDescribe('order transition store against Postgres', () => {
         orderId: ORDER_DISPATCH,
         expectedVersion: 1,
         toStatus: 'dispatched',
+      }),
+    ).toEqual({ status: 'dispatch_details_required' });
+
+    const [before] = await admin<{ status: string; delivery_state: string; version: number }[]>`
+      select status, delivery_state, version from app.orders where id = ${ORDER_DISPATCH}
+    `;
+    expect(before).toEqual({ status: 'ready_for_delivery', delivery_state: 'none', version: 1 });
+
+    expect(
+      await operational.transition({
+        workspaceId: WORKSPACE,
+        actorId: ACTOR,
+        requestId: REQUEST,
+        orderId: ORDER_DISPATCH,
+        expectedVersion: 1,
+        toStatus: 'dispatched',
+        dispatch: {
+          courier: 'Canada Post',
+          trackingReference: 'CP-TRACK-1',
+          dispatchedAt: NOW,
+        },
       }),
     ).toEqual({
       status: 'transitioned',
@@ -287,5 +306,16 @@ databaseDescribe('order transition store against Postgres', () => {
       select status, delivery_state, version from app.orders where id = ${ORDER_DISPATCH}
     `;
     expect(after).toEqual({ status: 'dispatched', delivery_state: 'dispatched', version: 2 });
+
+    // The courier record lands in the same transaction as the status change.
+    const records = await admin<
+      { courier: string; tracking_reference: string | null; actor_id: string }[]
+    >`
+      select courier, tracking_reference, actor_id
+      from app.dispatch_records where order_id = ${ORDER_DISPATCH}
+    `;
+    expect(records).toEqual([
+      { courier: 'Canada Post', tracking_reference: 'CP-TRACK-1', actor_id: ACTOR },
+    ]);
   });
 });

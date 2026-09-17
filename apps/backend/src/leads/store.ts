@@ -22,6 +22,7 @@ import {
 } from '@canadian-plans/contracts';
 
 import { sanitizeAttribution } from './attribution.js';
+import { deriveSource } from './source.js';
 import { generateDraftGrantToken, hashDraftGrantToken } from './token.js';
 
 /** Proposed default: long enough for a customer to leave and resume the form later. */
@@ -84,22 +85,6 @@ export interface LeadStore {
 type LeadDatabase = Pick<import('@canadian-plans/db').DatabaseClient, 'withTenantTx'>;
 
 const defaultLeadDatabase: LeadDatabase = { withTenantTx };
-
-/** A short, human-readable source label for the admin list's source column. */
-function deriveSource(attribution: Attribution): string {
-  if (attribution.partnerCode) {
-    return attribution.partnerCodeMatched
-      ? `partner:${attribution.partnerCode}`
-      : `partner:${attribution.partnerCode} (unmatched)`;
-  }
-  if (attribution.utmSource) {
-    return attribution.utmMedium
-      ? `utm:${attribution.utmSource}/${attribution.utmMedium}`
-      : `utm:${attribution.utmSource}`;
-  }
-  if (attribution.referrerHost) return `referrer:${attribution.referrerHost}`;
-  return 'direct';
-}
 
 function toSummary(row: {
   id: string;

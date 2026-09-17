@@ -31,6 +31,7 @@ Business questions that are not yet answered. **AI agents: never invent an answe
 | 21 | Supabase Auth email (staff invites/recovery) — verified sender + custom SMTP, separate from the customer EmailAdapter | T5/T18 | needed before real staff-invite testing | |
 | 22 | Staging setup — separate Free Supabase org, or a second paid project in the prod org (billing is per-org) | T0 | decide before hosted staging | Single live environment — no separate staging project |
 | 23 | Email provider selection, SES region/production access and sending quota, sender/event verification | T0 approval request / T18 integration / before live mail | SES preferred candidate; fake adapter in tests; no automatic provider fallback | |
+| 24 | Terms/privacy content and its versioning per website (the disclosure version recorded when a draft lead is saved, and the terms version quoted at order submission) | T21 (content); T13 order form uses a placeholder | `TEST-disclosure-v1` in site-1 `site.config.ts` for the lead-save disclosure only — an order's accepted terms version always comes from the server-issued quote, never the storefront | |
 
 ## Deferred recovery objectives (do not block development)
 

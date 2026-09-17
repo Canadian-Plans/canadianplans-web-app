@@ -815,6 +815,83 @@ export const orderChangeRequests = appSchema
   )
   .enableRLS();
 
+/**
+ * Operational contact notes (REQ 20). Append-only child records of an order;
+ * the author and time make every note attributable without editing the order
+ * envelope, so adding a note never races a status transition.
+ */
+export const orderNotes = appSchema
+  .table(
+    'order_notes',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      orderId: uuid('order_id').notNull(),
+      authorId: uuid('author_id').notNull(),
+      body: text('body').notNull(),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('order_notes_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'order_notes_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }).onDelete('cascade'),
+      check('order_notes_body_check', sql`char_length(${table.body}) between 1 and 2000`),
+      index('order_notes_workspace_order_created_idx').on(
+        table.workspaceId,
+        table.orderId,
+        table.createdAt,
+      ),
+      tenantPolicy('order_notes_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * A scheduled follow-up reminder (REQ 20/27). The scheduling runner in T18
+ * re-checks whether the customer completed, cancelled or unsubscribed before
+ * sending; deleting the row cancels the reminder.
+ */
+export const orderReminders = appSchema
+  .table(
+    'order_reminders',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      orderId: uuid('order_id').notNull(),
+      createdBy: uuid('created_by').notNull(),
+      remindAt: timestamp('remind_at', { withTimezone: true, mode: 'date' }).notNull(),
+      note: text('note'),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('order_reminders_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'order_reminders_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }).onDelete('cascade'),
+      check(
+        'order_reminders_note_check',
+        sql`${table.note} is null or char_length(${table.note}) between 1 and 2000`,
+      ),
+      index('order_reminders_workspace_order_remind_idx').on(
+        table.workspaceId,
+        table.orderId,
+        table.remindAt,
+      ),
+      index('order_reminders_workspace_remind_at_idx').on(table.workspaceId, table.remindAt),
+      tenantPolicy('order_reminders_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
 export const idempotencyKeys = appSchema
   .table(
     'idempotency_keys',
@@ -1127,6 +1204,8 @@ export const schema = {
   orderStatusHistory,
   orderAmendments,
   orderChangeRequests,
+  orderNotes,
+  orderReminders,
   idempotencyKeys,
   outboxJobs,
   outboxJobAlerts,
@@ -1157,6 +1236,8 @@ export type Quote = typeof quotes.$inferSelect;
 export type OrderStatusHistory = typeof orderStatusHistory.$inferSelect;
 export type OrderAmendment = typeof orderAmendments.$inferSelect;
 export type OrderChangeRequest = typeof orderChangeRequests.$inferSelect;
+export type OrderNote = typeof orderNotes.$inferSelect;
+export type OrderReminder = typeof orderReminders.$inferSelect;
 export type IdempotencyKey = typeof idempotencyKeys.$inferSelect;
 export type OutboxJob = typeof outboxJobs.$inferSelect;
 export type OutboxJobAlert = typeof outboxJobAlerts.$inferSelect;

@@ -7,12 +7,23 @@ payloads into tickets or logs.
 ## Safe manual invocation
 
 Webhook receipt only commits a tenant-scoped inbox row and returns `200`.
-Until T10B connects these handlers to T15's five-minute staging schedule, run
-the same handlers manually from the repository with the target UUIDs:
+The scheduled route (`GET`/`POST /api/internal/catalogue/sync`, T10B) runs the
+same handlers, but its `crons` entry is not deployed yet (see "Scheduling
+boundary"). Until then, run the handlers manually from the repository with the
+target UUIDs:
 
 ```powershell
 pnpm --filter backend catalogue:job -- process-event <workspace-uuid> <event-uuid>
 pnpm --filter backend catalogue:job -- reconcile <workspace-uuid>
+```
+
+Or drive the identical scheduled pass by authenticated POST against a deployment
+that has the route:
+
+```text
+POST https://<backend>/api/internal/catalogue/sync
+Authorization: Bearer <CRON_SECRET>
+X-Scheduler-Selector: <CATALOGUE_SYNC_SELECTOR>
 ```
 
 The command reads `DATABASE_URL`, `DATABASE_SSL_MODE`,
@@ -58,15 +69,30 @@ availability by changing historical rows.
 
 ## Scheduling boundary
 
-T10B, after T15, registers these already-tested handlers with the verified
-scheduler identity on the staging production deployment at five-minute
-cadence. This task intentionally does not create a Vercel Cron or claim hosted
-staging evidence.
+T10B registers these handlers with T15's authenticated cron surface at
+`/api/internal/catalogue/sync`. For every workspace in the verified scheduler
+identity's explicit set, in registry order, the route runs one bounded
+`drainEvents` pass and then `reconcile` using the registry entry's `actorId`; it
+never discovers a tenant through the database and refuses preview deployments.
+It requires the existing `reconcile:run` scope, selected by
+`CATALOGUE_SYNC_SELECTOR` (`docs/ENV.md`) — no new scope and no schema migration.
+A workspace whose drain or reconcile fails is recorded with a bounded error code
+and the pass continues, so one poison workspace cannot stall the schedule. A
+120-second run deadline stops starting new workspaces while work already in
+flight is still recorded, so a slow CMS cannot exceed the serverless limit.
 
-T10B also schedules `CatalogueService.drainEvents` alongside `reconcile` under
-the existing `reconcile:run` machine scope (`packages/types`); this adds no new
-scope and no schema migration. One drain pass lists the workspace's pending
-events plus failed events still below the bounded maximum attempt count, in
-deterministic `createdAt` then `id` order, and calls `processEvent` for each. A
-single failing event is recorded and the drain continues, so one poison
-delivery cannot block the rest of the inbox.
+The five-minute `crons` entry (`*/5 * * * *`) is **not** in
+`apps/backend/vercel.json` yet: a sub-daily cron expression fails the whole
+deployment on the Hobby plan, exactly as the one-minute outbox entry did before
+it was removed. It is added together with the outbox entry once a Pro,
+non-preview deployment exists (`docs/RUNBOOKS/outbox-jobs.md`). Until then the
+route is reachable only by the authenticated manual POST above, so the hosted
+staging check (G30) remains unrecorded — see `docs/EVIDENCE/T10-T12-T15.md`.
+
+One drain pass lists the workspace's pending events plus failed events still
+below the bounded maximum attempt count, in deterministic `createdAt` then `id`
+order, and calls `processEvent` for each. A single failing event is recorded and
+the drain continues, so one poison delivery cannot block the rest of the inbox.
+A duplicate delivery is stored once at ingest; an older delivery drained after a
+newer one re-reads the published document and converges on the newer revision; a
+product whose webhook never arrived is created by the `reconcile` half alone.

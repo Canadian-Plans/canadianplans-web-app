@@ -42,6 +42,8 @@ const conflictTransitionStore: OrderTransitionStore = {
 
 const noopOrderQueryStore: OrderQueryStore = {
   getOrder: async () => undefined,
+  listOrders: async () => ({ orders: [], page: { page: 1, pageSize: 25, total: 0 } }),
+  listAssignableMembers: async () => [],
 };
 
 class MemoryJobStore implements JobAdminStore {
@@ -80,6 +82,7 @@ const noopCatalogueStore: CatalogueStore = {
   prepareQuote: async () => ({ status: 'product_not_found' }),
   issueQuote: async () => ({ status: 'product_not_found' }),
   validateQuote: async () => ({ status: 'not_found' }),
+  listPublishedOffers: async () => [],
   catalogueStatus: async () => ({
     sync: { lastAttemptAt: null, lastSuccessAt: null, lastErrorCode: null },
     offers: [],
@@ -445,7 +448,7 @@ describe('protected staff routes', () => {
   });
 
   it.each([
-    ['dispatch', { action: 'dispatch', expectedVersion: 1 }],
+    ['dispatch', { action: 'dispatch', courier: 'Canada Post', expectedVersion: 1 }],
     ['activate', { action: 'activate', expectedVersion: 1 }],
   ])('returns feature_not_ready for a partnered %s', async (_label, payload) => {
     // A transition store that refuses operational transitions, as the partnered
