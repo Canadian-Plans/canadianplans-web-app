@@ -13,13 +13,22 @@ five-minute catalogue sync cron) once the dedicated staging Vercel project on
 Pro exists. Until then the authenticated `POST` below is the only invocation
 path; nothing else changes about the route.
 
+The same boundary applies to the T10B catalogue sync route,
+`GET /api/internal/catalogue/sync`, which drains the catalogue inbox and
+reconciles each authorized workspace at a five-minute cadence
+(`docs/RUNBOOKS/catalogue-sync.md`). Its route is implemented and tested; only
+the `crons` entry is pending the same Pro, non-preview deployment.
+
 ## Configuration
 
 Set `CRON_SECRET`, `JOB_RUNNER_SELECTOR`, and `MACHINE_REGISTRY_JSON` only on the
 backend production environment. `CRON_SECRET` must match the selected scheduler
 entry. The entry must contain a UUID `actorId`, `outbox:run`, and the explicit
 workspace UUIDs that this deployment may process. Do not put a catch-all tenant
-identity or a privileged database URL on the scheduler.
+identity or a privileged database URL on the scheduler. The catalogue sync route
+uses a separate `CATALOGUE_SYNC_SELECTOR` entry holding the existing
+`reconcile:run` scope (documented in `docs/ENV.md`); its `secret` is the same
+`CRON_SECRET`.
 
 Provider adapters are selected explicitly. Set `OUTBOX_ADAPTERS=fake` on local and
 automated non-production deployments that should exercise the in-memory email and

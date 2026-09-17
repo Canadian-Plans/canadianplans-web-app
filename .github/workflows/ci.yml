@@ -78,6 +78,8 @@ jobs:
       - name: Ensure admin build exists for browser tests
         run: test -f apps/admin/.next/BUILD_ID || pnpm --filter admin build
       - run: pnpm --filter admin exec playwright install --with-deps chromium
+      - name: Create the disposable e2e database
+        run: PGPASSWORD=postgres createdb -h localhost -U postgres canadian_plans_e2e_test
       - run: pnpm run test:e2e
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: failure()

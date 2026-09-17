@@ -70,6 +70,20 @@ export interface PersistPublishedResult {
   createdVersion: boolean;
 }
 
+/**
+ * One currently quotable product in a workspace: the backend product UUID a
+ * quote must reference, its stable product key, the current immutable offer
+ * version, and that version's raw (unvalidated) commercial content. The content
+ * is a DB value, not an API response — the route validates it before exposure.
+ */
+export interface PublishedOfferRow {
+  productId: string;
+  productKey: string;
+  offerVersionId: string;
+  lastSyncedAt: Date | null;
+  content: unknown;
+}
+
 export type PrepareQuoteResult =
   | { status: 'ready'; productKey: string }
   | { status: 'draft_invalid' }
@@ -305,6 +319,12 @@ export interface CatalogueStore {
     draftId: string,
     now: Date,
   ): Promise<QuoteUseResult>;
+  /**
+   * The currently available (unrevoked, current-version) offers for one
+   * workspace, ordered by product key. Public catalogue content only, scoped to
+   * the credential's own workspace; never a cross-tenant scan.
+   */
+  listPublishedOffers(workspaceId: string, actorId: string): Promise<readonly PublishedOfferRow[]>;
   catalogueStatus(
     workspaceId: string,
     actorId: string,
@@ -709,6 +729,62 @@ export class DatabaseCatalogueStore implements CatalogueStore {
       if (row.revokedAt !== null) return { status: 'withdrawn' };
       if (row.expiresAt.getTime() <= now.getTime()) return { status: 'expired' };
       return { status: 'valid', offerVersionId: row.offerVersionId };
+    });
+  }
+
+  async listPublishedOffers(
+    workspaceId: string,
+    actorId: string,
+  ): Promise<readonly PublishedOfferRow[]> {
+    return this.database.withTenantTx({ workspaceId, actorId }, async (tx) => {
+      // Only products that are currently quotable: a current offer version with
+      // no revocation. The inner joins keep the read on one workspace's rows and
+      // the explicit workspace predicate plus RLS enforce isolation
+      // (PLATFORM_CONTEXT §4b, invariant 2).
+      const rows = await tx
+        .select({
+          productId: products.id,
+          productKey: products.productKey,
+          offerVersionId: productAvailability.currentOfferVersionId,
+          lastSyncedAt: productAvailability.lastSyncedAt,
+          content: offerVersions.content,
+        })
+        .from(products)
+        .innerJoin(
+          productAvailability,
+          and(
+            eq(productAvailability.workspaceId, products.workspaceId),
+            eq(productAvailability.productId, products.id),
+          ),
+        )
+        .innerJoin(
+          offerVersions,
+          and(
+            eq(offerVersions.workspaceId, productAvailability.workspaceId),
+            eq(offerVersions.id, productAvailability.currentOfferVersionId),
+          ),
+        )
+        .where(
+          and(
+            eq(products.workspaceId, workspaceId),
+            isNotNull(productAvailability.currentOfferVersionId),
+            isNull(productAvailability.revokedAt),
+          ),
+        )
+        .orderBy(products.productKey);
+      return rows.flatMap((row) =>
+        row.offerVersionId === null
+          ? []
+          : [
+              {
+                productId: row.productId,
+                productKey: row.productKey,
+                offerVersionId: row.offerVersionId,
+                lastSyncedAt: row.lastSyncedAt,
+                content: row.content,
+              },
+            ],
+      );
     });
   }
 

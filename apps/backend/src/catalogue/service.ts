@@ -102,7 +102,8 @@ function totalOf(charges: readonly ChargeComponent[]): number {
   return total;
 }
 
-function safeFailureCode(error: unknown, fallback: string): string {
+/** Shared by the service and the scheduled runner so both bound error detail identically. */
+export function safeFailureCode(error: unknown, fallback: string): string {
   if (error instanceof Error && /^[a-z][a-z0-9_]{0,63}$/.test(error.message)) {
     return error.message;
   }

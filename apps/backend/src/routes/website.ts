@@ -1,6 +1,7 @@
 import { Router, type Request } from 'express';
 import { rateLimitHit, resolveWebsiteCredential } from '@canadian-plans/db';
 import {
+  commercialOfferSchema,
   createLeadRequestSchema,
   createQuoteRequestSchema,
   submitOrderRequestSchema,
@@ -12,7 +13,7 @@ import { sendDomainError } from '../http/domain-errors.js';
 import { isConnectionLevelError, logRequestError } from '../http/logger.js';
 import { CatalogueService, providerResolverFromRegistry } from '../catalogue/service.js';
 import { loadQuoteWithdrawalPolicy } from '../catalogue/policy.js';
-import { DatabaseCatalogueStore } from '../catalogue/store.js';
+import { DatabaseCatalogueStore, type CatalogueStore } from '../catalogue/store.js';
 import { DatabaseLeadStore, type LeadStore } from '../leads/store.js';
 import { parseDraftGrantToken } from '../leads/token.js';
 import { createTurnstileVerifier } from '../website/turnstile.js';
@@ -31,6 +32,7 @@ export interface WebsiteRouteDependencies {
   leads: { store: LeadStore };
   quotes?: { service: Pick<CatalogueService, 'createQuote'> };
   orders?: { service: Pick<OrderService, 'submit'> };
+  catalogue?: { store: Pick<CatalogueStore, 'listPublishedOffers'> };
 }
 
 export function createDefaultWebsiteRouteDependencies(): WebsiteRouteDependencies {
@@ -57,6 +59,7 @@ export function createDefaultWebsiteRouteDependencies(): WebsiteRouteDependencie
     orders: {
       service: new OrderService(new DatabaseOrderStore(), loadQuoteWithdrawalPolicy()),
     },
+    catalogue: { store: new DatabaseCatalogueStore() },
   };
 }
 
@@ -264,6 +267,40 @@ function requireDraftGrant(req: Request): string | undefined {
 export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Router {
   const router = Router();
   router.use(requireWebsiteCredential(dependencies.auth));
+
+  /**
+   * Public catalogue read for the storefront. It reuses the `quotes:create`
+   * scope — a credential that may quote may read the public offers it can
+   * quote. Only the credential's own workspace is read, and each row's content
+   * is validated before exposure so an unvalidated snapshot is never returned.
+   */
+  router.get('/offers', requireScope('quotes:create'), async (req, res) => {
+    const catalogue = dependencies.catalogue;
+    if (!catalogue) {
+      sendDomainError(res, req.id, 'internal_error', 500);
+      return;
+    }
+
+    try {
+      const ctx = websiteContext(req);
+      const rows = await catalogue.store.listPublishedOffers(ctx.workspaceId, ctx.credentialId);
+      const offers = rows.flatMap((row) => {
+        const content = commercialOfferSchema.safeParse(row.content);
+        if (!content.success) return [];
+        return [
+          {
+            productId: row.productId,
+            offerVersionId: row.offerVersionId,
+            lastSyncedAt: row.lastSyncedAt?.toISOString() ?? null,
+            commercial: content.data,
+          },
+        ];
+      });
+      res.json({ offers, requestId: req.id });
+    } catch {
+      sendDomainError(res, req.id, 'internal_error', 500);
+    }
+  });
 
   router.post('/leads', requireScope('leads:write'), async (req, res) => {
     const body = createLeadRequestSchema.safeParse(req.body);

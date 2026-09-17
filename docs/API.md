@@ -177,6 +177,22 @@ acknowledges the authenticated, scoped context.
 - `403`: `scope_denied`, `caller_forbidden`
 - `429`: `rate_limited` (with `Retry-After`)
 
+### `GET /api/v1/website/offers`
+
+Website credential with `quotes:create`. Returns the quotable catalogue for the
+credential's own workspace: each entry pairs the backend `productId` a quote must
+reference with the product's current immutable offer version
+(`offerVersionId`, `lastSyncedAt`) and the validated commercial snapshot
+(`commercial`). Only currently available offers are returned — a product with no
+current offer version or a withdrawn/revoked availability row is excluded, as is
+any row whose stored content fails commercial validation. This is public
+catalogue content scoped to the credential; it never returns tenant records.
+
+- `200`: `{ offers: [{ productId, offerVersionId, lastSyncedAt, commercial }], requestId }`
+- `401`: `missing_credential`, `invalid_credential`, `credential_revoked`
+- `403`: `scope_denied`, `caller_forbidden`
+- `429`: `rate_limited` (with `Retry-After`)
+
 ### `POST /api/v1/quotes`
 
 Website credential with `quotes:create` plus `X-Draft-Grant`. Body contains
@@ -222,19 +238,62 @@ return the stored order; the grant no longer authorises editing the draft
   `Retry-After`, or `priced_checkout_disabled` while OPEN_INPUTS #14 remains
   unresolved; no success response is emitted
 
-### `PATCH /api/v1/staff/workspaces/{workspaceId}/orders/{orderId}`
+### Staff order processing (`/api/v1/staff/workspaces/{workspaceId}/orders`)
 
-Orders/Owner transition endpoint. Every status transition carries
-`expectedVersion`; a stale version returns `409 version_conflict`. Illegal
-edges are rejected, cancellation requires a reason, and every accepted edge
-writes status history plus an audit event. Dispatch/activation remain gated by
-unresolved production prerequisites. Partnered activation returns
-`feature_not_ready` until T19 can create its commission atomically.
+T14's order journey. Every write is a backend endpoint; the admin renders
+buttons and dialogs but holds no transition, payment or amendment rule. All
+reads require `workspace.read`; all mutations require `order.manage` except
+payment recording, which accepts `order.manage` **or** `financial.read`
+(Finance's privileged action, so it additionally requires a verified `aal2`
+session).
 
-The order detail this endpoint (and `GET .../orders/{orderId}`) returns carries
-the consent captured at submission. Consent is exposed on the staff order
-detail only, never on the public order summary; it is `null` for orders that
-predate the consent column.
+Every mutation carries the `recordVersion` the caller last rendered as
+`expectedVersion`. A mismatch returns `409 version_conflict` and changes
+nothing; the admin shows "changed by someone else, reload" and offers a reload.
+Transition edges, cancellation reasons, dispatch details, partnered activation
+and the operational-transition gate are all decided server-side. Illegal edges
+return `409 illegal_transition`, a cancellation without a reason returns
+`400 cancellation_reason_required`, and a dispatch without a courier returns
+`400 dispatch_details_required`.
+
+| Route                                                 | Purpose                                                                                                                                                                                                                                                                                                                                                                                           |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /orders`                                         | Paginated list. Filters: `status`, `paymentState`, `assigneeId`, `partnerId`, `partnerCode`, `source`, `submittedFrom`/`submittedTo` (ISO, `to` exclusive), `archiveState=active\|archived\|all`. `search` (≤120 chars) matches the reference and, when the actor holds the contact-search capability, the customer name/email/phone with substring matching, parameterized and workspace-scoped. |
+| `GET /orders/{orderId}`                               | Full detail: frozen snapshot, customer, plan payload, consent, status history, audit events, notes, reminders, change requests, amendments, payments, dispatch record, the actor's `capabilities`, and `allowedTransitions` computed from the current status and the live gates.                                                                                                                  |
+| `PATCH /orders/{orderId}`                             | Status transitions: `transition` (`toStatus`, optional `reason`), `dispatch` (`courier` required, optional `trackingReference`/`dispatchDate`), `activate`, `cancel` (`reason` required). Dispatch writes `dispatch_records` in the same transaction as the status change and sets `delivery_state`.                                                                                              |
+| `PATCH /orders/{orderId}/assignee`                    | Assign to an active staff membership of the same workspace, or unassign with `assigneeId: null`.                                                                                                                                                                                                                                                                                                  |
+| `PATCH /orders/{orderId}/archive`                     | Set or clear `archived_at`. Archiving is a visibility action, never deletion.                                                                                                                                                                                                                                                                                                                     |
+| `POST /orders/bulk-assign`                            | Assign up to 100 orders. Each entry carries its own `expectedVersion`; the response reports `assigned`, `version_conflict` or `not_found` per order, so a partial failure is never silent. An unknown assignee returns `404 assignee_not_found` for the whole request.                                                                                                                            |
+| `GET`/`POST /orders/{orderId}/notes`                  | Operational notes with author and timestamp. Append-only; the audit event records only the note id, never its text.                                                                                                                                                                                                                                                                               |
+| `POST /orders/{orderId}/reminders`                    | Schedule a follow-up (`remindAt`, optional `note`).                                                                                                                                                                                                                                                                                                                                               |
+| `DELETE /orders/{orderId}/reminders/{reminderId}`     | Cancel a scheduled reminder.                                                                                                                                                                                                                                                                                                                                                                      |
+| `POST /orders/{orderId}/change-requests`              | Record a proposed customer edit (`patch.contact`, `patch.form`, optional `note`) for staff decision.                                                                                                                                                                                                                                                                                              |
+| `POST /orders/{orderId}/change-requests/{id}/approve` | Approve in one transaction: exactly one audited `order_amendments` row plus the version check. Contact fields are applied to the originating lead; the submitted order envelope (snapshot, payload, consent, terms) stays immutable (REQ 14), so form changes live in the amendment.                                                                                                              |
+| `POST /orders/{orderId}/change-requests/{id}/reject`  | Reject without changing any customer data. Re-resolving a resolved request returns `409 change_request_resolved`.                                                                                                                                                                                                                                                                                 |
+| `POST /orders/{orderId}/payments`                     | Record a manual payment (`paymentState`, optional `method`/`reference`/`amountMinor`) into `payment_records` and update `payment_state` in one transaction. The amount currency always comes from the frozen snapshot.                                                                                                                                                                            |
+
+`GET /api/v1/staff/workspaces/{workspaceId}/members` lists the active staff
+memberships as assignee options. It returns membership id, roles and an
+`isSelf` flag — never another tenant's member and never the actor's email.
+
+The order detail carries the consent captured at submission. Consent is exposed
+on the staff order detail only, never on the public order summary; it is `null`
+for orders that predate the consent column.
+
+`GET /orders` and `GET /orders/{orderId}` include a `capabilities` object
+(`canManageOrders`, `canRecordPayment`, `canSearchContact`) computed from the
+same live authorization decision the mutations use, so the admin can render the
+right controls without re-deriving policy from role names.
+
+### Dispatch and activation gates
+
+Phase A keeps dispatch and activation disabled in production until OPEN_INPUTS
+#15/#19 are resolved; partnered activation additionally returns
+`409 feature_not_ready` until activation can commit its commission line
+(invariant 10). Tests and staging exercise both behind the TEST-only
+`ORDER_OPERATIONAL_TRANSITIONS` flag, which the backend ignores when
+`NODE_ENV=production`. The admin surfaces `feature_not_ready` rather than hiding
+the action. See `docs/RUNBOOKS/orders.md`.
 
 ### `POST /api/v1/webhooks/sanity`
 
@@ -272,6 +331,24 @@ and configured selector resolve through the server-only scheduler registry to
 an actor, `outbox:run` scope, and an explicit workspace set. Preview
 deployments are rejected. An equivalent authenticated `POST` supports manual
 staging checks.
+
+### `GET /api/internal/catalogue/sync`
+
+Backend-only Vercel Cron route for catalogue sync (T10B), intended to run every
+five minutes on a Pro production deployment in addition to the outbox cron
+above. Vercel supplies `Authorization: Bearer <CRON_SECRET>`; the secret and the
+configured `CATALOGUE_SYNC_SELECTOR` resolve through the server-only scheduler
+registry to an actor, the existing `reconcile:run` scope, and an explicit
+workspace set. Preview deployments are rejected, and no tenant is discovered
+through the database. For each authorized workspace, in registry order, the
+route drains the catalogue inbox (`CatalogueService.drainEvents`, one bounded
+pass) and then reconciles against the published CMS snapshot using the registry
+actor. A failed workspace records a bounded error code and the pass continues; a
+120-second run deadline stops starting new workspaces while work already in
+flight is still recorded. The response reports bounded counters
+(`workspaces`, `listed`, `processed`, `drainFailed`, `reconciled`, `failures`)
+and contains no PII. An equivalent authenticated `POST` supports manual staging
+checks.
 
 ## Staff permission matrix
 

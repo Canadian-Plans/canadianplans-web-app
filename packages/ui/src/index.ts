@@ -17,6 +17,18 @@ export {
   CardContent,
 } from './components/card';
 export {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+} from './components/dialog';
+export {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
@@ -25,8 +37,25 @@ export {
   DropdownMenuSeparator,
   DropdownMenuCheckboxItem,
 } from './components/dropdown-menu';
+export { FileDrop, FILE_DROP_DEFAULT_NOTE, type FileDropProps } from './components/file-drop';
+export {
+  FormField,
+  type FormFieldProps,
+  type FormFieldControlProps,
+} from './components/form-field';
 export { Input } from './components/input';
 export { Label } from './components/label';
+export { ReviewCard, type ReviewCardProps } from './components/review-card';
+export {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from './components/select';
 export { Separator } from './components/separator';
 export {
   Sheet,
@@ -58,5 +87,17 @@ export {
 } from './components/sidebar';
 export { Skeleton } from './components/skeleton';
 export { SkipLink } from './components/skip-link';
+export { Stepper, type StepperProps, type StepperStep } from './components/stepper';
+export {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from './components/table';
+export { Textarea } from './components/textarea';
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './components/tooltip';
 export { useIsMobile } from './hooks/use-mobile';

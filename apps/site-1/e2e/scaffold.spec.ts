@@ -4,7 +4,7 @@ const pages = [
   ['/', 'Welcome to Site 1'],
   ['/plans', 'Plans'],
   ['/plans/test-plan', 'Plan details'],
-  ['/order', 'Order'],
+  ['/order', 'Order your SIM plan'],
   ['/track', 'Track your order'],
   ['/privacy', 'Privacy'],
   ['/terms', 'Terms'],

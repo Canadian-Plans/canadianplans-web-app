@@ -27,7 +27,12 @@ const messages: Partial<Record<ApiErrorCode, string>> = {
   version_conflict: 'The order changed. Reload it before applying another transition.',
   illegal_transition: 'That order status transition is not allowed.',
   cancellation_reason_required: 'A cancellation reason is required.',
+  dispatch_details_required: 'A courier is required to dispatch this order.',
   feature_not_ready: 'This order action is not enabled yet.',
+  assignee_not_found: 'The assignee is not an active member of this workspace.',
+  reminder_not_found: 'The reminder does not exist on this order.',
+  change_request_not_found: 'The change request does not exist on this order.',
+  change_request_resolved: 'This change request has already been resolved.',
   invalid_request: 'The request body is invalid.',
   internal_error: 'An internal error occurred.',
 };

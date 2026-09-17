@@ -24,12 +24,18 @@ import {
   createJobsRouter,
   type JobsRouteDependencies,
 } from './routes/jobs.js';
+import {
+  createCatalogueSyncRouter,
+  createDefaultCatalogueSyncRouteDependencies,
+  type CatalogueSyncRouteDependencies,
+} from './routes/catalogue-sync.js';
 
 export interface CreateAppOptions {
   staff?: StaffRouteDependencies;
   website?: WebsiteRouteDependencies;
   sanityWebhook?: SanityWebhookDependencies;
   jobs?: JobsRouteDependencies;
+  catalogueSync?: CatalogueSyncRouteDependencies;
 }
 
 function adminCors(): RequestHandler {
@@ -76,6 +82,12 @@ export function createApp(options: CreateAppOptions = {}): Express {
   app.use(
     '/api/internal/jobs',
     createJobsRouter(options.jobs ?? createDefaultJobsRouteDependencies()),
+  );
+  app.use(
+    '/api/internal/catalogue',
+    createCatalogueSyncRouter(
+      options.catalogueSync ?? createDefaultCatalogueSyncRouteDependencies(),
+    ),
   );
   app.use(
     '/api/v1/staff',

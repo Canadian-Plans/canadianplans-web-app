@@ -278,6 +278,9 @@ class MemoryCatalogueStore implements CatalogueStore {
     if (Date.parse(stored.quote.expiresAt) <= now.getTime()) return { status: 'expired' } as const;
     return { status: 'valid', offerVersionId: stored.quote.offerVersionId } as const;
   }
+  async listPublishedOffers(_workspaceId: string, _actorId: string) {
+    return [];
+  }
   async catalogueStatus(_workspaceId: string, _actorId: string, requestId: string) {
     return {
       sync: { lastAttemptAt: null, lastSuccessAt: null, lastErrorCode: this.syncError ?? null },
