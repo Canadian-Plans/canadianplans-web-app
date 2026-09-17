@@ -56,6 +56,11 @@ test.beforeEach(async () => {
 
 async function choosePassportPlan(page: Page): Promise<void> {
   await page.goto('/order');
+  // Fail loudly and specifically when step 1 could not load its offers at all:
+  // otherwise this only shows up as an opaque 30s timeout on the plan link.
+  await expect(page.getByRole('heading', { name: 'Plans are unavailable right now' })).toHaveCount(
+    0,
+  );
   await page.getByRole('link', { name: /Select .*E2E Passport Plan/ }).click();
   await expect(page.getByRole('heading', { name: 'Your details' })).toBeVisible();
 }

@@ -2,7 +2,7 @@
  * T13 end-to-end harness (site-1 order journey).
  *
  * Runs the REAL backend application (`createApp`) against a disposable
- * Postgres, with exactly two test seams that cannot exist in production:
+ * Postgres, with exactly three test seams that cannot exist in production:
  *
  *  1. A stub published-catalogue provider, so the journey does not need a live
  *     Sanity project. It implements the same `SanityCatalogue` interface the
@@ -11,6 +11,15 @@
  *  2. An admitting bot check, because the production verifier deliberately
  *     rejects Cloudflare's public test secrets and there is no legitimate
  *     token to obtain here.
+ *  3. Raised website rate-limit thresholds. The limiter itself is the real
+ *     DB-backed one and still runs on every request; only the numbers move.
+ *     The whole Playwright suite shares one client IP (127.0.0.1) behind the
+ *     proxy below, so the production 120-requests-per-minute IP bucket is
+ *     spent by the suite's own traffic — a later test then gets a 429 on
+ *     `GET /api/v1/website/offers`, the order page renders "Plans are
+ *     unavailable right now", and the spec times out waiting for a plan
+ *     link. That is an artifact of co-located test traffic, not a defect the
+ *     journey should assert, and it made the suite flaky.
  *
  * Everything else is the real thing: real HTTP routes, real service
  * credentials and scopes, real Postgres with RLS, real lead/quote/order
@@ -133,11 +142,24 @@ const catalogueService = new CatalogueService(
   DEFAULT_POLICY,
 );
 
+/**
+ * Seam 3 (see the module comment): the real limiter, thresholds raised so the
+ * suite cannot rate-limit itself from its single shared client IP. Still
+ * finite, so a genuine runaway loop in a journey is caught rather than hidden.
+ */
+const E2E_RATE_LIMITS = {
+  ipWindowSeconds: 60,
+  ipMaxCount: 20_000,
+  credentialWindowSeconds: 60,
+  credentialMaxCount: 20_000,
+};
+
 const website: WebsiteRouteDependencies = {
   auth: {
     resolveCredential: resolveWebsiteCredential,
     rateLimit: rateLimitHit,
     botCheck: async () => true,
+    limits: E2E_RATE_LIMITS,
   },
   leads: { store: new DatabaseLeadStore() },
   quotes: { service: catalogueService },
