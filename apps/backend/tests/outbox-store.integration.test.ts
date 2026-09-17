@@ -138,6 +138,105 @@ databaseTest('database outbox store', () => {
     expect(requeued[0]).toMatchObject({ status: 'pending', attempts: 0 });
   });
 
+  test('an expired lease is reclaimed by another owner and the original owner loses it', async () => {
+    // A dedicated workspace so the claimable pool for this test is exactly the
+    // single job inserted below.
+    const LEASE_WORKSPACE = '10000000-0000-4000-8000-000000000783';
+    const FIRST_OWNER = '20000000-0000-4000-8000-0000000007a1';
+    const SECOND_OWNER = '20000000-0000-4000-8000-0000000007b2';
+    const claimedAt = new Date('2026-09-16T12:00:00.000Z');
+
+    await admin`
+      insert into app.workspaces (id, slug, name)
+      values (${LEASE_WORKSPACE}, 'ci-outbox-lease', 'CI Outbox Lease')
+      on conflict (id) do nothing
+    `;
+    await admin`
+      insert into app.outbox_jobs (workspace_id, job_type, dedupe_key, payload, available_at)
+      values (${LEASE_WORKSPACE}, 'analytics_order_submitted', 'order:lease-reclaim', ${admin.json({ orderId: crypto.randomUUID() })}, ${claimedAt})
+      on conflict (workspace_id, job_type, dedupe_key) do update
+        set status = 'pending', attempts = 0, lease_owner_id = null, lease_expires_at = null,
+            available_at = excluded.available_at
+    `;
+
+    // Owner A takes the job with a lease that has already expired.
+    const first = await store.claim({
+      workspaceId: LEASE_WORKSPACE,
+      actorId: ACTOR,
+      leaseOwnerId: FIRST_OWNER,
+      limit: 1,
+      now: claimedAt,
+      leaseExpiresAt: new Date(claimedAt.getTime() + 1_000),
+      maxAttempts: 8,
+    });
+    expect(first).toHaveLength(1);
+    const job = first[0];
+    if (!job) throw new Error('expected one claimed job');
+    expect(job.attempts).toBe(1);
+    expect(job.leaseOwnerId).toBe(FIRST_OWNER);
+
+    // Owner B claims after A's lease expired and reclaims the same job.
+    const reclaimAt = new Date(claimedAt.getTime() + 2_000);
+    const second = await store.claim({
+      workspaceId: LEASE_WORKSPACE,
+      actorId: ACTOR,
+      leaseOwnerId: SECOND_OWNER,
+      limit: 1,
+      now: reclaimAt,
+      leaseExpiresAt: new Date(reclaimAt.getTime() + 60_000),
+      maxAttempts: 8,
+    });
+    expect(second).toHaveLength(1);
+    expect(second[0]?.id).toBe(job.id);
+    expect(second[0]?.leaseOwnerId).toBe(SECOND_OWNER);
+    expect(second[0]?.attempts).toBe(2);
+
+    const persisted = await admin`
+      select attempts, status, lease_owner_id
+      from app.outbox_jobs
+      where id = ${job.id}
+    `;
+    expect(persisted[0]).toMatchObject({
+      attempts: 2,
+      status: 'processing',
+      lease_owner_id: SECOND_OWNER,
+    });
+
+    // The original owner's outcome is rejected; the new owner records it.
+    expect(
+      await store.recordOutcome({
+        workspaceId: LEASE_WORKSPACE,
+        actorId: ACTOR,
+        jobId: job.id,
+        leaseOwnerId: FIRST_OWNER,
+        outcome: { status: 'completed', providerId: 'provider-a' },
+        now: reclaimAt,
+      }),
+    ).toBe('lease_lost');
+
+    expect(
+      await store.recordOutcome({
+        workspaceId: LEASE_WORKSPACE,
+        actorId: ACTOR,
+        jobId: job.id,
+        leaseOwnerId: SECOND_OWNER,
+        outcome: { status: 'completed', providerId: 'provider-b' },
+        now: reclaimAt,
+      }),
+    ).toBe('recorded');
+
+    const completed = await admin`
+      select status, provider_id, lease_owner_id
+      from app.outbox_jobs
+      where id = ${job.id}
+    `;
+    expect(completed[0]).toMatchObject({
+      status: 'completed',
+      provider_id: 'provider-b',
+      lease_owner_id: null,
+    });
+  });
+
   test('dedupe keys are unique per workspace and job type', async () => {
     await expect(admin`
       insert into app.outbox_jobs (workspace_id, job_type, dedupe_key, payload)

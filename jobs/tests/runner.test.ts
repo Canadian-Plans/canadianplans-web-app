@@ -109,6 +109,34 @@ describe('outbox runner', () => {
     ]);
   });
 
+  it('counts a lost lease instead of the outcome, and does not count it as completed', async () => {
+    const claimed = job();
+    const store: OutboxStore = {
+      claim: vi.fn(async () => [claimed]),
+      recordOutcome: vi.fn(async () => 'lease_lost' as const),
+    };
+    const runner = new OutboxRunner({
+      store,
+      handlers: new Map([
+        [claimed.jobType, async () => ({ status: 'completed' as const, providerId: 'provider-1' })],
+      ]),
+      leaseId: () => claimed.leaseOwnerId,
+    });
+
+    const result = await runner.run({
+      authorizedWorkspaceIds: [claimed.workspaceId],
+      actorId: crypto.randomUUID(),
+    });
+
+    expect(result.leaseLost).toBe(1);
+    expect(result.claimed).toBe(1);
+    // A lost lease is not attributed to the completed/retried/failed counters.
+    expect(result.completed).toBe(0);
+    expect(result.retried).toBe(0);
+    expect(result.failed).toBe(0);
+    expect(result.uncertain).toBe(0);
+  });
+
   it('only sends sanitized analytics identifiers and stable email message ids', async () => {
     const email = new FakeEmailAdapter();
     const analytics = new FakeAnalyticsAdapter();

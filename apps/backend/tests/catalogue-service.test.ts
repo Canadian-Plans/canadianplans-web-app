@@ -17,7 +17,6 @@ const WORKSPACE = '10000000-0000-4000-8000-000000000401';
 const ACTOR = '20000000-0000-4000-8000-000000000401';
 const PRODUCT = '30000000-0000-4000-8000-000000000401';
 const DRAFT = '40000000-0000-4000-8000-000000000401';
-const EVENT = '50000000-0000-4000-8000-000000000401';
 const GRANT = 'cpldg_valid-catalogue-grant-0001';
 
 function offer(amount: number, revisionId = `rev-${amount}`): PublishedOffer {
@@ -79,9 +78,14 @@ interface StoredQuote {
 class MemoryCatalogueStore implements CatalogueStore {
   readonly events = new Map<string, SyncEventRecord>();
   readonly deliveryIds = new Map<string, string>();
-  readonly versions = new Map<string, { id: string; content: PersistPublishedInput['content'] }>();
+  readonly versions = new Map<
+    string,
+    { id: string; content: PersistPublishedInput['content']; revisionId: string }
+  >();
   readonly quotes = new Map<string, StoredQuote>();
   readonly leases = new Map<string, string>();
+  /** Revisions recorded on the event row by `markEvent`, keyed by event id. */
+  readonly eventRevisions = new Map<string, string | undefined>();
   currentVersionId: string | undefined;
   syncError: string | undefined;
   private versionCounter = 0;
@@ -91,7 +95,9 @@ class MemoryCatalogueStore implements CatalogueStore {
     const key = `${input.workspaceId}:${input.providerAccount}:${input.deliveryId}`;
     const existing = this.deliveryIds.get(key);
     if (existing) return { eventId: existing, duplicate: true };
-    const eventId = EVENT;
+    // Distinct deliveries get distinct event ids, so a test can enqueue two
+    // revisions of one document and process them in either order.
+    const eventId = `50000000-0000-4000-8000-${String(this.events.size + 1).padStart(12, '0')}`;
     this.deliveryIds.set(key, eventId);
     this.events.set(eventId, {
       id: eventId,
@@ -111,9 +117,12 @@ class MemoryCatalogueStore implements CatalogueStore {
     _actorId: string,
     eventId: string,
     status: 'processing' | 'completed' | 'failed' | 'ignored',
+    _errorCode?: string,
+    revisionId?: string,
   ) {
     const event = this.events.get(eventId);
     if (event) this.events.set(eventId, { ...event, status });
+    this.eventRevisions.set(eventId, revisionId);
   }
   async productKeyByDocumentId() {
     return this.versions.size > 0 ? 'rogers-sim-5gb' : undefined;
@@ -136,6 +145,7 @@ class MemoryCatalogueStore implements CatalogueStore {
       stored = {
         id: `60000000-0000-4000-8000-${String(++this.versionCounter).padStart(12, '0')}`,
         content: input.content,
+        revisionId: input.revisionId,
       };
       this.versions.set(input.contentHash, stored);
     }
@@ -274,7 +284,60 @@ describe('catalogue sync and quote consistency', () => {
 
     expect(store.versions.size).toBe(1);
     expect(store.versions.has(commercialContentHash(offer(5_000).commercial))).toBe(true);
-    expect(store.events.get(EVENT)?.status).toBe('completed');
+    expect(store.events.get(first.eventId)?.status).toBe('completed');
+  });
+
+  it('converges on the current CMS document when two revisions are processed in reverse order', async () => {
+    const { store, sanity, service } = harness();
+    // Two distinct deliveries for two revisions of the same document.
+    const olderDelivery = await enqueue(store, 'delivery-r1');
+    const newerDelivery = await enqueue(store, 'delivery-r2');
+    expect(olderDelivery.eventId).not.toBe(newerDelivery.eventId);
+    expect(store.events.size).toBe(2);
+
+    // The provider's published state has already advanced to r2 by the time
+    // either delivery is processed; the r2 event is handled *first*.
+    sanity.current = offer(7_500, 'r2');
+    await service.processEvent(WORKSPACE, newerDelivery.eventId);
+    // Then the older r1 delivery arrives late.
+    await service.processEvent(WORKSPACE, olderDelivery.eventId);
+
+    // Both inbox rows converge on the current published revision, and the
+    // late older delivery never resurrects its superseded snapshot.
+    expect(store.eventRevisions.get(newerDelivery.eventId)).toBe('r2');
+    expect(store.eventRevisions.get(olderDelivery.eventId)).toBe('r2');
+    expect(store.events.get(newerDelivery.eventId)?.status).toBe('completed');
+    expect(store.events.get(olderDelivery.eventId)?.status).toBe('completed');
+    expect(store.versions.size).toBe(1);
+    const only = [...store.versions.values()][0];
+    expect(only?.revisionId).toBe('r2');
+    expect(only?.content.recurringChargeAmountMinor).toBe(7_500);
+    expect(store.currentVersionId).toBe(only?.id);
+  });
+
+  it('stays withdrawn when an unpublish is followed by a stale publish delivery', async () => {
+    const { store, sanity, service } = harness();
+    // The document is published, then unpublished, then a stale publish
+    // delivery for that now-withdrawn document is processed.
+    sanity.current = offer(3_500, 'r1');
+    const published = await enqueue(store, 'delivery-publish-r1');
+    await service.processEvent(WORKSPACE, published.eventId);
+    expect(store.currentVersionId).toBeDefined();
+    expect(store.versions.size).toBe(1);
+
+    sanity.current = undefined;
+    const unpublished = await enqueue(store, 'delivery-unpublish');
+    await service.processEvent(WORKSPACE, unpublished.eventId);
+    expect(store.currentVersionId).toBeUndefined();
+
+    const stalePublish = await enqueue(store, 'delivery-stale-publish');
+    await service.processEvent(WORKSPACE, stalePublish.eventId);
+
+    // The stale publish must not re-publish: nothing is current and no
+    // replacement version is written.
+    expect(store.currentVersionId).toBeUndefined();
+    expect(store.versions.size).toBe(1);
+    expect(store.events.get(stalePublish.eventId)?.status).toBe('completed');
   });
 
   it('keeps quote fields and immutable version content exact across a webhook race', async () => {

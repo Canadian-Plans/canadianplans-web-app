@@ -3,7 +3,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   apiErrorResponseSchema,
   inviteStaffResponseSchema,
+  listWorkspaceJobsResponseSchema,
   listWorkspaceLeadsResponseSchema,
+  retryWorkspaceJobResponseSchema,
   staffWorkspaceAccessResponseSchema,
   staffWorkspacesResponseSchema,
   type LeadListItem,
@@ -23,6 +25,8 @@ import type {
 import type { WebsiteCredentialStore } from '../src/website/store.js';
 import type { OrderQueryStore } from '../src/orders/query-store.js';
 import type { OrderTransitionStore } from '../src/orders/transitions.js';
+import type { JobAdminStore, AdminJob } from '../src/jobs/store.js';
+import type { CatalogueStore } from '../src/catalogue/store.js';
 
 const noopCredentialStore: WebsiteCredentialStore = {
   createCredential: async () => {
@@ -38,6 +42,61 @@ const conflictTransitionStore: OrderTransitionStore = {
 
 const noopOrderQueryStore: OrderQueryStore = {
   getOrder: async () => undefined,
+};
+
+class MemoryJobStore implements JobAdminStore {
+  jobs: Awaited<ReturnType<JobAdminStore['listActive']>> = [];
+  readonly listCalls: { workspaceId: string; actorId: string }[] = [];
+  readonly retryCalls: { workspaceId: string; jobId: string }[] = [];
+  retryResult: Awaited<ReturnType<JobAdminStore['retry']>> = 'retried';
+
+  async listActive(workspaceId: string, actorId: string) {
+    this.listCalls.push({ workspaceId, actorId });
+    return this.jobs;
+  }
+
+  async retry(input: { workspaceId: string; actorId: string; jobId: string; requestId: string }) {
+    this.retryCalls.push({ workspaceId: input.workspaceId, jobId: input.jobId });
+    return this.retryResult;
+  }
+}
+
+const noopCatalogueStore: CatalogueStore = {
+  acceptEvent: async () => {
+    throw new Error('not used in these staff-route tests');
+  },
+  getEvent: async () => undefined,
+  markEvent: async () => undefined,
+  productKeyByDocumentId: async () => undefined,
+  listProductKeys: async () => [],
+  acquireLease: async () => false,
+  releaseLease: async () => undefined,
+  persistPublished: async () => {
+    throw new Error('not used in these staff-route tests');
+  },
+  withdrawProduct: async () => false,
+  recordSyncResult: async () => undefined,
+  prepareQuote: async () => ({ status: 'product_not_found' }),
+  issueQuote: async () => ({ status: 'product_not_found' }),
+  validateQuote: async () => ({ status: 'not_found' }),
+  catalogueStatus: async () => ({
+    sync: { lastAttemptAt: null, lastSuccessAt: null, lastErrorCode: null },
+    offers: [],
+    errors: [],
+    requestId: 'req',
+  }),
+};
+
+const sampleJob: AdminJob = {
+  id: '40000000-0000-4000-8000-000000000001',
+  jobType: 'order_acknowledgement_email',
+  status: 'failed',
+  attempts: 1,
+  availableAt: new Date('2026-09-14T00:00:00.000Z'),
+  leaseExpiresAt: null,
+  lastErrorCode: 'provider_rejected',
+  createdAt: new Date('2026-09-14T00:00:00.000Z'),
+  updatedAt: new Date('2026-09-14T00:00:00.000Z'),
 };
 
 const ACTOR = '20000000-0000-4000-8000-000000000001';
@@ -115,6 +174,7 @@ let baseUrl: string;
 let verifier: TokenVerifier;
 let store: MemoryStaffStore;
 let leadStore: MemoryLeadStore;
+let jobStore: MemoryJobStore;
 
 beforeEach(async () => {
   verifier = new TokenVerifier();
@@ -130,6 +190,8 @@ beforeEach(async () => {
   });
   store = new MemoryStaffStore();
   leadStore = new MemoryLeadStore();
+  jobStore = new MemoryJobStore();
+  jobStore.jobs = [{ ...sampleJob }];
   server = createApp({
     staff: {
       sessionVerifier: verifier,
@@ -138,6 +200,8 @@ beforeEach(async () => {
       leadStore,
       orderTransitionStore: conflictTransitionStore,
       orderQueryStore: noopOrderQueryStore,
+      jobStore,
+      catalogueStore: noopCatalogueStore,
     },
   }).listen(0);
   await new Promise<void>((resolve) => server.once('listening', resolve));
@@ -294,5 +358,132 @@ describe('protected staff routes', () => {
     );
     expect(response.status).toBe(400);
     expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe('invalid_request');
+  });
+
+  it('lets a viewer list jobs with canRetry false', async () => {
+    store.access = { ...store.access, roles: ['viewer'], permissions: [] };
+
+    const response = await fetch(`${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/jobs`, {
+      headers: { authorization: 'Bearer aal1-token' },
+    });
+
+    expect(response.status).toBe(200);
+    const body = listWorkspaceJobsResponseSchema.parse(await response.json());
+    expect(body.jobs).toHaveLength(1);
+    expect(body.jobs[0]).toMatchObject({ id: sampleJob.id, status: 'failed' });
+    // The route serialises the job timestamps to ISO strings for the contract.
+    expect(body.jobs[0]?.availableAt).toBe('2026-09-14T00:00:00.000Z');
+    expect(body.canRetry).toBe(false);
+    expect(jobStore.listCalls).toEqual([{ workspaceId: WORKSPACE, actorId: ACTOR }]);
+  });
+
+  it('denies a viewer the job retry with 403 and no store call', async () => {
+    store.access = { ...store.access, roles: ['viewer'], permissions: [] };
+
+    const response = await fetch(
+      `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/jobs/${sampleJob.id}/retry`,
+      { method: 'POST', headers: { authorization: 'Bearer aal1-token' } },
+    );
+
+    expect(response.status).toBe(403);
+    expect(jobStore.retryCalls).toEqual([]);
+  });
+
+  it('lets an integration-management holder retry a failed job', async () => {
+    // `integration.manage` is privileged, so an owner session must have
+    // completed MFA (aal2) before the retry is allowed.
+    store.access = {
+      ...store.access,
+      roles: ['owner'],
+      permissions: [{ name: 'integration_management', effect: 'allow' }],
+    };
+
+    const unverified = await fetch(
+      `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/jobs/${sampleJob.id}/retry`,
+      { method: 'POST', headers: { authorization: 'Bearer aal1-token' } },
+    );
+    expect(unverified.status).toBe(403);
+    expect(apiErrorResponseSchema.parse(await unverified.json()).error.code).toBe('mfa_required');
+    expect(jobStore.retryCalls).toEqual([]);
+
+    const response = await fetch(
+      `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/jobs/${sampleJob.id}/retry`,
+      { method: 'POST', headers: { authorization: 'Bearer aal2-token' } },
+    );
+
+    expect(response.status).toBe(200);
+    const body = retryWorkspaceJobResponseSchema.parse(await response.json());
+    expect(body).toMatchObject({ jobId: sampleJob.id, status: 'pending' });
+    expect(jobStore.retryCalls).toEqual([{ workspaceId: WORKSPACE, jobId: sampleJob.id }]);
+  });
+
+  it('denies a foreign workspace the job list with 403 and no store call', async () => {
+    const FOREIGN_WORKSPACE = '10000000-0000-4000-8000-0000000000ff';
+
+    const response = await fetch(`${baseUrl}/api/v1/staff/workspaces/${FOREIGN_WORKSPACE}/jobs`, {
+      headers: { authorization: 'Bearer aal1-token' },
+    });
+
+    expect(response.status).toBe(403);
+    expect(jobStore.listCalls).toEqual([]);
+  });
+
+  it('rejects a cancel without a reason before reaching the transition store', async () => {
+    const orderId = '80000000-0000-4000-8000-000000000002';
+    const response = await fetch(
+      `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/orders/${orderId}`,
+      {
+        method: 'PATCH',
+        headers: { authorization: 'Bearer aal1-token', 'content-type': 'application/json' },
+        body: JSON.stringify({ action: 'cancel', expectedVersion: 1 }),
+      },
+    );
+
+    expect(response.status).toBe(400);
+    expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe('invalid_request');
+  });
+
+  it.each([
+    ['dispatch', { action: 'dispatch', expectedVersion: 1 }],
+    ['activate', { action: 'activate', expectedVersion: 1 }],
+  ])('returns feature_not_ready for a partnered %s', async (_label, payload) => {
+    // A transition store that refuses operational transitions, as the partnered
+    // path does, must surface feature_not_ready rather than a generic error.
+    const refusingStore: OrderTransitionStore = {
+      transition: async () => ({ status: 'feature_not_ready' }),
+    };
+    const app = createApp({
+      staff: {
+        sessionVerifier: verifier,
+        store,
+        credentialStore: noopCredentialStore,
+        leadStore,
+        orderTransitionStore: refusingStore,
+        orderQueryStore: noopOrderQueryStore,
+        jobStore,
+      },
+    }).listen(0);
+    await new Promise<void>((resolve) => app.once('listening', resolve));
+    const address = app.address();
+    if (address === null || typeof address === 'string') throw new Error('expected TCP server');
+
+    try {
+      const orderId = '80000000-0000-4000-8000-000000000003';
+      const response = await fetch(
+        `http://127.0.0.1:${address.port}/api/v1/staff/workspaces/${WORKSPACE}/orders/${orderId}`,
+        {
+          method: 'PATCH',
+          headers: { authorization: 'Bearer aal1-token', 'content-type': 'application/json' },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      expect(response.status).toBe(409);
+      expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe(
+        'feature_not_ready',
+      );
+    } finally {
+      await new Promise<void>((resolve) => app.close(() => resolve()));
+    }
   });
 });

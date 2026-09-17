@@ -70,7 +70,7 @@ describe('POST /api/v1/webhooks/sanity', () => {
     await new Promise<void>((resolve) => server.close(() => resolve()));
   });
 
-  async function post(providerAccount: string) {
+  async function post(providerAccount: string, overrides: { signature?: string } = {}) {
     const body = JSON.stringify({ documentId: 'sanity-offer-1', ignoredPrice: 1 });
     return fetch(`${baseUrl}/api/v1/webhooks/sanity`, {
       method: 'POST',
@@ -78,7 +78,7 @@ describe('POST /api/v1/webhooks/sanity', () => {
         'content-type': 'application/json',
         'x-webhook-selector': 'site-1-sanity',
         'x-provider-account': providerAccount,
-        'sanity-webhook-signature': signature(body),
+        'sanity-webhook-signature': overrides.signature ?? signature(body),
         'idempotency-key': 'delivery-451',
       },
       body,
@@ -102,6 +102,31 @@ describe('POST /api/v1/webhooks/sanity', () => {
     expect(accepted).toHaveLength(0);
     expect(await response.json()).toMatchObject({
       error: { code: 'machine_account_mismatch' },
+    });
+  });
+
+  it('rejects a correctly signed delivery whose timestamp is older than five minutes', async () => {
+    const body = JSON.stringify({ documentId: 'sanity-offer-1', ignoredPrice: 1 });
+    const staleTimestamp = String((NOW - 6 * 60_000) / 1_000);
+    const staleSignature = `t=${staleTimestamp},v1=${createHmac('sha256', SECRET)
+      .update(`${staleTimestamp}.${body}`)
+      .digest('base64url')}`;
+
+    const response = await post('project-site-1', { signature: staleSignature });
+    expect(response.status).toBe(401);
+    expect(accepted).toHaveLength(0);
+    expect(await response.json()).toMatchObject({
+      error: { code: 'machine_signature_invalid' },
+    });
+  });
+
+  it('rejects a signature header that omits the signed value', async () => {
+    // Timestamp present but no `v1=` component: the signed value is missing.
+    const response = await post('project-site-1', { signature: `t=${TIMESTAMP}` });
+    expect(response.status).toBe(401);
+    expect(accepted).toHaveLength(0);
+    expect(await response.json()).toMatchObject({
+      error: { code: 'machine_signature_invalid' },
     });
   });
 });
