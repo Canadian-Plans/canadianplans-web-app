@@ -9,18 +9,26 @@ function validInventory() {
   return {
     schemaVersion: 1,
     productionResourceFingerprints: [
-      { kind: 'postgres', immutableIdFingerprint: fingerprint('a') },
+      { kind: 'postgres', platform: 'railway', immutableIdFingerprint: fingerprint('a') },
     ],
     resources: [
       {
         id: 'preview-db',
         provider: 'supabase',
         kind: 'postgres',
+        platform: 'railway',
         environment: 'preview',
         immutableIdFingerprint: fingerprint('b'),
       },
     ],
-    credentialCatalog: [{ deployment: 'backend', name: 'DATABASE_URL', resourceKind: 'postgres' }],
+    credentialCatalog: [
+      {
+        deployment: 'backend',
+        name: 'DATABASE_URL',
+        resourceKind: 'postgres',
+        platform: 'railway',
+      },
+    ],
     previewDeployments: [
       {
         deployment: 'backend',
@@ -92,6 +100,26 @@ test('rejects a preview binding that points at a production resource', () => {
   const inventory = validInventory();
   inventory.resources[0].immutableIdFingerprint = fingerprint('a');
   assert.throws(() => validatePreviewIsolation(inventory), /matches a production resource/);
+});
+
+test('requires a valid platform on credentials, resources and production fingerprints', () => {
+  const missingCredentialPlatform = validInventory();
+  delete missingCredentialPlatform.credentialCatalog[0].platform;
+  assert.throws(() => validatePreviewIsolation(missingCredentialPlatform), /platform/);
+
+  const invalidResourcePlatform = validInventory();
+  invalidResourcePlatform.resources[0].platform = 'aws';
+  assert.throws(() => validatePreviewIsolation(invalidResourcePlatform), /platform/);
+
+  const missingProductionPlatform = validInventory();
+  delete missingProductionPlatform.productionResourceFingerprints[0].platform;
+  assert.throws(() => validatePreviewIsolation(missingProductionPlatform), /platform/);
+});
+
+test('rejects a preview binding that crosses platforms', () => {
+  const inventory = validInventory();
+  inventory.resources[0].platform = 'vercel';
+  assert.throws(() => validatePreviewIsolation(inventory), /crosses platforms/);
 });
 
 test('rejects raw credential values anywhere in the redacted inventory', () => {

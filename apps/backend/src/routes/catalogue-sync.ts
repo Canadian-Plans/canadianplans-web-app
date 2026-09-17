@@ -4,6 +4,7 @@ import { loadQuoteWithdrawalPolicy } from '../catalogue/policy.js';
 import { CatalogueSyncRunner, type CatalogueSyncRunSummary } from '../catalogue/runner.js';
 import { CatalogueService, providerResolverFromRegistry } from '../catalogue/service.js';
 import { DatabaseCatalogueStore } from '../catalogue/store.js';
+import { loadDeploymentEnvironment } from '../config/deployment.js';
 import { sendStaffAuthError } from '../http/staff-errors.js';
 import { sendWebsiteError } from '../http/website-errors.js';
 import { loadMachineRegistry, type MachineRegistry } from '../machines/registry.js';
@@ -30,7 +31,7 @@ export function createDefaultCatalogueSyncRouteDependencies(): CatalogueSyncRout
     registry,
     run: (input) => runner.run(input),
     selector: process.env.CATALOGUE_SYNC_SELECTOR,
-    deploymentEnvironment: process.env.VERCEL_ENV,
+    deploymentEnvironment: loadDeploymentEnvironment(),
   };
 }
 
@@ -40,7 +41,7 @@ function bearerSecret(value: string | undefined): string | undefined {
 }
 
 /**
- * Authenticated Vercel Cron entry point for catalogue sync (T10B). Like the
+ * Authenticated scheduled entry point for catalogue sync (T10B). Like the
  * outbox runner it derives its authorized workspace set only from the verified
  * scheduler identity — never from a database tenant scan — and refuses to act
  * as a scheduler on a preview deployment. The scheduler entry must hold the
@@ -78,8 +79,8 @@ export function createCatalogueSyncRouter(dependencies: CatalogueSyncRouteDepend
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   };
-  // Vercel Cron issues GET. POST remains available for an authenticated manual
-  // staging invocation of the identical path.
+  // The scheduler issues GET. POST remains available for an authenticated
+  // manual staging invocation of the identical path.
   router.get('/sync', runSync);
   router.post('/sync', runSync);
   return router;

@@ -16,7 +16,7 @@ This is **not** Get Canada SIM. That was a separate, earlier venture. Do not car
 
 ## 2. The apps
 
-Five deployable apps, one shared database. Each app is a separate deployment on Vercel; they share code through workspace packages, never through the database directly except via the backend.
+Five deployable apps, one shared database. Each app is a separate deployment — the backend on Railway, admin and the storefronts on Vercel; they share code through workspace packages, never through the database directly except via the backend.
 
 | App | What it is | Talks to |
 |---|---|---|
@@ -33,9 +33,9 @@ The three storefronts are **separate brands** with their own names, domains, loo
 | Concern | Choice | Notes |
 |---|---|---|
 | Language | TypeScript, strict everywhere | `any` is banned. See §4. |
-| Backend | **Express** (strict TS) | The only DB client. Deployed as **Vercel Functions** — subject to serverless limits; use the pooled DB connection. Scheduled work (outbox, reconciliation, synthetic check) runs via Vercel Cron, which needs **Pro for the required minute-level cadence** — Hobby caps cron at once-daily and only runs it on production deployments, so the Pro upgrade (or an external scheduler) must be in place before scheduled work is integrated, not left to launch day. |
+| Backend | **Express** (strict TS) | The only DB client. Runs as a long-lived server on **Railway** (Docker) over the pooled DB connection, with scheduled work — outbox every 60s, catalogue sync every 300s, and a later synthetic check — on an **in-process scheduler** enabled by `ENABLE_SCHEDULER=1`. Railway cron cannot do minute-level work (five-minute floor, no precision guarantee), which is why the schedule is in-process; the authenticated `/api/internal/...` routes stay for manual invocation. See ADR 0004. |
 | Frontends | **Next.js** (App Router) | admin + 3 sites, each its own Vercel project. Never touch the DB. Each storefront's *server* may hold only its own scoped backend service credential; the browser holds none. |
-| Hosting | **Vercel**, Canada function region (set explicitly on every project) | Everything runs here. Use local development and eligible free services initially; Vercel Pro before commercial hosting or scheduled-work integration. A dedicated **staging Vercel project** (its production deployment wired only to staging DB/storage/CMS + a fake email sink) is what actually exercises cron; PR previews use manual job invocation only. |
+| Hosting | **Railway** for the backend (long-lived container, US West); **Vercel** for admin and each storefront (Next.js) | The backend container has no serverless limits and runs its own schedule (ADR 0004). Admin/site-1 keep one Vercel project each. Use local development and eligible free services initially; backend compute is outside Canada and the owner's region decision is pending (ADR 0004 residency). PR previews use manual job invocation only. |
 | Database + Auth | **Supabase** (Postgres + Auth), Canada region | Free during build → Pro at launch. Backend connects via the **pooled** connection string (Supavisor, transaction mode). |
 | Tenant isolation | Postgres **RLS** + per-request tenant context | `SET LOCAL app.workspace_id` inside each transaction — works under the transaction-mode pooler. |
 | File storage | **Cloudflare R2** | Private buckets, signature-verified uploads, signed download URLs. |
@@ -110,7 +110,7 @@ Backend + admin + **site-1 only**. One workspace (site-1). Everything needed to 
 
 ## 7. Decisions already made (don't re-ask)
 
-Owner approves everything, no co-founder · region = Canada for the **database and functions** (not a blanket promise that every provider stores everything in Canada — record the chosen email provider's actual region, R2 location hints aren't a guarantee; record actual provider regions and reflect them in the privacy policy) · Sanity roles: owner is Administrator (Free has no Editor role); content staff get Administrator · analytics = Umami · delivery = manual courier, recorded in admin · payments = manual, per-plan `paymentRequired` flag, provider TBD in Phase B · no refunds, no such policy · English only · email only (no SMS/WhatsApp) · customers are international, any country/phone accepted · documents = per-offer checklist, PDF/JPG/PNG, ≤10 MB, signature-verified, no malware scanner yet (deliberate) · partners = referral agencies, commission on activation, carrier pays Canadian Plans then Canadian Plans pays partner, monthly owner-approved invoices · design = shadcn only, no Figma · backend = Express on Vercel functions · monorepo = one pnpm repo, shared code in workspace packages (not published to a registry) · one shared DB · **Supabase billing is per-organization, so staging can't be Free alongside a Pro prod project in the same org — either put staging in its own Free org or budget it as a second paid project.**
+Owner approves everything, no co-founder · region = Canada for the **database**; backend compute runs on Railway US West with the Canada residency decision **pending owner** (ADR 0004) — not a blanket promise that every provider stores everything in Canada: record the chosen email provider's actual region, R2 location hints aren't a guarantee; record actual provider regions and reflect them in the privacy policy · Sanity roles: owner is Administrator (Free has no Editor role); content staff get Administrator · analytics = Umami · delivery = manual courier, recorded in admin · payments = manual, per-plan `paymentRequired` flag, provider TBD in Phase B · no refunds, no such policy · English only · email only (no SMS/WhatsApp) · customers are international, any country/phone accepted · documents = per-offer checklist, PDF/JPG/PNG, ≤10 MB, signature-verified, no malware scanner yet (deliberate) · partners = referral agencies, commission on activation, carrier pays Canadian Plans then Canadian Plans pays partner, monthly owner-approved invoices · design = shadcn only, no Figma · backend = Express on Railway (long-lived container); admin/site-1 Next.js on Vercel · monorepo = one pnpm repo, shared code in workspace packages (not published to a registry) · one shared DB · **Supabase billing is per-organization, so staging can't be Free alongside a Pro prod project in the same org — either put staging in its own Free org or budget it as a second paid project.**
 
 ### Review decisions — 14 September 2026
 
@@ -143,7 +143,7 @@ Owner approves everything, no co-founder · region = Canada for the **database a
 ```
 canadian-plans/
   apps/
-    backend/          Express + TS. The only DB client. Deploys as Vercel functions.
+    backend/          Express + TS. The only DB client. Long-lived container on Railway.
     admin/            Next.js staff app. API client only.
     site-1/           Next.js storefront (SIM). Embeds Sanity Studio at /studio.
     site-2/           Next.js storefront (mobile internet). Phase B.
