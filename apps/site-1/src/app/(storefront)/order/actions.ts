@@ -111,8 +111,31 @@ function draftExpired(): ActionResult<never> {
   };
 }
 
+/**
+ * The previous draft can no longer be edited: its grant lapsed, it was cleaned
+ * up, or it was already turned into an order. None of these is a save failure —
+ * the customer simply needs a new draft (see `saveDetails`).
+ */
+function isFinishedDraft(error: unknown): boolean {
+  return (
+    error instanceof BackendError &&
+    (error.code === 'draft_expired' ||
+      error.code === 'draft_not_found' ||
+      error.code === 'draft_already_submitted')
+  );
+}
+
+function alreadyOrdered(): ActionResult<never> {
+  return {
+    ok: false,
+    code: 'draft_expired',
+    message: 'That order has already been placed. Start a new order to buy another plan.',
+  };
+}
+
 function failureFrom(error: unknown): ActionResult<never> {
   if (error instanceof BackendError) {
+    if (error.code === 'draft_already_submitted') return alreadyOrdered();
     if (error.code === 'draft_expired' || error.code === 'draft_not_found') return draftExpired();
     if (
       error.code === 'quote_expired' ||
@@ -149,6 +172,7 @@ function failureFrom(error: unknown): ActionResult<never> {
 
 function quoteFailureFrom(error: unknown): ActionResult<never> {
   if (error instanceof BackendError) {
+    if (error.code === 'draft_already_submitted') return alreadyOrdered();
     if (error.code === 'draft_expired' || error.code === 'draft_not_found') return draftExpired();
     if (error.code === 'offer_unavailable') {
       return {
@@ -194,14 +218,23 @@ export async function saveDetails(
 
   try {
     if (existing) {
-      const updated = await client.leads.update(
-        existing.leadId,
-        { contact, form, productId: productId.data },
-        { draftGrant: existing.draftGrant },
-      );
-      // Same draft, same grant, same submission key — only the plan may change.
-      await writeOrderDraft({ ...existing, productId: productId.data });
-      return { ok: true, data: { leadId: updated.lead.id } };
+      try {
+        const updated = await client.leads.update(
+          existing.leadId,
+          { contact, form, productId: productId.data },
+          { draftGrant: existing.draftGrant },
+        );
+        // Same draft, same grant, same submission key — only the plan may change.
+        await writeOrderDraft({ ...existing, productId: productId.data });
+        return { ok: true, data: { leadId: updated.lead.id } };
+      } catch (error) {
+        // The cookie still points at a draft that can no longer be edited —
+        // most often because the customer already ordered with it and has come
+        // back for a second plan. Fall through and start a brand-new draft with
+        // its own idempotency key rather than dead-ending them on an httpOnly
+        // cookie they cannot clear. Anything else is a real failure.
+        if (!isFinishedDraft(error)) throw error;
+      }
     }
     const created = await client.leads.create({
       contact,

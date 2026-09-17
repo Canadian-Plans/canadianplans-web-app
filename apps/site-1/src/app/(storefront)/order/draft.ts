@@ -9,6 +9,12 @@ import { z } from 'zod';
  * successful `POST /leads`) and reused by every later attempt, which is what
  * makes a timeout retry return the existing order rather than a second one
  * (REQ 18, PLATFORM_CONTEXT.md invariant 6).
+ *
+ * The cookie deliberately SURVIVES a successful submission: if the customer
+ * never received the confirmation, their retry must still land on the existing
+ * order rather than create a second one. A customer who comes back to order
+ * another plan is handled in `saveDetails`, which starts a fresh draft (new lead,
+ * new key) once the backend reports the old one can no longer be edited.
  */
 
 const DRAFT_COOKIE = 'cp_order_draft';
