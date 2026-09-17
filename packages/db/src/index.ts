@@ -154,6 +154,18 @@ function getDefaultClient(): DatabaseClient {
 }
 
 /**
+ * Closes the shared runtime pool and clears the cached client. Intended for
+ * graceful process shutdown (SIGTERM/SIGINT) on a long-lived host such as
+ * Railway; a serverless instance simply lets the pool idle out. Safe to call
+ * when no client was ever created. A later call recreates a fresh client.
+ */
+export async function closeDatabase(): Promise<void> {
+  const client = defaultClient;
+  defaultClient = undefined;
+  if (client) await client.close();
+}
+
+/**
  * Runs exactly one tenant unit of work in a transaction on the pooled runtime
  * connection. Commit/rollback and tenant-context cleanup are automatic.
  */
