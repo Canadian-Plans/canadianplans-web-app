@@ -379,12 +379,14 @@ test('a forged draft grant is rejected and no order is created', async ({
   const cookies = await context.cookies();
   const draftCookie = cookies.find((cookie) => cookie.name === DRAFT_COOKIE);
   if (!draftCookie) throw new Error('draft cookie must exist by the review step');
-  const parsed: unknown = JSON.parse(draftCookie.value);
+  // The cookie value is URL-encoded JSON (Next.js encodes on set, decodes on
+  // read); decode before parsing and re-encode when writing it back.
+  const parsed: unknown = JSON.parse(decodeURIComponent(draftCookie.value));
   if (typeof parsed !== 'object' || parsed === null) {
     throw new Error('draft cookie is not an object');
   }
   const forged = { ...parsed, draftGrant: 'forged-grant-token-not-issued-by-the-backend' };
-  await context.addCookies([{ ...draftCookie, value: JSON.stringify(forged) }]);
+  await context.addCookies([{ ...draftCookie, value: encodeURIComponent(JSON.stringify(forged)) }]);
 
   await placeOrder(page);
 
