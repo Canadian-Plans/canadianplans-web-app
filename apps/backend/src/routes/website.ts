@@ -5,6 +5,8 @@ import {
   createLeadRequestSchema,
   createQuoteRequestSchema,
   submitOrderRequestSchema,
+  trackingOtpRequestSchema,
+  trackingVerifyRequestSchema,
   updateLeadRequestSchema,
 } from '@canadian-plans/contracts';
 import { z } from 'zod';
@@ -21,6 +23,19 @@ import { loadMachineRegistry } from '../machines/registry.js';
 import { OrderService } from '../orders/service.js';
 import { DatabaseOrderStore } from '../orders/store.js';
 import {
+  emailRateBucket,
+  loadTrackingSecret,
+  normalizeEmail,
+  verifyTrackingGrant,
+} from '../tracking/secrets.js';
+import { loadTrackingNotifier } from '../tracking/notifier.js';
+import { DatabaseTrackingStore } from '../tracking/store.js';
+import {
+  TRACKING_OTP_EMAIL_MAX_REQUESTS,
+  TRACKING_OTP_EMAIL_WINDOW_SECONDS,
+  TrackingService,
+} from '../tracking/service.js';
+import {
   requireScope,
   requireWebsiteCredential,
   websiteContext,
@@ -33,6 +48,7 @@ export interface WebsiteRouteDependencies {
   quotes?: { service: Pick<CatalogueService, 'createQuote'> };
   orders?: { service: Pick<OrderService, 'submit'> };
   catalogue?: { store: Pick<CatalogueStore, 'listPublishedOffers'> };
+  tracking?: { service: TrackingService };
 }
 
 export function createDefaultWebsiteRouteDependencies(): WebsiteRouteDependencies {
@@ -60,6 +76,13 @@ export function createDefaultWebsiteRouteDependencies(): WebsiteRouteDependencie
       service: new OrderService(new DatabaseOrderStore(), loadQuoteWithdrawalPolicy()),
     },
     catalogue: { store: new DatabaseCatalogueStore() },
+    tracking: {
+      service: new TrackingService({
+        store: new DatabaseTrackingStore(),
+        notifier: loadTrackingNotifier(),
+        secret: loadTrackingSecret(),
+      }),
+    },
   };
 }
 
@@ -378,6 +401,150 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
       sendDomainError(res, req.id, 'internal_error', 500);
     }
   });
+
+  return router;
+}
+
+/**
+ * Customer order tracking (T22, REQ 05). `POST /tracking/otp` always answers the
+ * same neutral acknowledgement so a caller cannot tell whether the reference +
+ * email matched an order; the code is only sent on a match. `verify` consumes
+ * the code atomically and returns a 30-minute grant; `GET /tracking` requires
+ * the grant and is bound to the credential's own workspace.
+ */
+export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Router {
+  const router = Router();
+  const tracking = dependencies.tracking;
+  if (!tracking) return router;
+
+  router.post(
+    '/tracking/otp',
+    requireWebsiteCredential(dependencies.auth),
+    requireScope('tracking:otp'),
+    async (req, res) => {
+      const body = trackingOtpRequestSchema.safeParse(req.body);
+      if (!body.success) {
+        sendDomainError(res, req.id, 'validation_error', 400);
+        return;
+      }
+      try {
+        const ctx = websiteContext(req);
+        if (tracking.service.configured) {
+          const secret = loadTrackingSecret();
+          const ipKey = req.ip ?? req.socket.remoteAddress ?? 'unknown';
+          const emailLimit = secret
+            ? await dependencies.auth.rateLimit({
+                bucketKey: emailRateBucket(
+                  secret,
+                  ctx.workspaceId,
+                  normalizeEmail(body.data.email),
+                ),
+                windowSeconds: TRACKING_OTP_EMAIL_WINDOW_SECONDS,
+                maxCount: TRACKING_OTP_EMAIL_MAX_REQUESTS,
+              })
+            : { allowed: true, retryAfterSeconds: 0 };
+          const ipLimit = await dependencies.auth.rateLimit({
+            bucketKey: `tracking-otp:ip:${ctx.workspaceId}:${ipKey}`,
+            windowSeconds: TRACKING_OTP_EMAIL_WINDOW_SECONDS,
+            maxCount: TRACKING_OTP_EMAIL_MAX_REQUESTS * 4,
+          });
+          if (emailLimit.allowed && ipLimit.allowed) {
+            await tracking.service.requestCode({
+              workspaceId: ctx.workspaceId,
+              email: body.data.email,
+              orderReference: body.data.orderReference,
+            });
+          }
+        }
+      } catch {
+        // Neutral response regardless of internal outcome.
+      }
+      res.status(200).json({ status: 'challenge_sent', requestId: req.id });
+    },
+  );
+
+  router.post(
+    '/tracking/verify',
+    requireWebsiteCredential(dependencies.auth),
+    requireScope('tracking:otp'),
+    async (req, res) => {
+      const body = trackingVerifyRequestSchema.safeParse(req.body);
+      if (!body.success) {
+        sendDomainError(res, req.id, 'validation_error', 400);
+        return;
+      }
+      if (!tracking.service.configured) {
+        sendDomainError(res, req.id, 'persistence_unavailable', 503, { retryable: true });
+        return;
+      }
+      try {
+        const ctx = websiteContext(req);
+        const outcome = await tracking.service.verifyCode({
+          workspaceId: ctx.workspaceId,
+          email: body.data.email,
+          orderReference: body.data.orderReference,
+          code: body.data.code,
+        });
+        if (outcome.status === 'verified') {
+          res.status(200).json({ status: 'verified', grant: outcome.grant, requestId: req.id });
+          return;
+        }
+        if (outcome.status === 'expired') {
+          sendDomainError(res, req.id, 'tracking_expired', 400);
+          return;
+        }
+        if (outcome.status === 'exhausted') {
+          sendDomainError(res, req.id, 'tracking_attempts_exceeded', 429);
+          return;
+        }
+        sendDomainError(res, req.id, 'tracking_challenge_invalid', 400);
+      } catch {
+        sendDomainError(res, req.id, 'internal_error', 500);
+      }
+    },
+  );
+
+  router.get(
+    '/tracking',
+    requireWebsiteCredential(dependencies.auth),
+    requireScope('tracking:otp'),
+    async (req, res) => {
+      if (!tracking.service.configured) {
+        sendDomainError(res, req.id, 'persistence_unavailable', 503, { retryable: true });
+        return;
+      }
+      const secret = loadTrackingSecret();
+      const token = req.get('x-customer-grant');
+      if (!secret || !token) {
+        sendDomainError(res, req.id, 'not_found', 401);
+        return;
+      }
+      const ctx = websiteContext(req);
+      const payload = verifyTrackingGrant(secret, token, Date.now());
+      // The grant is bound to one workspace; a foreign-workspace grant is denied.
+      if (!payload || payload.workspaceId !== ctx.workspaceId) {
+        sendDomainError(res, req.id, 'not_found', 401);
+        return;
+      }
+      try {
+        const status = await tracking.service.status({
+          workspaceId: ctx.workspaceId,
+          orderId: payload.orderId,
+        });
+        if (!status) {
+          sendDomainError(res, req.id, 'order_not_found', 404);
+          return;
+        }
+        res.status(200).json({
+          ...status,
+          updatedAt: status.updatedAt.toISOString(),
+          requestId: req.id,
+        });
+      } catch {
+        sendDomainError(res, req.id, 'internal_error', 500);
+      }
+    },
+  );
 
   return router;
 }

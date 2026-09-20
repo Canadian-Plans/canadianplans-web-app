@@ -65,9 +65,13 @@ import {
   trackingOtpRequestSchema,
   trackingOtpResponseSchema,
   trackingStatusResponseSchema,
+  trackingVerifyRequestSchema,
+  trackingVerifyResponseSchema,
   type TrackingOtpRequest,
   type TrackingOtpResponse,
   type TrackingStatusResponse,
+  type TrackingVerifyRequest,
+  type TrackingVerifyResponse,
 } from './tracking';
 import {
   createUploadIntentRequestSchema,
@@ -243,6 +247,7 @@ export interface BackendClient {
   };
   tracking: {
     otp(body: TrackingOtpRequest): Promise<TrackingOtpResponse>;
+    verify(body: TrackingVerifyRequest): Promise<TrackingVerifyResponse>;
     get(options: { customerGrant: string }): Promise<TrackingStatusResponse>;
   };
   staff: {
@@ -489,6 +494,13 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           path: '/api/v1/website/tracking/otp',
           body: trackingOtpRequestSchema.parse(body),
           responseSchema: trackingOtpResponseSchema,
+        }),
+      verify: (body) =>
+        call({
+          method: 'POST',
+          path: '/api/v1/website/tracking/verify',
+          body: trackingVerifyRequestSchema.parse(body),
+          responseSchema: trackingVerifyResponseSchema,
         }),
       get: (opts) =>
         call({

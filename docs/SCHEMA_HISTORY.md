@@ -511,6 +511,26 @@ REQ 24 / REQ 34: a customer-data deletion must be recorded in a minimal ledger h
 
 Tenant RLS enabled and forced on `deletion_intents`, scoped to `app_runtime`, requiring transaction-local `app.workspace_id` and a non-null `app.actor_id`, repeated in `WITH CHECK`. Existing tables are unchanged.
 
+## 0017_worthless_synch.sql
+
+Task: T22
+
+Date: 2026-09-20
+
+### Change
+
+- Added tenant table `app.tracking_challenges` (id, workspace_id, order_id, email_hash, code_hash, status, attempts, expires_at, created_at, consumed_at), the one-time-code challenges for customer order tracking.
+- Constrained `status` to `pending|consumed` and `attempts >= 0`, with `(workspace_id, id)` uniqueness, an order FK and `(workspace_id, order_id, status)` / `(workspace_id, email_hash)` indexes.
+- Stores only keyed hashes bound to workspace, order and normalized email; the plaintext code is never persisted.
+
+### Why
+
+REQ 05 / IMPLEMENTATION_PLAN §5: a verified customer may track an order after a six-digit email code, with at most five attempts and a 10-minute expiry, and no enumeration of orders.
+
+### RLS
+
+Tenant RLS enabled and forced on `tracking_challenges`, scoped to `app_runtime`, requiring transaction-local `app.workspace_id` and a non-null `app.actor_id`, repeated in `WITH CHECK`.
+
 Each future entry follows this shape:
 
 ```

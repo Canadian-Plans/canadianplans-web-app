@@ -364,10 +364,14 @@ export {
   trackingOtpRequestSchema,
   trackingOtpResponseSchema,
   trackingStatusResponseSchema,
+  trackingVerifyRequestSchema,
+  trackingVerifyResponseSchema,
   type TrackingGrant,
   type TrackingOtpRequest,
   type TrackingOtpResponse,
   type TrackingStatusResponse,
+  type TrackingVerifyRequest,
+  type TrackingVerifyResponse,
 } from './tracking';
 
 // Endpoint registry, OpenAPI generation, typed client

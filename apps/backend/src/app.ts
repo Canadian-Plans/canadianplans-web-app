@@ -11,6 +11,7 @@ import {
   createDefaultWebsiteRouteDependencies,
   createOrderRouter,
   createQuoteRouter,
+  createTrackingRouter,
   createWebsiteRouter,
   type WebsiteRouteDependencies,
 } from './routes/website.js';
@@ -99,6 +100,7 @@ export function createApp(options: CreateAppOptions = {}): Express {
   app.use('/api/v1', createQuoteRouter(websiteDependencies));
   app.use('/api/v1', createOrderRouter(websiteDependencies));
   app.use('/api/v1/website', createWebsiteRouter(websiteDependencies));
+  app.use('/api/v1/website', createTrackingRouter(websiteDependencies));
   app.use(invalidBodyError);
 
   return app;

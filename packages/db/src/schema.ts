@@ -1222,6 +1222,49 @@ export const deletionIntents = appSchema
   )
   .enableRLS();
 
+/**
+ * A customer order-tracking one-time-code challenge (T22, REQ 05). The code and
+ * the binding email are stored only as keyed hashes bound to workspace, order
+ * and normalized email; the plaintext code is never persisted. Consumed,
+ * expired or over-attempted challenges never verify.
+ */
+export const trackingChallenges = appSchema
+  .table(
+    'tracking_challenges',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      orderId: uuid('order_id').notNull(),
+      emailHash: text('email_hash').notNull(),
+      codeHash: text('code_hash').notNull(),
+      status: text('status').notNull().default('pending'),
+      attempts: integer('attempts').notNull().default(0),
+      expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
+      createdAt: createdAt(),
+      consumedAt: timestamp('consumed_at', { withTimezone: true, mode: 'date' }),
+    },
+    (table) => [
+      unique('tracking_challenges_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'tracking_challenges_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }).onDelete('cascade'),
+      check('tracking_challenges_status_check', sql`${table.status} in ('pending', 'consumed')`),
+      check('tracking_challenges_attempts_check', sql`${table.attempts} >= 0`),
+      index('tracking_challenges_workspace_order_status_idx').on(
+        table.workspaceId,
+        table.orderId,
+        table.status,
+      ),
+      index('tracking_challenges_workspace_email_idx').on(table.workspaceId, table.emailHash),
+      tenantPolicy('tracking_challenges_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
 export const schema = {
   workspaces,
   memberships,
@@ -1254,6 +1297,7 @@ export const schema = {
   rateLimitBuckets,
   auditEvents,
   deletionIntents,
+  trackingChallenges,
 };
 
 export type Workspace = typeof workspaces.$inferSelect;

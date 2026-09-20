@@ -50,6 +50,10 @@ proxy trust policy must be narrowly verified before enabling public traffic.
 
 Unset (either value) means no ledger is configured: a `deletion_ledger_publish` job fails closed with `deletion_ledger_not_configured` and the local intent stays pending/failed rather than reporting completion. The write-only/S3 SigV4 key restrictions are provisioned and verified by T4R before this is set in production.
 
+## Customer tracking (T22)
+
+- `TRACKING_HASH_SECRET` — backend-only HMAC secret (at least 32 characters) that keys the order-tracking email/code hashes and the 30-minute tracking grant. Unset or too short means tracking is unavailable: the OTP request still answers neutrally and verify/status fail closed with `persistence_unavailable`. Never expose it to a browser bundle and rotate it only with a deployment (existing grants and pending codes become invalid).
+
 ## Supabase
 
 - `SUPABASE_URL`

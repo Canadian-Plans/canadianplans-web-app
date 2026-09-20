@@ -120,6 +120,13 @@
       "when": 1789910190920,
       "tag": "0016_bumpy_puppet_master",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1789910810194,
+      "tag": "0017_worthless_synch",
+      "breakpoints": true
     }
   ]
 }

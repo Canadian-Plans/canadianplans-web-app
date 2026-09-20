@@ -37,6 +37,8 @@ import {
   trackingOtpRequestSchema,
   trackingOtpResponseSchema,
   trackingStatusResponseSchema,
+  trackingVerifyRequestSchema,
+  trackingVerifyResponseSchema,
 } from './tracking';
 import {
   createUploadIntentRequestSchema,
@@ -547,11 +549,21 @@ export const endpoints: readonly EndpointDef[] = [
     operationId: 'requestTrackingOtp',
     method: 'POST',
     path: '/api/v1/website/tracking/otp',
-    summary: 'Request or verify an order-tracking OTP.',
+    summary: 'Request a six-digit order-tracking code (always acknowledged neutrally).',
     auth: 'website',
     successStatus: 200,
     request: trackingOtpRequestSchema,
     response: trackingOtpResponseSchema,
+  },
+  {
+    operationId: 'verifyTrackingOtp',
+    method: 'POST',
+    path: '/api/v1/website/tracking/verify',
+    summary: 'Verify a six-digit code and receive a scoped 30-minute tracking grant.',
+    auth: 'website',
+    successStatus: 200,
+    request: trackingVerifyRequestSchema,
+    response: trackingVerifyResponseSchema,
   },
   {
     operationId: 'getTracking',

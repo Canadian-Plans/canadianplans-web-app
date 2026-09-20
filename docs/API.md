@@ -379,6 +379,27 @@ tick is skipped while a run is still in flight. The response reports bounded
 counters (`workspaces`, `listed`, `processed`, `drainFailed`, `reconciled`,
 `failures`) and contains no PII. An equivalent authenticated `POST` is accepted.
 
+### Customer order tracking (T22)
+
+`POST /api/v1/website/tracking/otp` (`tracking:otp` scope) takes
+`{ email, orderReference }` and sends a six-digit code only when the reference
+and email match an order in the credential's workspace. It **always** answers
+`200 { status: "challenge_sent" }` so the endpoint cannot be used to enumerate
+orders. The code is keyed-hashed (bound to workspace, order and normalized
+email), expires in 10 minutes, is invalidated by a resend and permits at most
+five attempts. Requests are rate-limited per email and per IP.
+
+`POST /api/v1/website/tracking/verify` (`tracking:otp` scope) takes
+`{ email, orderReference, code }`; on success it atomically consumes the code
+and returns a 30-minute scoped grant (`tracking_challenge_invalid`,
+`tracking_expired`, `tracking_attempts_exceeded` otherwise).
+
+`GET /api/v1/website/tracking` requires the grant in `X-Customer-Grant` and
+returns the order's reference, fulfilment/payment/delivery states, the dispatch
+tracking reference and the documents still required — never internal notes or
+staff names. The grant is bound to one workspace; a foreign-workspace grant is
+denied, and codes and grants are never logged.
+
 ## Staff permission matrix
 
 `workspace.read` is non-privileged so an authenticated Owner/Finance actor can
