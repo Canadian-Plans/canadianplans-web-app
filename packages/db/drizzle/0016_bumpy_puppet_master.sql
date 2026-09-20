@@ -36,8 +36,10 @@ CREATE POLICY "deletion_intents_tenant_policy" ON "app"."deletion_intents" AS PE
 ALTER TABLE "app"."deletion_intents" FORCE ROW LEVEL SECURITY;--> statement-breakpoint
 GRANT SELECT, INSERT, UPDATE ON TABLE "app"."deletion_intents" TO "app_runtime";--> statement-breakpoint
 -- T21 customer-data deletion (REQ 24) also restricts/removes pre-existing
--- personal copies, so the runtime role needs these additional privileges.
-GRANT UPDATE ON TABLE "app"."audit_events" TO "app_runtime";--> statement-breakpoint
+-- personal copies. audit_events stays append-only: the runtime role may only
+-- null the personal before/after values, never any other column (actor label,
+-- action, timestamps), which the RLS suite asserts is denied.
+GRANT UPDATE ("before", "after") ON TABLE "app"."audit_events" TO "app_runtime";--> statement-breakpoint
 GRANT DELETE ON TABLE "app"."order_notes" TO "app_runtime";--> statement-breakpoint
 GRANT DELETE ON TABLE "app"."order_amendments" TO "app_runtime";--> statement-breakpoint
 GRANT DELETE ON TABLE "app"."order_change_requests" TO "app_runtime";--> statement-breakpoint
