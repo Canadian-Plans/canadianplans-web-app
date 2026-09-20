@@ -9,7 +9,7 @@ import {
   type JobOutcome,
   type OutboxStore,
 } from '../src/index.js';
-import { FakeAnalyticsAdapter, FakeEmailAdapter } from '@canadian-plans/adapters';
+import { FakeAnalyticsSink, FakeEmailAdapter } from '@canadian-plans/adapters';
 
 const job = (overrides: Partial<ClaimedJob> = {}): ClaimedJob => ({
   id: crypto.randomUUID(),
@@ -213,7 +213,7 @@ describe('outbox runner', () => {
 
   it('only sends sanitized analytics identifiers and stable email message ids', async () => {
     const email = new FakeEmailAdapter();
-    const analytics = new FakeAnalyticsAdapter();
+    const analytics = new FakeAnalyticsSink();
     const registry = createJobHandlerRegistry({ email, analytics });
     const analyticsJob = job();
     await registry.get('analytics_order_submitted')?.(analyticsJob);
@@ -229,12 +229,34 @@ describe('outbox runner', () => {
         workspaceId: analyticsJob.workspaceId,
         eventId: analyticsJob.messageId,
         name: 'order_submitted',
-        orderId: '22222222-2222-4222-8222-222222222222',
+        subjectId: '22222222-2222-4222-8222-222222222222',
       },
     ]);
     expect(email.deliveries).toHaveLength(1);
     expect(email.deliveries[0]?.messageId).toBe(emailJob.messageId);
     expect(registry.has('commission_placeholder')).toBe(false);
+  });
+
+  it('emits exactly one lead_saved event for the lead job', async () => {
+    const email = new FakeEmailAdapter();
+    const analytics = new FakeAnalyticsSink();
+    const registry = createJobHandlerRegistry({ email, analytics });
+    const leadJob = job({
+      jobType: 'analytics_lead_saved',
+      payload: { leadId: '44444444-4444-4444-8444-444444444444' },
+    });
+
+    const result = await registry.get('analytics_lead_saved')?.(leadJob);
+
+    expect(result?.status).toBe('completed');
+    expect(analytics.events).toEqual([
+      {
+        workspaceId: leadJob.workspaceId,
+        eventId: leadJob.messageId,
+        name: 'lead_saved',
+        subjectId: '44444444-4444-4444-8444-444444444444',
+      },
+    ]);
   });
 });
 

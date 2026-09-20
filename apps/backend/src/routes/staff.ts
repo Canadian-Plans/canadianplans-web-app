@@ -14,6 +14,7 @@ import {
   patchWorkspaceOrderRequestSchema,
   recordOrderPaymentRequestSchema,
   resolveOrderChangeRequestRequestSchema,
+  sourceReportQuerySchema,
   type OrderCapabilities,
 } from '@canadian-plans/contracts';
 import { z } from 'zod';
@@ -37,6 +38,7 @@ import {
   type StaffOrderActionStore,
 } from '../orders/staff-actions.js';
 import { loadOperationalTransitionsEnabled } from '../orders/transitions-config.js';
+import { DatabaseReportStore, type ReportStore } from '../reports/store.js';
 import {
   allowedTransitionsFor,
   DatabaseOrderTransitionStore,
@@ -58,6 +60,7 @@ export interface StaffRouteDependencies {
   credentialStore: WebsiteCredentialStore;
   leadStore: LeadStore;
   catalogueStore?: CatalogueStore;
+  reportStore?: ReportStore;
   orderQueryStore?: OrderQueryStore;
   orderTransitionStore?: OrderTransitionStore;
   orderActionStore?: StaffOrderActionStore;
@@ -74,6 +77,7 @@ export function createDefaultStaffRouteDependencies(): StaffRouteDependencies {
     credentialStore: new DatabaseWebsiteCredentialStore(),
     leadStore: new DatabaseLeadStore(),
     catalogueStore: new DatabaseCatalogueStore(),
+    reportStore: new DatabaseReportStore(),
     orderQueryStore: new DatabaseOrderQueryStore(),
     orderTransitionStore: new DatabaseOrderTransitionStore(
       undefined,
@@ -352,6 +356,54 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         pageSize: query.data.pageSize,
       });
       res.json({ leads: result.leads, page: result.page, requestId: req.id });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.get('/workspaces/:workspaceId/reports/sources', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const query = sourceReportQuerySchema.safeParse(req.query);
+    if (!workspaceId.success || !query.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+
+    try {
+      const actor = session(req);
+      const authorize = createAuthorize({
+        accessStore: dependencies.store,
+        assuranceLevel: actor.assuranceLevel,
+      });
+      const decision = await authorize({
+        actorId: actor.actorId,
+        workspaceId: workspaceId.data,
+        action: 'workspace.read',
+      });
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.reportStore) {
+        sendStaffAuthError(res, req.id, 'internal_error', 500);
+        return;
+      }
+
+      const from = query.data.from ? new Date(query.data.from) : undefined;
+      const to = query.data.to ? new Date(query.data.to) : undefined;
+      const result = await dependencies.reportStore.sourceReport({
+        workspaceId: workspaceId.data,
+        actorId: actor.actorId,
+        from,
+        to,
+      });
+      res.json({
+        from: from ? from.toISOString() : null,
+        to: to ? to.toISOString() : null,
+        groups: result.groups,
+        totals: result.totals,
+        requestId: req.id,
+      });
     } catch {
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }

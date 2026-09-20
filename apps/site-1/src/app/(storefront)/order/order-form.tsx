@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRef, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import type { Quote, RawAttribution, WebsiteOffer } from '@canadian-plans/contracts';
 import {
   Button,
@@ -17,9 +17,9 @@ import {
   Stepper,
 } from '@canadian-plans/ui';
 
+import { trackPlanSelected } from '../../../lib/analytics';
 import { requestCallback, requestQuote, saveDetails, saveDocuments, submitOrder } from './actions';
 import type { ActionResult, OrderDetailsInput, OrderFieldErrors } from './types';
-
 const STEPS = [
   { id: 'plan', label: 'Plan' },
   { id: 'details', label: 'Details' },
@@ -123,6 +123,14 @@ export function OrderForm({
   const [busy, setBusy] = useState(false);
   const summaryRef = useRef<HTMLDivElement>(null);
   const stepRef = useRef<HTMLDivElement>(null);
+
+  const selectedProductId = selected?.productId;
+
+  // One `plan_selected` per chosen plan. The conversion events are server-side
+  // only, so the browser never double-counts an order.
+  useEffect(() => {
+    if (selectedProductId) trackPlanSelected(selectedProductId);
+  }, [selectedProductId]);
 
   /** Moves to a step and focuses its content, so keyboard users follow the flow. */
   function goToStep(index: number): void {

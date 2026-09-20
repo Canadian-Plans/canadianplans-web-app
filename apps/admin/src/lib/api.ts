@@ -35,6 +35,8 @@ import {
   type RetryWorkspaceJobResponse,
   type RevokeServiceCredentialResponse,
   type RevokeStaffResponse,
+  type SourceReportQuery,
+  type SourceReportResponse,
   type StaffWorkspaceAccessResponse,
   type StaffWorkspacesResponse,
 } from '@canadian-plans/contracts';
@@ -122,6 +124,14 @@ export async function getCatalogueStatus(
   workspaceId: string,
 ): Promise<CatalogueStatusResponse> {
   return client(accessToken).staff.catalogue(workspaceId);
+}
+
+export async function getSourceReport(
+  accessToken: string,
+  workspaceId: string,
+  query?: SourceReportQuery,
+): Promise<SourceReportResponse> {
+  return client(accessToken).staff.getSourceReport(workspaceId, query);
 }
 
 export async function listWorkspaceJobs(

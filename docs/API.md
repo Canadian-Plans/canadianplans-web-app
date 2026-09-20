@@ -323,6 +323,18 @@ Requires `integration.manage` (the `integration_management` individual
 permission or an allowed role, with explicit deny winning). Only definitively
 failed jobs can be requeued; uncertain deliveries must be reconciled first.
 
+### `GET /api/v1/staff/workspaces/{workspaceId}/reports/sources`
+
+Any staff member with `workspace.read` can read lead-to-order counts grouped by
+UTM source, UTM medium, UTM campaign and partner (REQ 35). Optional `from`/`to`
+ISO-8601 bounds filter by lead-created / order-submitted time; counts come only
+from the workspace's sanitized stored attribution — never raw request data — and
+the response is workspace-scoped.
+
+Server lead/order conversion events (`lead_saved`, `order_submitted`) are emitted
+once through the Umami `AnalyticsSink` from the outbox; the browser sends only
+page views and `plan_selected`, so a submission is never counted twice.
+
 ### `GET /api/internal/jobs/run`
 
 Backend-only internal route. On the Railway service the in-process scheduler runs

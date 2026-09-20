@@ -137,6 +137,11 @@ import {
   type ListWorkspaceLeadsQuery,
   type ListWorkspaceLeadsResponse,
 } from './workspace-leads';
+import {
+  sourceReportResponseSchema,
+  type SourceReportQuery,
+  type SourceReportResponse,
+} from './reports';
 import { listWebsiteOffersResponseSchema, type ListWebsiteOffersResponse } from './website-offers';
 
 /**
@@ -244,6 +249,7 @@ export interface BackendClient {
       workspaceId: string,
       query?: ListWorkspaceLeadsQuery,
     ): Promise<ListWorkspaceLeadsResponse>;
+    getSourceReport(workspaceId: string, query?: SourceReportQuery): Promise<SourceReportResponse>;
     catalogue(workspaceId: string): Promise<CatalogueStatusResponse>;
     listJobs(workspaceId: string): Promise<ListWorkspaceJobsResponse>;
     retryJob(workspaceId: string, jobId: string): Promise<RetryWorkspaceJobResponse>;
@@ -520,6 +526,13 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           path: `/api/v1/staff/workspaces/${encode(workspaceId)}/leads`,
           query: { status: query?.status, page: query?.page, pageSize: query?.pageSize },
           responseSchema: listWorkspaceLeadsResponseSchema,
+        }),
+      getSourceReport: (workspaceId, query) =>
+        call({
+          method: 'GET',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/reports/sources`,
+          query: { from: query?.from, to: query?.to },
+          responseSchema: sourceReportResponseSchema,
         }),
       catalogue: (workspaceId) =>
         call({

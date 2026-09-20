@@ -7,7 +7,7 @@ import {
   type OutboxStore,
 } from '@canadian-plans/jobs';
 
-import { createOutboxJobHandlers } from '../src/jobs/providers.js';
+import { createOutboxJobHandlers, loadUmamiAnalyticsSink } from '../src/jobs/providers.js';
 
 const WORKSPACE = '10000000-0000-4000-8000-000000000781';
 const ACTOR = '20000000-0000-4000-8000-000000000781';
@@ -61,5 +61,30 @@ describe('outbox provider configuration', () => {
     await runner.run({ authorizedWorkspaceIds: [WORKSPACE], actorId: ACTOR });
 
     expect(outcomes).toEqual([{ status: 'failed', errorCode: 'provider_not_configured' }]);
+  });
+});
+
+describe('Umami analytics sink configuration', () => {
+  it('is absent when unset or malformed', () => {
+    expect(loadUmamiAnalyticsSink({})).toBeUndefined();
+    expect(
+      loadUmamiAnalyticsSink({
+        UMAMI_EVENTS_URL: 'https://umami.example.test/api/send',
+        UMAMI_WORKSPACE_WEBSITES: 'not-json',
+      }),
+    ).toBeUndefined();
+    expect(
+      loadUmamiAnalyticsSink({
+        UMAMI_WORKSPACE_WEBSITES: `[{"workspaceId":"${WORKSPACE}","websiteId":"site-1"}]`,
+      }),
+    ).toBeUndefined();
+  });
+
+  it('builds the sink from a valid endpoint and workspace mapping', () => {
+    const sink = loadUmamiAnalyticsSink({
+      UMAMI_EVENTS_URL: 'https://umami.example.test/api/send',
+      UMAMI_WORKSPACE_WEBSITES: `[{"workspaceId":"${WORKSPACE}","websiteId":"site-1"}]`,
+    });
+    expect(sink).toBeDefined();
   });
 });

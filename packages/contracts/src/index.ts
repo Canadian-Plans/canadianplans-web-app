@@ -165,6 +165,17 @@ export {
 } from './workspace-leads';
 
 export {
+  sourceReportDimensionSchema,
+  sourceReportGroupSchema,
+  sourceReportQuerySchema,
+  sourceReportResponseSchema,
+  type SourceReportDimension,
+  type SourceReportGroup,
+  type SourceReportQuery,
+  type SourceReportResponse,
+} from './reports';
+
+export {
   chargeComponentSchema,
   createQuoteRequestSchema,
   createQuoteResponseSchema,

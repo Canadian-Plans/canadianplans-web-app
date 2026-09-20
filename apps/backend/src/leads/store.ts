@@ -3,6 +3,7 @@ import {
   auditEvents,
   draftGrants,
   leads,
+  outboxJobs,
   partners,
   productAvailability,
   withTenantTx,
@@ -218,6 +219,15 @@ export class DatabaseLeadStore implements LeadStore {
           leadId: leadRow.id,
           tokenHash,
           expiresAt,
+        });
+
+        // The lead conversion event is emitted once from the outbox (never from
+        // the browser), deduped per lead by (workspace, job type, dedupe key).
+        await tx.insert(outboxJobs).values({
+          workspaceId: input.workspaceId,
+          jobType: 'analytics_lead_saved',
+          dedupeKey: leadRow.id,
+          payload: { leadId: leadRow.id },
         });
 
         return { lead: toSummary(leadRow), grant: { token, expiresAt: expiresAt.toISOString() } };

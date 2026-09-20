@@ -1,9 +1,17 @@
-import { FakeAnalyticsAdapter, FakeEmailAdapter } from '@canadian-plans/adapters';
+import {
+  FakeAnalyticsSink,
+  FakeEmailAdapter,
+  UmamiAnalyticsSink,
+  type AnalyticsSink,
+  type EmailAdapter,
+} from '@canadian-plans/adapters';
 import {
   createFailingJobHandlerRegistry,
   createJobHandlerRegistry,
+  JobHandlerError,
   type JobHandlerRegistry,
 } from '@canadian-plans/jobs';
+import { z } from 'zod';
 
 /**
  * The explicit opt-in for the in-memory provider fakes. There is deliberately
@@ -13,21 +21,75 @@ import {
 export const FAKE_OUTBOX_ADAPTERS_VALUE = 'fake';
 
 /**
+ * Deployment configuration for the Umami server-event sink. The workspace →
+ * website-id mapping is what keeps each storefront's events on its own Umami
+ * site (REQ 35); a workspace with no mapping fails closed in the adapter rather
+ * than sending to the wrong site. Parsed strictly so a malformed value yields
+ * "no provider" instead of a guess.
+ */
+const umamiConfigSchema = z
+  .object({
+    endpoint: z.url(),
+    hostname: z.string().min(1).max(253).optional(),
+    sites: z
+      .array(z.object({ workspaceId: z.uuid(), websiteId: z.string().min(1).max(64) }))
+      .min(1),
+  })
+  .strict();
+
+/** Builds the Umami sink from the environment, or `undefined` when unconfigured/invalid. */
+export function loadUmamiAnalyticsSink(
+  env: NodeJS.ProcessEnv = process.env,
+): AnalyticsSink | undefined {
+  const endpoint = env.UMAMI_EVENTS_URL?.trim();
+  const rawSites = env.UMAMI_WORKSPACE_WEBSITES?.trim();
+  if (!endpoint || !rawSites) return undefined;
+  let sites: unknown;
+  try {
+    sites = JSON.parse(rawSites);
+  } catch {
+    return undefined;
+  }
+  const parsed = umamiConfigSchema.safeParse({
+    endpoint,
+    hostname: env.UMAMI_HOSTNAME?.trim() || undefined,
+    sites,
+  });
+  if (!parsed.success) return undefined;
+  const byWorkspace = new Map(parsed.data.sites.map((site) => [site.workspaceId, site.websiteId]));
+  return new UmamiAnalyticsSink({
+    endpoint: parsed.data.endpoint,
+    hostname: parsed.data.hostname,
+    websiteIdForWorkspace: (workspaceId) => byWorkspace.get(workspaceId),
+  });
+}
+
+/** Fails an email job permanently until a real selected adapter is wired (T18). */
+function unconfiguredEmailAdapter(): EmailAdapter {
+  return {
+    send: async () => {
+      throw new JobHandlerError('provider_not_configured', false);
+    },
+  };
+}
+
+/**
  * Builds the outbox handler registry for the current deployment.
  *
- * The fakes are constructed only when `OUTBOX_ADAPTERS=fake` is set explicitly
- * *and* the process is not production. A production deployment (or any
- * deployment without the explicit opt-in) gets a registry whose handlers fail
- * permanently with `provider_not_configured`, so the failure is recorded on the
- * job and surfaces in admin rather than being delivered by a fake.
+ * Fakes are constructed only when `OUTBOX_ADAPTERS=fake` is set explicitly
+ * *and* the process is not production. Otherwise analytics uses the configured
+ * Umami sink; email stays unconfigured until its own adapter lands. When
+ * neither a fake nor a real analytics sink is available the whole registry
+ * fails closed with `provider_not_configured`, so the failure is recorded on
+ * the job and surfaces in admin rather than being delivered by a fake.
  */
 export function createOutboxJobHandlers(env: NodeJS.ProcessEnv = process.env): JobHandlerRegistry {
-  const explicitlyFake = env.OUTBOX_ADAPTERS === FAKE_OUTBOX_ADAPTERS_VALUE;
-  if (explicitlyFake && env.NODE_ENV !== 'production') {
-    return createJobHandlerRegistry({
-      email: new FakeEmailAdapter(),
-      analytics: new FakeAnalyticsAdapter(),
-    });
-  }
-  return createFailingJobHandlerRegistry('provider_not_configured');
+  const explicitFake = env.OUTBOX_ADAPTERS === FAKE_OUTBOX_ADAPTERS_VALUE;
+  const allowFakes = explicitFake && env.NODE_ENV !== 'production';
+
+  const analytics = allowFakes ? new FakeAnalyticsSink() : loadUmamiAnalyticsSink(env);
+  if (!analytics) return createFailingJobHandlerRegistry('provider_not_configured');
+
+  const email: EmailAdapter = allowFakes ? new FakeEmailAdapter() : unconfiguredEmailAdapter();
+  return createJobHandlerRegistry({ email, analytics });
 }

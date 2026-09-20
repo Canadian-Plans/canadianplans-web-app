@@ -9,14 +9,24 @@
 export const ADAPTERS_PACKAGE_PLACEHOLDER = true as const;
 
 export {
-  FakeAnalyticsAdapter,
+  analyticsEventNames,
+  FakeAnalyticsSink,
   FakeEmailAdapter,
-  type AnalyticsAdapter,
   type AnalyticsEvent,
+  type AnalyticsEventName,
+  type AnalyticsSink,
   type EmailAdapter,
   type EmailMessage,
   type ProviderDeliveryResult,
 } from './messaging.js';
+
+export {
+  LogAnalyticsSink,
+  UmamiAnalyticsSink,
+  type AnalyticsLogLine,
+  type AnalyticsLogger,
+  type UmamiAnalyticsOptions,
+} from './analytics.js';
 
 export {
   HttpSiteRevalidator,

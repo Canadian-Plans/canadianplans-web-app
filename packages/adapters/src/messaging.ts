@@ -28,20 +28,33 @@ export class FakeEmailAdapter implements EmailAdapter {
   }
 }
 
+/**
+ * The server-emitted conversion events (IMPLEMENTATION_PLAN §9). Both are
+ * emitted once from the transactional outbox, never from the browser, so a
+ * submission is counted exactly once (REQ 35).
+ */
+export const analyticsEventNames = ['lead_saved', 'order_submitted'] as const;
+export type AnalyticsEventName = (typeof analyticsEventNames)[number];
+
 export interface AnalyticsEvent {
   workspaceId: string;
+  /** Stable logical id (the outbox `message_id`); providers dedupe on it. */
   eventId: string;
-  name: 'order_submitted';
-  /** Internal opaque identifier only. No contact, URL, attribution, or free text. */
-  orderId: string;
+  name: AnalyticsEventName;
+  /** Internal opaque lead/order identifier only. No contact, URL, attribution, or free text. */
+  subjectId: string;
 }
 
-export interface AnalyticsAdapter {
+/**
+ * The analytics seam (PLATFORM_CONTEXT §6). Only an Umami and a fake/log sink
+ * exist in Phase A; Google Ads/Meta are Phase B sinks over the same events.
+ */
+export interface AnalyticsSink {
   capture(event: AnalyticsEvent): Promise<ProviderDeliveryResult>;
 }
 
-/** In-memory analytics sink with stable event-id deduplication. */
-export class FakeAnalyticsAdapter implements AnalyticsAdapter {
+/** In-memory analytics sink with stable event-id deduplication (tests, non-production). */
+export class FakeAnalyticsSink implements AnalyticsSink {
   readonly events: AnalyticsEvent[] = [];
   private readonly providerIds = new Map<string, string>();
 

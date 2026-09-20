@@ -1,7 +1,11 @@
-import type { AnalyticsAdapter, EmailAdapter } from '@canadian-plans/adapters';
+import type { AnalyticsSink, EmailAdapter } from '@canadian-plans/adapters';
 import { z } from 'zod';
 
-export const outboxJobTypes = ['order_acknowledgement_email', 'analytics_order_submitted'] as const;
+export const outboxJobTypes = [
+  'order_acknowledgement_email',
+  'analytics_order_submitted',
+  'analytics_lead_saved',
+] as const;
 export type OutboxJobType = (typeof outboxJobTypes)[number];
 
 export interface ClaimedJob {
@@ -92,15 +96,20 @@ const acknowledgementPayloadSchema = z
   .object({ orderId: z.uuid(), reference: z.string().min(1).max(32) })
   .strict();
 const orderSubmittedPayloadSchema = z.object({ orderId: z.uuid() }).strict();
+const leadSavedPayloadSchema = z.object({ leadId: z.uuid() }).strict();
 
 function safeErrorCode(value: string, fallback: string): string {
   return /^[a-z0-9_]{1,64}$/.test(value) ? value : fallback;
 }
 
-/** The complete T15 registry. Commissions intentionally are not an outbox handler. */
+/**
+ * The complete handler registry (T15 + T20). Conversions are the two analytics
+ * events plus the acknowledgement email. Commissions are intentionally not an
+ * outbox handler — they are internal activation writes.
+ */
 export function createJobHandlerRegistry(dependencies: {
   email: EmailAdapter;
-  analytics: AnalyticsAdapter;
+  analytics: AnalyticsSink;
 }): JobHandlerRegistry {
   return new Map<string, JobHandler>([
     [
@@ -136,7 +145,28 @@ export function createJobHandlerRegistry(dependencies: {
           workspaceId: job.workspaceId,
           eventId: job.messageId,
           name: 'order_submitted',
-          orderId: parsed.data.orderId,
+          subjectId: parsed.data.orderId,
+        });
+        return result.status === 'delivered'
+          ? { status: 'completed', providerId: result.providerId }
+          : {
+              status: 'uncertain',
+              errorCode: safeErrorCode(result.errorCode, 'provider_uncertain'),
+            };
+      },
+    ],
+    [
+      'analytics_lead_saved',
+      async (job) => {
+        if (job.payloadVersion !== 1)
+          throw new JobHandlerError('unsupported_payload_version', false);
+        const parsed = leadSavedPayloadSchema.safeParse(job.payload);
+        if (!parsed.success) throw new JobHandlerError('invalid_job_payload', false);
+        const result = await dependencies.analytics.capture({
+          workspaceId: job.workspaceId,
+          eventId: job.messageId,
+          name: 'lead_saved',
+          subjectId: parsed.data.leadId,
         });
         return result.status === 'delivered'
           ? { status: 'completed', providerId: result.providerId }

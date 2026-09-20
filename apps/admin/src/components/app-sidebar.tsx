@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
+  BarChart3Icon,
   ClipboardListIcon,
   FileTextIcon,
   SettingsIcon,
@@ -27,6 +28,7 @@ const NAV_ITEMS = [
   { section: 'leads', label: 'Leads', icon: UsersIcon },
   { section: 'partners', label: 'Partners', icon: ShieldCheckIcon },
   { section: 'documents', label: 'Documents', icon: FileTextIcon },
+  { section: 'reports/sources', label: 'Reports', icon: BarChart3Icon },
   { section: 'settings', label: 'Settings', icon: SettingsIcon },
 ] as const;
 

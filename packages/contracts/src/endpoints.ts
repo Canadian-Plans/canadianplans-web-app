@@ -67,6 +67,7 @@ import {
   resolveOrderChangeRequestResponseSchema,
 } from './workspace-orders';
 import { listWorkspaceLeadsQuerySchema, listWorkspaceLeadsResponseSchema } from './workspace-leads';
+import { sourceReportQuerySchema, sourceReportResponseSchema } from './reports';
 import { listWebsiteOffersResponseSchema } from './website-offers';
 import { webhookAckResponseSchema, webhookDeliveryRequestSchema } from './webhooks';
 
@@ -236,6 +237,16 @@ export const endpoints: readonly EndpointDef[] = [
     auth: 'staff',
     successStatus: 200,
     response: catalogueStatusResponseSchema,
+  },
+  {
+    operationId: 'getSourceReport',
+    method: 'GET',
+    path: '/api/v1/staff/workspaces/{workspaceId}/reports/sources',
+    summary: 'Leads and orders by utm source/medium/campaign and by partner.',
+    auth: 'staff',
+    successStatus: 200,
+    query: sourceReportQuerySchema,
+    response: sourceReportResponseSchema,
   },
   {
     operationId: 'listWorkspaceJobs',
