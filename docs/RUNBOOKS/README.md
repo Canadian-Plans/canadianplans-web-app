@@ -15,6 +15,7 @@ production recovery rehearsal.
 | [CMS publishing and price-error handling](catalogue-sync.md) | T9/T10 |
 | [Order submission integrity and retry handling](orders.md) | T12 |
 | [Outbox jobs](outbox-jobs.md) | T15 |
+| [Customer-data deletion](data-deletion.md) | T21 |
 | Failed-email recovery | T18 |
 | Dispatch and activation | T14/T19 |
 | Commission and invoice month-end | T19 |

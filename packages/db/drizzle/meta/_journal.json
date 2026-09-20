@@ -113,6 +113,13 @@
       "when": 1789643689405,
       "tag": "0015_organic_roland_deschain",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1789910190920,
+      "tag": "0016_bumpy_puppet_master",
+      "breakpoints": true
     }
   ]
 }

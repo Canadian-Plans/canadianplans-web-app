@@ -23,6 +23,7 @@ import {
   partnerInvoiceResponseSchema,
 } from './partners';
 import { createExportRequestSchema, createExportResponseSchema } from './exports';
+import { deleteCustomerDataRequestSchema, deleteCustomerDataResponseSchema } from './deletion';
 import { healthResponseSchema } from './health';
 import { listWorkspaceJobsResponseSchema, retryWorkspaceJobResponseSchema } from './jobs';
 import {
@@ -414,6 +415,16 @@ export const endpoints: readonly EndpointDef[] = [
     successStatus: 201,
     request: recordOrderPaymentRequestSchema,
     response: recordOrderPaymentResponseSchema,
+  },
+  {
+    operationId: 'deleteCustomerData',
+    method: 'POST',
+    path: '/api/v1/staff/workspaces/{workspaceId}/orders/{orderId}/deletion',
+    summary: 'Delete a customer’s personal data for an order, keeping the commercial record.',
+    auth: 'staff',
+    successStatus: 202,
+    request: deleteCustomerDataRequestSchema,
+    response: deleteCustomerDataResponseSchema,
   },
 
   // Staff — partners

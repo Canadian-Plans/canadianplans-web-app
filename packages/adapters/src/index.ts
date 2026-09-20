@@ -29,6 +29,18 @@ export {
 } from './analytics.js';
 
 export {
+  createDeletionLedgerFromEnv,
+  deletionActions,
+  HttpDeletionLedger,
+  InMemoryDeletionLedger,
+  type DeletionAction,
+  type DeletionLedger,
+  type DeletionLedgerAcknowledgement,
+  type DeletionLedgerEvent,
+  type HttpDeletionLedgerOptions,
+} from './deletion-ledger.js';
+
+export {
   HttpSiteRevalidator,
   SanityCatalogueAdapter,
   SanityProviderError,

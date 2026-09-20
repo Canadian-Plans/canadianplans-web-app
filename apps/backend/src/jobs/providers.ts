@@ -1,6 +1,8 @@
 import {
+  createDeletionLedgerFromEnv,
   FakeAnalyticsSink,
   FakeEmailAdapter,
+  InMemoryDeletionLedger,
   UmamiAnalyticsSink,
   type AnalyticsSink,
   type EmailAdapter,
@@ -12,6 +14,12 @@ import {
   type JobHandlerRegistry,
 } from '@canadian-plans/jobs';
 import { z } from 'zod';
+
+import {
+  createDeletionLedgerHandler,
+  DatabaseDeletionLedgerStore,
+  DeletionLedgerService,
+} from '../deletion/ledger.js';
 
 /**
  * The explicit opt-in for the in-memory provider fakes. There is deliberately
@@ -88,8 +96,23 @@ export function createOutboxJobHandlers(env: NodeJS.ProcessEnv = process.env): J
   const allowFakes = explicitFake && env.NODE_ENV !== 'production';
 
   const analytics = allowFakes ? new FakeAnalyticsSink() : loadUmamiAnalyticsSink(env);
-  if (!analytics) return createFailingJobHandlerRegistry('provider_not_configured');
+  const base = analytics
+    ? createJobHandlerRegistry({
+        email: allowFakes ? new FakeEmailAdapter() : unconfiguredEmailAdapter(),
+        analytics,
+      })
+    : createFailingJobHandlerRegistry('provider_not_configured');
 
-  const email: EmailAdapter = allowFakes ? new FakeEmailAdapter() : unconfiguredEmailAdapter();
-  return createJobHandlerRegistry({ email, analytics });
+  // The deletion-ledger handler is registered independently of analytics/email:
+  // deleting customer data must work even when no other provider is configured,
+  // and it fails closed when the ledger itself is not configured.
+  const handlers = new Map(base);
+  const ledger = allowFakes ? new InMemoryDeletionLedger() : createDeletionLedgerFromEnv(env);
+  handlers.set(
+    'deletion_ledger_publish',
+    createDeletionLedgerHandler(
+      new DeletionLedgerService({ ledger, store: new DatabaseDeletionLedgerStore() }),
+    ),
+  );
+  return handlers;
 }

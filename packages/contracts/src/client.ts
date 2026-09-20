@@ -142,6 +142,12 @@ import {
   type SourceReportQuery,
   type SourceReportResponse,
 } from './reports';
+import {
+  deleteCustomerDataRequestSchema,
+  deleteCustomerDataResponseSchema,
+  type DeleteCustomerDataRequest,
+  type DeleteCustomerDataResponse,
+} from './deletion';
 import { listWebsiteOffersResponseSchema, type ListWebsiteOffersResponse } from './website-offers';
 
 /**
@@ -324,6 +330,11 @@ export interface BackendClient {
       orderId: string,
       body: RecordOrderPaymentRequest,
     ): Promise<RecordOrderPaymentResponse>;
+    deleteCustomerData(
+      workspaceId: string,
+      orderId: string,
+      body: DeleteCustomerDataRequest,
+    ): Promise<DeleteCustomerDataResponse>;
     changeCommissionState(
       workspaceId: string,
       partnerId: string,
@@ -678,6 +689,13 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/payments`,
           body: recordOrderPaymentRequestSchema.parse(body),
           responseSchema: recordOrderPaymentResponseSchema,
+        }),
+      deleteCustomerData: (workspaceId, orderId, body) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/deletion`,
+          body: deleteCustomerDataRequestSchema.parse(body),
+          responseSchema: deleteCustomerDataResponseSchema,
         }),
       changeCommissionState: (workspaceId, partnerId, body) =>
         call({

@@ -176,6 +176,15 @@ export {
 } from './reports';
 
 export {
+  deleteCustomerDataRequestSchema,
+  deleteCustomerDataResponseSchema,
+  deletionLedgerStatusSchema,
+  type DeleteCustomerDataRequest,
+  type DeleteCustomerDataResponse,
+  type DeletionLedgerStatus,
+} from './deletion';
+
+export {
   chargeComponentSchema,
   createQuoteRequestSchema,
   createQuoteResponseSchema,

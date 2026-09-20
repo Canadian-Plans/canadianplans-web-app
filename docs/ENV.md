@@ -43,6 +43,13 @@ proxy trust policy must be narrowly verified before enabling public traffic.
 - `QUOTE_WITHDRAWAL_POLICY` — `immediate` or `honour_until_expiry`. This is a **TEST policy only** while OPEN_INPUTS #14 is unresolved. Unset/unknown becomes `unresolved` and disables priced checkout; do not set it in production until the owner records the decision.
 - `ORDER_OPERATIONAL_TRANSITIONS` — **TEST-only** switch that lets T14/T16 exercise the dispatch and activate transitions synthetically. It must be exactly `1` or `true` to have any effect, is always ignored when `NODE_ENV=production` (production is disabled regardless of the value), and never authorizes real dispatch or activation. Production dispatch/activation stay disabled until OPEN_INPUTS #15 (transition prerequisites) is resolved; do not set this on a production deployment.
 
+## Deletion ledger (T21, §13)
+
+- `DELETION_LEDGER_ENDPOINT` — backend-only write endpoint of the dedicated deletion/suppression ledger bucket (Backblaze B2), separate from the archive. The object key is the logical deletion id, so a retry cannot duplicate an event.
+- `DELETION_LEDGER_TOKEN` — backend-only write-only ledger credential; it must not be able to delete events or read back other events.
+
+Unset (either value) means no ledger is configured: a `deletion_ledger_publish` job fails closed with `deletion_ledger_not_configured` and the local intent stays pending/failed rather than reporting completion. The write-only/S3 SigV4 key restrictions are provisioned and verified by T4R before this is set in production.
+
 ## Supabase
 
 - `SUPABASE_URL`

@@ -1183,6 +1183,45 @@ export const auditEvents = appSchema
   )
   .enableRLS();
 
+/**
+ * Local mirror of the external deletion ledger intent (T21, §13). It holds the
+ * logical operation the app committed and restricted; the durable event lives
+ * in the independent ledger. Identifiers and an action only — never the deleted
+ * personal data.
+ */
+export const deletionIntents = appSchema
+  .table(
+    'deletion_intents',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      action: text('action').notNull(),
+      subjectType: text('subject_type').notNull(),
+      subjectId: uuid('subject_id').notNull(),
+      status: text('status').notNull().default('pending'),
+      reason: text('reason'),
+      actorId: uuid('actor_id').notNull(),
+      ledgerAckId: text('ledger_ack_id'),
+      lastErrorCode: text('last_error_code'),
+      createdAt: createdAt(),
+      acknowledgedAt: timestamp('acknowledged_at', { withTimezone: true, mode: 'date' }),
+    },
+    (table) => [
+      unique('deletion_intents_workspace_id_id_unique').on(table.workspaceId, table.id),
+      check(
+        'deletion_intents_status_check',
+        sql`${table.status} in ('pending', 'acknowledged', 'failed')`,
+      ),
+      check('deletion_intents_action_check', sql`${table.action} in ('delete_customer_data')`),
+      check('deletion_intents_subject_type_check', sql`${table.subjectType} = 'order'`),
+      index('deletion_intents_workspace_status_idx').on(table.workspaceId, table.status),
+      tenantPolicy('deletion_intents_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
 export const schema = {
   workspaces,
   memberships,
@@ -1214,6 +1253,7 @@ export const schema = {
   serviceCredentials,
   rateLimitBuckets,
   auditEvents,
+  deletionIntents,
 };
 
 export type Workspace = typeof workspaces.$inferSelect;

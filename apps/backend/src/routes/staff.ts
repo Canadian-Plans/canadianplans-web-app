@@ -5,6 +5,7 @@ import {
   createOrderNoteRequestSchema,
   createOrderReminderRequestSchema,
   createServiceCredentialRequestSchema,
+  deleteCustomerDataRequestSchema,
   inviteStaffRequestSchema,
   listWorkspaceLeadsQuerySchema,
   listWorkspaceOrdersQuerySchema,
@@ -38,6 +39,7 @@ import {
   type StaffOrderActionStore,
 } from '../orders/staff-actions.js';
 import { loadOperationalTransitionsEnabled } from '../orders/transitions-config.js';
+import { DatabaseDeletionStore, type DeletionStore } from '../deletion/store.js';
 import { DatabaseReportStore, type ReportStore } from '../reports/store.js';
 import {
   allowedTransitionsFor,
@@ -61,6 +63,7 @@ export interface StaffRouteDependencies {
   leadStore: LeadStore;
   catalogueStore?: CatalogueStore;
   reportStore?: ReportStore;
+  deletionStore?: DeletionStore;
   orderQueryStore?: OrderQueryStore;
   orderTransitionStore?: OrderTransitionStore;
   orderActionStore?: StaffOrderActionStore;
@@ -78,6 +81,7 @@ export function createDefaultStaffRouteDependencies(): StaffRouteDependencies {
     leadStore: new DatabaseLeadStore(),
     catalogueStore: new DatabaseCatalogueStore(),
     reportStore: new DatabaseReportStore(),
+    deletionStore: new DatabaseDeletionStore(),
     orderQueryStore: new DatabaseOrderQueryStore(),
     orderTransitionStore: new DatabaseOrderTransitionStore(
       undefined,
@@ -1029,6 +1033,58 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
       });
       if (sendOrderWriteOutcome(res, req.id, outcome.status)) return;
       await sendOrderDetail(res, req, context.workspaceId, context.orderId, 201);
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.post('/workspaces/:workspaceId/orders/:orderId/deletion', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const orderId = z.uuid().safeParse(req.params['orderId']);
+    const body = deleteCustomerDataRequestSchema.safeParse(req.body);
+    if (!workspaceId.success || !orderId.success || !body.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const actor = session(req);
+      const authorize = createAuthorize({
+        accessStore: dependencies.store,
+        assuranceLevel: actor.assuranceLevel,
+      });
+      // `record.delete` is the `deletion` permission, privileged for Owner/Finance
+      // (verified aal2). Requiring it explicitly means a deny override wins.
+      const decision = await authorize({
+        actorId: actor.actorId,
+        workspaceId: workspaceId.data,
+        action: 'record.delete',
+      });
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.deletionStore) {
+        sendStaffAuthError(res, req.id, 'internal_error', 500);
+        return;
+      }
+
+      const outcome = await dependencies.deletionStore.deleteCustomerData({
+        workspaceId: workspaceId.data,
+        actorId: actor.actorId,
+        requestId: req.id,
+        orderId: orderId.data,
+        reason: body.data.reason,
+      });
+      if (outcome.status === 'not_found') {
+        sendDomainError(res, req.id, 'order_not_found', 404);
+        return;
+      }
+      res.status(202).json({
+        orderId: orderId.data,
+        deletionId: outcome.deletionId,
+        ledgerStatus: 'pending_acknowledgement',
+        requestId: req.id,
+      });
     } catch {
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }

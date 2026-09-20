@@ -271,6 +271,7 @@ return `409 illegal_transition`, a cancellation without a reason returns
 | `POST /orders/{orderId}/change-requests/{id}/approve` | Approve in one transaction: exactly one audited `order_amendments` row plus the version check. Contact fields are applied to the originating lead; the submitted order envelope (snapshot, payload, consent, terms) stays immutable (REQ 14), so form changes live in the amendment.                                                                                                              |
 | `POST /orders/{orderId}/change-requests/{id}/reject`  | Reject without changing any customer data. Re-resolving a resolved request returns `409 change_request_resolved`.                                                                                                                                                                                                                                                                                 |
 | `POST /orders/{orderId}/payments`                     | Record a manual payment (`paymentState`, optional `method`/`reference`/`amountMinor`) into `payment_records` and update `payment_state` in one transaction. The amount currency always comes from the frozen snapshot.                                                                                                                                                                            |
+| `POST /orders/{orderId}/deletion`                     | Delete the customer's personal data for the order (`reason` required). Requires the `deletion` permission (`record.delete`; verified `aal2` for Owner/Finance). Restricts every linked copy, keeps the reference and commercial snapshot, audits without personal data, and commits a local deletion intent. Returns `202` with `ledgerStatus: pending_acknowledgement`.                        |
 
 `GET /api/v1/staff/workspaces/{workspaceId}/members` lists the active staff
 memberships as assignee options. It returns membership id, roles and an
@@ -284,6 +285,21 @@ for orders that predate the consent column.
 (`canManageOrders`, `canRecordPayment`, `canSearchContact`) computed from the
 same live authorization decision the mutations use, so the admin can render the
 right controls without re-deriving policy from role names.
+
+### Customer-data deletion (T21)
+
+`POST /orders/{orderId}/deletion` clears the order payload/consent and the lead's
+contact/form, deletes notes, amendments, change requests and reminders, nulls
+personal audit `before`/`after` values, and scrubs outbox payloads — while keeping
+the order `reference` and commercial `snapshot`. It writes an audit entry
+(`order.customer_data_deleted`, actor + reason, no deleted personal data) and a
+local deletion intent (identifiers + action only).
+
+The independent deletion ledger (§13) is published after commit by the
+`deletion_ledger_publish` outbox job: retries reuse the logical id, a durable
+acknowledgement moves the intent to `acknowledged`, and an unavailable or
+unconfigured ledger leaves it `failed`/pending and fails the job closed rather
+than reporting completion. See `docs/RUNBOOKS/data-deletion.md`.
 
 ### Dispatch and activation gates
 

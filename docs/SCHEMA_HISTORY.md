@@ -491,6 +491,26 @@ Both tables use the same `FOR ALL` policy for `app_runtime` comparing
 non-null `app.actor_id`, repeated in `WITH CHECK`. RLS is enabled **and forced**,
 so the table owner does not bypass it. Existing tenant tables are unchanged.
 
+## 0016_bumpy_puppet_master.sql
+
+Task: T21
+
+Date: 2026-09-20
+
+### Change
+
+- Added tenant table `app.deletion_intents` (id, workspace_id, action, subject_type, subject_id, status, reason, actor_id, ledger_ack_id, last_error_code, created_at, acknowledged_at), the local mirror that drives the external deletion ledger.
+- Constrained `status` to `pending|acknowledged|failed`, `action` to `delete_customer_data`, and `subject_type` to `order`, with `(workspace_id, id)` uniqueness and a `(workspace_id, status)` index.
+- No personal data is stored: identifiers and an action only. The staff reason is bounded by the API contract.
+
+### Why
+
+REQ 24 / REQ 34: a customer-data deletion must be recorded in a minimal ledger held outside any single application-database snapshot so a restore can replay it before reopening. This table is the restricted local intent (§13), not the durable ledger.
+
+### RLS
+
+Tenant RLS enabled and forced on `deletion_intents`, scoped to `app_runtime`, requiring transaction-local `app.workspace_id` and a non-null `app.actor_id`, repeated in `WITH CHECK`. Existing tables are unchanged.
+
 Each future entry follows this shape:
 
 ```
