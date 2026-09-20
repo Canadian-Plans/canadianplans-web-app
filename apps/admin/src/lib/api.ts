@@ -8,12 +8,16 @@ import {
   type CreateOrderNoteRequest,
   type CreateOrderReminderRequest,
   type CreateOrderReminderResponse,
+  type CreateDownloadLinkResponse,
   type CreateServiceCredentialRequest,
   type CreateServiceCredentialResponse,
   type CatalogueStatusResponse,
   type ChangeCommissionStateRequest,
   type ChangeCommissionStateResponse,
   type DeleteOrderReminderResponse,
+  type ListWorkspaceFilesResponse,
+  type ReviewFileRequest,
+  type ReviewFileResponse,
   type ListPartnersResponse,
   type PartnerDetailResponse,
   type GetWorkspaceOrderResponse,
@@ -279,6 +283,34 @@ export async function recordOrderPayment(
   body: RecordOrderPaymentRequest,
 ): Promise<RecordOrderPaymentResponse> {
   return client(accessToken).staff.recordOrderPayment(workspaceId, orderId, body);
+}
+
+// ---- Documents (T17). Listing reveals metadata (workspace.read); downloading
+// an original requires the document.download permission, checked server-side. ----
+
+export async function listOrderFiles(
+  accessToken: string,
+  workspaceId: string,
+  orderId: string,
+): Promise<ListWorkspaceFilesResponse> {
+  return client(accessToken).staff.listOrderFiles(workspaceId, orderId);
+}
+
+export async function reviewFile(
+  accessToken: string,
+  workspaceId: string,
+  fileId: string,
+  body: ReviewFileRequest,
+): Promise<ReviewFileResponse> {
+  return client(accessToken).staff.reviewFile(workspaceId, fileId, body);
+}
+
+export async function createFileDownloadLink(
+  accessToken: string,
+  workspaceId: string,
+  fileId: string,
+): Promise<CreateDownloadLinkResponse> {
+  return client(accessToken).staff.fileDownloadLink(workspaceId, fileId);
 }
 
 // ---- Partners and commissions (T19). Directory and payout actions go through

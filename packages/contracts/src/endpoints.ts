@@ -1,7 +1,12 @@
 import type { z } from 'zod';
 import { catalogueStatusResponseSchema } from './catalogue';
 
-import { createDownloadLinkResponseSchema } from './files';
+import {
+  createDownloadLinkResponseSchema,
+  listWorkspaceFilesResponseSchema,
+  reviewFileRequestSchema,
+  reviewFileResponseSchema,
+} from './files';
 import {
   createLeadRequestSchema,
   createLeadResponseSchema,
@@ -545,6 +550,7 @@ export const endpoints: readonly EndpointDef[] = [
     successStatus: 201,
     request: createUploadIntentRequestSchema,
     response: createUploadIntentResponseSchema,
+    headers: [DRAFT_GRANT],
   },
   {
     operationId: 'finalizeUpload',
@@ -555,6 +561,7 @@ export const endpoints: readonly EndpointDef[] = [
     successStatus: 200,
     request: finalizeUploadRequestSchema,
     response: finalizeUploadResponseSchema,
+    headers: [DRAFT_GRANT],
   },
   {
     operationId: 'createDownloadLink',
@@ -562,6 +569,35 @@ export const endpoints: readonly EndpointDef[] = [
     path: '/api/v1/website/files/{fileId}/download-link',
     summary: 'Issue a short-lived signed download URL after a permission check.',
     auth: 'website',
+    successStatus: 200,
+    response: createDownloadLinkResponseSchema,
+    headers: [DRAFT_GRANT],
+  },
+  {
+    operationId: 'listWorkspaceFiles',
+    method: 'GET',
+    path: '/api/v1/staff/workspaces/{workspaceId}/orders/{orderId}/files',
+    summary: 'List the documents attached to an order for the admin Documents panel.',
+    auth: 'staff',
+    successStatus: 200,
+    response: listWorkspaceFilesResponseSchema,
+  },
+  {
+    operationId: 'reviewWorkspaceFile',
+    method: 'POST',
+    path: '/api/v1/staff/workspaces/{workspaceId}/files/{fileId}/review',
+    summary: 'Approve or reject a document with an optional note.',
+    auth: 'staff',
+    successStatus: 200,
+    request: reviewFileRequestSchema,
+    response: reviewFileResponseSchema,
+  },
+  {
+    operationId: 'createWorkspaceFileDownloadLink',
+    method: 'POST',
+    path: '/api/v1/staff/workspaces/{workspaceId}/files/{fileId}/download-link',
+    summary: 'Issue a short-lived signed download URL after a document-download permission check.',
+    auth: 'staff',
     successStatus: 200,
     response: createDownloadLinkResponseSchema,
   },

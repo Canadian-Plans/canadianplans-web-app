@@ -48,3 +48,27 @@ export {
   type SanityCatalogueConfig,
   type SiteRevalidator,
 } from './sanity.js';
+
+export {
+  InMemoryR2DocumentStore,
+  detectDocumentType,
+  sha256Hex,
+  type CopyForExportInput,
+  type CreateUploadInput,
+  type DocumentMediaType,
+  type IssueDownloadInput,
+  type PresignedDownload,
+  type PresignedUpload,
+  type R2DocumentStore,
+  type VerifyUploadInput,
+  type VerifyUploadRejection,
+  type VerifyUploadResult,
+} from './r2.js';
+
+export {
+  S3R2DocumentStore,
+  configFromEnv,
+  createR2DocumentStoreFromEnv,
+  presignUrl,
+  type R2Config,
+} from './r2-s3.js';

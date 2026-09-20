@@ -4,12 +4,19 @@ import {
   commercialOfferSchema,
   createLeadRequestSchema,
   createQuoteRequestSchema,
+  createUploadIntentRequestSchema,
+  finalizeUploadRequestSchema,
   submitOrderRequestSchema,
   trackingOtpRequestSchema,
   trackingVerifyRequestSchema,
   updateLeadRequestSchema,
 } from '@canadian-plans/contracts';
 import { z } from 'zod';
+
+import { DatabaseDraftGrantVerifier, type DraftGrantVerifier } from '../documents/grant.js';
+import { createDocumentServiceFromEnv } from '../documents/factory.js';
+import { toFileSummary } from '../documents/summary.js';
+import type { DocumentService } from '../documents/service.js';
 
 import { sendDomainError } from '../http/domain-errors.js';
 import { isConnectionLevelError, logRequestError } from '../http/logger.js';
@@ -50,6 +57,10 @@ export interface WebsiteRouteDependencies {
   quotes?: { service: Pick<CatalogueService, 'createQuote'> };
   orders?: { service: Pick<OrderService, 'submit'> };
   catalogue?: { store: Pick<CatalogueStore, 'listPublishedOffers'> };
+  documents?: {
+    service: Pick<DocumentService, 'createIntent' | 'finalize' | 'issueDownload'>;
+    grants: DraftGrantVerifier;
+  };
   tracking?: { service: TrackingService };
 }
 
@@ -78,6 +89,7 @@ export function createDefaultWebsiteRouteDependencies(): WebsiteRouteDependencie
       service: new OrderService(new DatabaseOrderStore(), loadQuoteWithdrawalPolicy()),
     },
     catalogue: { store: new DatabaseCatalogueStore() },
+    ...documentsDependencies(),
     tracking: {
       service: new TrackingService({
         store: new DatabaseTrackingStore(),
@@ -86,6 +98,12 @@ export function createDefaultWebsiteRouteDependencies(): WebsiteRouteDependencie
       }),
     },
   };
+}
+
+function documentsDependencies(): Pick<WebsiteRouteDependencies, 'documents'> {
+  const service = createDocumentServiceFromEnv();
+  if (!service) return {};
+  return { documents: { service, grants: new DatabaseDraftGrantVerifier() } };
 }
 
 /** Exact T10 public path (`POST /api/v1/quotes`) with website authentication. */
@@ -399,6 +417,183 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
       }
 
       res.json({ lead: outcome.lead, requestId: req.id });
+    } catch {
+      sendDomainError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  // ---- Customer document uploads (T17) -----------------------------------
+  // The service credential proves the workspace; the draft grant proves which
+  // lead the customer owns. Uploads attach to that lead (invariant 2/8).
+  const documents = dependencies.documents;
+
+  router.post('/uploads/intents', requireScope('uploads:customer'), async (req, res) => {
+    if (!documents) {
+      sendDomainError(res, req.id, 'feature_not_ready', 409);
+      return;
+    }
+    const body = createUploadIntentRequestSchema.safeParse(req.body);
+    const grantToken = requireDraftGrant(req);
+    if (!body.success) {
+      sendDomainError(res, req.id, 'validation_error', 400);
+      return;
+    }
+    if (!grantToken) {
+      sendDomainError(res, req.id, 'draft_not_found', 401);
+      return;
+    }
+    try {
+      const ctx = websiteContext(req);
+      const leadId = await documents.grants.verifyLead({
+        workspaceId: ctx.workspaceId,
+        actorId: ctx.credentialId,
+        grantToken,
+        now: new Date(),
+      });
+      // Customer uploads only ever attach to their own lead. `parentType` must be
+      // 'lead' and `parentId` must match the grant's lead.
+      if (!leadId || body.data.parentType !== 'lead' || body.data.parentId !== leadId) {
+        sendDomainError(res, req.id, 'draft_not_found', 401);
+        return;
+      }
+      const outcome = await documents.service.createIntent({
+        workspaceId: ctx.workspaceId,
+        actorId: ctx.credentialId,
+        requestId: req.id,
+        recordType: 'lead',
+        recordId: leadId,
+        documentType: body.data.documentType,
+        declaredContentType: body.data.contentType,
+        declaredSizeBytes: body.data.sizeBytes,
+      });
+      if (outcome.status === 'created') {
+        res.status(201).json({
+          uploadId: outcome.uploadId,
+          url: outcome.url,
+          method: 'PUT',
+          headers: outcome.headers,
+          expiresAt: outcome.expiresAt.toISOString(),
+          requestId: req.id,
+        });
+        return;
+      }
+      if (outcome.status === 'parent_not_found') {
+        sendDomainError(res, req.id, 'draft_not_found', 401);
+        return;
+      }
+      if (outcome.status === 'too_large') {
+        sendDomainError(res, req.id, 'document_too_large', 413);
+        return;
+      }
+      sendDomainError(res, req.id, 'checklist_mismatch', 409);
+    } catch {
+      sendDomainError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.post('/uploads/:uploadId/finalize', requireScope('uploads:customer'), async (req, res) => {
+    if (!documents) {
+      sendDomainError(res, req.id, 'feature_not_ready', 409);
+      return;
+    }
+    const uploadId = z.uuid().safeParse(req.params['uploadId']);
+    const body = finalizeUploadRequestSchema.safeParse(req.body);
+    const grantToken = requireDraftGrant(req);
+    if (!uploadId.success || !body.success) {
+      sendDomainError(res, req.id, 'validation_error', 400);
+      return;
+    }
+    if (!grantToken) {
+      sendDomainError(res, req.id, 'draft_not_found', 401);
+      return;
+    }
+    try {
+      const ctx = websiteContext(req);
+      const leadId = await documents.grants.verifyLead({
+        workspaceId: ctx.workspaceId,
+        actorId: ctx.credentialId,
+        grantToken,
+        now: new Date(),
+      });
+      if (!leadId) {
+        sendDomainError(res, req.id, 'draft_not_found', 401);
+        return;
+      }
+      const outcome = await documents.service.finalize({
+        workspaceId: ctx.workspaceId,
+        actorId: ctx.credentialId,
+        requestId: req.id,
+        fileId: uploadId.data,
+        checksumSha256: body.data.checksumSha256,
+        ownedLeadId: leadId,
+      });
+      switch (outcome.status) {
+        case 'available':
+          res.json({ file: toFileSummary(outcome.file), requestId: req.id });
+          return;
+        case 'rejected':
+          sendDomainError(res, req.id, 'document_verification_failed', 422, {
+            reason: outcome.reason,
+          });
+          return;
+        case 'in_progress':
+          res.setHeader('retry-after', '2');
+          sendDomainError(res, req.id, 'verification_in_progress', 409, { retryable: true });
+          return;
+        case 'expired':
+          sendDomainError(res, req.id, 'upload_expired', 410);
+          return;
+        case 'not_found':
+          sendDomainError(res, req.id, 'upload_not_found', 404);
+          return;
+      }
+    } catch {
+      sendDomainError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.post('/files/:fileId/download-link', requireScope('uploads:customer'), async (req, res) => {
+    if (!documents) {
+      sendDomainError(res, req.id, 'feature_not_ready', 409);
+      return;
+    }
+    const fileId = z.uuid().safeParse(req.params['fileId']);
+    const grantToken = requireDraftGrant(req);
+    if (!fileId.success) {
+      sendDomainError(res, req.id, 'validation_error', 400);
+      return;
+    }
+    if (!grantToken) {
+      sendDomainError(res, req.id, 'draft_not_found', 401);
+      return;
+    }
+    try {
+      const ctx = websiteContext(req);
+      const leadId = await documents.grants.verifyLead({
+        workspaceId: ctx.workspaceId,
+        actorId: ctx.credentialId,
+        grantToken,
+        now: new Date(),
+      });
+      if (!leadId) {
+        sendDomainError(res, req.id, 'draft_not_found', 401);
+        return;
+      }
+      const outcome = await documents.service.issueDownload({
+        workspaceId: ctx.workspaceId,
+        actorId: ctx.credentialId,
+        fileId: fileId.data,
+        ownedLeadId: leadId,
+      });
+      if (outcome.status === 'issued') {
+        res.json({ url: outcome.url, expiresAt: outcome.expiresAt.toISOString(), requestId: req.id });
+        return;
+      }
+      if (outcome.status === 'not_available') {
+        sendDomainError(res, req.id, 'file_not_available', 409);
+        return;
+      }
+      sendDomainError(res, req.id, 'file_not_found', 404);
     } catch {
       sendDomainError(res, req.id, 'internal_error', 500);
     }

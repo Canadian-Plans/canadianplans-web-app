@@ -1,7 +1,16 @@
 import type { z } from 'zod';
 import { catalogueStatusResponseSchema, type CatalogueStatusResponse } from './catalogue';
 
-import { createDownloadLinkResponseSchema, type CreateDownloadLinkResponse } from './files';
+import {
+  createDownloadLinkResponseSchema,
+  listWorkspaceFilesResponseSchema,
+  reviewFileRequestSchema,
+  reviewFileResponseSchema,
+  type CreateDownloadLinkResponse,
+  type ListWorkspaceFilesResponse,
+  type ReviewFileRequest,
+  type ReviewFileResponse,
+} from './files';
 import { healthResponseSchema, type HealthResponse } from './health';
 import {
   listWorkspaceJobsResponseSchema,
@@ -243,11 +252,21 @@ export interface BackendClient {
     ): Promise<SubmitOrderResponse>;
   };
   uploads: {
-    createIntent(body: CreateUploadIntentRequest): Promise<CreateUploadIntentResponse>;
-    finalize(uploadId: string, body: FinalizeUploadRequest): Promise<FinalizeUploadResponse>;
+    createIntent(
+      body: CreateUploadIntentRequest,
+      options: { draftGrant: string },
+    ): Promise<CreateUploadIntentResponse>;
+    finalize(
+      uploadId: string,
+      body: FinalizeUploadRequest,
+      options: { draftGrant: string },
+    ): Promise<FinalizeUploadResponse>;
   };
   files: {
-    createDownloadLink(fileId: string): Promise<CreateDownloadLinkResponse>;
+    createDownloadLink(
+      fileId: string,
+      options: { draftGrant: string },
+    ): Promise<CreateDownloadLinkResponse>;
   };
   tracking: {
     otp(body: TrackingOtpRequest): Promise<TrackingOtpResponse>;
@@ -357,6 +376,13 @@ export interface BackendClient {
       body: PartnerInvoiceRequest,
     ): Promise<PartnerInvoiceResponse>;
     createExport(workspaceId: string, body: CreateExportRequest): Promise<CreateExportResponse>;
+    listOrderFiles(workspaceId: string, orderId: string): Promise<ListWorkspaceFilesResponse>;
+    reviewFile(
+      workspaceId: string,
+      fileId: string,
+      body: ReviewFileRequest,
+    ): Promise<ReviewFileResponse>;
+    fileDownloadLink(workspaceId: string, fileId: string): Promise<CreateDownloadLinkResponse>;
   };
 }
 
@@ -468,27 +494,30 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
     },
 
     uploads: {
-      createIntent: (body) =>
+      createIntent: (body, opts) =>
         call({
           method: 'POST',
           path: '/api/v1/website/uploads/intents',
           body: createUploadIntentRequestSchema.parse(body),
+          headers: { 'x-draft-grant': opts.draftGrant },
           responseSchema: createUploadIntentResponseSchema,
         }),
-      finalize: (uploadId, body) =>
+      finalize: (uploadId, body, opts) =>
         call({
           method: 'POST',
           path: `/api/v1/website/uploads/${encode(uploadId)}/finalize`,
           body: finalizeUploadRequestSchema.parse(body),
+          headers: { 'x-draft-grant': opts.draftGrant },
           responseSchema: finalizeUploadResponseSchema,
         }),
     },
 
     files: {
-      createDownloadLink: (fileId) =>
+      createDownloadLink: (fileId, opts) =>
         call({
           method: 'POST',
           path: `/api/v1/website/files/${encode(fileId)}/download-link`,
+          headers: { 'x-draft-grant': opts.draftGrant },
           responseSchema: createDownloadLinkResponseSchema,
         }),
     },
@@ -747,6 +776,25 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           path: `/api/v1/staff/workspaces/${encode(workspaceId)}/exports`,
           body: createExportRequestSchema.parse(body),
           responseSchema: createExportResponseSchema,
+        }),
+      listOrderFiles: (workspaceId, orderId) =>
+        call({
+          method: 'GET',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/files`,
+          responseSchema: listWorkspaceFilesResponseSchema,
+        }),
+      reviewFile: (workspaceId, fileId, body) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/files/${encode(fileId)}/review`,
+          body: reviewFileRequestSchema.parse(body),
+          responseSchema: reviewFileResponseSchema,
+        }),
+      fileDownloadLink: (workspaceId, fileId) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/files/${encode(fileId)}/download-link`,
+          responseSchema: createDownloadLinkResponseSchema,
         }),
     },
   };

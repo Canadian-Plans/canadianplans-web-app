@@ -1596,3 +1596,197 @@ export type PaymentRecord = typeof paymentRecords.$inferSelect;
 export type ServiceCredential = typeof serviceCredentials.$inferSelect;
 export type RateLimitBucket = typeof rateLimitBuckets.$inferSelect;
 export type AuditEvent = typeof auditEvents.$inferSelect;
+
+
+/**
+ * Uploaded document metadata (T17; REQ 22-25; IMPLEMENTATION_PLAN.md §8). One
+ * row per uploaded object with the full lifecycle from the task brief:
+ * `uploading` (intent issued, client uploading to the staging key) →
+ * `verifying` (finalize claimed; staging copied to the private candidate key
+ * the uploader cannot write to) → `available` (candidate verified by signature
+ * + checksum and atomically attached) or `rejected` (verification failed) →
+ * `deleted` (tombstoned, scheduled for cleanup). The object key, detected MIME,
+ * actual size and checksum are set only when verification succeeds. `record_type`
+ * is polymorphic (a lead or an order) so, like `audit_events`, ownership is
+ * enforced by the tenant RLS policy and the backend rather than a single
+ * composite FK. `object_key`/`staging_key`/`candidate_key` are random and never
+ * leak the customer's identity (REQ 22).
+ */
+export const files = appSchema
+  .table(
+    'files',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      recordType: text('record_type').notNull(),
+      recordId: uuid('record_id').notNull(),
+      documentType: text('document_type').notNull(),
+      bucket: text('bucket').notNull(),
+      /** The uploader-writable staging object the presigned PUT targets. */
+      stagingKey: text('staging_key').notNull(),
+      /** The private candidate the uploader cannot write to; set when finalize is claimed. */
+      candidateKey: text('candidate_key'),
+      /** The attached, verified object served to staff. Equals the candidate key. */
+      objectKey: text('object_key'),
+      declaredContentType: text('declared_content_type').notNull(),
+      detectedMime: text('detected_mime'),
+      declaredSizeBytes: integer('declared_size_bytes').notNull(),
+      sizeBytes: integer('size_bytes'),
+      checksumSha256: text('checksum_sha256'),
+      status: text('status').default('uploading').notNull(),
+      rejectReason: text('reject_reason'),
+      revision: integer('revision').default(1).notNull(),
+      /** Set on a superseded object when a replacement is attached to the same slot. */
+      supersededByFileId: uuid('superseded_by_file_id'),
+      uploadedBy: uuid('uploaded_by').notNull(),
+      expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
+      finalizedAt: timestamp('finalized_at', { withTimezone: true, mode: 'date' }),
+      deletedAt: timestamp('deleted_at', { withTimezone: true, mode: 'date' }),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+        .defaultNow()
+        .notNull(),
+    },
+    (table) => [
+      unique('files_workspace_id_id_unique').on(table.workspaceId, table.id),
+      uniqueIndex('files_staging_key_unique').on(table.stagingKey),
+      uniqueIndex('files_object_key_unique')
+        .on(table.objectKey)
+        .where(sql`${table.objectKey} is not null`),
+      check(
+        'files_status_check',
+        sql`${table.status} in ('uploading', 'verifying', 'available', 'rejected', 'deleted')`,
+      ),
+      check('files_record_type_check', sql`${table.recordType} in ('lead', 'order')`),
+      check(
+        'files_content_type_check',
+        sql`${table.declaredContentType} in ('application/pdf', 'image/jpeg', 'image/png')`,
+      ),
+      check('files_declared_size_check', sql`${table.declaredSizeBytes} > 0`),
+      check('files_size_check', sql`${table.sizeBytes} is null or ${table.sizeBytes} >= 0`),
+      check('files_revision_positive_check', sql`${table.revision} > 0`),
+      // An available object must carry the verified provenance; a non-available
+      // object must not (so an unchecked object can never look attached).
+      check(
+        'files_available_provenance_check',
+        sql`(
+          ${table.status} = 'available'
+          and ${table.objectKey} is not null
+          and ${table.detectedMime} is not null
+          and ${table.checksumSha256} is not null
+          and ${table.sizeBytes} is not null
+        ) or (
+          ${table.status} <> 'available'
+        )`,
+      ),
+      index('files_workspace_record_idx').on(
+        table.workspaceId,
+        table.recordType,
+        table.recordId,
+        table.status,
+      ),
+      index('files_workspace_status_expires_idx').on(
+        table.workspaceId,
+        table.status,
+        table.expiresAt,
+      ),
+      tenantPolicy('files_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Immutable provenance of every verified object (T17; REQ 23/24). One row is
+ * written when a file's candidate is attached; a replacement adds the next
+ * revision, so review/version history survives even after the current `files`
+ * row is tombstoned or scrubbed. `app_runtime` is granted only SELECT/INSERT.
+ */
+export const fileRevisions = appSchema
+  .table(
+    'file_revisions',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      fileId: uuid('file_id').notNull(),
+      revision: integer('revision').notNull(),
+      objectKey: text('object_key').notNull(),
+      detectedMime: text('detected_mime').notNull(),
+      sizeBytes: integer('size_bytes').notNull(),
+      checksumSha256: text('checksum_sha256').notNull(),
+      createdBy: uuid('created_by').notNull(),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('file_revisions_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('file_revisions_workspace_file_revision_unique').on(
+        table.workspaceId,
+        table.fileId,
+        table.revision,
+      ),
+      foreignKey({
+        name: 'file_revisions_workspace_file_fk',
+        columns: [table.workspaceId, table.fileId],
+        foreignColumns: [files.workspaceId, files.id],
+      }).onDelete('cascade'),
+      check('file_revisions_revision_positive_check', sql`${table.revision} > 0`),
+      index('file_revisions_workspace_file_idx').on(table.workspaceId, table.fileId, table.revision),
+      tenantPolicy('file_revisions_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Staff review decisions on a file (T17; admin Documents panel — approve/reject
+ * with a note). Append-only and independent of the signature-verification
+ * `status`: a file can be byte-verified (`available`) yet business-rejected by
+ * staff. Every decision records who and when (invariant 11).
+ */
+export const fileReviewEvents = appSchema
+  .table(
+    'file_review_events',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      fileId: uuid('file_id').notNull(),
+      actorId: uuid('actor_id').notNull(),
+      decision: text('decision').notNull(),
+      note: text('note'),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('file_review_events_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'file_review_events_workspace_file_fk',
+        columns: [table.workspaceId, table.fileId],
+        foreignColumns: [files.workspaceId, files.id],
+      }).onDelete('cascade'),
+      check(
+        'file_review_events_decision_check',
+        sql`${table.decision} in ('approved', 'rejected')`,
+      ),
+      check(
+        'file_review_events_note_check',
+        sql`${table.note} is null or char_length(${table.note}) between 1 and 2000`,
+      ),
+      index('file_review_events_workspace_file_created_idx').on(
+        table.workspaceId,
+        table.fileId,
+        table.createdAt,
+      ),
+      tenantPolicy('file_review_events_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+  files,
+  fileRevisions,
+  fileReviewEvents,
+export type FileRecord = typeof files.$inferSelect;
+export type FileRevision = typeof fileRevisions.$inferSelect;
+export type FileReviewEvent = typeof fileReviewEvents.$inferSelect;

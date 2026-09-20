@@ -10,7 +10,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  FileDrop,
   FormField,
   Input,
   ReviewCard,
@@ -19,6 +18,7 @@ import {
 
 import { trackPlanSelected } from '../../../lib/analytics';
 import { requestCallback, requestQuote, saveDetails, saveDocuments, submitOrder } from './actions';
+import { DocumentUploads } from './document-uploads';
 import type { ActionResult, OrderDetailsInput, OrderFieldErrors } from './types';
 const STEPS = [
   { id: 'plan', label: 'Plan' },
@@ -451,25 +451,16 @@ export function OrderForm({
           </CardTitle>
           <CardDescription>
             {documentsRequired
-              ? 'This plan asks for documents before activation. Uploads open in a later release; you can continue now.'
+              ? 'This plan asks for documents before activation. Upload them now, or continue and send them later.'
               : 'This plan does not require any documents.'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {documentsRequired ? (
-            <ul className="space-y-4">
-              {documentKeys.map((key) => (
-                <li key={key}>
-                  <FileDrop
-                    id={`order-document-${key}`}
-                    label={checklistLabel(key)}
-                    hint="PDF, JPG or PNG, up to 10 MB."
-                    accept="application/pdf,image/jpeg,image/png"
-                    note="Uploads are not enabled yet — nothing is sent from this step."
-                  />
-                </li>
-              ))}
-            </ul>
+            <DocumentUploads
+              documentKeys={documentKeys.filter((key) => key !== 'none')}
+              labelFor={checklistLabel}
+            />
           ) : (
             <p>Nothing to upload for this plan.</p>
           )}

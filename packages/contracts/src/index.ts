@@ -313,11 +313,23 @@ export {
 
 export {
   createDownloadLinkResponseSchema,
+  fileReviewDecisionSchema,
+  fileReviewEventSchema,
   fileStatusSchema,
   fileSummarySchema,
+  listWorkspaceFilesResponseSchema,
+  reviewFileRequestSchema,
+  reviewFileResponseSchema,
+  staffFileSchema,
   type CreateDownloadLinkResponse,
+  type FileReviewDecision,
+  type FileReviewEvent,
   type FileStatus,
   type FileSummary,
+  type ListWorkspaceFilesResponse,
+  type ReviewFileRequest,
+  type ReviewFileResponse,
+  type StaffFile,
 } from './files';
 
 export {

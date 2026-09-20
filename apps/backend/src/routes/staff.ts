@@ -16,10 +16,15 @@ import {
   patchWorkspaceOrderRequestSchema,
   recordOrderPaymentRequestSchema,
   resolveOrderChangeRequestRequestSchema,
+  reviewFileRequestSchema,
   sourceReportQuerySchema,
   type OrderCapabilities,
 } from '@canadian-plans/contracts';
 import { z } from 'zod';
+
+import { createDocumentServiceFromEnv } from '../documents/factory.js';
+import type { DocumentService } from '../documents/service.js';
+import { toStaffFile } from '../documents/summary.js';
 
 import {
   requireStaffSession,
@@ -76,6 +81,7 @@ export interface StaffRouteDependencies {
   orderActionStore?: StaffOrderActionStore;
   partnerStore?: PartnerStore;
   jobStore?: JobAdminStore;
+  documentService?: Pick<DocumentService, 'listForOrder' | 'review' | 'issueDownload'>;
   /** Kept beside the transition store so the rendered action set matches what the write path accepts. */
   operationalTransitionsEnabled?: boolean;
 }
@@ -100,6 +106,7 @@ export function createDefaultStaffRouteDependencies(): StaffRouteDependencies {
     orderActionStore: new DatabaseStaffOrderActionStore(),
     partnerStore: new DatabasePartnerStore(),
     jobStore: new DatabaseOutboxStore(),
+    documentService: createDocumentServiceFromEnv(),
     operationalTransitionsEnabled,
   };
 }
@@ -1432,6 +1439,121 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
           sendDomainError(res, req.id, 'feature_not_ready', 409);
           return;
       }
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  // ---- Documents (T17) ---------------------------------------------------
+  // Listing a document reveals only metadata (workspace.read); downloading the
+  // original requires the separately-grantable `document.download` permission
+  // (REQ 23; gate 5). Approve/reject is an order-management action.
+
+  router.get('/workspaces/:workspaceId/orders/:orderId/files', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const orderId = z.uuid().safeParse(req.params['orderId']);
+    if (!workspaceId.success || !orderId.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const { actor, decision } = await decide(req, workspaceId.data, 'workspace.read');
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.documentService) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const outcome = await dependencies.documentService.listForOrder({
+        workspaceId: workspaceId.data,
+        actorId: actor.actorId,
+        orderId: orderId.data,
+      });
+      if (outcome.status === 'not_found') {
+        sendDomainError(res, req.id, 'order_not_found', 404);
+        return;
+      }
+      res.json({ files: outcome.files.map(toStaffFile), requestId: req.id });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.post('/workspaces/:workspaceId/files/:fileId/review', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const fileId = z.uuid().safeParse(req.params['fileId']);
+    const body = reviewFileRequestSchema.safeParse(req.body);
+    if (!workspaceId.success || !fileId.success || !body.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const { actor, decision } = await decide(req, workspaceId.data, 'order.manage');
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.documentService) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const outcome = await dependencies.documentService.review({
+        workspaceId: workspaceId.data,
+        actorId: actor.actorId,
+        requestId: req.id,
+        fileId: fileId.data,
+        decision: body.data.decision,
+        ...(body.data.note ? { note: body.data.note } : {}),
+      });
+      if (outcome.status === 'not_found') {
+        sendDomainError(res, req.id, 'file_not_found', 404);
+        return;
+      }
+      res.json({ file: toStaffFile(outcome.file), requestId: req.id });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.post('/workspaces/:workspaceId/files/:fileId/download-link', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const fileId = z.uuid().safeParse(req.params['fileId']);
+    if (!workspaceId.success || !fileId.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      // Download of an original is gated on the explicit document.download
+      // permission — not merely workspace membership (REQ 23; gate 5).
+      const { actor, decision } = await decide(req, workspaceId.data, 'document.download');
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.documentService) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const outcome = await dependencies.documentService.issueDownload({
+        workspaceId: workspaceId.data,
+        actorId: actor.actorId,
+        fileId: fileId.data,
+      });
+      if (outcome.status === 'issued') {
+        res.json({
+          url: outcome.url,
+          expiresAt: outcome.expiresAt.toISOString(),
+          requestId: req.id,
+        });
+        return;
+      }
+      if (outcome.status === 'not_available') {
+        sendDomainError(res, req.id, 'file_not_available', 409);
+        return;
+      }
+      sendDomainError(res, req.id, 'file_not_found', 404);
     } catch {
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
