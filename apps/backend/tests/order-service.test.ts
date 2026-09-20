@@ -241,11 +241,31 @@ describe('order transition policy', () => {
     ).toBe('cancellation_reason_required');
   });
 
-  it('keeps partnered activation disabled until T19', () => {
+  it('keeps partnered activation disabled until a commission line can be created (T19)', () => {
     expect(
       validateTransition('dispatched', 'activated', {
         partnered: true,
         allowOperationalTransitions: true,
+      }),
+    ).toBe('feature_not_ready');
+  });
+
+  it('allows partnered activation once the commission path is wired (T19)', () => {
+    expect(
+      validateTransition('dispatched', 'activated', {
+        partnered: true,
+        allowOperationalTransitions: true,
+        commissionConfigured: true,
+      }),
+    ).toBeUndefined();
+  });
+
+  it('still blocks partnered activation when operational transitions are off', () => {
+    expect(
+      validateTransition('dispatched', 'activated', {
+        partnered: true,
+        allowOperationalTransitions: false,
+        commissionConfigured: true,
       }),
     ).toBe('feature_not_ready');
   });

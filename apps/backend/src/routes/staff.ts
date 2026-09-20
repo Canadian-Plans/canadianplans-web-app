@@ -1,6 +1,7 @@
 import { Router, type Request, type Response } from 'express';
 import {
   bulkAssignOrdersRequestSchema,
+  changeCommissionStateRequestSchema,
   createOrderChangeRequestRequestSchema,
   createOrderNoteRequestSchema,
   createOrderReminderRequestSchema,
@@ -41,6 +42,12 @@ import {
 import { loadOperationalTransitionsEnabled } from '../orders/transitions-config.js';
 import { DatabaseDeletionStore, type DeletionStore } from '../deletion/store.js';
 import { DatabaseReportStore, type ReportStore } from '../reports/store.js';
+import { DatabaseCommissionActivationHook } from '../partners/activation.js';
+import {
+  DatabasePartnerStore,
+  type PartnerStore,
+  type CommissionStateOutcome,
+} from '../partners/store.js';
 import {
   allowedTransitionsFor,
   DatabaseOrderTransitionStore,
@@ -67,6 +74,7 @@ export interface StaffRouteDependencies {
   orderQueryStore?: OrderQueryStore;
   orderTransitionStore?: OrderTransitionStore;
   orderActionStore?: StaffOrderActionStore;
+  partnerStore?: PartnerStore;
   jobStore?: JobAdminStore;
   /** Kept beside the transition store so the rendered action set matches what the write path accepts. */
   operationalTransitionsEnabled?: boolean;
@@ -86,8 +94,11 @@ export function createDefaultStaffRouteDependencies(): StaffRouteDependencies {
     orderTransitionStore: new DatabaseOrderTransitionStore(
       undefined,
       operationalTransitionsEnabled,
+      undefined,
+      new DatabaseCommissionActivationHook(),
     ),
     orderActionStore: new DatabaseStaffOrderActionStore(),
+    partnerStore: new DatabasePartnerStore(),
     jobStore: new DatabaseOutboxStore(),
     operationalTransitionsEnabled,
   };
@@ -1284,6 +1295,143 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
       }
       // Idempotent: revoking an already-revoked credential returns its first revocation time.
       res.json({ id: credentialId.data, revokedAt: result.revokedAt, requestId: req.id });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  // ---- Partners and commissions (T19) ------------------------------------
+  // The partner directory is visible to any workspace reader (the Partners
+  // role); commission *amounts* are payout details gated behind `financial.read`
+  // (a Viewer sees states but no money). Marking a commission `carrier_paid`
+  // needs `financial.read`, which for owner/finance additionally requires a
+  // verified aal2 session; `partner_paid` stays disabled (OPEN_INPUTS #18).
+
+  const PAYOUT_DISABLED_REASON =
+    'Partner payout marking is disabled until B1 invoice approval exists or OPEN_INPUTS #18 defines an interim approval mechanism.';
+
+  router.get('/workspaces/:workspaceId/partners', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    if (!workspaceId.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const { actor, decision } = await decide(req, workspaceId.data, 'workspace.read');
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.partnerStore) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const partners = await dependencies.partnerStore.listPartners(
+        workspaceId.data,
+        actor.actorId,
+      );
+      res.json({ partners, requestId: req.id });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.get('/workspaces/:workspaceId/partners/:partnerId', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const partnerId = z.uuid().safeParse(req.params['partnerId']);
+    if (!workspaceId.success || !partnerId.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const { actor, decision } = await decide(req, workspaceId.data, 'workspace.read');
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.partnerStore) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const detail = await dependencies.partnerStore.getPartnerDetail(
+        workspaceId.data,
+        actor.actorId,
+        partnerId.data,
+      );
+      if (!detail) {
+        sendDomainError(res, req.id, 'not_found', 404);
+        return;
+      }
+      // Payout details (commission amounts) require `financial.read`; the same
+      // read decides whether the carrier-paid action is offered.
+      const finance = await decide(req, workspaceId.data, 'financial.read');
+      const canViewPayouts = finance.decision.allowed;
+      const commissions = detail.commissions.map((commission) => ({
+        ...commission,
+        amount: canViewPayouts ? commission.amount : null,
+      }));
+      res.json({
+        partner: detail.partner,
+        referredOrders: detail.referredOrders,
+        commissions,
+        canViewPayouts,
+        canMarkCarrierPaid: canViewPayouts,
+        partnerPaidEnabled: false,
+        payoutDisabledReason: PAYOUT_DISABLED_REASON,
+        requestId: req.id,
+      });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.post('/workspaces/:workspaceId/partners/:partnerId/commissions', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const partnerId = z.uuid().safeParse(req.params['partnerId']);
+    const body = changeCommissionStateRequestSchema.safeParse(req.body);
+    if (!workspaceId.success || !partnerId.success || !body.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      // Finance action: `financial.read` (which requires aal2 for owner/finance).
+      // The Partners role lacks it, so it can never mark a commission paid.
+      const { actor, decision } = await decide(req, workspaceId.data, 'financial.read');
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.partnerStore) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const outcome: CommissionStateOutcome = await dependencies.partnerStore.changeCommissionState({
+        workspaceId: workspaceId.data,
+        actorId: actor.actorId,
+        requestId: req.id,
+        partnerId: partnerId.data,
+        commissionId: body.data.commissionId,
+        toState: body.data.toState,
+      });
+      switch (outcome.status) {
+        case 'updated':
+          res.json({
+            commission: outcome.commission,
+            history: outcome.history,
+            requestId: req.id,
+          });
+          return;
+        case 'partner_not_found':
+        case 'commission_not_found':
+          sendDomainError(res, req.id, 'commission_not_found', 404);
+          return;
+        case 'invalid_transition':
+          sendDomainError(res, req.id, 'commission_state_invalid', 409);
+          return;
+        case 'partner_paid_disabled':
+          sendDomainError(res, req.id, 'feature_not_ready', 409);
+          return;
+      }
     } catch {
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }

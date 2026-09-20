@@ -28,10 +28,14 @@ import {
 import {
   changeCommissionStateRequestSchema,
   changeCommissionStateResponseSchema,
+  listPartnersResponseSchema,
+  partnerDetailResponseSchema,
   partnerInvoiceRequestSchema,
   partnerInvoiceResponseSchema,
   type ChangeCommissionStateRequest,
   type ChangeCommissionStateResponse,
+  type ListPartnersResponse,
+  type PartnerDetailResponse,
   type PartnerInvoiceRequest,
   type PartnerInvoiceResponse,
 } from './partners';
@@ -340,6 +344,8 @@ export interface BackendClient {
       orderId: string,
       body: DeleteCustomerDataRequest,
     ): Promise<DeleteCustomerDataResponse>;
+    listPartners(workspaceId: string): Promise<ListPartnersResponse>;
+    getPartner(workspaceId: string, partnerId: string): Promise<PartnerDetailResponse>;
     changeCommissionState(
       workspaceId: string,
       partnerId: string,
@@ -708,6 +714,18 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/deletion`,
           body: deleteCustomerDataRequestSchema.parse(body),
           responseSchema: deleteCustomerDataResponseSchema,
+        }),
+      listPartners: (workspaceId) =>
+        call({
+          method: 'GET',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/partners`,
+          responseSchema: listPartnersResponseSchema,
+        }),
+      getPartner: (workspaceId, partnerId) =>
+        call({
+          method: 'GET',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/partners/${encode(partnerId)}`,
+          responseSchema: partnerDetailResponseSchema,
         }),
       changeCommissionState: (workspaceId, partnerId, body) =>
         call({

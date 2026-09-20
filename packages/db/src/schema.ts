@@ -1,6 +1,9 @@
 import { sql } from 'drizzle-orm';
 import {
+  commissionRuleTypes,
+  commissionStates,
   deliveryStates,
+  invoiceStatuses,
   leadStatuses,
   membershipStatuses,
   orderStatuses,
@@ -13,6 +16,7 @@ import {
 import {
   check,
   boolean,
+  date,
   foreignKey,
   index,
   integer,
@@ -62,6 +66,9 @@ const membershipStatusList = sql.raw(membershipStatuses.map((status) => `'${stat
 const partnerStatusList = sql.raw(partnerStatuses.map((status) => `'${status}'`).join(', '));
 const leadStatusList = sql.raw(leadStatuses.map((status) => `'${status}'`).join(', '));
 const orderStatusList = sql.raw(orderStatuses.map((status) => `'${status}'`).join(', '));
+const commissionRuleTypeList = sql.raw(commissionRuleTypes.map((type) => `'${type}'`).join(', '));
+const commissionStateList = sql.raw(commissionStates.map((state) => `'${state}'`).join(', '));
+const invoiceStatusList = sql.raw(invoiceStatuses.map((status) => `'${status}'`).join(', '));
 const paymentStateList = sql.raw(paymentStates.map((state) => `'${state}'`).join(', '));
 const deliveryStateList = sql.raw(deliveryStates.map((state) => `'${state}'`).join(', '));
 
@@ -262,6 +269,104 @@ export const partners = appSchema
       index('partners_workspace_id_status_idx').on(table.workspaceId, table.status),
       check('partners_status_check', sql`${table.status} in (${partnerStatusList})`),
       tenantPolicy('partners_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Commission rules (T19; REQ 32). A rule is workspace-scoped and time-bounded:
+ * the rule *in effect at activation time* is the one whose window contains that
+ * instant. Its full shape is snapshotted onto each commission line, so a later
+ * rule change never alters lines already earned (invariant 10). `valueMinor`
+ * is a flat CAD amount for `fixed` rules; for `percentage` it is a rate whose
+ * basis and rounding are OPEN_INPUTS #17 (unresolved — percentage rules cannot
+ * be applied to a live activation yet). `isTest` marks a placeholder rule that
+ * may only produce commission lines outside production (the TEST fixed-zero
+ * rule must never enter live immutable records). Rules are never updated or
+ * deleted — a change is a new row — so the runtime role gets only SELECT/INSERT.
+ */
+export const commissionRules = appSchema
+  .table(
+    'commission_rules',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      ruleType: text('rule_type').notNull(),
+      valueMinor: integer('value_minor').notNull(),
+      currency: text('currency').notNull(),
+      isTest: boolean('is_test').default(false).notNull(),
+      effectiveFrom: timestamp('effective_from', { withTimezone: true, mode: 'date' }).notNull(),
+      effectiveTo: timestamp('effective_to', { withTimezone: true, mode: 'date' }),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('commission_rules_workspace_id_id_unique').on(table.workspaceId, table.id),
+      check('commission_rules_type_check', sql`${table.ruleType} in (${commissionRuleTypeList})`),
+      check('commission_rules_value_nonnegative_check', sql`${table.valueMinor} >= 0`),
+      check(
+        'commission_rules_window_check',
+        sql`${table.effectiveTo} is null or ${table.effectiveTo} > ${table.effectiveFrom}`,
+      ),
+      index('commission_rules_workspace_effective_idx').on(
+        table.workspaceId,
+        table.effectiveFrom,
+        table.effectiveTo,
+      ),
+      tenantPolicy('commission_rules_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Invoices and their lines (T19 — tables only in Phase A; no generation UI).
+ * One draft invoice per partner per period; approval freezes it. Invoice
+ * numbers are sequential per workspace (REQ 33). Generation and approval land
+ * in B1, so the runtime role gets SELECT/INSERT/UPDATE but no code path writes
+ * these in Phase A.
+ */
+export const invoices = appSchema
+  .table(
+    'invoices',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      partnerId: uuid('partner_id').notNull(),
+      invoiceNumber: integer('invoice_number').notNull(),
+      periodStart: date('period_start').notNull(),
+      periodEnd: date('period_end').notNull(),
+      status: text('status').default('draft').notNull(),
+      totalMinor: integer('total_minor').default(0).notNull(),
+      currency: text('currency').notNull(),
+      approvedBy: uuid('approved_by'),
+      approvedAt: timestamp('approved_at', { withTimezone: true, mode: 'date' }),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('invoices_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('invoices_workspace_number_unique').on(table.workspaceId, table.invoiceNumber),
+      unique('invoices_workspace_partner_period_unique').on(
+        table.workspaceId,
+        table.partnerId,
+        table.periodStart,
+        table.periodEnd,
+      ),
+      foreignKey({
+        name: 'invoices_workspace_partner_fk',
+        columns: [table.workspaceId, table.partnerId],
+        foreignColumns: [partners.workspaceId, partners.id],
+      }),
+      check('invoices_status_check', sql`${table.status} in (${invoiceStatusList})`),
+      check('invoices_period_check', sql`${table.periodEnd} >= ${table.periodStart}`),
+      check(
+        'invoices_approved_state_check',
+        sql`(${table.status} = 'approved') = (${table.approvedAt} is not null)`,
+      ),
+      index('invoices_workspace_partner_idx').on(table.workspaceId, table.partnerId),
+      tenantPolicy('invoices_tenant_policy', table.workspaceId),
     ],
   )
   .enableRLS();
@@ -625,6 +730,157 @@ export const orders = appSchema
       index('orders_workspace_assignee_idx').on(table.workspaceId, table.assigneeId),
       index('orders_workspace_partner_idx').on(table.workspaceId, table.partnerId),
       tenantPolicy('orders_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * One earned commission for one activated order (invariant 10), with the rule
+ * snapshotted at activation. The unique `(workspace_id, order_id)` is what makes
+ * activation create *exactly one* line: a retried or concurrent activation
+ * conflicts on this key rather than inserting a second line. `amountMinor`,
+ * `currency`, `ruleId` and `ruleSnapshot` are the immutable financial facts;
+ * only `state` and `invoiceId` change afterwards, through audited Finance
+ * actions. `invoiceId` is nullable until B1 invoicing links the line.
+ */
+export const commissionLines = appSchema
+  .table(
+    'commission_lines',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      orderId: uuid('order_id').notNull(),
+      partnerId: uuid('partner_id').notNull(),
+      ruleId: uuid('rule_id').notNull(),
+      ruleSnapshot: jsonb('rule_snapshot').notNull(),
+      amountMinor: integer('amount_minor').notNull(),
+      currency: text('currency').notNull(),
+      state: text('state').default('earned').notNull(),
+      invoiceId: uuid('invoice_id'),
+      earnedAt: timestamp('earned_at', { withTimezone: true, mode: 'date' }).notNull(),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+        .defaultNow()
+        .notNull(),
+    },
+    (table) => [
+      unique('commission_lines_workspace_id_id_unique').on(table.workspaceId, table.id),
+      // Exactly one commission line per activated order (invariant 10).
+      unique('commission_lines_workspace_order_unique').on(table.workspaceId, table.orderId),
+      foreignKey({
+        name: 'commission_lines_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }),
+      foreignKey({
+        name: 'commission_lines_workspace_partner_fk',
+        columns: [table.workspaceId, table.partnerId],
+        foreignColumns: [partners.workspaceId, partners.id],
+      }),
+      foreignKey({
+        name: 'commission_lines_workspace_rule_fk',
+        columns: [table.workspaceId, table.ruleId],
+        foreignColumns: [commissionRules.workspaceId, commissionRules.id],
+      }),
+      foreignKey({
+        name: 'commission_lines_workspace_invoice_fk',
+        columns: [table.workspaceId, table.invoiceId],
+        foreignColumns: [invoices.workspaceId, invoices.id],
+      }),
+      check('commission_lines_state_check', sql`${table.state} in (${commissionStateList})`),
+      check('commission_lines_amount_nonnegative_check', sql`${table.amountMinor} >= 0`),
+      check(
+        'commission_lines_snapshot_object_check',
+        sql`jsonb_typeof(${table.ruleSnapshot}) = 'object'`,
+      ),
+      index('commission_lines_workspace_partner_idx').on(table.workspaceId, table.partnerId),
+      index('commission_lines_workspace_state_idx').on(table.workspaceId, table.state),
+      tenantPolicy('commission_lines_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Append-only state history for a commission line (REQ 32 — "state history").
+ * Every transition (including the initial `earned`) writes one row so the full
+ * carrier-paid / partner-paid trail is reconstructable. Immutable, so the
+ * runtime role gets only SELECT/INSERT, matching `audit_events`.
+ */
+export const commissionLineEvents = appSchema
+  .table(
+    'commission_line_events',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      commissionLineId: uuid('commission_line_id').notNull(),
+      actorId: uuid('actor_id').notNull(),
+      fromState: text('from_state'),
+      toState: text('to_state').notNull(),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('commission_line_events_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'commission_line_events_workspace_line_fk',
+        columns: [table.workspaceId, table.commissionLineId],
+        foreignColumns: [commissionLines.workspaceId, commissionLines.id],
+      }).onDelete('cascade'),
+      check(
+        'commission_line_events_from_state_check',
+        sql`${table.fromState} is null or ${table.fromState} in (${commissionStateList})`,
+      ),
+      check(
+        'commission_line_events_to_state_check',
+        sql`${table.toState} in (${commissionStateList})`,
+      ),
+      index('commission_line_events_workspace_line_created_idx').on(
+        table.workspaceId,
+        table.commissionLineId,
+        table.createdAt,
+      ),
+      tenantPolicy('commission_line_events_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+export const invoiceLines = appSchema
+  .table(
+    'invoice_lines',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      invoiceId: uuid('invoice_id').notNull(),
+      commissionLineId: uuid('commission_line_id').notNull(),
+      orderId: uuid('order_id').notNull(),
+      amountMinor: integer('amount_minor').notNull(),
+      currency: text('currency').notNull(),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('invoice_lines_workspace_id_id_unique').on(table.workspaceId, table.id),
+      // A commission line belongs to exactly one invoice (REQ 33).
+      unique('invoice_lines_workspace_commission_unique').on(
+        table.workspaceId,
+        table.commissionLineId,
+      ),
+      foreignKey({
+        name: 'invoice_lines_workspace_invoice_fk',
+        columns: [table.workspaceId, table.invoiceId],
+        foreignColumns: [invoices.workspaceId, invoices.id],
+      }).onDelete('cascade'),
+      foreignKey({
+        name: 'invoice_lines_workspace_commission_fk',
+        columns: [table.workspaceId, table.commissionLineId],
+        foreignColumns: [commissionLines.workspaceId, commissionLines.id],
+      }),
+      index('invoice_lines_workspace_invoice_idx').on(table.workspaceId, table.invoiceId),
+      tenantPolicy('invoice_lines_tenant_policy', table.workspaceId),
     ],
   )
   .enableRLS();
@@ -1273,6 +1529,11 @@ export const schema = {
   permissions,
   membershipPermissions,
   partners,
+  commissionRules,
+  invoices,
+  commissionLines,
+  commissionLineEvents,
+  invoiceLines,
   products,
   offerVersions,
   productAvailability,
@@ -1307,6 +1568,11 @@ export type MembershipRole = typeof membershipRoles.$inferSelect;
 export type Permission = typeof permissions.$inferSelect;
 export type MembershipPermission = typeof membershipPermissions.$inferSelect;
 export type Partner = typeof partners.$inferSelect;
+export type CommissionRule = typeof commissionRules.$inferSelect;
+export type Invoice = typeof invoices.$inferSelect;
+export type CommissionLine = typeof commissionLines.$inferSelect;
+export type CommissionLineEvent = typeof commissionLineEvents.$inferSelect;
+export type InvoiceLine = typeof invoiceLines.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type OfferVersion = typeof offerVersions.$inferSelect;
 export type ProductAvailability = typeof productAvailability.$inferSelect;

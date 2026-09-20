@@ -11,7 +11,11 @@ import {
   type CreateServiceCredentialRequest,
   type CreateServiceCredentialResponse,
   type CatalogueStatusResponse,
+  type ChangeCommissionStateRequest,
+  type ChangeCommissionStateResponse,
   type DeleteOrderReminderResponse,
+  type ListPartnersResponse,
+  type PartnerDetailResponse,
   type GetWorkspaceOrderResponse,
   type HealthResponse,
   type InviteStaffRequest,
@@ -275,4 +279,31 @@ export async function recordOrderPayment(
   body: RecordOrderPaymentRequest,
 ): Promise<RecordOrderPaymentResponse> {
   return client(accessToken).staff.recordOrderPayment(workspaceId, orderId, body);
+}
+
+// ---- Partners and commissions (T19). Directory and payout actions go through
+// the backend; the admin holds no commission rules of its own. ----
+
+export async function listPartners(
+  accessToken: string,
+  workspaceId: string,
+): Promise<ListPartnersResponse> {
+  return client(accessToken).staff.listPartners(workspaceId);
+}
+
+export async function getPartner(
+  accessToken: string,
+  workspaceId: string,
+  partnerId: string,
+): Promise<PartnerDetailResponse> {
+  return client(accessToken).staff.getPartner(workspaceId, partnerId);
+}
+
+export async function changeCommissionState(
+  accessToken: string,
+  workspaceId: string,
+  partnerId: string,
+  body: ChangeCommissionStateRequest,
+): Promise<ChangeCommissionStateResponse> {
+  return client(accessToken).staff.changeCommissionState(workspaceId, partnerId, body);
 }

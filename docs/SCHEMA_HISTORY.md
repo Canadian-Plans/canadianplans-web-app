@@ -551,3 +551,42 @@ Date: <date applied>
 
 <policies added/changed, or "none — see invariant N for why">
 ```
+
+## 0016_futuristic_marvel_zombies.sql
+
+Task: T19
+Date: 2026-09-20
+
+### Change
+
+Adds the partner commission model, all workspace-scoped:
+
+- `commission_rules` — workspace-scoped, time-bounded rules (`rule_type`
+  fixed|percentage, `value_minor`, `currency`, `is_test`, `effective_from`,
+  nullable `effective_to`). Immutable: `app_runtime` gets SELECT/INSERT only.
+- `commission_lines` — one earned commission per activated order, with
+  `rule_snapshot` (JSONB), `amount_minor`, `currency`, `state`
+  (earned|carrier_paid|partner_paid) and nullable `invoice_id`. The unique
+  `(workspace_id, order_id)` is what guarantees exactly one line per order
+  (invariant 10). `app_runtime` gets SELECT/INSERT/UPDATE (state + invoice link).
+- `commission_line_events` — append-only state history; SELECT/INSERT only.
+- `invoices` / `invoice_lines` — tables only in Phase A (no generation UI).
+  One invoice per `(workspace_id, partner_id, period_start, period_end)`;
+  sequential `invoice_number` per workspace; a commission line links to at most
+  one invoice (`unique (workspace_id, commission_line_id)` on `invoice_lines`).
+
+### Why
+
+PLATFORM_CONTEXT.md §4 item 10 and REQ 31–33: commission is earned exactly once
+on activation with the rule snapshotted; rule changes never alter existing lines;
+commission state is independent of order status; invoice generation is idempotent
+(the uniqueness keys enforce this at the database, not in application code).
+
+### RLS
+
+Every table uses the standard `FOR ALL` `app_runtime` tenant policy comparing
+`workspace_id` to `app.workspace_id` with a non-null `app.actor_id`, repeated in
+`WITH CHECK`, RLS enabled and forced. Grants are the immutability lever:
+commission_rules and commission_line_events are SELECT/INSERT only (like
+offer_versions/audit_events); commission_lines and invoices/invoice_lines add
+UPDATE where a later transition legitimately mutates state.

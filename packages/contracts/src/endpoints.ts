@@ -19,6 +19,8 @@ import {
 import {
   changeCommissionStateRequestSchema,
   changeCommissionStateResponseSchema,
+  listPartnersResponseSchema,
+  partnerDetailResponseSchema,
   partnerInvoiceRequestSchema,
   partnerInvoiceResponseSchema,
 } from './partners';
@@ -430,6 +432,24 @@ export const endpoints: readonly EndpointDef[] = [
   },
 
   // Staff — partners
+  {
+    operationId: 'listPartners',
+    method: 'GET',
+    path: '/api/v1/staff/workspaces/{workspaceId}/partners',
+    summary: 'List partners with referral codes and referred-order counts (Partners role).',
+    auth: 'staff',
+    successStatus: 200,
+    response: listPartnersResponseSchema,
+  },
+  {
+    operationId: 'getPartner',
+    method: 'GET',
+    path: '/api/v1/staff/workspaces/{workspaceId}/partners/{partnerId}',
+    summary: 'Read one partner with referred orders and commission lines (payout amounts require financial.read).',
+    auth: 'staff',
+    successStatus: 200,
+    response: partnerDetailResponseSchema,
+  },
   {
     operationId: 'changeCommissionState',
     method: 'POST',
