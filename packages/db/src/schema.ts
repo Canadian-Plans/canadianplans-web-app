@@ -1521,45 +1521,6 @@ export const trackingChallenges = appSchema
   )
   .enableRLS();
 
-export const schema = {
-  workspaces,
-  memberships,
-  roles,
-  membershipRoles,
-  permissions,
-  membershipPermissions,
-  partners,
-  commissionRules,
-  invoices,
-  commissionLines,
-  commissionLineEvents,
-  invoiceLines,
-  products,
-  offerVersions,
-  productAvailability,
-  catalogueSyncEvents,
-  catalogueSyncLeases,
-  catalogueSyncState,
-  leads,
-  draftGrants,
-  orders,
-  quotes,
-  orderStatusHistory,
-  orderAmendments,
-  orderChangeRequests,
-  orderNotes,
-  orderReminders,
-  idempotencyKeys,
-  outboxJobs,
-  outboxJobAlerts,
-  dispatchRecords,
-  paymentRecords,
-  serviceCredentials,
-  rateLimitBuckets,
-  auditEvents,
-  deletionIntents,
-  trackingChallenges,
-};
 
 export type Workspace = typeof workspaces.$inferSelect;
 export type Membership = typeof memberships.$inferSelect;
@@ -1784,9 +1745,297 @@ export const fileReviewEvents = appSchema
   )
   .enableRLS();
 
-  files,
-  fileRevisions,
-  fileReviewEvents,
 export type FileRecord = typeof files.$inferSelect;
 export type FileRevision = typeof fileRevisions.$inferSelect;
 export type FileReviewEvent = typeof fileReviewEvents.$inferSelect;
+
+
+/**
+ * One row per logical email send (T18/REQ 26-27). `messageId` is the stable
+ * logical job identifier used for provider-level dedupe, never regenerated on
+ * retry. `contactHash` is a keyed digest, never the raw address, so this table
+ * never carries an unhashed contact detail (§4 invariant 12).
+ */
+export const emailMessages = appSchema
+  .table(
+    'email_messages',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      messageId: uuid('message_id').notNull(),
+      template: text('template').notNull(),
+      messageClass: text('message_class').notNull(),
+      leadId: uuid('lead_id'),
+      orderId: uuid('order_id'),
+      contactHash: text('contact_hash').notNull(),
+      status: text('status').default('queued').notNull(),
+      providerId: text('provider_id'),
+      lastErrorCode: text('last_error_code'),
+      lastEventAt: timestamp('last_event_at', { withTimezone: true, mode: 'date' }),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+        .defaultNow()
+        .notNull(),
+    },
+    (table) => [
+      unique('email_messages_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('email_messages_workspace_message_id_unique').on(table.workspaceId, table.messageId),
+      check(
+        'email_messages_class_check',
+        sql`${table.messageClass} in ('transactional', 'marketing')`,
+      ),
+      check(
+        'email_messages_status_check',
+        sql`${table.status} in ('queued', 'sent', 'delivered', 'bounced', 'complained', 'failed', 'uncertain')`,
+      ),
+      foreignKey({
+        name: 'email_messages_workspace_lead_fk',
+        columns: [table.workspaceId, table.leadId],
+        foreignColumns: [leads.workspaceId, leads.id],
+      }),
+      foreignKey({
+        name: 'email_messages_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }),
+      index('email_messages_workspace_status_idx').on(table.workspaceId, table.status),
+      index('email_messages_workspace_contact_hash_idx').on(table.workspaceId, table.contactHash),
+      tenantPolicy('email_messages_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Deliverability suppression — hard bounce, complaint, or manual address
+ * block. Deliberately separate from `marketing_consents.marketingOptIn`
+ * (REQ 26): a marketing opt-out never lands here, and transactional sends
+ * only ever check this table, never the opt-out flag.
+ */
+export const emailSuppressions = appSchema
+  .table(
+    'email_suppressions',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      contactHash: text('contact_hash').notNull(),
+      reason: text('reason').notNull(),
+      sourceEventId: text('source_event_id'),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('email_suppressions_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('email_suppressions_workspace_contact_reason_unique').on(
+        table.workspaceId,
+        table.contactHash,
+        table.reason,
+      ),
+      check(
+        'email_suppressions_reason_check',
+        sql`${table.reason} in ('hard_bounce', 'complaint', 'manual')`,
+      ),
+      index('email_suppressions_workspace_contact_hash_idx').on(
+        table.workspaceId,
+        table.contactHash,
+      ),
+      tenantPolicy('email_suppressions_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Marketing opt-in state (CASL, REQ 34). Recorded per lead and/or order at
+ * capture with the consent version; unsubscribe writes a new row rather than
+ * mutating history so the capture record is preserved.
+ */
+export const marketingConsents = appSchema
+  .table(
+    'marketing_consents',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      leadId: uuid('lead_id'),
+      orderId: uuid('order_id'),
+      contactHash: text('contact_hash').notNull(),
+      marketingOptIn: boolean('marketing_opt_in').notNull(),
+      version: text('version').notNull(),
+      capturedAt: timestamp('captured_at', { withTimezone: true, mode: 'date' }).notNull(),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('marketing_consents_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'marketing_consents_workspace_lead_fk',
+        columns: [table.workspaceId, table.leadId],
+        foreignColumns: [leads.workspaceId, leads.id],
+      }),
+      foreignKey({
+        name: 'marketing_consents_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }),
+      check(
+        'marketing_consents_reference_check',
+        sql`${table.leadId} is not null or ${table.orderId} is not null`,
+      ),
+      index('marketing_consents_workspace_contact_hash_idx').on(
+        table.workspaceId,
+        table.contactHash,
+        table.capturedAt,
+      ),
+      tenantPolicy('marketing_consents_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Centrally stored follow-up due dates and eligibility (REQ 27). Staff can
+ * cancel a scheduled sequence; the runner re-checks lead/order state, consent
+ * and suppression immediately before sending, never trusting this row alone.
+ */
+export const followUpSchedules = appSchema
+  .table(
+    'follow_up_schedules',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      leadId: uuid('lead_id'),
+      orderId: uuid('order_id'),
+      template: text('template').notNull(),
+      dueAt: timestamp('due_at', { withTimezone: true, mode: 'date' }).notNull(),
+      status: text('status').default('scheduled').notNull(),
+      cancelledReason: text('cancelled_reason'),
+      cancelledByActorId: uuid('cancelled_by_actor_id'),
+      sentMessageId: uuid('sent_message_id'),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+        .defaultNow()
+        .notNull(),
+    },
+    (table) => [
+      unique('follow_up_schedules_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'follow_up_schedules_workspace_lead_fk',
+        columns: [table.workspaceId, table.leadId],
+        foreignColumns: [leads.workspaceId, leads.id],
+      }),
+      foreignKey({
+        name: 'follow_up_schedules_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }),
+      check(
+        'follow_up_schedules_reference_check',
+        sql`${table.leadId} is not null or ${table.orderId} is not null`,
+      ),
+      check(
+        'follow_up_schedules_status_check',
+        sql`${table.status} in ('scheduled', 'sent', 'cancelled', 'skipped')`,
+      ),
+      index('follow_up_schedules_workspace_due_idx').on(
+        table.workspaceId,
+        table.status,
+        table.dueAt,
+      ),
+      tenantPolicy('follow_up_schedules_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Verified provider delivery-event inbox (REQ 26). Deduplicated by provider
+ * event ID within a workspace/account so a replayed or duplicated webhook
+ * never double-applies a bounce/complaint suppression.
+ */
+export const emailProviderEvents = appSchema
+  .table(
+    'email_provider_events',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      providerEventId: text('provider_event_id').notNull(),
+      eventType: text('event_type').notNull(),
+      messageId: uuid('message_id'),
+      contactHash: text('contact_hash'),
+      receivedAt: timestamp('received_at', { withTimezone: true, mode: 'date' }).notNull(),
+      appliedAt: timestamp('applied_at', { withTimezone: true, mode: 'date' }),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('email_provider_events_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('email_provider_events_workspace_provider_event_unique').on(
+        table.workspaceId,
+        table.providerEventId,
+      ),
+      check(
+        'email_provider_events_type_check',
+        sql`${table.eventType} in ('delivered', 'bounce', 'complaint', 'reject')`,
+      ),
+      index('email_provider_events_workspace_message_idx').on(table.workspaceId, table.messageId),
+      tenantPolicy('email_provider_events_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+export type EmailMessageRow = typeof emailMessages.$inferSelect;
+export type EmailSuppressionRow = typeof emailSuppressions.$inferSelect;
+export type MarketingConsentRow = typeof marketingConsents.$inferSelect;
+export type FollowUpScheduleRow = typeof followUpSchedules.$inferSelect;
+export type EmailProviderEventRow = typeof emailProviderEvents.$inferSelect;
+
+export const schema = {
+  workspaces,
+  memberships,
+  roles,
+  membershipRoles,
+  permissions,
+  membershipPermissions,
+  partners,
+  commissionRules,
+  invoices,
+  commissionLines,
+  commissionLineEvents,
+  invoiceLines,
+  products,
+  offerVersions,
+  productAvailability,
+  catalogueSyncEvents,
+  catalogueSyncLeases,
+  catalogueSyncState,
+  leads,
+  draftGrants,
+  orders,
+  quotes,
+  orderStatusHistory,
+  orderAmendments,
+  orderChangeRequests,
+  orderNotes,
+  orderReminders,
+  idempotencyKeys,
+  outboxJobs,
+  outboxJobAlerts,
+  dispatchRecords,
+  paymentRecords,
+  serviceCredentials,
+  rateLimitBuckets,
+  auditEvents,
+  deletionIntents,
+  trackingChallenges,
+  files,
+  fileRevisions,
+  fileReviewEvents,
+  emailMessages,
+  emailSuppressions,
+  marketingConsents,
+  followUpSchedules,
+  emailProviderEvents,
+};

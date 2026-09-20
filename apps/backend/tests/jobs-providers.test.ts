@@ -3,6 +3,7 @@ import {
   JobHandlerError,
   OutboxRunner,
   type ClaimedJob,
+  type EmailEligibilityChecker,
   type JobOutcome,
   type OutboxStore,
 } from '@canadian-plans/jobs';
@@ -12,6 +13,11 @@ import { createOutboxJobHandlers, loadUmamiAnalyticsSink } from '../src/jobs/pro
 const WORKSPACE = '10000000-0000-4000-8000-000000000781';
 const ACTOR = '20000000-0000-4000-8000-000000000781';
 
+const alwaysEligible: EmailEligibilityChecker = {
+  checkTransactional: async () => ({ eligible: true }),
+  checkMarketing: async () => ({ eligible: true }),
+};
+
 function job(overrides: Partial<ClaimedJob> = {}): ClaimedJob {
   return {
     id: crypto.randomUUID(),
@@ -19,7 +25,12 @@ function job(overrides: Partial<ClaimedJob> = {}): ClaimedJob {
     jobType: 'order_acknowledgement_email',
     messageId: crypto.randomUUID(),
     payloadVersion: 1,
-    payload: { orderId: '22222222-2222-4222-8222-222222222222', reference: 'CP-ABC123' },
+    payload: {
+      orderId: '22222222-2222-4222-8222-222222222222',
+      reference: 'CP-ABC123',
+      toAddress: 'customer@example.com',
+      contactHash: 'hash-1',
+    },
     attempts: 1,
     leaseOwnerId: crypto.randomUUID(),
     ...overrides,
@@ -27,17 +38,20 @@ function job(overrides: Partial<ClaimedJob> = {}): ClaimedJob {
 }
 
 describe('outbox provider configuration', () => {
-  it('constructs the fakes only for an explicit non-production opt-in', async () => {
-    const handlers = createOutboxJobHandlers({ OUTBOX_ADAPTERS: 'fake', NODE_ENV: 'test' });
+  it('constructs the fake email adapter only for the explicit EMAIL_PROVIDER=fake opt-in outside production', async () => {
+    const handlers = createOutboxJobHandlers(
+      { EMAIL_PROVIDER: 'fake', OUTBOX_ADAPTERS: 'fake', NODE_ENV: 'test' },
+      alwaysEligible,
+    );
     const result = await handlers.get('order_acknowledgement_email')?.(job());
     expect(result?.status).toBe('completed');
   });
 
-  it('refuses the fakes on a production deployment even when explicitly requested', async () => {
-    const handlers = createOutboxJobHandlers({
-      OUTBOX_ADAPTERS: 'fake',
-      NODE_ENV: 'production',
-    });
+  it('refuses the fake email adapter on a production deployment even when explicitly requested', async () => {
+    const handlers = createOutboxJobHandlers(
+      { EMAIL_PROVIDER: 'fake', OUTBOX_ADAPTERS: 'fake', NODE_ENV: 'production' },
+      alwaysEligible,
+    );
     const handler = handlers.get('order_acknowledgement_email');
     expect(handler).toBeDefined();
     await expect(handler?.(job())).rejects.toMatchObject({
@@ -47,7 +61,7 @@ describe('outbox provider configuration', () => {
     } satisfies Partial<JobHandlerError>);
   });
 
-  it('records a permanent provider_not_configured failure when no provider is configured', async () => {
+  it('records a permanent provider_not_configured failure when EMAIL_PROVIDER is unset', async () => {
     const outcomes: JobOutcome[] = [];
     const claimed = job();
     const store: OutboxStore = {
@@ -57,10 +71,16 @@ describe('outbox provider configuration', () => {
         return 'recorded';
       },
     };
-    const runner = new OutboxRunner({ store, handlers: createOutboxJobHandlers({}) });
+    const runner = new OutboxRunner({ store, handlers: createOutboxJobHandlers({}, alwaysEligible) });
     await runner.run({ authorizedWorkspaceIds: [WORKSPACE], actorId: ACTOR });
 
     expect(outcomes).toEqual([{ status: 'failed', errorCode: 'provider_not_configured' }]);
+  });
+
+  it('fails closed when EMAIL_PROVIDER=ses is selected without the required sender env vars', () => {
+    expect(() =>
+      createOutboxJobHandlers({ EMAIL_PROVIDER: 'ses', OUTBOX_ADAPTERS: 'fake', NODE_ENV: 'test' }, alwaysEligible),
+    ).toThrow(/AWS_REGION/);
   });
 });
 

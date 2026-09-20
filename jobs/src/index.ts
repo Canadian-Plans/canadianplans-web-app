@@ -1,13 +1,47 @@
-import type { AnalyticsSink, EmailAdapter } from '@canadian-plans/adapters';
+import type { AnalyticsSink, EmailAdapter, EmailTemplate } from '@canadian-plans/adapters';
 import { z } from 'zod';
 
 export const outboxJobTypes = [
   'order_acknowledgement_email',
+  'order_status_email',
+  'order_awaiting_customer_email',
+  'order_dispatch_email',
+  'order_activation_email',
+  'abandoned_form_marketing_email',
   'analytics_order_submitted',
   'analytics_lead_saved',
   'deletion_ledger_publish',
 ] as const;
 export type OutboxJobType = (typeof outboxJobTypes)[number];
+
+const emailJobTypeToTemplate: Record<string, EmailTemplate> = {
+  order_acknowledgement_email: 'order_acknowledgement',
+  order_status_email: 'order_status',
+  order_awaiting_customer_email: 'order_awaiting_customer',
+  order_dispatch_email: 'order_dispatch',
+  order_activation_email: 'order_activation',
+  abandoned_form_marketing_email: 'abandoned_form_marketing',
+};
+
+/**
+ * Re-checked immediately before every send (REQ 27, IMPLEMENTATION_PLAN.md
+ * §9 "Email"): transactional sends only ever consult deliverability
+ * suppression; marketing sends additionally require recorded opt-in and
+ * re-verify the lead/order hasn't completed, cancelled, or been unsubscribed
+ * since the follow-up was scheduled.
+ */
+export interface EmailEligibilityChecker {
+  checkTransactional(input: {
+    workspaceId: string;
+    contactHash: string;
+  }): Promise<{ eligible: boolean; reason?: string }>;
+  checkMarketing(input: {
+    workspaceId: string;
+    contactHash: string;
+    leadId?: string;
+    orderId?: string;
+  }): Promise<{ eligible: boolean; reason?: string }>;
+}
 
 export interface ClaimedJob {
   id: string;
@@ -94,38 +128,119 @@ export function createFailingJobHandlerRegistry(errorCode: string): JobHandlerRe
 }
 
 const acknowledgementPayloadSchema = z
-  .object({ orderId: z.uuid(), reference: z.string().min(1).max(32) })
+  .object({ orderId: z.uuid(), reference: z.string().min(1).max(32), toAddress: z.string().email(), contactHash: z.string().min(1) })
   .strict();
 const orderSubmittedPayloadSchema = z.object({ orderId: z.uuid() }).strict();
 const leadSavedPayloadSchema = z.object({ leadId: z.uuid() }).strict();
+
+const orderEmailPayloadSchema = z
+  .object({
+    orderId: z.uuid(),
+    reference: z.string().min(1).max(32),
+    toAddress: z.string().email(),
+    contactHash: z.string().min(1),
+    variables: z.record(z.string(), z.string()).optional(),
+  })
+  .strict();
+
+const marketingPayloadSchema = z
+  .object({
+    leadId: z.uuid(),
+    toAddress: z.string().email(),
+    contactHash: z.string().min(1),
+    unsubscribeUrl: z.string().min(1),
+  })
+  .strict();
 
 function safeErrorCode(value: string, fallback: string): string {
   return /^[a-z0-9_]{1,64}$/.test(value) ? value : fallback;
 }
 
+function transactionalEmailHandler(
+  email: EmailAdapter,
+  eligibility: EmailEligibilityChecker,
+): JobHandler {
+  return async (job) => {
+    if (job.payloadVersion !== 1) throw new JobHandlerError('unsupported_payload_version', false);
+    const template = emailJobTypeToTemplate[job.jobType];
+    const parsed =
+      job.jobType === 'order_acknowledgement_email'
+        ? acknowledgementPayloadSchema.safeParse(job.payload)
+        : orderEmailPayloadSchema.safeParse(job.payload);
+    if (!parsed.success || !template) throw new JobHandlerError('invalid_job_payload', false);
+    const check = await eligibility.checkTransactional({
+      workspaceId: job.workspaceId,
+      contactHash: parsed.data.contactHash,
+    });
+    if (!check.eligible) {
+      // A hard-bounce/complaint/manual suppression blocks even transactional
+      // mail; a marketing-only opt-out never reaches this branch because
+      // `checkTransactional` never consults the marketing consent table.
+      return { status: 'completed', providerId: `skipped:${safeErrorCode(check.reason ?? 'suppressed', 'suppressed')}` };
+    }
+    const result = await email.send({
+      workspaceId: job.workspaceId,
+      messageId: job.messageId,
+      template,
+      toAddress: parsed.data.toAddress,
+      orderId: parsed.data.orderId,
+      reference: parsed.data.reference,
+      variables: 'variables' in parsed.data ? (parsed.data.variables as Record<string, string> | undefined) : undefined,
+    });
+    return result.status === 'delivered'
+      ? { status: 'completed', providerId: result.providerId }
+      : { status: 'uncertain', errorCode: safeErrorCode(result.errorCode, 'provider_uncertain') };
+  };
+}
+
 /**
- * The complete handler registry (T15 + T20). Conversions are the two analytics
- * events plus the acknowledgement email. Commissions are intentionally not an
- * outbox handler — they are internal activation writes.
+ * The complete handler registry (T15 + T18 + T20). Email jobs consult
+ * suppression/consent eligibility before sending; analytics conversions are
+ * captured too. Commissions and the deletion-ledger publish are composed in the
+ * backend provider layer, not here.
  */
 export function createJobHandlerRegistry(dependencies: {
   email: EmailAdapter;
   analytics: AnalyticsSink;
+  eligibility: EmailEligibilityChecker;
 }): JobHandlerRegistry {
   return new Map<string, JobHandler>([
+    ['order_acknowledgement_email', transactionalEmailHandler(dependencies.email, dependencies.eligibility)],
+    ['order_status_email', transactionalEmailHandler(dependencies.email, dependencies.eligibility)],
     [
-      'order_acknowledgement_email',
+      'order_awaiting_customer_email',
+      transactionalEmailHandler(dependencies.email, dependencies.eligibility),
+    ],
+    ['order_dispatch_email', transactionalEmailHandler(dependencies.email, dependencies.eligibility)],
+    [
+      'order_activation_email',
+      transactionalEmailHandler(dependencies.email, dependencies.eligibility),
+    ],
+    [
+      'abandoned_form_marketing_email',
       async (job) => {
         if (job.payloadVersion !== 1)
           throw new JobHandlerError('unsupported_payload_version', false);
-        const parsed = acknowledgementPayloadSchema.safeParse(job.payload);
+        const parsed = marketingPayloadSchema.safeParse(job.payload);
         if (!parsed.success) throw new JobHandlerError('invalid_job_payload', false);
+        const check = await dependencies.eligibility.checkMarketing({
+          workspaceId: job.workspaceId,
+          contactHash: parsed.data.contactHash,
+          leadId: parsed.data.leadId,
+        });
+        if (!check.eligible) {
+          return {
+            status: 'completed',
+            providerId: `skipped:${safeErrorCode(check.reason ?? 'ineligible', 'ineligible')}`,
+          };
+        }
         const result = await dependencies.email.send({
           workspaceId: job.workspaceId,
           messageId: job.messageId,
-          template: 'order_acknowledgement',
-          orderId: parsed.data.orderId,
-          reference: parsed.data.reference,
+          template: 'abandoned_form_marketing',
+          toAddress: parsed.data.toAddress,
+          leadId: parsed.data.leadId,
+          unsubscribeUrl: parsed.data.unsubscribeUrl,
         });
         return result.status === 'delivered'
           ? { status: 'completed', providerId: result.providerId }

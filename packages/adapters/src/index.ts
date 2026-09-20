@@ -12,12 +12,22 @@ export {
   analyticsEventNames,
   FakeAnalyticsSink,
   FakeEmailAdapter,
+  FakeSuppressionLedgerPublisher,
+  SesEmailAdapter,
+  emailTemplates,
+  messageClassForTemplate,
+  transactionalEmailTemplates,
   type AnalyticsEvent,
   type AnalyticsEventName,
   type AnalyticsSink,
   type EmailAdapter,
   type EmailMessage,
+  type EmailMessageClass,
+  type EmailTemplate,
   type ProviderDeliveryResult,
+  type SenderIdentity,
+  type SuppressionLedgerEvent,
+  type SuppressionLedgerPublisher,
 } from './messaging.js';
 
 export {

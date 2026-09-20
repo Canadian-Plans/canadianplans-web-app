@@ -100,6 +100,13 @@ future public actions must bind their own expected action explicitly.
 - `SITE_1_SANITY_PREVIEW_TOKEN` — site-1-scoped, read-only viewer token for editor draft preview only; never `NEXT_PUBLIC_*`
 - `SITE_1_REVALIDATE_SECRET` — site-1 server-only bearer secret accepted only by `/api/revalidate/catalogue`; must match the registry entry's `sanity.revalidateSecret`
 
+## Email (T18)
+
+- `EMAIL_PROVIDER` — backend-only, explicit selection: `fake` or `ses`. There is no third value and no implicit default; an unset or unrecognised value fails every email job closed with `provider_not_configured` rather than guessing. `fake` is only honoured outside `NODE_ENV=production`. Set to `fake` in CI and preview deployments; `ses` is the presumed live default, gated on OPEN_INPUTS #23 (production access, verified sender domain, quota) — see the T18 evidence/BLOCKERS note before flipping this in a real deployment.
+- `EMAIL_CONTACT_HASH_SECRET` — backend-only, at least 16 characters. Keys the HMAC used to match a contact against suppression/consent records without storing the raw address; rotating it invalidates existing unsubscribe links and orphans old suppression matches, so treat it as a durable secret, not a rotate-on-a-whim one.
+- `EMAIL_WEBHOOK_SHARED_SECRET` — backend-only shared secret gating `/api/v1/email/webhook/events`. Interim verification only: SES/SNS notifications should move to the provider's supported signed transport once OPEN_INPUTS #23 is resolved (see BLOCKERS).
+- `MARKETING_CONSENT_VERSION` — the consent-version string recorded when a customer unsubscribes via the no-login link; defaults to `"1"` if unset.
+
 ## AWS SES
 
 - `AWS_REGION`
@@ -107,6 +114,8 @@ future public actions must bind their own expected action explicitly.
 - `AWS_SECRET_ACCESS_KEY`
 - `SES_FROM_EMAIL`
 - `SES_FROM_NAME`
+- `SES_REPLY_TO_EMAIL` — optional
+- `SES_CONFIGURATION_SET_NAME` — optional; required in practice to receive delivery/bounce/complaint events at `/api/v1/email/webhook/events`
 
 ## Observability and analytics
 

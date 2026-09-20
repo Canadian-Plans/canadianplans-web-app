@@ -127,6 +127,13 @@
       "when": 1789910810194,
       "tag": "0017_worthless_synch",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1789926717324,
+      "tag": "0018_lowly_dragon_lord",
+      "breakpoints": true
     }
   ]
 }

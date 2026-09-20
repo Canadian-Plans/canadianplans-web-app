@@ -353,7 +353,11 @@ const analyticsSink = new FakeAnalyticsSink();
 let armEmailFailure = false;
 
 function buildOutboxHandlers(): JobHandlerRegistry {
-  const real = createJobHandlerRegistry({ email: emailAdapter, analytics: analyticsSink });
+  const real = createJobHandlerRegistry({
+    email: emailAdapter,
+    analytics: analyticsSink,
+    eligibility: { checkTransactional: async () => ({ eligible: true }), checkMarketing: async () => ({ eligible: true }) },
+  });
   const realEmail = real.get('order_acknowledgement_email');
   if (!realEmail) throw new Error('email handler missing from registry');
   const emailWithSeam: JobHandler = async (job, signal) => {

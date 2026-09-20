@@ -23,6 +23,7 @@ import {
 } from '@canadian-plans/contracts';
 
 import { hashDraftGrantToken } from '../leads/token.js';
+import { hashContact, normalizeEmail, requireContactHashSecret } from '../email/hash.js';
 
 type OrderDatabase = Pick<import('@canadian-plans/db').DatabaseClient, 'withTenantTx'>;
 const defaultDatabase: OrderDatabase = { withTenantTx };
@@ -114,6 +115,7 @@ async function grantForLead(
       expiresAt: draftGrants.expiresAt,
       revokedAt: draftGrants.revokedAt,
       leadStatus: leads.status,
+      leadEmail: leads.email,
     })
     .from(draftGrants)
     .innerJoin(
@@ -377,15 +379,28 @@ async function submitInTransaction(
     orderVersion: order.version,
     reason: 'order_submitted',
   });
+  // Acknowledgement email only queues when the lead recorded a contact
+  // address; there is nothing to send otherwise. `grant.leadEmail` was read
+  // earlier in this same transaction, so it reflects the submitted lead.
+  const acknowledgementJob = grant.leadEmail
+    ? [
+        {
+          workspaceId: input.workspaceId,
+          jobType: 'order_acknowledgement_email',
+          dedupeKey: order.id,
+          payload: {
+            orderId: order.id,
+            reference: order.reference,
+            toAddress: grant.leadEmail,
+            contactHash: hashContact(normalizeEmail(grant.leadEmail), requireContactHashSecret()),
+          },
+          availableAt: input.now,
+          updatedAt: input.now,
+        },
+      ]
+    : [];
   await tx.insert(outboxJobs).values([
-    {
-      workspaceId: input.workspaceId,
-      jobType: 'order_acknowledgement_email',
-      dedupeKey: order.id,
-      payload: { orderId: order.id, reference: order.reference },
-      availableAt: input.now,
-      updatedAt: input.now,
-    },
+    ...acknowledgementJob,
     {
       workspaceId: input.workspaceId,
       jobType: 'analytics_order_submitted',
