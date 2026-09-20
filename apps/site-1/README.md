@@ -18,6 +18,8 @@ no domain or brand has been invented.
 origin, or HTTP localhost for development) and `SITE_1_SERVICE_CREDENTIAL` lazily.
 Never prefix these names with NEXT_PUBLIC, export them from public configuration,
 or pass their values into React props or Studio. Placeholder pages need no secrets.
+In production `SITE_1_BACKEND_URL` points at the Railway-hosted backend
+(`https://backend-production-ebbb6.up.railway.app`).
 
 `src/lib/backendClient.ts` is a server-only fetch transport until the shared typed
 client exists. It attaches scoped Bearer authorization and a fresh request ID,
@@ -86,39 +88,3 @@ Create the disposable database once (the harness migrates and seeds it):
 
 ```bash
 createdb canadian_plans_e2e_test
-```
-
-The tests cover the happy path to a reference, a dropped order response retried
-with the same key returning the same reference, a retryable failure that must
-never show success, and a quote failure that offers a callback without creating
-an order. Override the defaults with `E2E_TEST_DATABASE_URL`,
-`E2E_DATABASE_URL`, `E2E_SERVICE_CREDENTIAL` or `E2E_HARNESS_URL` if needed.
-These tests exercise the form, not real pricing: the fixtures are TEST-only and
-authorize no real publishing, dispatch, activation or payout.
-
-## Verification
-
-- `pnpm --filter site-1 test`: transport success and failure cases.
-- `pnpm --filter site-1 build`: credential-free production build.
-- `pnpm --filter site-1 exec playwright test`: desktop/mobile journeys against the
-  default analytics-disabled build on port 3101.
-- `pnpm --filter site-1 test:security`: deliberately fails a client import of
-  server configuration, then builds with a random synthetic credential and tests
-  both enabled and disabled Umami configurations. Scans browser assets and rendered
-  payloads for leaks and checks live HTML in Playwright. The analytics request is
-  intercepted locally; no real analytics or backend service is contacted.
-
-Install Chromium with `pnpm --filter site-1 exec playwright install chromium`.
-The root `test:e2e` command and CI include the security/browser suite. Run it
-without another site-1 build or server using the same output directory. It leaves
-an analytics-disabled build and removes its temporary boundary probe source.
-
-Sanity 5.29.0 satisfies next-sanity 13.3.4's peer range and the repository Node
-22.19.0 baseline. The scoped `@sanity/cli>skills` override pins 1.5.7 within the
-CLI's declared range: newer skills releases require Node 22.20.0. Revisit this
-override with a deliberate runtime upgrade. The pinned Sanity/client/styling
-dependencies support the official Studio integration; server-only enforces the
-credential boundary.
-
-References: [official Studio setup](https://www.sanity.io/docs/nextjs/embedding-sanity-studio-in-nextjs)
-and [Umami tracker configuration](https://docs.umami.is/docs/tracker-configuration).
