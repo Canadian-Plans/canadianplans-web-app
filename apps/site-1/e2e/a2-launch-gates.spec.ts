@@ -332,10 +332,11 @@ test('the full journey reaches admin: browser → lead → quote → order → s
   expect(detail.ok, `order detail failed (${detail.status})`).toBe(true);
   await note(info, '01-staff-order-detail', await detail.clone().json());
 
-  // The outbox delivers the acknowledgement + analytics jobs; nothing fails.
+  // The outbox delivers the lead-saved, acknowledgement and analytics jobs;
+  // nothing fails.
   const summary = outboxCounts(await control('/__e2e__/run-outbox'));
   expect(summary.failed).toBe(0);
-  expect(summary.completed).toBe(2);
+  expect(summary.completed).toBe(3);
   const jobs = await staffJobs();
   expect(jobs.some((job) => job.status === 'failed')).toBe(false);
   await note(info, '01-outbox-summary', summary);
@@ -516,7 +517,7 @@ test('a failed acknowledgement email leaves the order intact and the job failed,
   await control('/__e2e__/arm-email-failure');
   const failedRun = outboxCounts(await control('/__e2e__/run-outbox'));
   expect(failedRun.failed, 'the email job failed').toBe(1);
-  expect(failedRun.completed, 'the analytics job still delivered').toBe(1);
+  expect(failedRun.completed, 'the analytics jobs still delivered').toBe(2);
   await note(info, '06-outbox-run-with-email-failure', failedRun);
 
   // The order is untouched by the delivery failure.
