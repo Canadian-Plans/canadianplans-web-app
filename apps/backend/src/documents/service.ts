@@ -235,7 +235,11 @@ export class DocumentService {
       });
       if (current?.status === 'available') return { status: 'available', file: current };
       if (current?.status === 'rejected') {
-        return { status: 'rejected', file: current, reason: rejectionFromReason(current.rejectReason) };
+        return {
+          status: 'rejected',
+          file: current,
+          reason: rejectionFromReason(current.rejectReason),
+        };
       }
       return { status: 'in_progress' };
     }

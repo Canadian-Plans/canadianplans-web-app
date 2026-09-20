@@ -28,16 +28,10 @@ describe('selectEffectiveRule', () => {
   it('returns undefined when no rule window contains the instant', () => {
     expect(selectEffectiveRule([], at)).toBeUndefined();
     expect(
-      selectEffectiveRule(
-        [rule({ effectiveFrom: new Date('2026-10-01T00:00:00.000Z') })],
-        at,
-      ),
+      selectEffectiveRule([rule({ effectiveFrom: new Date('2026-10-01T00:00:00.000Z') })], at),
     ).toBeUndefined();
     expect(
-      selectEffectiveRule(
-        [rule({ effectiveTo: new Date('2026-09-01T00:00:00.000Z') })],
-        at,
-      ),
+      selectEffectiveRule([rule({ effectiveTo: new Date('2026-09-01T00:00:00.000Z') })], at),
     ).toBeUndefined();
   });
 
@@ -103,9 +97,7 @@ describe('ruleAllowedForLiveRecords', () => {
 
 describe('buildRuleSnapshot', () => {
   it('captures the rule terms as ISO strings for the commission line', () => {
-    const snapshot = buildRuleSnapshot(
-      rule({ effectiveTo: new Date('2027-01-01T00:00:00.000Z') }),
-    );
+    const snapshot = buildRuleSnapshot(rule({ effectiveTo: new Date('2027-01-01T00:00:00.000Z') }));
     expect(snapshot).toEqual({
       ruleId: '00000000-0000-4000-8000-000000000001',
       ruleType: 'fixed',

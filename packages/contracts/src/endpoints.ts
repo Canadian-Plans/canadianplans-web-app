@@ -450,7 +450,8 @@ export const endpoints: readonly EndpointDef[] = [
     operationId: 'getPartner',
     method: 'GET',
     path: '/api/v1/staff/workspaces/{workspaceId}/partners/{partnerId}',
-    summary: 'Read one partner with referred orders and commission lines (payout amounts require financial.read).',
+    summary:
+      'Read one partner with referred orders and commission lines (payout amounts require financial.read).',
     auth: 'staff',
     successStatus: 200,
     response: partnerDetailResponseSchema,

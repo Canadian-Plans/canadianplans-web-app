@@ -19,9 +19,7 @@ const forwardTransitions: Readonly<Record<CommissionState, CommissionState | und
 };
 
 export type CommissionStateTransition =
-  | { status: 'ok' }
-  | { status: 'partner_paid_disabled' }
-  | { status: 'invalid_transition' };
+  { status: 'ok' } | { status: 'partner_paid_disabled' } | { status: 'invalid_transition' };
 
 /**
  * Whether a Finance action may move a commission line from `from` to `to`.

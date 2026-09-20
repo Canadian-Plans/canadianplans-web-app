@@ -2,7 +2,16 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import type { StaffFile } from '@canadian-plans/contracts';
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input } from '@canadian-plans/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Input,
+} from '@canadian-plans/ui';
 
 import { BackendError, createFileDownloadLink, listOrderFiles, reviewFile } from '../../lib/api';
 
@@ -42,7 +51,9 @@ export function OrderDocuments({
       setFiles(result.files);
     } catch (error) {
       setMessage(
-        error instanceof BackendError ? `Could not load documents (${error.code}).` : 'Could not load documents.',
+        error instanceof BackendError
+          ? `Could not load documents (${error.code}).`
+          : 'Could not load documents.',
       );
     }
   }, [accessToken, workspaceId, orderId]);
@@ -77,7 +88,10 @@ export function OrderDocuments({
       const link = await createFileDownloadLink(accessToken, workspaceId, file.id);
       window.open(link.url, '_blank', 'noopener,noreferrer');
     } catch (error) {
-      if (error instanceof BackendError && (error.code === 'download_denied' || error.status === 403)) {
+      if (
+        error instanceof BackendError &&
+        (error.code === 'download_denied' || error.status === 403)
+      ) {
         setMessage('You do not have permission to download documents.');
       } else {
         setMessage(
@@ -119,7 +133,11 @@ export function OrderDocuments({
                   </Badge>
                   <span className="text-xs text-muted-foreground">rev {file.revision}</span>
                   {file.latestReview ? (
-                    <Badge variant={file.latestReview.decision === 'approved' ? 'secondary' : 'destructive'}>
+                    <Badge
+                      variant={
+                        file.latestReview.decision === 'approved' ? 'secondary' : 'destructive'
+                      }
+                    >
                       {file.latestReview.decision}
                     </Badge>
                   ) : null}
@@ -128,7 +146,9 @@ export function OrderDocuments({
                   <p className="mt-1 text-xs text-destructive">Verification: {file.rejectReason}</p>
                 ) : null}
                 {file.latestReview?.note ? (
-                  <p className="mt-1 text-xs text-muted-foreground">Note: {file.latestReview.note}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Note: {file.latestReview.note}
+                  </p>
                 ) : null}
                 <div className="mt-2 flex flex-col gap-2">
                   <Input

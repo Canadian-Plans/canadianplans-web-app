@@ -1412,14 +1412,16 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         sendDomainError(res, req.id, 'feature_not_ready', 409);
         return;
       }
-      const outcome: CommissionStateOutcome = await dependencies.partnerStore.changeCommissionState({
-        workspaceId: workspaceId.data,
-        actorId: actor.actorId,
-        requestId: req.id,
-        partnerId: partnerId.data,
-        commissionId: body.data.commissionId,
-        toState: body.data.toState,
-      });
+      const outcome: CommissionStateOutcome = await dependencies.partnerStore.changeCommissionState(
+        {
+          workspaceId: workspaceId.data,
+          actorId: actor.actorId,
+          requestId: req.id,
+          partnerId: partnerId.data,
+          commissionId: body.data.commissionId,
+          toState: body.data.toState,
+        },
+      );
       switch (outcome.status) {
         case 'updated':
           res.json({

@@ -356,7 +356,10 @@ function buildOutboxHandlers(): JobHandlerRegistry {
   const real = createJobHandlerRegistry({
     email: emailAdapter,
     analytics: analyticsSink,
-    eligibility: { checkTransactional: async () => ({ eligible: true }), checkMarketing: async () => ({ eligible: true }) },
+    eligibility: {
+      checkTransactional: async () => ({ eligible: true }),
+      checkMarketing: async () => ({ eligible: true }),
+    },
   });
   const realEmail = real.get('order_acknowledgement_email');
   if (!realEmail) throw new Error('email handler missing from registry');

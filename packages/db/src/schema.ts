@@ -1521,7 +1521,6 @@ export const trackingChallenges = appSchema
   )
   .enableRLS();
 
-
 export type Workspace = typeof workspaces.$inferSelect;
 export type Membership = typeof memberships.$inferSelect;
 export type Role = typeof roles.$inferSelect;
@@ -1557,7 +1556,6 @@ export type PaymentRecord = typeof paymentRecords.$inferSelect;
 export type ServiceCredential = typeof serviceCredentials.$inferSelect;
 export type RateLimitBucket = typeof rateLimitBuckets.$inferSelect;
 export type AuditEvent = typeof auditEvents.$inferSelect;
-
 
 /**
  * Uploaded document metadata (T17; REQ 22-25; IMPLEMENTATION_PLAN.md §8). One
@@ -1694,7 +1692,11 @@ export const fileRevisions = appSchema
         foreignColumns: [files.workspaceId, files.id],
       }).onDelete('cascade'),
       check('file_revisions_revision_positive_check', sql`${table.revision} > 0`),
-      index('file_revisions_workspace_file_idx').on(table.workspaceId, table.fileId, table.revision),
+      index('file_revisions_workspace_file_idx').on(
+        table.workspaceId,
+        table.fileId,
+        table.revision,
+      ),
       tenantPolicy('file_revisions_tenant_policy', table.workspaceId),
     ],
   )
@@ -1748,7 +1750,6 @@ export const fileReviewEvents = appSchema
 export type FileRecord = typeof files.$inferSelect;
 export type FileRevision = typeof fileRevisions.$inferSelect;
 export type FileReviewEvent = typeof fileReviewEvents.$inferSelect;
-
 
 /**
  * One row per logical email send (T18/REQ 26-27). `messageId` is the stable

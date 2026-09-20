@@ -311,7 +311,11 @@ describe('outbox runner', () => {
         return { eligible: true };
       },
     };
-    const registry = createJobHandlerRegistry({ email, analytics: new FakeAnalyticsSink(), eligibility });
+    const registry = createJobHandlerRegistry({
+      email,
+      analytics: new FakeAnalyticsSink(),
+      eligibility,
+    });
     const suppressedJob = job({
       jobType: 'order_dispatch_email',
       payload: {
@@ -336,7 +340,11 @@ describe('outbox runner', () => {
       checkTransactional: async () => ({ eligible: true }),
       checkMarketing: async () => ({ eligible: false, reason: 'opted_out' }),
     };
-    const registry = createJobHandlerRegistry({ email, analytics: new FakeAnalyticsSink(), eligibility });
+    const registry = createJobHandlerRegistry({
+      email,
+      analytics: new FakeAnalyticsSink(),
+      eligibility,
+    });
     const transactionalJob = job({
       jobType: 'order_activation_email',
       payload: {
@@ -358,7 +366,11 @@ describe('outbox runner', () => {
       checkTransactional: async () => ({ eligible: true }),
       checkMarketing: async () => ({ eligible: false, reason: 'opted_out' }),
     };
-    const registry = createJobHandlerRegistry({ email, analytics: new FakeAnalyticsSink(), eligibility });
+    const registry = createJobHandlerRegistry({
+      email,
+      analytics: new FakeAnalyticsSink(),
+      eligibility,
+    });
     const marketingJob = job({
       jobType: 'abandoned_form_marketing_email',
       payload: {
@@ -380,7 +392,11 @@ describe('outbox runner', () => {
       checkTransactional: async () => ({ eligible: true }),
       checkMarketing: async () => ({ eligible: true }),
     };
-    const registry = createJobHandlerRegistry({ email, analytics: new FakeAnalyticsSink(), eligibility });
+    const registry = createJobHandlerRegistry({
+      email,
+      analytics: new FakeAnalyticsSink(),
+      eligibility,
+    });
     const badVersion = job({ jobType: 'order_status_email', payloadVersion: 2 });
     await expect(registry.get('order_status_email')?.(badVersion)).rejects.toThrow(JobHandlerError);
 

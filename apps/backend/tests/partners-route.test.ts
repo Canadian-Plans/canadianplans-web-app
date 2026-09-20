@@ -147,7 +147,12 @@ class MemoryPartnerStore implements PartnerStore {
         updatedAt: NOW,
       },
       history: [
-        { id: '80000000-0000-4000-8000-0000000008d1', fromState: null, toState: 'earned', createdAt: NOW },
+        {
+          id: '80000000-0000-4000-8000-0000000008d1',
+          fromState: null,
+          toState: 'earned',
+          createdAt: NOW,
+        },
         {
           id: '80000000-0000-4000-8000-0000000008d2',
           fromState: 'earned',
@@ -281,7 +286,9 @@ describe('commission state actions (T19)', () => {
     withRoles('partners');
     const response = await markState('carrier_paid', 'aal2');
     expect(response.status).toBe(403);
-    expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe('permission_denied');
+    expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe(
+      'permission_denied',
+    );
     expect(partnerStore.stateCalls).toEqual([]);
   });
 
@@ -315,6 +322,8 @@ describe('commission state actions (T19)', () => {
     partnerStore.commissionState = 'carrier_paid';
     const response = await markState('partner_paid', 'aal2');
     expect(response.status).toBe(409);
-    expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe('feature_not_ready');
+    expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe(
+      'feature_not_ready',
+    );
   });
 });

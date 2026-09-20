@@ -87,9 +87,7 @@ export function ruleAllowedForLiveRecords(
 }
 
 export type CommissionConfigIncompleteReason =
-  | 'no_effective_rule'
-  | 'unsupported_rule_type'
-  | 'test_rule_barred_from_live';
+  'no_effective_rule' | 'unsupported_rule_type' | 'test_rule_barred_from_live';
 
 export type CommissionPlan =
   /** A new line should be created with these terms. */

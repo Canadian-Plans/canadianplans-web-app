@@ -111,7 +111,10 @@ export function PartnerDetail({
           </CardDescription>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground">
-          <Link className="underline-offset-2 hover:underline" href={`/w/${workspaceSlug}/partners`}>
+          <Link
+            className="underline-offset-2 hover:underline"
+            href={`/w/${workspaceSlug}/partners`}
+          >
             ← All partners
           </Link>
         </CardContent>
@@ -208,9 +211,7 @@ export function PartnerDetail({
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary">
-                        {COMMISSION_STATE_LABELS[commission.state]}
-                      </Badge>
+                      <Badge variant="secondary">{COMMISSION_STATE_LABELS[commission.state]}</Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       {payoutAmount(commission, detail.canViewPayouts)}
@@ -227,7 +228,12 @@ export function PartnerDetail({
                           Mark carrier paid
                         </Button>
                       ) : commission.state === 'carrier_paid' ? (
-                        <Button size="sm" variant="outline" disabled title={detail.payoutDisabledReason}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled
+                          title={detail.payoutDisabledReason}
+                        >
                           Mark partner paid
                         </Button>
                       ) : null}

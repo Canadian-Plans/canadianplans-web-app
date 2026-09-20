@@ -122,7 +122,9 @@ function requireEnv(env: NodeJS.ProcessEnv, name: string): string {
  */
 export function createOutboxJobHandlers(
   env: NodeJS.ProcessEnv = process.env,
-  eligibility: EmailEligibilityChecker = new DatabaseEmailStore(new FakeSuppressionLedgerPublisher()),
+  eligibility: EmailEligibilityChecker = new DatabaseEmailStore(
+    new FakeSuppressionLedgerPublisher(),
+  ),
 ): JobHandlerRegistry {
   const explicitFake = env.OUTBOX_ADAPTERS === FAKE_OUTBOX_ADAPTERS_VALUE;
   const allowFakes = explicitFake && env.NODE_ENV !== 'production';

@@ -60,7 +60,10 @@ export class DatabaseDocumentContextResolver implements DocumentContextResolver 
           .limit(1);
         if (!order) return { found: false };
         const parsed = snapshotChecklistSchema.safeParse(order.snapshot);
-        return { found: true, allowed: parsed.success ? parsed.data.documentChecklist ?? [] : [] };
+        return {
+          found: true,
+          allowed: parsed.success ? (parsed.data.documentChecklist ?? []) : [],
+        };
       },
     );
   }

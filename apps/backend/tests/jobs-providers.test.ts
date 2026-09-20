@@ -71,7 +71,10 @@ describe('outbox provider configuration', () => {
         return 'recorded';
       },
     };
-    const runner = new OutboxRunner({ store, handlers: createOutboxJobHandlers({}, alwaysEligible) });
+    const runner = new OutboxRunner({
+      store,
+      handlers: createOutboxJobHandlers({}, alwaysEligible),
+    });
     await runner.run({ authorizedWorkspaceIds: [WORKSPACE], actorId: ACTOR });
 
     expect(outcomes).toEqual([{ status: 'failed', errorCode: 'provider_not_configured' }]);
@@ -79,7 +82,10 @@ describe('outbox provider configuration', () => {
 
   it('fails closed when EMAIL_PROVIDER=ses is selected without the required sender env vars', () => {
     expect(() =>
-      createOutboxJobHandlers({ EMAIL_PROVIDER: 'ses', OUTBOX_ADAPTERS: 'fake', NODE_ENV: 'test' }, alwaysEligible),
+      createOutboxJobHandlers(
+        { EMAIL_PROVIDER: 'ses', OUTBOX_ADAPTERS: 'fake', NODE_ENV: 'test' },
+        alwaysEligible,
+      ),
     ).toThrow(/AWS_REGION/);
   });
 });

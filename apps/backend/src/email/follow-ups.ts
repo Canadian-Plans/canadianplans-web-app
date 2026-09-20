@@ -16,23 +16,13 @@ export type FollowUpOutcome = 'sent' | 'skipped_ineligible' | 'skipped_state' | 
 /** Minimal read of the state a follow-up must be re-checked against (REQ 27). */
 export interface LeadOrderStateReader {
   /** Returns undefined only if the lead genuinely no longer exists. */
-  leadState(
-    workspaceId: string,
-    leadId: string,
-  ): Promise<{ status: string } | undefined>;
-  orderState(
-    workspaceId: string,
-    orderId: string,
-  ): Promise<{ status: string } | undefined>;
+  leadState(workspaceId: string, leadId: string): Promise<{ status: string } | undefined>;
+  orderState(workspaceId: string, orderId: string): Promise<{ status: string } | undefined>;
 }
 
 /** Terminal lead/order states after which a follow-up must never send. */
 const terminalLeadStatuses = new Set(['converted', 'abandoned', 'suppressed']);
-const terminalOrderStatuses = new Set([
-  'activated',
-  'cancelled',
-  'archived',
-]);
+const terminalOrderStatuses = new Set(['activated', 'cancelled', 'archived']);
 
 export interface FollowUpScheduleStore {
   listDue(workspaceId: string, now: Date): Promise<DueFollowUp[]>;

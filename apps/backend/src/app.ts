@@ -107,7 +107,10 @@ export function createApp(options: CreateAppOptions = {}): Express {
   app.use('/api/v1', createOrderRouter(websiteDependencies));
   app.use('/api/v1/website', createWebsiteRouter(websiteDependencies));
   app.use('/api/v1/website', createTrackingRouter(websiteDependencies));
-  app.use('/api/v1/email', createEmailRouter(options.email ?? createDefaultEmailRouteDependencies()));
+  app.use(
+    '/api/v1/email',
+    createEmailRouter(options.email ?? createDefaultEmailRouteDependencies()),
+  );
   app.use(invalidBodyError);
 
   return app;

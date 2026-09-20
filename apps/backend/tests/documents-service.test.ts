@@ -195,7 +195,11 @@ describe('DocumentService — upload/verify/attach', () => {
     // Attacker swaps staging bytes AFTER the check.
     ctx.r2.overwriteStaging(staging, HTML);
 
-    const link = await ctx.service.issueDownload({ workspaceId: WORKSPACE, actorId: ACTOR, fileId });
+    const link = await ctx.service.issueDownload({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      fileId,
+    });
     expect(link.status).toBe('issued');
     const served = ctx.r2.getObject(finalized.file.objectKey ?? '');
     // What staff receive is the verified candidate, not the swapped staging bytes.
@@ -284,7 +288,11 @@ describe('DocumentService — download and permission scoping', () => {
       checksumSha256: sha256Hex(PDF),
       ownedLeadId: LEAD,
     });
-    const link = await ctx.service.issueDownload({ workspaceId: WORKSPACE, actorId: ACTOR, fileId });
+    const link = await ctx.service.issueDownload({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      fileId,
+    });
     if (link.status !== 'issued') throw new Error('expected issued');
     const ttlMs = link.expiresAt.getTime() - before;
     // ~120s (link expiry is ultimately enforced by R2 on the presigned URL).
@@ -305,8 +313,17 @@ describe('DocumentService — download and permission scoping', () => {
       checksumSha256: sha256Hex(PDF),
       ownedLeadId: LEAD,
     });
-    await ctx.service.remove({ workspaceId: WORKSPACE, actorId: ACTOR, requestId: REQUEST, fileId });
-    const link = await ctx.service.issueDownload({ workspaceId: WORKSPACE, actorId: ACTOR, fileId });
+    await ctx.service.remove({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      requestId: REQUEST,
+      fileId,
+    });
+    const link = await ctx.service.issueDownload({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      fileId,
+    });
     expect(link.status).toBe('not_available');
   });
 

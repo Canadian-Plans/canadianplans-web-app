@@ -92,10 +92,7 @@ export interface VerifyUploadInput {
 }
 
 export type VerifyUploadRejection =
-  | 'staging_missing'
-  | 'too_large'
-  | 'unsupported_signature'
-  | 'checksum_mismatch';
+  'staging_missing' | 'too_large' | 'unsupported_signature' | 'checksum_mismatch';
 
 export type VerifyUploadResult =
   | {

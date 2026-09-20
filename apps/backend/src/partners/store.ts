@@ -134,7 +134,9 @@ export class DatabasePartnerStore implements PartnerStore {
         .groupBy(commissionLines.partnerId);
 
       const orderCountByPartner = new Map(
-        orderCounts.filter((row) => row.partnerId !== null).map((row) => [row.partnerId, row.count]),
+        orderCounts
+          .filter((row) => row.partnerId !== null)
+          .map((row) => [row.partnerId, row.count]),
       );
       const commissionCountByPartner = new Map(
         commissionCounts.map((row) => [row.partnerId, row.count]),
@@ -187,9 +189,17 @@ export class DatabasePartnerStore implements PartnerStore {
         .from(commissionLines)
         .innerJoin(
           orders,
-          and(eq(orders.workspaceId, commissionLines.workspaceId), eq(orders.id, commissionLines.orderId)),
+          and(
+            eq(orders.workspaceId, commissionLines.workspaceId),
+            eq(orders.id, commissionLines.orderId),
+          ),
         )
-        .where(and(eq(commissionLines.workspaceId, workspaceId), eq(commissionLines.partnerId, partnerId)))
+        .where(
+          and(
+            eq(commissionLines.workspaceId, workspaceId),
+            eq(commissionLines.partnerId, partnerId),
+          ),
+        )
         .orderBy(commissionLines.earnedAt);
 
       const referredOrders: PartnerReferredOrder[] = referredOrderRows.map((row) => ({
@@ -233,7 +243,8 @@ export class DatabasePartnerStore implements PartnerStore {
 
         const fromState = commissionStateSchema.parse(line.state);
         const transition = validateCommissionStateTransition(fromState, input.toState);
-        if (transition.status === 'partner_paid_disabled') return { status: 'partner_paid_disabled' };
+        if (transition.status === 'partner_paid_disabled')
+          return { status: 'partner_paid_disabled' };
         if (transition.status === 'invalid_transition') return { status: 'invalid_transition' };
 
         const now = this.now();

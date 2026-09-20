@@ -122,7 +122,11 @@ export interface DocumentRecordStore {
   claimForVerification(input: ClaimInput): Promise<ClaimResult>;
   attachVerified(input: AttachInput): Promise<AttachResult>;
   markRejected(input: RejectInput): Promise<void>;
-  getFile(input: { workspaceId: string; actorId: string; fileId: string }): Promise<FileRow | undefined>;
+  getFile(input: {
+    workspaceId: string;
+    actorId: string;
+    fileId: string;
+  }): Promise<FileRow | undefined>;
   listFilesForRecord(input: {
     workspaceId: string;
     actorId: string;
@@ -248,7 +252,13 @@ export class DatabaseDocumentStore implements DocumentRecordStore {
     return this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.actorId },
       async (tx) => {
-        const revision = await nextRevision(tx, input.workspaceId, input.recordType, input.recordId, input.documentType);
+        const revision = await nextRevision(
+          tx,
+          input.workspaceId,
+          input.recordType,
+          input.recordId,
+          input.documentType,
+        );
         const [row] = await tx
           .insert(files)
           .values({

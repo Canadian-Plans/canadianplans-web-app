@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import {
   emailMessages,
   emailProviderEvents,
@@ -12,15 +12,11 @@ import type { EmailEligibilityChecker } from '@canadian-plans/jobs';
 import type { SuppressionLedgerPublisher } from '@canadian-plans/adapters';
 
 export type EmailMessageStatus =
-  | 'queued'
-  | 'sent'
-  | 'delivered'
-  | 'bounced'
-  | 'complained'
-  | 'failed'
-  | 'uncertain';
+  'queued' | 'sent' | 'delivered' | 'bounced' | 'complained' | 'failed' | 'uncertain';
 
 export type SuppressionReason = 'hard_bounce' | 'complaint' | 'manual';
+
+const suppressionReasons: readonly SuppressionReason[] = ['hard_bounce', 'complaint', 'manual'];
 
 export interface QueueEmailMessageInput {
   workspaceId: string;
@@ -85,7 +81,7 @@ type EmailDatabase = Pick<import('@canadian-plans/db').DatabaseClient, 'withTena
 const defaultDatabase: EmailDatabase = { withTenantTx };
 
 function statusValue(value: string): EmailMessageStatus {
-  const known: EmailMessageStatus[] = [
+  const known: readonly EmailMessageStatus[] = [
     'queued',
     'sent',
     'delivered',
@@ -94,7 +90,7 @@ function statusValue(value: string): EmailMessageStatus {
     'failed',
     'uncertain',
   ];
-  return (known as string[]).includes(value) ? (value as EmailMessageStatus) : 'uncertain';
+  return known.find((status) => status === value) ?? 'uncertain';
 }
 
 /**
@@ -152,21 +148,24 @@ export class DatabaseEmailStore implements EmailStore {
   }
 
   async queueMessage(input: QueueEmailMessageInput): Promise<void> {
-    await this.database.withTenantTx({ workspaceId: input.workspaceId, actorId: input.actorId }, async (tx) => {
-      await tx
-        .insert(emailMessages)
-        .values({
-          workspaceId: input.workspaceId,
-          messageId: input.messageId,
-          template: input.template,
-          messageClass: input.messageClass,
-          leadId: input.leadId,
-          orderId: input.orderId,
-          contactHash: input.contactHash,
-          status: 'queued',
-        })
-        .onConflictDoNothing();
-    });
+    await this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: input.actorId },
+      async (tx) => {
+        await tx
+          .insert(emailMessages)
+          .values({
+            workspaceId: input.workspaceId,
+            messageId: input.messageId,
+            template: input.template,
+            messageClass: input.messageClass,
+            leadId: input.leadId,
+            orderId: input.orderId,
+            contactHash: input.contactHash,
+            status: 'queued',
+          })
+          .onConflictDoNothing();
+      },
+    );
   }
 
   async applyProviderEvent(input: ProviderEventInput): Promise<ApplyProviderEventOutcome> {
@@ -208,8 +207,12 @@ export class DatabaseEmailStore implements EmailStore {
             );
         }
 
-        if ((input.eventType === 'bounce' || input.eventType === 'complaint') && input.contactHash) {
-          const reason: SuppressionReason = input.eventType === 'bounce' ? 'hard_bounce' : 'complaint';
+        if (
+          (input.eventType === 'bounce' || input.eventType === 'complaint') &&
+          input.contactHash
+        ) {
+          const reason: SuppressionReason =
+            input.eventType === 'bounce' ? 'hard_bounce' : 'complaint';
           const [row] = await tx
             .insert(emailSuppressions)
             .values({
@@ -293,31 +296,34 @@ export class DatabaseEmailStore implements EmailStore {
     version: string;
     now: Date;
   }): Promise<void> {
-    await this.database.withTenantTx({ workspaceId: input.workspaceId, actorId: 'public:unsubscribe' }, async (tx) => {
-      await tx.insert(marketingConsents).values({
-        workspaceId: input.workspaceId,
-        leadId: input.leadId,
-        orderId: input.orderId,
-        contactHash: input.contactHash,
-        marketingOptIn: false,
-        version: input.version,
-        capturedAt: input.now,
-      });
-      // Cancel any still-scheduled marketing follow-ups for this contact's
-      // lead/order so a pending job never fires after unsubscribe.
-      if (input.leadId) {
-        await tx
-          .update(followUpSchedules)
-          .set({ status: 'cancelled', cancelledReason: 'unsubscribed', updatedAt: input.now })
-          .where(
-            and(
-              eq(followUpSchedules.workspaceId, input.workspaceId),
-              eq(followUpSchedules.leadId, input.leadId),
-              eq(followUpSchedules.status, 'scheduled'),
-            ),
-          );
-      }
-    });
+    await this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: 'public:unsubscribe' },
+      async (tx) => {
+        await tx.insert(marketingConsents).values({
+          workspaceId: input.workspaceId,
+          leadId: input.leadId,
+          orderId: input.orderId,
+          contactHash: input.contactHash,
+          marketingOptIn: false,
+          version: input.version,
+          capturedAt: input.now,
+        });
+        // Cancel any still-scheduled marketing follow-ups for this contact's
+        // lead/order so a pending job never fires after unsubscribe.
+        if (input.leadId) {
+          await tx
+            .update(followUpSchedules)
+            .set({ status: 'cancelled', cancelledReason: 'unsubscribed', updatedAt: input.now })
+            .where(
+              and(
+                eq(followUpSchedules.workspaceId, input.workspaceId),
+                eq(followUpSchedules.leadId, input.leadId),
+                eq(followUpSchedules.status, 'scheduled'),
+              ),
+            );
+        }
+      },
+    );
   }
 }
 
@@ -330,8 +336,11 @@ async function isSuppressed(
     .select({ reason: emailSuppressions.reason })
     .from(emailSuppressions)
     .where(
-      and(eq(emailSuppressions.workspaceId, workspaceId), eq(emailSuppressions.contactHash, contactHash)),
+      and(
+        eq(emailSuppressions.workspaceId, workspaceId),
+        eq(emailSuppressions.contactHash, contactHash),
+      ),
     )
     .limit(1);
-  return row ? (row.reason as SuppressionReason) : undefined;
+  return row ? suppressionReasons.find((reason) => reason === row.reason) : undefined;
 }

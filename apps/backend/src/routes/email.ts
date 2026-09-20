@@ -2,7 +2,11 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { Router, type Request, type Response } from 'express';
 import { z } from 'zod';
 
-import { requireStaffSession, SupabaseStaffSessionVerifier, type StaffSessionVerifier } from '../auth/session.js';
+import {
+  requireStaffSession,
+  SupabaseStaffSessionVerifier,
+  type StaffSessionVerifier,
+} from '../auth/session.js';
 import { DatabaseEmailStore, type EmailStore } from '../email/store.js';
 import { hashContact, normalizeEmail, requireContactHashSecret } from '../email/hash.js';
 import { createAuthorize } from '../staff/authorization.js';
@@ -74,7 +78,18 @@ function verifyUnsubscribeToken(
   }
   const parts = decoded.split('.');
   if (parts.length !== 4) return undefined;
-  const [workspaceId, contactHash, leadId, signature] = parts as [string, string, string, string];
+  const workspaceId = parts[0];
+  const contactHash = parts[1];
+  const leadId = parts[2];
+  const signature = parts[3];
+  if (
+    workspaceId === undefined ||
+    contactHash === undefined ||
+    leadId === undefined ||
+    signature === undefined
+  ) {
+    return undefined;
+  }
   const payload = `${workspaceId}.${contactHash}.${leadId}`;
   const expected = createHmac('sha256', secret).update(payload, 'utf8').digest('hex');
   const expectedBuf = Buffer.from(expected, 'utf8');

@@ -2,7 +2,9 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
-const migrationPath = fileURLToPath(new URL('../drizzle/0016_thick_tombstone.sql', import.meta.url));
+const migrationPath = fileURLToPath(
+  new URL('../drizzle/0016_thick_tombstone.sql', import.meta.url),
+);
 
 describe('T17 additive documents migration', () => {
   it('creates the three document tables', async () => {
@@ -29,9 +31,7 @@ describe('T17 additive documents migration', () => {
     expect(sql).toContain('ALTER TABLE "app"."file_revisions" FORCE ROW LEVEL SECURITY');
     expect(sql).toContain('ALTER TABLE "app"."file_review_events" FORCE ROW LEVEL SECURITY');
     expect(sql).toContain('GRANT SELECT, INSERT, UPDATE ON TABLE "app"."files" TO "app_runtime"');
-    expect(sql).toContain(
-      'GRANT SELECT, INSERT ON TABLE "app"."file_revisions" TO "app_runtime"',
-    );
+    expect(sql).toContain('GRANT SELECT, INSERT ON TABLE "app"."file_revisions" TO "app_runtime"');
     expect(sql).toContain(
       'GRANT SELECT, INSERT ON TABLE "app"."file_review_events" TO "app_runtime"',
     );

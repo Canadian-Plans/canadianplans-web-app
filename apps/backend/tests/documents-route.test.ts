@@ -108,7 +108,12 @@ async function requestDownloadLink(): Promise<Response> {
 
 describe('staff document download permission (REQ 23; gate 5)', () => {
   it('denies download without the document.download permission', async () => {
-    store.access = { membershipId: MEMBERSHIP, status: 'active', roles: ['viewer'], permissions: [] };
+    store.access = {
+      membershipId: MEMBERSHIP,
+      status: 'active',
+      roles: ['viewer'],
+      permissions: [],
+    };
     const response = await requestDownloadLink();
     expect(response.status).toBe(403);
   });
@@ -127,7 +132,12 @@ describe('staff document download permission (REQ 23; gate 5)', () => {
   });
 
   it('denies a revoked member on the next request', async () => {
-    store.access = { membershipId: MEMBERSHIP, status: 'revoked', roles: ['owner'], permissions: [] };
+    store.access = {
+      membershipId: MEMBERSHIP,
+      status: 'revoked',
+      roles: ['owner'],
+      permissions: [],
+    };
     const response = await requestDownloadLink();
     expect(response.status).toBe(403);
   });

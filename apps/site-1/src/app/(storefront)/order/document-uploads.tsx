@@ -38,7 +38,11 @@ export interface DocumentUploadsProps {
  * copy-verify-attach. The service credential and object keys never reach the
  * browser.
  */
-export function DocumentUploads({ documentKeys, labelFor, onUploadedChange }: DocumentUploadsProps) {
+export function DocumentUploads({
+  documentKeys,
+  labelFor,
+  onUploadedChange,
+}: DocumentUploadsProps) {
   const baseId = useId();
   const [states, setStates] = useState<Record<string, UploadState>>({});
 
@@ -46,9 +50,13 @@ export function DocumentUploads({ documentKeys, labelFor, onUploadedChange }: Do
     setStates((current) => {
       const merged = { ...current, [key]: next };
       if (onUploadedChange) {
-        const done = uploaded ?? new Set(Object.entries(merged)
-          .filter(([, s]) => s.status === 'uploaded')
-          .map(([k]) => k));
+        const done =
+          uploaded ??
+          new Set(
+            Object.entries(merged)
+              .filter(([, s]) => s.status === 'uploaded')
+              .map(([k]) => k),
+          );
         onUploadedChange([...done]);
       }
       return merged;
@@ -88,14 +96,20 @@ export function DocumentUploads({ documentKeys, labelFor, onUploadedChange }: Do
         update(key, { status: 'error', message: 'The upload did not complete. Please try again.' });
         return;
       }
-      const finalized = await finalizeDocument({ uploadId: intent.uploadId, checksumSha256: checksum });
+      const finalized = await finalizeDocument({
+        uploadId: intent.uploadId,
+        checksumSha256: checksum,
+      });
       if (!finalized.ok) {
         update(key, { status: 'error', message: finalized.message });
         return;
       }
       update(key, { status: 'uploaded', fileName: file.name });
     } catch {
-      update(key, { status: 'error', message: 'The upload could not be completed. Please try again.' });
+      update(key, {
+        status: 'error',
+        message: 'The upload could not be completed. Please try again.',
+      });
     }
   }
 

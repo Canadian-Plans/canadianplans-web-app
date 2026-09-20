@@ -105,7 +105,8 @@ export class DatabaseCommissionActivationHook implements CommissionActivationHoo
     if (plan.status === 'config_incomplete') {
       return { status: 'config_incomplete', reason: plan.reason };
     }
-    if (plan.status !== 'create') return { status: 'config_incomplete', reason: 'no_effective_rule' };
+    if (plan.status !== 'create')
+      return { status: 'config_incomplete', reason: 'no_effective_rule' };
 
     const [line] = await tx
       .insert(commissionLines)

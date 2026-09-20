@@ -77,8 +77,7 @@ export type DocumentIntentResult =
   | { ok: false; message: string };
 
 export type DocumentFinalizeResult =
-  | { ok: true; fileId: string; documentType: string }
-  | { ok: false; message: string };
+  { ok: true; fileId: string; documentType: string } | { ok: false; message: string };
 
 export interface SubmitOrderResult {
   reference: string;

@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  InMemoryR2DocumentStore,
-  detectDocumentType,
-  sha256Hex,
-} from './r2.js';
+import { InMemoryR2DocumentStore, detectDocumentType, sha256Hex } from './r2.js';
 import { presignUrl, type R2Config } from './r2-s3.js';
 
 const PDF = new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x37]);

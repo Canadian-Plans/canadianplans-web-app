@@ -159,7 +159,10 @@ interface SignedRequest {
 }
 
 /** Header-signed (not presigned) request for server-to-server copy/head/get. */
-function signRequest(config: R2Config, req: SignedRequest): { url: string; headers: Record<string, string> } {
+function signRequest(
+  config: R2Config,
+  req: SignedRequest,
+): { url: string; headers: Record<string, string> } {
   const now = req.now ?? new Date();
   const { amzDate, dateStamp } = amzTimestamp(now);
   const url = new URL(config.endpoint);
@@ -181,9 +184,14 @@ function signRequest(config: R2Config, req: SignedRequest): { url: string; heade
     .join('');
   const signedHeaders = sortedHeaderNames.join(';');
 
-  const canonicalRequest = [req.method, canonicalUri, '', canonicalHeaders, signedHeaders, payloadHash].join(
-    '\n',
-  );
+  const canonicalRequest = [
+    req.method,
+    canonicalUri,
+    '',
+    canonicalHeaders,
+    signedHeaders,
+    payloadHash,
+  ].join('\n');
   const credentialScope = `${dateStamp}/${config.region}/${SERVICE}/aws4_request`;
   const stringToSign = [ALGORITHM, amzDate, credentialScope, hashHex(canonicalRequest)].join('\n');
   const signature = hmac(signingKey(config, dateStamp), stringToSign).toString('hex');

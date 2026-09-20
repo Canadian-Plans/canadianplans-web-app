@@ -1,6 +1,11 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi, type Mock } from 'vitest';
 
-import { FollowUpRunner, type DueFollowUp, type FollowUpScheduleStore, type LeadOrderStateReader } from './follow-ups.js';
+import {
+  FollowUpRunner,
+  type DueFollowUp,
+  type FollowUpScheduleStore,
+  type LeadOrderStateReader,
+} from './follow-ups.js';
 import type { EmailEligibilityChecker } from '@canadian-plans/jobs';
 
 const workspaceId = '11111111-1111-4111-8111-111111111111';
@@ -21,6 +26,7 @@ function makeSchedules(): FollowUpScheduleStore & {
   sent: string[];
   skipped: string[];
   cancelled: string[];
+  listDue: Mock<FollowUpScheduleStore['listDue']>;
 } {
   const sent: string[] = [];
   const skipped: string[] = [];
@@ -29,7 +35,7 @@ function makeSchedules(): FollowUpScheduleStore & {
     sent,
     skipped,
     cancelled,
-    listDue: vi.fn(async () => []),
+    listDue: vi.fn<FollowUpScheduleStore['listDue']>(async () => []),
     markSent: vi.fn(async (_ws, id) => {
       sent.push(id);
     }),
@@ -46,7 +52,7 @@ describe('FollowUpRunner', () => {
   it('stops a follow-up sequence once the lead has already completed (converted)', async () => {
     const item = due();
     const schedules = makeSchedules();
-    (schedules.listDue as ReturnType<typeof vi.fn>).mockResolvedValue([item]);
+    schedules.listDue.mockResolvedValue([item]);
     const state: LeadOrderStateReader = {
       leadState: vi.fn(async () => ({ status: 'converted' })),
       orderState: vi.fn(async () => undefined),
@@ -69,7 +75,7 @@ describe('FollowUpRunner', () => {
   it('sends when the lead is still open and consent/suppression allow it', async () => {
     const item = due();
     const schedules = makeSchedules();
-    (schedules.listDue as ReturnType<typeof vi.fn>).mockResolvedValue([item]);
+    schedules.listDue.mockResolvedValue([item]);
     const state: LeadOrderStateReader = {
       leadState: vi.fn(async () => ({ status: 'new' })),
       orderState: vi.fn(async () => undefined),
@@ -91,7 +97,7 @@ describe('FollowUpRunner', () => {
   it('re-checks eligibility immediately before sending and skips on a since-recorded opt-out', async () => {
     const item = due();
     const schedules = makeSchedules();
-    (schedules.listDue as ReturnType<typeof vi.fn>).mockResolvedValue([item]);
+    schedules.listDue.mockResolvedValue([item]);
     const state: LeadOrderStateReader = {
       leadState: vi.fn(async () => ({ status: 'new' })),
       orderState: vi.fn(async () => undefined),
@@ -113,7 +119,7 @@ describe('FollowUpRunner', () => {
   it('cancels when the referenced lead no longer exists', async () => {
     const item = due();
     const schedules = makeSchedules();
-    (schedules.listDue as ReturnType<typeof vi.fn>).mockResolvedValue([item]);
+    schedules.listDue.mockResolvedValue([item]);
     const state: LeadOrderStateReader = {
       leadState: vi.fn(async () => undefined),
       orderState: vi.fn(async () => undefined),

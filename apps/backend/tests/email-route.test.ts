@@ -84,9 +84,15 @@ describe('email routes', () => {
 
   it('unsubscribes without any login given a valid signed token', async () => {
     const contactHash = hashContact('lead@example.com', SECRET);
-    const token = buildUnsubscribeToken(SECRET, { workspaceId: WORKSPACE, contactHash, leadId: LEAD });
+    const token = buildUnsubscribeToken(SECRET, {
+      workspaceId: WORKSPACE,
+      contactHash,
+      leadId: LEAD,
+    });
 
-    const response = await fetch(`${baseUrl}/api/v1/email/unsubscribe?token=${encodeURIComponent(token)}`);
+    const response = await fetch(
+      `${baseUrl}/api/v1/email/unsubscribe?token=${encodeURIComponent(token)}`,
+    );
 
     expect(response.status).toBe(200);
     expect(store.unsubscribed).toEqual([{ contactHash, leadId: LEAD }]);
@@ -94,10 +100,16 @@ describe('email routes', () => {
 
   it('rejects a tampered unsubscribe token', async () => {
     const contactHash = hashContact('lead@example.com', SECRET);
-    const token = buildUnsubscribeToken(SECRET, { workspaceId: WORKSPACE, contactHash, leadId: LEAD });
+    const token = buildUnsubscribeToken(SECRET, {
+      workspaceId: WORKSPACE,
+      contactHash,
+      leadId: LEAD,
+    });
     const tampered = token.slice(0, -1) + (token.endsWith('A') ? 'B' : 'A');
 
-    const response = await fetch(`${baseUrl}/api/v1/email/unsubscribe?token=${encodeURIComponent(tampered)}`);
+    const response = await fetch(
+      `${baseUrl}/api/v1/email/unsubscribe?token=${encodeURIComponent(tampered)}`,
+    );
 
     expect(response.status).toBe(400);
     expect(store.unsubscribed).toHaveLength(0);
@@ -107,7 +119,11 @@ describe('email routes', () => {
     const response = await fetch(`${baseUrl}/api/v1/email/webhook/events`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-email-webhook-secret': WEBHOOK_SECRET },
-      body: JSON.stringify({ eventType: 'not_a_real_type', workspaceId: WORKSPACE, providerEventId: 'evt-1' }),
+      body: JSON.stringify({
+        eventType: 'not_a_real_type',
+        workspaceId: WORKSPACE,
+        providerEventId: 'evt-1',
+      }),
     });
 
     expect(response.status).toBe(400);
@@ -118,7 +134,11 @@ describe('email routes', () => {
     const response = await fetch(`${baseUrl}/api/v1/email/webhook/events`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ eventType: 'bounce', workspaceId: WORKSPACE, providerEventId: 'evt-1' }),
+      body: JSON.stringify({
+        eventType: 'bounce',
+        workspaceId: WORKSPACE,
+        providerEventId: 'evt-1',
+      }),
     });
 
     expect(response.status).toBe(401);
@@ -132,10 +152,21 @@ describe('email routes', () => {
       providerEventId: 'evt-dup-1',
       toAddress: 'bounced@example.com',
     });
-    const headers = { 'content-type': 'application/json', 'x-email-webhook-secret': WEBHOOK_SECRET };
+    const headers = {
+      'content-type': 'application/json',
+      'x-email-webhook-secret': WEBHOOK_SECRET,
+    };
 
-    const first = await fetch(`${baseUrl}/api/v1/email/webhook/events`, { method: 'POST', headers, body });
-    const second = await fetch(`${baseUrl}/api/v1/email/webhook/events`, { method: 'POST', headers, body });
+    const first = await fetch(`${baseUrl}/api/v1/email/webhook/events`, {
+      method: 'POST',
+      headers,
+      body,
+    });
+    const second = await fetch(`${baseUrl}/api/v1/email/webhook/events`, {
+      method: 'POST',
+      headers,
+      body,
+    });
 
     expect(first.status).toBe(200);
     expect(second.status).toBe(200);

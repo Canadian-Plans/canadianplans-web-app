@@ -128,7 +128,12 @@ export function createFailingJobHandlerRegistry(errorCode: string): JobHandlerRe
 }
 
 const acknowledgementPayloadSchema = z
-  .object({ orderId: z.uuid(), reference: z.string().min(1).max(32), toAddress: z.string().email(), contactHash: z.string().min(1) })
+  .object({
+    orderId: z.uuid(),
+    reference: z.string().min(1).max(32),
+    toAddress: z.string().email(),
+    contactHash: z.string().min(1),
+  })
   .strict();
 const orderSubmittedPayloadSchema = z.object({ orderId: z.uuid() }).strict();
 const leadSavedPayloadSchema = z.object({ leadId: z.uuid() }).strict();
@@ -156,6 +161,15 @@ function safeErrorCode(value: string, fallback: string): string {
   return /^[a-z0-9_]{1,64}$/.test(value) ? value : fallback;
 }
 
+function isStringRecord(value: unknown): value is Record<string, string> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value) &&
+    Object.values(value).every((entry) => typeof entry === 'string')
+  );
+}
+
 function transactionalEmailHandler(
   email: EmailAdapter,
   eligibility: EmailEligibilityChecker,
@@ -176,7 +190,10 @@ function transactionalEmailHandler(
       // A hard-bounce/complaint/manual suppression blocks even transactional
       // mail; a marketing-only opt-out never reaches this branch because
       // `checkTransactional` never consults the marketing consent table.
-      return { status: 'completed', providerId: `skipped:${safeErrorCode(check.reason ?? 'suppressed', 'suppressed')}` };
+      return {
+        status: 'completed',
+        providerId: `skipped:${safeErrorCode(check.reason ?? 'suppressed', 'suppressed')}`,
+      };
     }
     const result = await email.send({
       workspaceId: job.workspaceId,
@@ -185,7 +202,10 @@ function transactionalEmailHandler(
       toAddress: parsed.data.toAddress,
       orderId: parsed.data.orderId,
       reference: parsed.data.reference,
-      variables: 'variables' in parsed.data ? (parsed.data.variables as Record<string, string> | undefined) : undefined,
+      variables:
+        'variables' in parsed.data && isStringRecord(parsed.data.variables)
+          ? parsed.data.variables
+          : undefined,
     });
     return result.status === 'delivered'
       ? { status: 'completed', providerId: result.providerId }
@@ -205,13 +225,19 @@ export function createJobHandlerRegistry(dependencies: {
   eligibility: EmailEligibilityChecker;
 }): JobHandlerRegistry {
   return new Map<string, JobHandler>([
-    ['order_acknowledgement_email', transactionalEmailHandler(dependencies.email, dependencies.eligibility)],
+    [
+      'order_acknowledgement_email',
+      transactionalEmailHandler(dependencies.email, dependencies.eligibility),
+    ],
     ['order_status_email', transactionalEmailHandler(dependencies.email, dependencies.eligibility)],
     [
       'order_awaiting_customer_email',
       transactionalEmailHandler(dependencies.email, dependencies.eligibility),
     ],
-    ['order_dispatch_email', transactionalEmailHandler(dependencies.email, dependencies.eligibility)],
+    [
+      'order_dispatch_email',
+      transactionalEmailHandler(dependencies.email, dependencies.eligibility),
+    ],
     [
       'order_activation_email',
       transactionalEmailHandler(dependencies.email, dependencies.eligibility),

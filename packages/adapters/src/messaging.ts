@@ -13,9 +13,9 @@ export const emailTemplates = [
 ] as const;
 export type EmailTemplate = (typeof emailTemplates)[number];
 
-export const transactionalEmailTemplates = emailTemplates.filter(
+export const transactionalEmailTemplates: readonly EmailTemplate[] = emailTemplates.filter(
   (template) => template !== 'abandoned_form_marketing',
-) as readonly EmailTemplate[];
+);
 
 export type EmailMessageClass = 'transactional' | 'marketing';
 
@@ -48,8 +48,7 @@ export interface EmailMessage {
 }
 
 export type ProviderDeliveryResult =
-  | { status: 'delivered'; providerId: string }
-  | { status: 'uncertain'; errorCode: string };
+  { status: 'delivered'; providerId: string } | { status: 'uncertain'; errorCode: string };
 
 export interface EmailAdapter {
   send(message: EmailMessage): Promise<ProviderDeliveryResult>;

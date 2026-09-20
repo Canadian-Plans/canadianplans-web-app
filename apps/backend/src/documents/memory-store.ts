@@ -117,10 +117,7 @@ export class InMemoryDocumentRecordStore implements DocumentRecordStore {
     }
   }
 
-  async getFile(input: {
-    workspaceId: string;
-    fileId: string;
-  }): Promise<FileRow | undefined> {
+  async getFile(input: { workspaceId: string; fileId: string }): Promise<FileRow | undefined> {
     const row = this.rows.get(input.fileId);
     return row && row.workspaceId === input.workspaceId ? { ...row } : undefined;
   }

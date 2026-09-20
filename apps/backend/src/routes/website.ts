@@ -552,52 +552,60 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
     }
   });
 
-  router.post('/files/:fileId/download-link', requireScope('uploads:customer'), async (req, res) => {
-    if (!documents) {
-      sendDomainError(res, req.id, 'feature_not_ready', 409);
-      return;
-    }
-    const fileId = z.uuid().safeParse(req.params['fileId']);
-    const grantToken = requireDraftGrant(req);
-    if (!fileId.success) {
-      sendDomainError(res, req.id, 'validation_error', 400);
-      return;
-    }
-    if (!grantToken) {
-      sendDomainError(res, req.id, 'draft_not_found', 401);
-      return;
-    }
-    try {
-      const ctx = websiteContext(req);
-      const leadId = await documents.grants.verifyLead({
-        workspaceId: ctx.workspaceId,
-        actorId: ctx.credentialId,
-        grantToken,
-        now: new Date(),
-      });
-      if (!leadId) {
+  router.post(
+    '/files/:fileId/download-link',
+    requireScope('uploads:customer'),
+    async (req, res) => {
+      if (!documents) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const fileId = z.uuid().safeParse(req.params['fileId']);
+      const grantToken = requireDraftGrant(req);
+      if (!fileId.success) {
+        sendDomainError(res, req.id, 'validation_error', 400);
+        return;
+      }
+      if (!grantToken) {
         sendDomainError(res, req.id, 'draft_not_found', 401);
         return;
       }
-      const outcome = await documents.service.issueDownload({
-        workspaceId: ctx.workspaceId,
-        actorId: ctx.credentialId,
-        fileId: fileId.data,
-        ownedLeadId: leadId,
-      });
-      if (outcome.status === 'issued') {
-        res.json({ url: outcome.url, expiresAt: outcome.expiresAt.toISOString(), requestId: req.id });
-        return;
+      try {
+        const ctx = websiteContext(req);
+        const leadId = await documents.grants.verifyLead({
+          workspaceId: ctx.workspaceId,
+          actorId: ctx.credentialId,
+          grantToken,
+          now: new Date(),
+        });
+        if (!leadId) {
+          sendDomainError(res, req.id, 'draft_not_found', 401);
+          return;
+        }
+        const outcome = await documents.service.issueDownload({
+          workspaceId: ctx.workspaceId,
+          actorId: ctx.credentialId,
+          fileId: fileId.data,
+          ownedLeadId: leadId,
+        });
+        if (outcome.status === 'issued') {
+          res.json({
+            url: outcome.url,
+            expiresAt: outcome.expiresAt.toISOString(),
+            requestId: req.id,
+          });
+          return;
+        }
+        if (outcome.status === 'not_available') {
+          sendDomainError(res, req.id, 'file_not_available', 409);
+          return;
+        }
+        sendDomainError(res, req.id, 'file_not_found', 404);
+      } catch {
+        sendDomainError(res, req.id, 'internal_error', 500);
       }
-      if (outcome.status === 'not_available') {
-        sendDomainError(res, req.id, 'file_not_available', 409);
-        return;
-      }
-      sendDomainError(res, req.id, 'file_not_found', 404);
-    } catch {
-      sendDomainError(res, req.id, 'internal_error', 500);
-    }
-  });
+    },
+  );
 
   return router;
 }
