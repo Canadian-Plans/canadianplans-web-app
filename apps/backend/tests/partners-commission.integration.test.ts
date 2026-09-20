@@ -44,9 +44,9 @@ databaseDescribe('partner commission model against Postgres (T19)', () => {
 
   async function seedOrder(status: string): Promise<OrderFixture> {
     orderSeq += 1;
-    const suffix = orderSeq.toString().padStart(3, '0');
-    const lead = `50000000-0000-4000-8000-0009000${suffix}`;
-    const id = `82000000-0000-4000-8000-0009000${suffix}`;
+    const suffix = orderSeq.toString().padStart(12, '0');
+    const lead = `50000000-0000-4000-8000-${suffix}`;
+    const id = `82000000-0000-4000-8000-${suffix}`;
     await admin`
       insert into app.leads (id, workspace_id, status, consent_version, partner_id)
       values (${lead}, ${WORKSPACE}, 'submitted', 'terms-1', ${PARTNER})

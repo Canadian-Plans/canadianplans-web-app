@@ -32,4 +32,39 @@ CREATE POLICY "deletion_intents_tenant_policy" ON "app"."deletion_intents" AS PE
     )::uuid and nullif(
       (select current_setting('app.actor_id', true)),
       ''
-    )::uuid is not null);
+    )::uuid is not null);--> statement-breakpoint
+ALTER TABLE "app"."deletion_intents" FORCE ROW LEVEL SECURITY;--> statement-breakpoint
+GRANT SELECT, INSERT, UPDATE ON TABLE "app"."deletion_intents" TO "app_runtime";--> statement-breakpoint
+-- T21 customer-data deletion (REQ 24) also restricts/removes pre-existing
+-- personal copies, so the runtime role needs these additional privileges.
+GRANT UPDATE ON TABLE "app"."audit_events" TO "app_runtime";--> statement-breakpoint
+GRANT DELETE ON TABLE "app"."order_notes" TO "app_runtime";--> statement-breakpoint
+GRANT DELETE ON TABLE "app"."order_amendments" TO "app_runtime";--> statement-breakpoint
+GRANT DELETE ON TABLE "app"."order_change_requests" TO "app_runtime";--> statement-breakpoint
+-- Submitted orders stay immutable (REQ 14, invariant 5), except that a deletion
+-- may erase the personal `payload`/`consent`: they may only be emptied, never
+-- rewritten. See the T21 report and REQ 24.
+CREATE OR REPLACE FUNCTION "app"."prevent_order_submission_mutation"()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = pg_catalog, app
+AS $function$
+BEGIN
+  IF NEW.workspace_id IS DISTINCT FROM OLD.workspace_id
+     OR NEW.reference IS DISTINCT FROM OLD.reference
+     OR NEW.lead_id IS DISTINCT FROM OLD.lead_id
+     OR NEW.snapshot IS DISTINCT FROM OLD.snapshot
+     OR NEW.partner_id IS DISTINCT FROM OLD.partner_id
+     OR NEW.submitted_at IS DISTINCT FROM OLD.submitted_at
+     OR NEW.created_at IS DISTINCT FROM OLD.created_at THEN
+    RAISE EXCEPTION 'submitted order identity, payload, and commercial snapshot are immutable'
+      USING ERRCODE = 'check_violation';
+  END IF;
+  IF (NEW.payload IS DISTINCT FROM OLD.payload AND NEW.payload IS DISTINCT FROM '{}'::jsonb)
+     OR (NEW.consent IS DISTINCT FROM OLD.consent AND NEW.consent IS NOT NULL) THEN
+    RAISE EXCEPTION 'submitted order identity, payload, and commercial snapshot are immutable'
+      USING ERRCODE = 'check_violation';
+  END IF;
+  RETURN NEW;
+END;
+$function$;

@@ -31,4 +31,6 @@ CREATE POLICY "tracking_challenges_tenant_policy" ON "app"."tracking_challenges"
     )::uuid and nullif(
       (select current_setting('app.actor_id', true)),
       ''
-    )::uuid is not null);
+    )::uuid is not null);--> statement-breakpoint
+ALTER TABLE "app"."tracking_challenges" FORCE ROW LEVEL SECURITY;--> statement-breakpoint
+GRANT SELECT, INSERT, UPDATE ON TABLE "app"."tracking_challenges" TO "app_runtime";

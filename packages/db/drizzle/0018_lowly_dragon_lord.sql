@@ -478,4 +478,16 @@ GRANT SELECT, INSERT ON TABLE "app"."commission_rules" TO "app_runtime";--> stat
 GRANT SELECT, INSERT, UPDATE ON TABLE "app"."commission_lines" TO "app_runtime";--> statement-breakpoint
 GRANT SELECT, INSERT ON TABLE "app"."commission_line_events" TO "app_runtime";--> statement-breakpoint
 GRANT SELECT, INSERT, UPDATE ON TABLE "app"."invoices" TO "app_runtime";--> statement-breakpoint
-GRANT SELECT, INSERT ON TABLE "app"."invoice_lines" TO "app_runtime";
+GRANT SELECT, INSERT ON TABLE "app"."invoice_lines" TO "app_runtime";--> statement-breakpoint
+-- T18 email tables: drizzle emits neither FORCE RLS nor the runtime grants, so
+-- they are added explicitly (the same pattern as the files/commission tables).
+ALTER TABLE "app"."email_messages" FORCE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "app"."email_provider_events" FORCE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "app"."email_suppressions" FORCE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "app"."follow_up_schedules" FORCE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "app"."marketing_consents" FORCE ROW LEVEL SECURITY;--> statement-breakpoint
+GRANT SELECT, INSERT, UPDATE ON TABLE "app"."email_messages" TO "app_runtime";--> statement-breakpoint
+GRANT SELECT, INSERT, UPDATE ON TABLE "app"."email_provider_events" TO "app_runtime";--> statement-breakpoint
+GRANT SELECT, INSERT ON TABLE "app"."email_suppressions" TO "app_runtime";--> statement-breakpoint
+GRANT SELECT, INSERT, UPDATE ON TABLE "app"."follow_up_schedules" TO "app_runtime";--> statement-breakpoint
+GRANT SELECT, INSERT ON TABLE "app"."marketing_consents" TO "app_runtime";

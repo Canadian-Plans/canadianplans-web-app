@@ -84,7 +84,12 @@ export class DatabaseReportStore implements ReportStore {
     jsonKey: string,
     window: { from?: Date; to?: Date },
   ): Promise<SourceReportGroup[]> {
-    const leadExpr = sql<string | null>`${leads.attribution} ->> ${jsonKey}`;
+    // The JSON key is a fixed internal constant from UTM_DIMENSIONS, so inline
+    // it as a literal. A bind parameter renders as a *different* placeholder in
+    // SELECT and GROUP BY, which Postgres rejects as "column must appear in the
+    // GROUP BY clause" even though the expressions are logically identical.
+    const jsonKeyLiteral = sql.raw(`'${jsonKey.replace(/'/g, "''")}'`);
+    const leadExpr = sql<string | null>`${leads.attribution} ->> ${jsonKeyLiteral}`;
     const leadRows = await tx
       .select({ value: leadExpr, count: sql<number>`count(*)::int` })
       .from(leads)
@@ -97,7 +102,7 @@ export class DatabaseReportStore implements ReportStore {
       )
       .groupBy(leadExpr);
 
-    const orderExpr = sql<string | null>`${leads.attribution} ->> ${jsonKey}`;
+    const orderExpr = sql<string | null>`${leads.attribution} ->> ${jsonKeyLiteral}`;
     const orderRows = await tx
       .select({ value: orderExpr, count: sql<number>`count(*)::int` })
       .from(orders)

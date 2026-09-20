@@ -1,4 +1,4 @@
-import { and, eq, lt, sql } from 'drizzle-orm';
+import { and, eq, gt, lt, sql } from 'drizzle-orm';
 import {
   auditEvents,
   fileRevisions,
@@ -302,7 +302,7 @@ export class DatabaseDocumentStore implements DocumentRecordStore {
               eq(files.workspaceId, input.workspaceId),
               eq(files.id, input.fileId),
               eq(files.status, 'uploading'),
-              sql`${files.expiresAt} > ${input.now}`,
+              gt(files.expiresAt, input.now),
             ),
           )
           .returning(fileColumns);
