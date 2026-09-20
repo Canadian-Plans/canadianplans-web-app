@@ -271,7 +271,7 @@ return `409 illegal_transition`, a cancellation without a reason returns
 | `POST /orders/{orderId}/change-requests/{id}/approve` | Approve in one transaction: exactly one audited `order_amendments` row plus the version check. Contact fields are applied to the originating lead; the submitted order envelope (snapshot, payload, consent, terms) stays immutable (REQ 14), so form changes live in the amendment.                                                                                                              |
 | `POST /orders/{orderId}/change-requests/{id}/reject`  | Reject without changing any customer data. Re-resolving a resolved request returns `409 change_request_resolved`.                                                                                                                                                                                                                                                                                 |
 | `POST /orders/{orderId}/payments`                     | Record a manual payment (`paymentState`, optional `method`/`reference`/`amountMinor`) into `payment_records` and update `payment_state` in one transaction. The amount currency always comes from the frozen snapshot.                                                                                                                                                                            |
-| `POST /orders/{orderId}/deletion`                     | Delete the customer's personal data for the order (`reason` required). Requires the `deletion` permission (`record.delete`; verified `aal2` for Owner/Finance). Restricts every linked copy, keeps the reference and commercial snapshot, audits without personal data, and commits a local deletion intent. Returns `202` with `ledgerStatus: pending_acknowledgement`.                        |
+| `POST /orders/{orderId}/deletion`                     | Delete the customer's personal data for the order (`reason` required). Requires the `deletion` permission (`record.delete`; verified `aal2` for Owner/Finance). Restricts every linked copy, keeps the reference and commercial snapshot, audits without personal data, and commits a local deletion intent. Returns `202` with `ledgerStatus: pending_acknowledgement`.                          |
 
 `GET /api/v1/staff/workspaces/{workspaceId}/members` lists the active staff
 memberships as assignee options. It returns membership id, roles and an
@@ -385,14 +385,18 @@ counters (`workspaces`, `listed`, `processed`, `drainFailed`, `reconciled`,
 `{ email, orderReference }` and sends a six-digit code only when the reference
 and email match an order in the credential's workspace. It **always** answers
 `200 { status: "challenge_sent" }` so the endpoint cannot be used to enumerate
-orders. The code is keyed-hashed (bound to workspace, order and normalized
-email), expires in 10 minutes, is invalidated by a resend and permits at most
-five attempts. Requests are rate-limited per email and per IP.
+orders — including timing: the response is held to a minimum latency
+(`TRACKING_OTP_MIN_LATENCY_MS`, default 500 ms) so a matched and unmatched
+request take the same time. The code is keyed-hashed (bound to workspace, order
+and normalized email), expires in 10 minutes, is invalidated by a resend and
+permits at most five attempts. Requests are rate-limited per email and per IP.
 
 `POST /api/v1/website/tracking/verify` (`tracking:otp` scope) takes
 `{ email, orderReference, code }`; on success it atomically consumes the code
-and returns a 30-minute scoped grant (`tracking_challenge_invalid`,
-`tracking_expired`, `tracking_attempts_exceeded` otherwise).
+and returns a 30-minute scoped grant. Verifications are rate-limited per email
+and per IP before any consumption, and every non-verified outcome returns the
+same generic `tracking_challenge_invalid` (never whether the challenge exists
+or how it ended).
 
 `GET /api/v1/website/tracking` requires the grant in `X-Customer-Grant` and
 returns the order's reference, fulfilment/payment/delivery states, the dispatch

@@ -53,6 +53,7 @@ Unset (either value) means no ledger is configured: a `deletion_ledger_publish` 
 ## Customer tracking (T22)
 
 - `TRACKING_HASH_SECRET` — backend-only HMAC secret (at least 32 characters) that keys the order-tracking email/code hashes and the 30-minute tracking grant. Unset or too short means tracking is unavailable: the OTP request still answers neutrally and verify/status fail closed with `persistence_unavailable`. Never expose it to a browser bundle and rotate it only with a deployment (existing grants and pending codes become invalid).
+- `TRACKING_OTP_MIN_LATENCY_MS` — optional backend-only minimum latency for the neutral `tracking/otp` response (default `500`, capped at `5000`), so a matched and unmatched request are timing-indistinguishable. Set lower only in tests; never lower it in production.
 
 ## Supabase
 

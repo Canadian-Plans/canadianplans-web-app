@@ -151,6 +151,8 @@ let store: FakeTrackingStore;
 let notifier: RecordingNotifier;
 let nowMs: number;
 let originalSecret: string | undefined;
+let originalLatency: string | undefined;
+let denyRateLimit: boolean;
 
 function request(
   method: string,
@@ -171,7 +173,10 @@ function request(
 
 beforeEach(async () => {
   originalSecret = process.env['TRACKING_HASH_SECRET'];
+  originalLatency = process.env['TRACKING_OTP_MIN_LATENCY_MS'];
   process.env['TRACKING_HASH_SECRET'] = SECRET;
+  process.env['TRACKING_OTP_MIN_LATENCY_MS'] = '200';
+  denyRateLimit = false;
   store = new FakeTrackingStore();
   notifier = new RecordingNotifier();
   nowMs = Date.parse('2026-09-20T12:00:00.000Z');
@@ -186,7 +191,10 @@ beforeEach(async () => {
     website: {
       auth: {
         resolveCredential: async (hash) => (hash === SECRET_HASH ? resolution : undefined),
-        rateLimit: async () => ({ allowed: true, retryAfterSeconds: 0 }),
+        rateLimit: async () =>
+          denyRateLimit
+            ? { allowed: false, retryAfterSeconds: 60 }
+            : { allowed: true, retryAfterSeconds: 0 },
         botCheck: async () => true,
       },
       leads: { store: staffOnly.leadStore },
@@ -203,6 +211,8 @@ afterEach(async () => {
   await new Promise<void>((resolve) => server.close(() => resolve()));
   if (originalSecret === undefined) delete process.env['TRACKING_HASH_SECRET'];
   else process.env['TRACKING_HASH_SECRET'] = originalSecret;
+  if (originalLatency === undefined) delete process.env['TRACKING_OTP_MIN_LATENCY_MS'];
+  else process.env['TRACKING_OTP_MIN_LATENCY_MS'] = originalLatency;
 });
 
 describe('POST /api/v1/website/tracking/otp', () => {
@@ -239,6 +249,28 @@ describe('POST /api/v1/website/tracking/otp', () => {
       body: JSON.stringify({ email: EMAIL, orderReference: REFERENCE }),
     });
     expect(response.status).toBe(401);
+  });
+
+  it('responds no faster than the latency floor for a match and a non-match', async () => {
+    async function timed(reference: string) {
+      const start = Date.now();
+      const response = await request(
+        'POST',
+        '/api/v1/website/tracking/otp',
+        {},
+        {
+          email: EMAIL,
+          orderReference: reference,
+        },
+      );
+      return { elapsed: Date.now() - start, status: response.status };
+    }
+    const known = await timed(REFERENCE);
+    const unknown = await timed('CP-NOPE');
+    expect(known.status).toBe(200);
+    expect(unknown.status).toBe(200);
+    expect(known.elapsed).toBeGreaterThanOrEqual(180);
+    expect(unknown.elapsed).toBeGreaterThanOrEqual(180);
   });
 });
 
@@ -299,7 +331,31 @@ describe('POST /api/v1/website/tracking/verify', () => {
       { email: EMAIL, orderReference: REFERENCE, code },
     );
     expect(response.status).toBe(400);
-    expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe('tracking_expired');
+    // A generic failure code — the route does not leak that the code was expired.
+    expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe(
+      'tracking_challenge_invalid',
+    );
+  });
+
+  it('rate-limits code verification by email and IP before consuming', async () => {
+    await request(
+      'POST',
+      '/api/v1/website/tracking/otp',
+      {},
+      { email: EMAIL, orderReference: REFERENCE },
+    );
+    const code = notifier.sent[0]?.code ?? '';
+    denyRateLimit = true;
+    const response = await request(
+      'POST',
+      '/api/v1/website/tracking/verify',
+      {},
+      { email: EMAIL, orderReference: REFERENCE, code },
+    );
+    expect(response.status).toBe(429);
+    expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe('rate_limited');
+    // The challenge is untouched — the limiter denied before any consumption.
+    expect(store.rows.filter((row) => row.status === 'consumed')).toHaveLength(0);
   });
 });
 

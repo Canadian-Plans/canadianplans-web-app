@@ -13,6 +13,7 @@ import { z } from 'zod';
 
 import { sendDomainError } from '../http/domain-errors.js';
 import { isConnectionLevelError, logRequestError } from '../http/logger.js';
+import { sendWebsiteError } from '../http/website-errors.js';
 import { CatalogueService, providerResolverFromRegistry } from '../catalogue/service.js';
 import { loadQuoteWithdrawalPolicy } from '../catalogue/policy.js';
 import { DatabaseCatalogueStore, type CatalogueStore } from '../catalogue/store.js';
@@ -33,6 +34,7 @@ import { DatabaseTrackingStore } from '../tracking/store.js';
 import {
   TRACKING_OTP_EMAIL_MAX_REQUESTS,
   TRACKING_OTP_EMAIL_WINDOW_SECONDS,
+  TRACKING_OTP_VERIFY_EMAIL_MAX_REQUESTS,
   TrackingService,
 } from '../tracking/service.js';
 import {
@@ -405,6 +407,25 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
   return router;
 }
 
+/** Default minimum latency for the neutral OTP response (env-overridable for tests). */
+const TRACKING_OTP_MIN_LATENCY_DEFAULT_MS = 500;
+const TRACKING_OTP_MIN_LATENCY_MAX_MS = 5_000;
+
+/** Resolves the neutral-response floor. `TRACKING_OTP_MIN_LATENCY_MS` may lower it for tests. */
+function trackingMinLatencyMs(env: NodeJS.ProcessEnv = process.env): number {
+  const raw = Number(env.TRACKING_OTP_MIN_LATENCY_MS);
+  if (Number.isFinite(raw) && raw >= 0 && raw <= TRACKING_OTP_MIN_LATENCY_MAX_MS) {
+    return Math.round(raw);
+  }
+  return TRACKING_OTP_MIN_LATENCY_DEFAULT_MS;
+}
+
+/** Waits until `floorMs` has elapsed since `startMs`, so a response is timing-independent. */
+async function settleUntil(startMs: number, floorMs: number): Promise<void> {
+  const remaining = startMs + floorMs - Date.now();
+  if (remaining > 0) await new Promise((resolve) => setTimeout(resolve, remaining));
+}
+
 /**
  * Customer order tracking (T22, REQ 05). `POST /tracking/otp` always answers the
  * same neutral acknowledgement so a caller cannot tell whether the reference +
@@ -422,6 +443,7 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
     requireWebsiteCredential(dependencies.auth),
     requireScope('tracking:otp'),
     async (req, res) => {
+      const startedAt = Date.now();
       const body = trackingOtpRequestSchema.safeParse(req.body);
       if (!body.success) {
         sendDomainError(res, req.id, 'validation_error', 400);
@@ -459,6 +481,9 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
       } catch {
         // Neutral response regardless of internal outcome.
       }
+      // Enumeration resistance includes timing: the response is not sent until
+      // the floor has elapsed, so a match does not measurably differ.
+      await settleUntil(startedAt, trackingMinLatencyMs());
       res.status(200).json({ status: 'challenge_sent', requestId: req.id });
     },
   );
@@ -479,6 +504,29 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
       }
       try {
         const ctx = websiteContext(req);
+        const secret = loadTrackingSecret();
+        const ipKey = req.ip ?? req.socket.remoteAddress ?? 'unknown';
+        // Code guessing is rate-limited by email and by IP, independent of the
+        // five-attempt cap on each individual challenge.
+        const emailLimit = secret
+          ? await dependencies.auth.rateLimit({
+              bucketKey: emailRateBucket(secret, ctx.workspaceId, normalizeEmail(body.data.email)),
+              windowSeconds: TRACKING_OTP_EMAIL_WINDOW_SECONDS,
+              maxCount: TRACKING_OTP_VERIFY_EMAIL_MAX_REQUESTS,
+            })
+          : { allowed: true, retryAfterSeconds: 0 };
+        const ipLimit = await dependencies.auth.rateLimit({
+          bucketKey: `tracking-verify:ip:${ctx.workspaceId}:${ipKey}`,
+          windowSeconds: TRACKING_OTP_EMAIL_WINDOW_SECONDS,
+          maxCount: TRACKING_OTP_VERIFY_EMAIL_MAX_REQUESTS * 4,
+        });
+        if (!emailLimit.allowed || !ipLimit.allowed) {
+          const retryAfter = String(
+            emailLimit.allowed ? ipLimit.retryAfterSeconds : emailLimit.retryAfterSeconds,
+          );
+          sendWebsiteError(res, req.id, 'rate_limited', 429, { 'retry-after': retryAfter });
+          return;
+        }
         const outcome = await tracking.service.verifyCode({
           workspaceId: ctx.workspaceId,
           email: body.data.email,
@@ -489,14 +537,8 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
           res.status(200).json({ status: 'verified', grant: outcome.grant, requestId: req.id });
           return;
         }
-        if (outcome.status === 'expired') {
-          sendDomainError(res, req.id, 'tracking_expired', 400);
-          return;
-        }
-        if (outcome.status === 'exhausted') {
-          sendDomainError(res, req.id, 'tracking_attempts_exceeded', 429);
-          return;
-        }
+        // One generic failure for every non-verified outcome, so a guesser never
+        // learns whether the challenge exists or how it ended.
         sendDomainError(res, req.id, 'tracking_challenge_invalid', 400);
       } catch {
         sendDomainError(res, req.id, 'internal_error', 500);

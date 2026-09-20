@@ -13,6 +13,8 @@ import { MAX_TRACKING_ATTEMPTS } from './store.js';
 export const TRACKING_OTP_TTL_MS = 10 * 60 * 1_000;
 export const TRACKING_OTP_EMAIL_WINDOW_SECONDS = 10 * 60;
 export const TRACKING_OTP_EMAIL_MAX_REQUESTS = MAX_TRACKING_ATTEMPTS;
+/** Per-email bound on code verifications (separate from code requests). */
+export const TRACKING_OTP_VERIFY_EMAIL_MAX_REQUESTS = MAX_TRACKING_ATTEMPTS * 2;
 
 export type TrackingVerifyOutcome =
   | { status: 'verified'; grant: { token: string; expiresAt: string } }

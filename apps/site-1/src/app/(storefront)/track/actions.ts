@@ -58,11 +58,9 @@ export async function verifyTrackingCode(input: {
   } catch (error) {
     const code = error instanceof BackendError ? error.code : 'internal_error';
     const message =
-      code === 'tracking_expired'
-        ? 'That code has expired. Request a new one.'
-        : code === 'tracking_attempts_exceeded'
-          ? 'Too many attempts. Request a new code.'
-          : 'That code is not valid.';
+      code === 'rate_limited'
+        ? 'Too many attempts. Please wait and try again.'
+        : 'That code is not valid or has expired. Request a new one.';
     return { ok: false, code, message };
   }
 }
