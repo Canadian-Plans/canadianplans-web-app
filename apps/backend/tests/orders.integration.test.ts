@@ -79,6 +79,9 @@ databaseDescribe('orders database transaction', () => {
 
   beforeAll(async () => {
     if (!databaseUrl) throw new Error('disposable database URL missing');
+    // Order submission hashes the lead contact for email suppression/consent
+    // (T18), so the fixture needs the key whenever a lead carries an address.
+    process.env['EMAIL_CONTACT_HASH_SECRET'] = 'orders-integration-contact-secret';
     await applyMigrations({ connectionString: databaseUrl, ssl: false });
     admin = postgres(databaseUrl, { max: 1, prepare: false, ssl: false });
     await setTestRuntimePassword(admin);
@@ -100,8 +103,8 @@ databaseDescribe('orders database transaction', () => {
       ) on conflict (id) do nothing
     `;
     await admin`
-      insert into app.leads (id, workspace_id, status, consent_version)
-      values (${LEAD}, ${WORKSPACE}, 'incomplete', 'terms-1')
+      insert into app.leads (id, workspace_id, status, consent_version, email)
+      values (${LEAD}, ${WORKSPACE}, 'incomplete', 'terms-1', 'lead@example.test')
       on conflict (id) do update set status = 'incomplete'
     `;
     // `DatabaseLeadStore` validates grant expiry against the real clock while
@@ -204,8 +207,8 @@ databaseDescribe('orders database transaction', () => {
     // G16: a fresh lead/quote/grant/key, seeded once, whose completed key is
     // retried from both sides of the fixed retry window.
     await admin`
-      insert into app.leads (id, workspace_id, status, consent_version)
-      values (${RETRY_LEAD}, ${WORKSPACE}, 'incomplete', 'terms-1')
+      insert into app.leads (id, workspace_id, status, consent_version, email)
+      values (${RETRY_LEAD}, ${WORKSPACE}, 'incomplete', 'terms-1', 'retry@example.test')
       on conflict (id) do update set status = 'incomplete'
     `;
     await admin`
@@ -246,6 +249,7 @@ databaseDescribe('orders database transaction', () => {
   });
 
   afterAll(async () => {
+    delete process.env['EMAIL_CONTACT_HASH_SECRET'];
     await clientA.close();
     await clientB.close();
     await admin.end();

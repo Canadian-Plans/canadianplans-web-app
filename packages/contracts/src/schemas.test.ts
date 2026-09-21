@@ -44,6 +44,8 @@ import {
   trackingOtpRequestSchema,
   trackingOtpResponseSchema,
   trackingStatusResponseSchema,
+  trackingVerifyRequestSchema,
+  trackingVerifyResponseSchema,
   updateLeadRequestSchema,
   updateLeadResponseSchema,
   versionedFormSchema,
@@ -466,11 +468,24 @@ const cases: ReadonlyArray<readonly [string, z.ZodType, unknown]> = [
         orderId: UUID_C,
         partnerId: UUID_A,
         ruleId: UUID_B,
+        ruleSnapshot: {
+          ruleId: UUID_B,
+          ruleType: 'fixed',
+          value: CAD(500),
+          isTest: false,
+          effectiveFrom: NOW,
+          effectiveTo: null,
+        },
         amount: CAD(500),
-        state: 'earned',
+        state: 'carrier_paid',
+        invoiceId: null,
         earnedAt: NOW,
         updatedAt: NOW,
       },
+      history: [
+        { id: UUID_A, fromState: null, toState: 'earned', createdAt: NOW },
+        { id: UUID_B, fromState: 'earned', toState: 'carrier_paid', createdAt: NOW },
+      ],
       requestId: UUID_C,
     },
   ],
@@ -492,6 +507,7 @@ const cases: ReadonlyArray<readonly [string, z.ZodType, unknown]> = [
         id: UUID_A,
         workspaceId: UUID_B,
         partnerId: UUID_C,
+        invoiceNumber: 1,
         periodStart: '2026-09-01',
         periodEnd: '2026-09-30',
         status: 'draft',
@@ -513,23 +529,23 @@ const cases: ReadonlyArray<readonly [string, z.ZodType, unknown]> = [
     },
   ],
   [
-    'trackingOtpRequest:request',
+    'trackingOtpRequest',
     trackingOtpRequestSchema,
-    { action: 'request', email: 'a@b.co', orderReference: 'CP-000123' },
+    { email: 'a@b.co', orderReference: 'CP-000123' },
   ],
   [
-    'trackingOtpRequest:verify',
-    trackingOtpRequestSchema,
-    { action: 'verify', email: 'a@b.co', orderReference: 'CP-000123', code: '123456' },
+    'trackingVerifyRequest',
+    trackingVerifyRequestSchema,
+    { email: 'a@b.co', orderReference: 'CP-000123', code: '123456' },
   ],
   [
-    'trackingOtpResponse:sent',
+    'trackingOtpResponse',
     trackingOtpResponseSchema,
     { status: 'challenge_sent', requestId: UUID_C },
   ],
   [
-    'trackingOtpResponse:verified',
-    trackingOtpResponseSchema,
+    'trackingVerifyResponse',
+    trackingVerifyResponseSchema,
     { status: 'verified', grant: { token: 't', expiresAt: NOW }, requestId: UUID_C },
   ],
   [
@@ -540,6 +556,8 @@ const cases: ReadonlyArray<readonly [string, z.ZodType, unknown]> = [
       fulfilmentStatus: 'in_progress',
       paymentState: 'paid',
       deliveryState: 'dispatched',
+      trackingReference: 'TRACK-1',
+      documentsRequired: ['passport'],
       updatedAt: NOW,
       requestId: UUID_C,
     },
@@ -606,8 +624,7 @@ describe('contract schemas reject invalid input', () => {
 
   it('rejects a tracking code that is not six digits', () => {
     expect(
-      trackingOtpRequestSchema.safeParse({
-        action: 'verify',
+      trackingVerifyRequestSchema.safeParse({
         email: 'a@b.co',
         orderReference: 'CP-1',
         code: '12',

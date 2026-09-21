@@ -1,7 +1,16 @@
 import type { z } from 'zod';
 import { catalogueStatusResponseSchema, type CatalogueStatusResponse } from './catalogue';
 
-import { createDownloadLinkResponseSchema, type CreateDownloadLinkResponse } from './files';
+import {
+  createDownloadLinkResponseSchema,
+  listWorkspaceFilesResponseSchema,
+  reviewFileRequestSchema,
+  reviewFileResponseSchema,
+  type CreateDownloadLinkResponse,
+  type ListWorkspaceFilesResponse,
+  type ReviewFileRequest,
+  type ReviewFileResponse,
+} from './files';
 import { healthResponseSchema, type HealthResponse } from './health';
 import {
   listWorkspaceJobsResponseSchema,
@@ -28,10 +37,14 @@ import {
 import {
   changeCommissionStateRequestSchema,
   changeCommissionStateResponseSchema,
+  listPartnersResponseSchema,
+  partnerDetailResponseSchema,
   partnerInvoiceRequestSchema,
   partnerInvoiceResponseSchema,
   type ChangeCommissionStateRequest,
   type ChangeCommissionStateResponse,
+  type ListPartnersResponse,
+  type PartnerDetailResponse,
   type PartnerInvoiceRequest,
   type PartnerInvoiceResponse,
 } from './partners';
@@ -65,9 +78,13 @@ import {
   trackingOtpRequestSchema,
   trackingOtpResponseSchema,
   trackingStatusResponseSchema,
+  trackingVerifyRequestSchema,
+  trackingVerifyResponseSchema,
   type TrackingOtpRequest,
   type TrackingOtpResponse,
   type TrackingStatusResponse,
+  type TrackingVerifyRequest,
+  type TrackingVerifyResponse,
 } from './tracking';
 import {
   createUploadIntentRequestSchema,
@@ -137,6 +154,17 @@ import {
   type ListWorkspaceLeadsQuery,
   type ListWorkspaceLeadsResponse,
 } from './workspace-leads';
+import {
+  sourceReportResponseSchema,
+  type SourceReportQuery,
+  type SourceReportResponse,
+} from './reports';
+import {
+  deleteCustomerDataRequestSchema,
+  deleteCustomerDataResponseSchema,
+  type DeleteCustomerDataRequest,
+  type DeleteCustomerDataResponse,
+} from './deletion';
 import { listWebsiteOffersResponseSchema, type ListWebsiteOffersResponse } from './website-offers';
 
 /**
@@ -224,14 +252,25 @@ export interface BackendClient {
     ): Promise<SubmitOrderResponse>;
   };
   uploads: {
-    createIntent(body: CreateUploadIntentRequest): Promise<CreateUploadIntentResponse>;
-    finalize(uploadId: string, body: FinalizeUploadRequest): Promise<FinalizeUploadResponse>;
+    createIntent(
+      body: CreateUploadIntentRequest,
+      options: { draftGrant: string },
+    ): Promise<CreateUploadIntentResponse>;
+    finalize(
+      uploadId: string,
+      body: FinalizeUploadRequest,
+      options: { draftGrant: string },
+    ): Promise<FinalizeUploadResponse>;
   };
   files: {
-    createDownloadLink(fileId: string): Promise<CreateDownloadLinkResponse>;
+    createDownloadLink(
+      fileId: string,
+      options: { draftGrant: string },
+    ): Promise<CreateDownloadLinkResponse>;
   };
   tracking: {
     otp(body: TrackingOtpRequest): Promise<TrackingOtpResponse>;
+    verify(body: TrackingVerifyRequest): Promise<TrackingVerifyResponse>;
     get(options: { customerGrant: string }): Promise<TrackingStatusResponse>;
   };
   staff: {
@@ -244,6 +283,7 @@ export interface BackendClient {
       workspaceId: string,
       query?: ListWorkspaceLeadsQuery,
     ): Promise<ListWorkspaceLeadsResponse>;
+    getSourceReport(workspaceId: string, query?: SourceReportQuery): Promise<SourceReportResponse>;
     catalogue(workspaceId: string): Promise<CatalogueStatusResponse>;
     listJobs(workspaceId: string): Promise<ListWorkspaceJobsResponse>;
     retryJob(workspaceId: string, jobId: string): Promise<RetryWorkspaceJobResponse>;
@@ -318,6 +358,13 @@ export interface BackendClient {
       orderId: string,
       body: RecordOrderPaymentRequest,
     ): Promise<RecordOrderPaymentResponse>;
+    deleteCustomerData(
+      workspaceId: string,
+      orderId: string,
+      body: DeleteCustomerDataRequest,
+    ): Promise<DeleteCustomerDataResponse>;
+    listPartners(workspaceId: string): Promise<ListPartnersResponse>;
+    getPartner(workspaceId: string, partnerId: string): Promise<PartnerDetailResponse>;
     changeCommissionState(
       workspaceId: string,
       partnerId: string,
@@ -329,6 +376,13 @@ export interface BackendClient {
       body: PartnerInvoiceRequest,
     ): Promise<PartnerInvoiceResponse>;
     createExport(workspaceId: string, body: CreateExportRequest): Promise<CreateExportResponse>;
+    listOrderFiles(workspaceId: string, orderId: string): Promise<ListWorkspaceFilesResponse>;
+    reviewFile(
+      workspaceId: string,
+      fileId: string,
+      body: ReviewFileRequest,
+    ): Promise<ReviewFileResponse>;
+    fileDownloadLink(workspaceId: string, fileId: string): Promise<CreateDownloadLinkResponse>;
   };
 }
 
@@ -440,27 +494,30 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
     },
 
     uploads: {
-      createIntent: (body) =>
+      createIntent: (body, opts) =>
         call({
           method: 'POST',
           path: '/api/v1/website/uploads/intents',
           body: createUploadIntentRequestSchema.parse(body),
+          headers: { 'x-draft-grant': opts.draftGrant },
           responseSchema: createUploadIntentResponseSchema,
         }),
-      finalize: (uploadId, body) =>
+      finalize: (uploadId, body, opts) =>
         call({
           method: 'POST',
           path: `/api/v1/website/uploads/${encode(uploadId)}/finalize`,
           body: finalizeUploadRequestSchema.parse(body),
+          headers: { 'x-draft-grant': opts.draftGrant },
           responseSchema: finalizeUploadResponseSchema,
         }),
     },
 
     files: {
-      createDownloadLink: (fileId) =>
+      createDownloadLink: (fileId, opts) =>
         call({
           method: 'POST',
           path: `/api/v1/website/files/${encode(fileId)}/download-link`,
+          headers: { 'x-draft-grant': opts.draftGrant },
           responseSchema: createDownloadLinkResponseSchema,
         }),
     },
@@ -472,6 +529,13 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           path: '/api/v1/website/tracking/otp',
           body: trackingOtpRequestSchema.parse(body),
           responseSchema: trackingOtpResponseSchema,
+        }),
+      verify: (body) =>
+        call({
+          method: 'POST',
+          path: '/api/v1/website/tracking/verify',
+          body: trackingVerifyRequestSchema.parse(body),
+          responseSchema: trackingVerifyResponseSchema,
         }),
       get: (opts) =>
         call({
@@ -520,6 +584,13 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           path: `/api/v1/staff/workspaces/${encode(workspaceId)}/leads`,
           query: { status: query?.status, page: query?.page, pageSize: query?.pageSize },
           responseSchema: listWorkspaceLeadsResponseSchema,
+        }),
+      getSourceReport: (workspaceId, query) =>
+        call({
+          method: 'GET',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/reports/sources`,
+          query: { from: query?.from, to: query?.to },
+          responseSchema: sourceReportResponseSchema,
         }),
       catalogue: (workspaceId) =>
         call({
@@ -666,6 +737,25 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           body: recordOrderPaymentRequestSchema.parse(body),
           responseSchema: recordOrderPaymentResponseSchema,
         }),
+      deleteCustomerData: (workspaceId, orderId, body) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/deletion`,
+          body: deleteCustomerDataRequestSchema.parse(body),
+          responseSchema: deleteCustomerDataResponseSchema,
+        }),
+      listPartners: (workspaceId) =>
+        call({
+          method: 'GET',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/partners`,
+          responseSchema: listPartnersResponseSchema,
+        }),
+      getPartner: (workspaceId, partnerId) =>
+        call({
+          method: 'GET',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/partners/${encode(partnerId)}`,
+          responseSchema: partnerDetailResponseSchema,
+        }),
       changeCommissionState: (workspaceId, partnerId, body) =>
         call({
           method: 'POST',
@@ -686,6 +776,25 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           path: `/api/v1/staff/workspaces/${encode(workspaceId)}/exports`,
           body: createExportRequestSchema.parse(body),
           responseSchema: createExportResponseSchema,
+        }),
+      listOrderFiles: (workspaceId, orderId) =>
+        call({
+          method: 'GET',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/files`,
+          responseSchema: listWorkspaceFilesResponseSchema,
+        }),
+      reviewFile: (workspaceId, fileId, body) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/files/${encode(fileId)}/review`,
+          body: reviewFileRequestSchema.parse(body),
+          responseSchema: reviewFileResponseSchema,
+        }),
+      fileDownloadLink: (workspaceId, fileId) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/files/${encode(fileId)}/download-link`,
+          responseSchema: createDownloadLinkResponseSchema,
         }),
     },
   };

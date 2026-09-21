@@ -1,17 +1,6 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@canadian-plans/ui';
+import { PartnersList } from '../../../../components/partners/partners-list';
 
-export default function PartnersPage() {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle asChild>
-          <h1>Partners</h1>
-        </CardTitle>
-        <CardDescription>No data yet — this is a placeholder route.</CardDescription>
-      </CardHeader>
-      <CardContent className="text-sm text-muted-foreground">
-        Partner directory and commission lines land once the backend partner endpoints exist.
-      </CardContent>
-    </Card>
-  );
+export default async function PartnersPage({ params }: { params: Promise<{ workspace: string }> }) {
+  const { workspace } = await params;
+  return <PartnersList workspaceSlug={workspace} />;
 }

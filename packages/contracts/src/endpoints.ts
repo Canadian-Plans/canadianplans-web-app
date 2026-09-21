@@ -1,7 +1,12 @@
 import type { z } from 'zod';
 import { catalogueStatusResponseSchema } from './catalogue';
 
-import { createDownloadLinkResponseSchema } from './files';
+import {
+  createDownloadLinkResponseSchema,
+  listWorkspaceFilesResponseSchema,
+  reviewFileRequestSchema,
+  reviewFileResponseSchema,
+} from './files';
 import {
   createLeadRequestSchema,
   createLeadResponseSchema,
@@ -19,10 +24,13 @@ import {
 import {
   changeCommissionStateRequestSchema,
   changeCommissionStateResponseSchema,
+  listPartnersResponseSchema,
+  partnerDetailResponseSchema,
   partnerInvoiceRequestSchema,
   partnerInvoiceResponseSchema,
 } from './partners';
 import { createExportRequestSchema, createExportResponseSchema } from './exports';
+import { deleteCustomerDataRequestSchema, deleteCustomerDataResponseSchema } from './deletion';
 import { healthResponseSchema } from './health';
 import { listWorkspaceJobsResponseSchema, retryWorkspaceJobResponseSchema } from './jobs';
 import {
@@ -36,6 +44,8 @@ import {
   trackingOtpRequestSchema,
   trackingOtpResponseSchema,
   trackingStatusResponseSchema,
+  trackingVerifyRequestSchema,
+  trackingVerifyResponseSchema,
 } from './tracking';
 import {
   createUploadIntentRequestSchema,
@@ -67,6 +77,7 @@ import {
   resolveOrderChangeRequestResponseSchema,
 } from './workspace-orders';
 import { listWorkspaceLeadsQuerySchema, listWorkspaceLeadsResponseSchema } from './workspace-leads';
+import { sourceReportQuerySchema, sourceReportResponseSchema } from './reports';
 import { listWebsiteOffersResponseSchema } from './website-offers';
 import { webhookAckResponseSchema, webhookDeliveryRequestSchema } from './webhooks';
 
@@ -238,6 +249,16 @@ export const endpoints: readonly EndpointDef[] = [
     response: catalogueStatusResponseSchema,
   },
   {
+    operationId: 'getSourceReport',
+    method: 'GET',
+    path: '/api/v1/staff/workspaces/{workspaceId}/reports/sources',
+    summary: 'Leads and orders by utm source/medium/campaign and by partner.',
+    auth: 'staff',
+    successStatus: 200,
+    query: sourceReportQuerySchema,
+    response: sourceReportResponseSchema,
+  },
+  {
     operationId: 'listWorkspaceJobs',
     method: 'GET',
     path: '/api/v1/staff/workspaces/{workspaceId}/jobs',
@@ -404,8 +425,37 @@ export const endpoints: readonly EndpointDef[] = [
     request: recordOrderPaymentRequestSchema,
     response: recordOrderPaymentResponseSchema,
   },
+  {
+    operationId: 'deleteCustomerData',
+    method: 'POST',
+    path: '/api/v1/staff/workspaces/{workspaceId}/orders/{orderId}/deletion',
+    summary: 'Delete a customer’s personal data for an order, keeping the commercial record.',
+    auth: 'staff',
+    successStatus: 202,
+    request: deleteCustomerDataRequestSchema,
+    response: deleteCustomerDataResponseSchema,
+  },
 
   // Staff — partners
+  {
+    operationId: 'listPartners',
+    method: 'GET',
+    path: '/api/v1/staff/workspaces/{workspaceId}/partners',
+    summary: 'List partners with referral codes and referred-order counts (Partners role).',
+    auth: 'staff',
+    successStatus: 200,
+    response: listPartnersResponseSchema,
+  },
+  {
+    operationId: 'getPartner',
+    method: 'GET',
+    path: '/api/v1/staff/workspaces/{workspaceId}/partners/{partnerId}',
+    summary:
+      'Read one partner with referred orders and commission lines (payout amounts require financial.read).',
+    auth: 'staff',
+    successStatus: 200,
+    response: partnerDetailResponseSchema,
+  },
   {
     operationId: 'changeCommissionState',
     method: 'POST',
@@ -501,6 +551,7 @@ export const endpoints: readonly EndpointDef[] = [
     successStatus: 201,
     request: createUploadIntentRequestSchema,
     response: createUploadIntentResponseSchema,
+    headers: [DRAFT_GRANT],
   },
   {
     operationId: 'finalizeUpload',
@@ -511,6 +562,7 @@ export const endpoints: readonly EndpointDef[] = [
     successStatus: 200,
     request: finalizeUploadRequestSchema,
     response: finalizeUploadResponseSchema,
+    headers: [DRAFT_GRANT],
   },
   {
     operationId: 'createDownloadLink',
@@ -520,16 +572,55 @@ export const endpoints: readonly EndpointDef[] = [
     auth: 'website',
     successStatus: 200,
     response: createDownloadLinkResponseSchema,
+    headers: [DRAFT_GRANT],
+  },
+  {
+    operationId: 'listWorkspaceFiles',
+    method: 'GET',
+    path: '/api/v1/staff/workspaces/{workspaceId}/orders/{orderId}/files',
+    summary: 'List the documents attached to an order for the admin Documents panel.',
+    auth: 'staff',
+    successStatus: 200,
+    response: listWorkspaceFilesResponseSchema,
+  },
+  {
+    operationId: 'reviewWorkspaceFile',
+    method: 'POST',
+    path: '/api/v1/staff/workspaces/{workspaceId}/files/{fileId}/review',
+    summary: 'Approve or reject a document with an optional note.',
+    auth: 'staff',
+    successStatus: 200,
+    request: reviewFileRequestSchema,
+    response: reviewFileResponseSchema,
+  },
+  {
+    operationId: 'createWorkspaceFileDownloadLink',
+    method: 'POST',
+    path: '/api/v1/staff/workspaces/{workspaceId}/files/{fileId}/download-link',
+    summary: 'Issue a short-lived signed download URL after a document-download permission check.',
+    auth: 'staff',
+    successStatus: 200,
+    response: createDownloadLinkResponseSchema,
   },
   {
     operationId: 'requestTrackingOtp',
     method: 'POST',
     path: '/api/v1/website/tracking/otp',
-    summary: 'Request or verify an order-tracking OTP.',
+    summary: 'Request a six-digit order-tracking code (always acknowledged neutrally).',
     auth: 'website',
     successStatus: 200,
     request: trackingOtpRequestSchema,
     response: trackingOtpResponseSchema,
+  },
+  {
+    operationId: 'verifyTrackingOtp',
+    method: 'POST',
+    path: '/api/v1/website/tracking/verify',
+    summary: 'Verify a six-digit code and receive a scoped 30-minute tracking grant.',
+    auth: 'website',
+    successStatus: 200,
+    request: trackingVerifyRequestSchema,
+    response: trackingVerifyResponseSchema,
   },
   {
     operationId: 'getTracking',

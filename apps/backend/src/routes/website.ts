@@ -4,13 +4,23 @@ import {
   commercialOfferSchema,
   createLeadRequestSchema,
   createQuoteRequestSchema,
+  createUploadIntentRequestSchema,
+  finalizeUploadRequestSchema,
   submitOrderRequestSchema,
+  trackingOtpRequestSchema,
+  trackingVerifyRequestSchema,
   updateLeadRequestSchema,
 } from '@canadian-plans/contracts';
 import { z } from 'zod';
 
+import { DatabaseDraftGrantVerifier, type DraftGrantVerifier } from '../documents/grant.js';
+import { createDocumentServiceFromEnv } from '../documents/factory.js';
+import { toFileSummary } from '../documents/summary.js';
+import type { DocumentService } from '../documents/service.js';
+
 import { sendDomainError } from '../http/domain-errors.js';
 import { isConnectionLevelError, logRequestError } from '../http/logger.js';
+import { sendWebsiteError } from '../http/website-errors.js';
 import { CatalogueService, providerResolverFromRegistry } from '../catalogue/service.js';
 import { loadQuoteWithdrawalPolicy } from '../catalogue/policy.js';
 import { DatabaseCatalogueStore, type CatalogueStore } from '../catalogue/store.js';
@@ -20,6 +30,20 @@ import { createTurnstileVerifier } from '../website/turnstile.js';
 import { loadMachineRegistry } from '../machines/registry.js';
 import { OrderService } from '../orders/service.js';
 import { DatabaseOrderStore } from '../orders/store.js';
+import {
+  emailRateBucket,
+  loadTrackingSecret,
+  normalizeEmail,
+  verifyTrackingGrant,
+} from '../tracking/secrets.js';
+import { loadTrackingNotifier } from '../tracking/notifier.js';
+import { DatabaseTrackingStore } from '../tracking/store.js';
+import {
+  TRACKING_OTP_EMAIL_MAX_REQUESTS,
+  TRACKING_OTP_EMAIL_WINDOW_SECONDS,
+  TRACKING_OTP_VERIFY_EMAIL_MAX_REQUESTS,
+  TrackingService,
+} from '../tracking/service.js';
 import {
   requireScope,
   requireWebsiteCredential,
@@ -33,6 +57,11 @@ export interface WebsiteRouteDependencies {
   quotes?: { service: Pick<CatalogueService, 'createQuote'> };
   orders?: { service: Pick<OrderService, 'submit'> };
   catalogue?: { store: Pick<CatalogueStore, 'listPublishedOffers'> };
+  documents?: {
+    service: Pick<DocumentService, 'createIntent' | 'finalize' | 'issueDownload'>;
+    grants: DraftGrantVerifier;
+  };
+  tracking?: { service: TrackingService };
 }
 
 export function createDefaultWebsiteRouteDependencies(): WebsiteRouteDependencies {
@@ -60,7 +89,21 @@ export function createDefaultWebsiteRouteDependencies(): WebsiteRouteDependencie
       service: new OrderService(new DatabaseOrderStore(), loadQuoteWithdrawalPolicy()),
     },
     catalogue: { store: new DatabaseCatalogueStore() },
+    ...documentsDependencies(),
+    tracking: {
+      service: new TrackingService({
+        store: new DatabaseTrackingStore(),
+        notifier: loadTrackingNotifier(),
+        secret: loadTrackingSecret(),
+      }),
+    },
   };
+}
+
+function documentsDependencies(): Pick<WebsiteRouteDependencies, 'documents'> {
+  const service = createDocumentServiceFromEnv();
+  if (!service) return {};
+  return { documents: { service, grants: new DatabaseDraftGrantVerifier() } };
 }
 
 /** Exact T10 public path (`POST /api/v1/quotes`) with website authentication. */
@@ -378,6 +421,375 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
       sendDomainError(res, req.id, 'internal_error', 500);
     }
   });
+
+  // ---- Customer document uploads (T17) -----------------------------------
+  // The service credential proves the workspace; the draft grant proves which
+  // lead the customer owns. Uploads attach to that lead (invariant 2/8).
+  const documents = dependencies.documents;
+
+  router.post('/uploads/intents', requireScope('uploads:customer'), async (req, res) => {
+    if (!documents) {
+      sendDomainError(res, req.id, 'feature_not_ready', 409);
+      return;
+    }
+    const body = createUploadIntentRequestSchema.safeParse(req.body);
+    const grantToken = requireDraftGrant(req);
+    if (!body.success) {
+      sendDomainError(res, req.id, 'validation_error', 400);
+      return;
+    }
+    if (!grantToken) {
+      sendDomainError(res, req.id, 'draft_not_found', 401);
+      return;
+    }
+    try {
+      const ctx = websiteContext(req);
+      const leadId = await documents.grants.verifyLead({
+        workspaceId: ctx.workspaceId,
+        actorId: ctx.credentialId,
+        grantToken,
+        now: new Date(),
+      });
+      // Customer uploads only ever attach to their own lead. `parentType` must be
+      // 'lead' and `parentId` must match the grant's lead.
+      if (!leadId || body.data.parentType !== 'lead' || body.data.parentId !== leadId) {
+        sendDomainError(res, req.id, 'draft_not_found', 401);
+        return;
+      }
+      const outcome = await documents.service.createIntent({
+        workspaceId: ctx.workspaceId,
+        actorId: ctx.credentialId,
+        requestId: req.id,
+        recordType: 'lead',
+        recordId: leadId,
+        documentType: body.data.documentType,
+        declaredContentType: body.data.contentType,
+        declaredSizeBytes: body.data.sizeBytes,
+      });
+      if (outcome.status === 'created') {
+        res.status(201).json({
+          uploadId: outcome.uploadId,
+          url: outcome.url,
+          method: 'PUT',
+          headers: outcome.headers,
+          expiresAt: outcome.expiresAt.toISOString(),
+          requestId: req.id,
+        });
+        return;
+      }
+      if (outcome.status === 'parent_not_found') {
+        sendDomainError(res, req.id, 'draft_not_found', 401);
+        return;
+      }
+      if (outcome.status === 'too_large') {
+        sendDomainError(res, req.id, 'document_too_large', 413);
+        return;
+      }
+      sendDomainError(res, req.id, 'checklist_mismatch', 409);
+    } catch {
+      sendDomainError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.post('/uploads/:uploadId/finalize', requireScope('uploads:customer'), async (req, res) => {
+    if (!documents) {
+      sendDomainError(res, req.id, 'feature_not_ready', 409);
+      return;
+    }
+    const uploadId = z.uuid().safeParse(req.params['uploadId']);
+    const body = finalizeUploadRequestSchema.safeParse(req.body);
+    const grantToken = requireDraftGrant(req);
+    if (!uploadId.success || !body.success) {
+      sendDomainError(res, req.id, 'validation_error', 400);
+      return;
+    }
+    if (!grantToken) {
+      sendDomainError(res, req.id, 'draft_not_found', 401);
+      return;
+    }
+    try {
+      const ctx = websiteContext(req);
+      const leadId = await documents.grants.verifyLead({
+        workspaceId: ctx.workspaceId,
+        actorId: ctx.credentialId,
+        grantToken,
+        now: new Date(),
+      });
+      if (!leadId) {
+        sendDomainError(res, req.id, 'draft_not_found', 401);
+        return;
+      }
+      const outcome = await documents.service.finalize({
+        workspaceId: ctx.workspaceId,
+        actorId: ctx.credentialId,
+        requestId: req.id,
+        fileId: uploadId.data,
+        checksumSha256: body.data.checksumSha256,
+        ownedLeadId: leadId,
+      });
+      switch (outcome.status) {
+        case 'available':
+          res.json({ file: toFileSummary(outcome.file), requestId: req.id });
+          return;
+        case 'rejected':
+          sendDomainError(res, req.id, 'document_verification_failed', 422, {
+            reason: outcome.reason,
+          });
+          return;
+        case 'in_progress':
+          res.setHeader('retry-after', '2');
+          sendDomainError(res, req.id, 'verification_in_progress', 409, { retryable: true });
+          return;
+        case 'expired':
+          sendDomainError(res, req.id, 'upload_expired', 410);
+          return;
+        case 'not_found':
+          sendDomainError(res, req.id, 'upload_not_found', 404);
+          return;
+      }
+    } catch {
+      sendDomainError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.post(
+    '/files/:fileId/download-link',
+    requireScope('uploads:customer'),
+    async (req, res) => {
+      if (!documents) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const fileId = z.uuid().safeParse(req.params['fileId']);
+      const grantToken = requireDraftGrant(req);
+      if (!fileId.success) {
+        sendDomainError(res, req.id, 'validation_error', 400);
+        return;
+      }
+      if (!grantToken) {
+        sendDomainError(res, req.id, 'draft_not_found', 401);
+        return;
+      }
+      try {
+        const ctx = websiteContext(req);
+        const leadId = await documents.grants.verifyLead({
+          workspaceId: ctx.workspaceId,
+          actorId: ctx.credentialId,
+          grantToken,
+          now: new Date(),
+        });
+        if (!leadId) {
+          sendDomainError(res, req.id, 'draft_not_found', 401);
+          return;
+        }
+        const outcome = await documents.service.issueDownload({
+          workspaceId: ctx.workspaceId,
+          actorId: ctx.credentialId,
+          fileId: fileId.data,
+          ownedLeadId: leadId,
+        });
+        if (outcome.status === 'issued') {
+          res.json({
+            url: outcome.url,
+            expiresAt: outcome.expiresAt.toISOString(),
+            requestId: req.id,
+          });
+          return;
+        }
+        if (outcome.status === 'not_available') {
+          sendDomainError(res, req.id, 'file_not_available', 409);
+          return;
+        }
+        sendDomainError(res, req.id, 'file_not_found', 404);
+      } catch {
+        sendDomainError(res, req.id, 'internal_error', 500);
+      }
+    },
+  );
+
+  return router;
+}
+
+/** Default minimum latency for the neutral OTP response (env-overridable for tests). */
+const TRACKING_OTP_MIN_LATENCY_DEFAULT_MS = 500;
+const TRACKING_OTP_MIN_LATENCY_MAX_MS = 5_000;
+
+/** Resolves the neutral-response floor. `TRACKING_OTP_MIN_LATENCY_MS` may lower it for tests. */
+function trackingMinLatencyMs(env: NodeJS.ProcessEnv = process.env): number {
+  const raw = Number(env.TRACKING_OTP_MIN_LATENCY_MS);
+  if (Number.isFinite(raw) && raw >= 0 && raw <= TRACKING_OTP_MIN_LATENCY_MAX_MS) {
+    return Math.round(raw);
+  }
+  return TRACKING_OTP_MIN_LATENCY_DEFAULT_MS;
+}
+
+/** Waits until `floorMs` has elapsed since `startMs`, so a response is timing-independent. */
+async function settleUntil(startMs: number, floorMs: number): Promise<void> {
+  const remaining = startMs + floorMs - Date.now();
+  if (remaining > 0) await new Promise((resolve) => setTimeout(resolve, remaining));
+}
+
+/**
+ * Customer order tracking (T22, REQ 05). `POST /tracking/otp` always answers the
+ * same neutral acknowledgement so a caller cannot tell whether the reference +
+ * email matched an order; the code is only sent on a match. `verify` consumes
+ * the code atomically and returns a 30-minute grant; `GET /tracking` requires
+ * the grant and is bound to the credential's own workspace.
+ */
+export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Router {
+  const router = Router();
+  const tracking = dependencies.tracking;
+  if (!tracking) return router;
+
+  router.post(
+    '/tracking/otp',
+    requireWebsiteCredential(dependencies.auth),
+    requireScope('tracking:otp'),
+    async (req, res) => {
+      const startedAt = Date.now();
+      const body = trackingOtpRequestSchema.safeParse(req.body);
+      if (!body.success) {
+        sendDomainError(res, req.id, 'validation_error', 400);
+        return;
+      }
+      try {
+        const ctx = websiteContext(req);
+        if (tracking.service.configured) {
+          const secret = loadTrackingSecret();
+          const ipKey = req.ip ?? req.socket.remoteAddress ?? 'unknown';
+          const emailLimit = secret
+            ? await dependencies.auth.rateLimit({
+                bucketKey: emailRateBucket(
+                  secret,
+                  ctx.workspaceId,
+                  normalizeEmail(body.data.email),
+                ),
+                windowSeconds: TRACKING_OTP_EMAIL_WINDOW_SECONDS,
+                maxCount: TRACKING_OTP_EMAIL_MAX_REQUESTS,
+              })
+            : { allowed: true, retryAfterSeconds: 0 };
+          const ipLimit = await dependencies.auth.rateLimit({
+            bucketKey: `tracking-otp:ip:${ctx.workspaceId}:${ipKey}`,
+            windowSeconds: TRACKING_OTP_EMAIL_WINDOW_SECONDS,
+            maxCount: TRACKING_OTP_EMAIL_MAX_REQUESTS * 4,
+          });
+          if (emailLimit.allowed && ipLimit.allowed) {
+            await tracking.service.requestCode({
+              workspaceId: ctx.workspaceId,
+              email: body.data.email,
+              orderReference: body.data.orderReference,
+            });
+          }
+        }
+      } catch {
+        // Neutral response regardless of internal outcome.
+      }
+      // Enumeration resistance includes timing: the response is not sent until
+      // the floor has elapsed, so a match does not measurably differ.
+      await settleUntil(startedAt, trackingMinLatencyMs());
+      res.status(200).json({ status: 'challenge_sent', requestId: req.id });
+    },
+  );
+
+  router.post(
+    '/tracking/verify',
+    requireWebsiteCredential(dependencies.auth),
+    requireScope('tracking:otp'),
+    async (req, res) => {
+      const body = trackingVerifyRequestSchema.safeParse(req.body);
+      if (!body.success) {
+        sendDomainError(res, req.id, 'validation_error', 400);
+        return;
+      }
+      if (!tracking.service.configured) {
+        sendDomainError(res, req.id, 'persistence_unavailable', 503, { retryable: true });
+        return;
+      }
+      try {
+        const ctx = websiteContext(req);
+        const secret = loadTrackingSecret();
+        const ipKey = req.ip ?? req.socket.remoteAddress ?? 'unknown';
+        // Code guessing is rate-limited by email and by IP, independent of the
+        // five-attempt cap on each individual challenge.
+        const emailLimit = secret
+          ? await dependencies.auth.rateLimit({
+              bucketKey: emailRateBucket(secret, ctx.workspaceId, normalizeEmail(body.data.email)),
+              windowSeconds: TRACKING_OTP_EMAIL_WINDOW_SECONDS,
+              maxCount: TRACKING_OTP_VERIFY_EMAIL_MAX_REQUESTS,
+            })
+          : { allowed: true, retryAfterSeconds: 0 };
+        const ipLimit = await dependencies.auth.rateLimit({
+          bucketKey: `tracking-verify:ip:${ctx.workspaceId}:${ipKey}`,
+          windowSeconds: TRACKING_OTP_EMAIL_WINDOW_SECONDS,
+          maxCount: TRACKING_OTP_VERIFY_EMAIL_MAX_REQUESTS * 4,
+        });
+        if (!emailLimit.allowed || !ipLimit.allowed) {
+          const retryAfter = String(
+            emailLimit.allowed ? ipLimit.retryAfterSeconds : emailLimit.retryAfterSeconds,
+          );
+          sendWebsiteError(res, req.id, 'rate_limited', 429, { 'retry-after': retryAfter });
+          return;
+        }
+        const outcome = await tracking.service.verifyCode({
+          workspaceId: ctx.workspaceId,
+          email: body.data.email,
+          orderReference: body.data.orderReference,
+          code: body.data.code,
+        });
+        if (outcome.status === 'verified') {
+          res.status(200).json({ status: 'verified', grant: outcome.grant, requestId: req.id });
+          return;
+        }
+        // One generic failure for every non-verified outcome, so a guesser never
+        // learns whether the challenge exists or how it ended.
+        sendDomainError(res, req.id, 'tracking_challenge_invalid', 400);
+      } catch {
+        sendDomainError(res, req.id, 'internal_error', 500);
+      }
+    },
+  );
+
+  router.get(
+    '/tracking',
+    requireWebsiteCredential(dependencies.auth),
+    requireScope('tracking:otp'),
+    async (req, res) => {
+      if (!tracking.service.configured) {
+        sendDomainError(res, req.id, 'persistence_unavailable', 503, { retryable: true });
+        return;
+      }
+      const secret = loadTrackingSecret();
+      const token = req.get('x-customer-grant');
+      if (!secret || !token) {
+        sendDomainError(res, req.id, 'not_found', 401);
+        return;
+      }
+      const ctx = websiteContext(req);
+      const payload = verifyTrackingGrant(secret, token, Date.now());
+      // The grant is bound to one workspace; a foreign-workspace grant is denied.
+      if (!payload || payload.workspaceId !== ctx.workspaceId) {
+        sendDomainError(res, req.id, 'not_found', 401);
+        return;
+      }
+      try {
+        const status = await tracking.service.status({
+          workspaceId: ctx.workspaceId,
+          orderId: payload.orderId,
+        });
+        if (!status) {
+          sendDomainError(res, req.id, 'order_not_found', 404);
+          return;
+        }
+        res.status(200).json({
+          ...status,
+          updatedAt: status.updatedAt.toISOString(),
+          requestId: req.id,
+        });
+      } catch {
+        sendDomainError(res, req.id, 'internal_error', 500);
+      }
+    },
+  );
 
   return router;
 }

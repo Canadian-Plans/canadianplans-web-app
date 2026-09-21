@@ -11,6 +11,7 @@ import {
   createDefaultWebsiteRouteDependencies,
   createOrderRouter,
   createQuoteRouter,
+  createTrackingRouter,
   createWebsiteRouter,
   type WebsiteRouteDependencies,
 } from './routes/website.js';
@@ -29,6 +30,11 @@ import {
   createDefaultCatalogueSyncRouteDependencies,
   type CatalogueSyncRouteDependencies,
 } from './routes/catalogue-sync.js';
+import {
+  createDefaultEmailRouteDependencies,
+  createEmailRouter,
+  type EmailRouteDependencies,
+} from './routes/email.js';
 
 export interface CreateAppOptions {
   staff?: StaffRouteDependencies;
@@ -36,6 +42,7 @@ export interface CreateAppOptions {
   sanityWebhook?: SanityWebhookDependencies;
   jobs?: JobsRouteDependencies;
   catalogueSync?: CatalogueSyncRouteDependencies;
+  email?: EmailRouteDependencies;
 }
 
 function adminCors(): RequestHandler {
@@ -99,6 +106,11 @@ export function createApp(options: CreateAppOptions = {}): Express {
   app.use('/api/v1', createQuoteRouter(websiteDependencies));
   app.use('/api/v1', createOrderRouter(websiteDependencies));
   app.use('/api/v1/website', createWebsiteRouter(websiteDependencies));
+  app.use('/api/v1/website', createTrackingRouter(websiteDependencies));
+  app.use(
+    '/api/v1/email',
+    createEmailRouter(options.email ?? createDefaultEmailRouteDependencies()),
+  );
   app.use(invalidBodyError);
 
   return app;

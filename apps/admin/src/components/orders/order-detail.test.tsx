@@ -28,6 +28,9 @@ const mocks = vi.hoisted(() => {
     createOrderChangeRequest: vi.fn(),
     resolveOrderChangeRequest: vi.fn(),
     recordOrderPayment: vi.fn(),
+    listOrderFiles: vi.fn(),
+    reviewFile: vi.fn(),
+    createFileDownloadLink: vi.fn(),
   };
 });
 
@@ -44,6 +47,9 @@ vi.mock('../../lib/api', () => ({
   createOrderChangeRequest: mocks.createOrderChangeRequest,
   resolveOrderChangeRequest: mocks.resolveOrderChangeRequest,
   recordOrderPayment: mocks.recordOrderPayment,
+  listOrderFiles: mocks.listOrderFiles,
+  reviewFile: mocks.reviewFile,
+  createFileDownloadLink: mocks.createFileDownloadLink,
 }));
 
 vi.mock('../staff-session-provider', () => ({
@@ -174,6 +180,8 @@ beforeEach(() => {
   mocks.createOrderChangeRequest.mockReset();
   mocks.resolveOrderChangeRequest.mockReset();
   mocks.recordOrderPayment.mockReset();
+  mocks.listOrderFiles.mockReset();
+  mocks.listOrderFiles.mockResolvedValue({ files: [], requestId: 'request' });
   refreshFromState();
   mocks.listOrderAssignees.mockResolvedValue({
     members: [

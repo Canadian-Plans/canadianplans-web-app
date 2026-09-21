@@ -8,10 +8,18 @@ import {
   type CreateOrderNoteRequest,
   type CreateOrderReminderRequest,
   type CreateOrderReminderResponse,
+  type CreateDownloadLinkResponse,
   type CreateServiceCredentialRequest,
   type CreateServiceCredentialResponse,
   type CatalogueStatusResponse,
+  type ChangeCommissionStateRequest,
+  type ChangeCommissionStateResponse,
   type DeleteOrderReminderResponse,
+  type ListWorkspaceFilesResponse,
+  type ReviewFileRequest,
+  type ReviewFileResponse,
+  type ListPartnersResponse,
+  type PartnerDetailResponse,
   type GetWorkspaceOrderResponse,
   type HealthResponse,
   type InviteStaffRequest,
@@ -35,6 +43,8 @@ import {
   type RetryWorkspaceJobResponse,
   type RevokeServiceCredentialResponse,
   type RevokeStaffResponse,
+  type SourceReportQuery,
+  type SourceReportResponse,
   type StaffWorkspaceAccessResponse,
   type StaffWorkspacesResponse,
 } from '@canadian-plans/contracts';
@@ -122,6 +132,14 @@ export async function getCatalogueStatus(
   workspaceId: string,
 ): Promise<CatalogueStatusResponse> {
   return client(accessToken).staff.catalogue(workspaceId);
+}
+
+export async function getSourceReport(
+  accessToken: string,
+  workspaceId: string,
+  query?: SourceReportQuery,
+): Promise<SourceReportResponse> {
+  return client(accessToken).staff.getSourceReport(workspaceId, query);
 }
 
 export async function listWorkspaceJobs(
@@ -265,4 +283,59 @@ export async function recordOrderPayment(
   body: RecordOrderPaymentRequest,
 ): Promise<RecordOrderPaymentResponse> {
   return client(accessToken).staff.recordOrderPayment(workspaceId, orderId, body);
+}
+
+// ---- Documents (T17). Listing reveals metadata (workspace.read); downloading
+// an original requires the document.download permission, checked server-side. ----
+
+export async function listOrderFiles(
+  accessToken: string,
+  workspaceId: string,
+  orderId: string,
+): Promise<ListWorkspaceFilesResponse> {
+  return client(accessToken).staff.listOrderFiles(workspaceId, orderId);
+}
+
+export async function reviewFile(
+  accessToken: string,
+  workspaceId: string,
+  fileId: string,
+  body: ReviewFileRequest,
+): Promise<ReviewFileResponse> {
+  return client(accessToken).staff.reviewFile(workspaceId, fileId, body);
+}
+
+export async function createFileDownloadLink(
+  accessToken: string,
+  workspaceId: string,
+  fileId: string,
+): Promise<CreateDownloadLinkResponse> {
+  return client(accessToken).staff.fileDownloadLink(workspaceId, fileId);
+}
+
+// ---- Partners and commissions (T19). Directory and payout actions go through
+// the backend; the admin holds no commission rules of its own. ----
+
+export async function listPartners(
+  accessToken: string,
+  workspaceId: string,
+): Promise<ListPartnersResponse> {
+  return client(accessToken).staff.listPartners(workspaceId);
+}
+
+export async function getPartner(
+  accessToken: string,
+  workspaceId: string,
+  partnerId: string,
+): Promise<PartnerDetailResponse> {
+  return client(accessToken).staff.getPartner(workspaceId, partnerId);
+}
+
+export async function changeCommissionState(
+  accessToken: string,
+  workspaceId: string,
+  partnerId: string,
+  body: ChangeCommissionStateRequest,
+): Promise<ChangeCommissionStateResponse> {
+  return client(accessToken).staff.changeCommissionState(workspaceId, partnerId, body);
 }

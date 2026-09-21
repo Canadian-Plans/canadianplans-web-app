@@ -62,7 +62,7 @@ import { hashServiceSecret } from '../../src/website/credential.js';
 import type { PublishedOffer } from '@canadian-plans/contracts';
 import { commercialOfferSchema } from '@canadian-plans/contracts';
 import type { SanityCatalogue, SiteRevalidator } from '@canadian-plans/adapters';
-import { FakeAnalyticsAdapter, FakeEmailAdapter } from '@canadian-plans/adapters';
+import { FakeAnalyticsSink, FakeEmailAdapter } from '@canadian-plans/adapters';
 import {
   createJobHandlerRegistry,
   JobHandlerError,
@@ -349,11 +349,18 @@ const staff: StaffRouteDependencies = {
 // Seam 5: a harness-owned outbox runner. The analytics handler and store are
 // real; only the email handler gains an armable permanent failure.
 const emailAdapter = new FakeEmailAdapter();
-const analyticsAdapter = new FakeAnalyticsAdapter();
+const analyticsSink = new FakeAnalyticsSink();
 let armEmailFailure = false;
 
 function buildOutboxHandlers(): JobHandlerRegistry {
-  const real = createJobHandlerRegistry({ email: emailAdapter, analytics: analyticsAdapter });
+  const real = createJobHandlerRegistry({
+    email: emailAdapter,
+    analytics: analyticsSink,
+    eligibility: {
+      checkTransactional: async () => ({ eligible: true }),
+      checkMarketing: async () => ({ eligible: true }),
+    },
+  });
   const realEmail = real.get('order_acknowledgement_email');
   if (!realEmail) throw new Error('email handler missing from registry');
   const emailWithSeam: JobHandler = async (job, signal) => {

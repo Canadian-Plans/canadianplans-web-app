@@ -6,10 +6,11 @@ import {
   createJobHandlerRegistry,
   retryDelayMs,
   type ClaimedJob,
+  type EmailEligibilityChecker,
   type JobOutcome,
   type OutboxStore,
 } from '../src/index.js';
-import { FakeAnalyticsAdapter, FakeEmailAdapter } from '@canadian-plans/adapters';
+import { FakeAnalyticsSink, FakeEmailAdapter } from '@canadian-plans/adapters';
 
 const job = (overrides: Partial<ClaimedJob> = {}): ClaimedJob => ({
   id: crypto.randomUUID(),
@@ -213,13 +214,22 @@ describe('outbox runner', () => {
 
   it('only sends sanitized analytics identifiers and stable email message ids', async () => {
     const email = new FakeEmailAdapter();
-    const analytics = new FakeAnalyticsAdapter();
-    const registry = createJobHandlerRegistry({ email, analytics });
+    const analytics = new FakeAnalyticsSink();
+    const eligibility: EmailEligibilityChecker = {
+      checkTransactional: async () => ({ eligible: true }),
+      checkMarketing: async () => ({ eligible: true }),
+    };
+    const registry = createJobHandlerRegistry({ email, analytics, eligibility });
     const analyticsJob = job();
     await registry.get('analytics_order_submitted')?.(analyticsJob);
     const emailJob = job({
       jobType: 'order_acknowledgement_email',
-      payload: { orderId: '22222222-2222-4222-8222-222222222222', reference: 'CP-ABC123' },
+      payload: {
+        orderId: '22222222-2222-4222-8222-222222222222',
+        reference: 'CP-ABC123',
+        toAddress: 'customer@example.com',
+        contactHash: 'hash-1',
+      },
     });
     await registry.get('order_acknowledgement_email')?.(emailJob);
     await registry.get('order_acknowledgement_email')?.(emailJob);
@@ -229,12 +239,169 @@ describe('outbox runner', () => {
         workspaceId: analyticsJob.workspaceId,
         eventId: analyticsJob.messageId,
         name: 'order_submitted',
-        orderId: '22222222-2222-4222-8222-222222222222',
+        subjectId: '22222222-2222-4222-8222-222222222222',
       },
     ]);
     expect(email.deliveries).toHaveLength(1);
     expect(email.deliveries[0]?.messageId).toBe(emailJob.messageId);
     expect(registry.has('commission_placeholder')).toBe(false);
+  });
+
+  it('emits exactly one lead_saved event for the lead job', async () => {
+    const email = new FakeEmailAdapter();
+    const analytics = new FakeAnalyticsSink();
+    const eligibility: EmailEligibilityChecker = {
+      checkTransactional: async () => ({ eligible: true }),
+      checkMarketing: async () => ({ eligible: true }),
+    };
+    const registry = createJobHandlerRegistry({ email, analytics, eligibility });
+    const leadJob = job({
+      jobType: 'analytics_lead_saved',
+      payload: { leadId: '44444444-4444-4444-8444-444444444444' },
+    });
+
+    const result = await registry.get('analytics_lead_saved')?.(leadJob);
+
+    expect(result?.status).toBe('completed');
+    expect(analytics.events).toEqual([
+      {
+        workspaceId: leadJob.workspaceId,
+        eventId: leadJob.messageId,
+        name: 'lead_saved',
+        subjectId: '44444444-4444-4444-8444-444444444444',
+      },
+    ]);
+  });
+
+  it('never sends a transactional email a second time for the same duplicate logical job', async () => {
+    const email = new FakeEmailAdapter();
+    const eligibility: EmailEligibilityChecker = {
+      checkTransactional: async () => ({ eligible: true }),
+      checkMarketing: async () => ({ eligible: true }),
+    };
+    const registry = createJobHandlerRegistry({
+      email,
+      analytics: new FakeAnalyticsSink(),
+      eligibility,
+    });
+    const duplicateJob = job({
+      jobType: 'order_status_email',
+      payload: {
+        orderId: '22222222-2222-4222-8222-222222222222',
+        reference: 'CP-DUP001',
+        toAddress: 'customer@example.com',
+        contactHash: 'hash-dup',
+      },
+    });
+    const first = await registry.get('order_status_email')?.(duplicateJob);
+    const second = await registry.get('order_status_email')?.(duplicateJob);
+
+    expect(email.deliveries).toHaveLength(1);
+    expect(first).toMatchObject({ status: 'completed' });
+    expect(second).toEqual(first);
+  });
+
+  it('blocks a transactional send under a hard-bounce/complaint suppression but never checks marketing opt-out for it', async () => {
+    const email = new FakeEmailAdapter();
+    let marketingChecked = false;
+    const eligibility: EmailEligibilityChecker = {
+      checkTransactional: async () => ({ eligible: false, reason: 'hard_bounce' }),
+      checkMarketing: async () => {
+        marketingChecked = true;
+        return { eligible: true };
+      },
+    };
+    const registry = createJobHandlerRegistry({
+      email,
+      analytics: new FakeAnalyticsSink(),
+      eligibility,
+    });
+    const suppressedJob = job({
+      jobType: 'order_dispatch_email',
+      payload: {
+        orderId: '22222222-2222-4222-8222-222222222222',
+        reference: 'CP-SUP001',
+        toAddress: 'bounced@example.com',
+        contactHash: 'hash-bounced',
+      },
+    });
+    const outcome = await registry.get('order_dispatch_email')?.(suppressedJob);
+
+    expect(email.deliveries).toHaveLength(0);
+    expect(outcome).toMatchObject({ status: 'completed' });
+    expect(marketingChecked).toBe(false);
+  });
+
+  it('allows a transactional send for a contact who only opted out of marketing', async () => {
+    const email = new FakeEmailAdapter();
+    const eligibility: EmailEligibilityChecker = {
+      // checkTransactional never consults marketing consent, so a
+      // marketing-only opt-out must never make this ineligible.
+      checkTransactional: async () => ({ eligible: true }),
+      checkMarketing: async () => ({ eligible: false, reason: 'opted_out' }),
+    };
+    const registry = createJobHandlerRegistry({
+      email,
+      analytics: new FakeAnalyticsSink(),
+      eligibility,
+    });
+    const transactionalJob = job({
+      jobType: 'order_activation_email',
+      payload: {
+        orderId: '22222222-2222-4222-8222-222222222222',
+        reference: 'CP-OPT001',
+        toAddress: 'optedout@example.com',
+        contactHash: 'hash-optout',
+      },
+    });
+    const outcome = await registry.get('order_activation_email')?.(transactionalJob);
+
+    expect(email.deliveries).toHaveLength(1);
+    expect(outcome).toMatchObject({ status: 'completed' });
+  });
+
+  it('honours a marketing opt-out for the abandoned-form marketing template', async () => {
+    const email = new FakeEmailAdapter();
+    const eligibility: EmailEligibilityChecker = {
+      checkTransactional: async () => ({ eligible: true }),
+      checkMarketing: async () => ({ eligible: false, reason: 'opted_out' }),
+    };
+    const registry = createJobHandlerRegistry({
+      email,
+      analytics: new FakeAnalyticsSink(),
+      eligibility,
+    });
+    const marketingJob = job({
+      jobType: 'abandoned_form_marketing_email',
+      payload: {
+        leadId: '44444444-4444-4444-8444-444444444444',
+        toAddress: 'lead@example.com',
+        contactHash: 'hash-lead',
+        unsubscribeUrl: 'https://example.com/unsubscribe?token=abc',
+      },
+    });
+    const outcome = await registry.get('abandoned_form_marketing_email')?.(marketingJob);
+
+    expect(email.deliveries).toHaveLength(0);
+    expect(outcome).toMatchObject({ status: 'completed' });
+  });
+
+  it('rejects an unsupported payload version and an invalid provider event error code', async () => {
+    const email = new FakeEmailAdapter();
+    const eligibility: EmailEligibilityChecker = {
+      checkTransactional: async () => ({ eligible: true }),
+      checkMarketing: async () => ({ eligible: true }),
+    };
+    const registry = createJobHandlerRegistry({
+      email,
+      analytics: new FakeAnalyticsSink(),
+      eligibility,
+    });
+    const badVersion = job({ jobType: 'order_status_email', payloadVersion: 2 });
+    await expect(registry.get('order_status_email')?.(badVersion)).rejects.toThrow(JobHandlerError);
+
+    const badPayload = job({ jobType: 'order_status_email', payload: { not: 'valid' } });
+    await expect(registry.get('order_status_email')?.(badPayload)).rejects.toThrow(JobHandlerError);
   });
 });
 

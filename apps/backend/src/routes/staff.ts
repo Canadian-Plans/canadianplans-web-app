@@ -1,10 +1,12 @@
 import { Router, type Request, type Response } from 'express';
 import {
   bulkAssignOrdersRequestSchema,
+  changeCommissionStateRequestSchema,
   createOrderChangeRequestRequestSchema,
   createOrderNoteRequestSchema,
   createOrderReminderRequestSchema,
   createServiceCredentialRequestSchema,
+  deleteCustomerDataRequestSchema,
   inviteStaffRequestSchema,
   listWorkspaceLeadsQuerySchema,
   listWorkspaceOrdersQuerySchema,
@@ -14,9 +16,15 @@ import {
   patchWorkspaceOrderRequestSchema,
   recordOrderPaymentRequestSchema,
   resolveOrderChangeRequestRequestSchema,
+  reviewFileRequestSchema,
+  sourceReportQuerySchema,
   type OrderCapabilities,
 } from '@canadian-plans/contracts';
 import { z } from 'zod';
+
+import { createDocumentServiceFromEnv } from '../documents/factory.js';
+import type { DocumentService } from '../documents/service.js';
+import { toStaffFile } from '../documents/summary.js';
 
 import {
   requireStaffSession,
@@ -37,6 +45,14 @@ import {
   type StaffOrderActionStore,
 } from '../orders/staff-actions.js';
 import { loadOperationalTransitionsEnabled } from '../orders/transitions-config.js';
+import { DatabaseDeletionStore, type DeletionStore } from '../deletion/store.js';
+import { DatabaseReportStore, type ReportStore } from '../reports/store.js';
+import { DatabaseCommissionActivationHook } from '../partners/activation.js';
+import {
+  DatabasePartnerStore,
+  type PartnerStore,
+  type CommissionStateOutcome,
+} from '../partners/store.js';
 import {
   allowedTransitionsFor,
   DatabaseOrderTransitionStore,
@@ -58,10 +74,14 @@ export interface StaffRouteDependencies {
   credentialStore: WebsiteCredentialStore;
   leadStore: LeadStore;
   catalogueStore?: CatalogueStore;
+  reportStore?: ReportStore;
+  deletionStore?: DeletionStore;
   orderQueryStore?: OrderQueryStore;
   orderTransitionStore?: OrderTransitionStore;
   orderActionStore?: StaffOrderActionStore;
+  partnerStore?: PartnerStore;
   jobStore?: JobAdminStore;
+  documentService?: Pick<DocumentService, 'listForOrder' | 'review' | 'issueDownload'>;
   /** Kept beside the transition store so the rendered action set matches what the write path accepts. */
   operationalTransitionsEnabled?: boolean;
 }
@@ -74,13 +94,19 @@ export function createDefaultStaffRouteDependencies(): StaffRouteDependencies {
     credentialStore: new DatabaseWebsiteCredentialStore(),
     leadStore: new DatabaseLeadStore(),
     catalogueStore: new DatabaseCatalogueStore(),
+    reportStore: new DatabaseReportStore(),
+    deletionStore: new DatabaseDeletionStore(),
     orderQueryStore: new DatabaseOrderQueryStore(),
     orderTransitionStore: new DatabaseOrderTransitionStore(
       undefined,
       operationalTransitionsEnabled,
+      undefined,
+      new DatabaseCommissionActivationHook(),
     ),
     orderActionStore: new DatabaseStaffOrderActionStore(),
+    partnerStore: new DatabasePartnerStore(),
     jobStore: new DatabaseOutboxStore(),
+    documentService: createDocumentServiceFromEnv(),
     operationalTransitionsEnabled,
   };
 }
@@ -352,6 +378,54 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         pageSize: query.data.pageSize,
       });
       res.json({ leads: result.leads, page: result.page, requestId: req.id });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.get('/workspaces/:workspaceId/reports/sources', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const query = sourceReportQuerySchema.safeParse(req.query);
+    if (!workspaceId.success || !query.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+
+    try {
+      const actor = session(req);
+      const authorize = createAuthorize({
+        accessStore: dependencies.store,
+        assuranceLevel: actor.assuranceLevel,
+      });
+      const decision = await authorize({
+        actorId: actor.actorId,
+        workspaceId: workspaceId.data,
+        action: 'workspace.read',
+      });
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.reportStore) {
+        sendStaffAuthError(res, req.id, 'internal_error', 500);
+        return;
+      }
+
+      const from = query.data.from ? new Date(query.data.from) : undefined;
+      const to = query.data.to ? new Date(query.data.to) : undefined;
+      const result = await dependencies.reportStore.sourceReport({
+        workspaceId: workspaceId.data,
+        actorId: actor.actorId,
+        from,
+        to,
+      });
+      res.json({
+        from: from ? from.toISOString() : null,
+        to: to ? to.toISOString() : null,
+        groups: result.groups,
+        totals: result.totals,
+        requestId: req.id,
+      });
     } catch {
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
@@ -982,6 +1056,58 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
     }
   });
 
+  router.post('/workspaces/:workspaceId/orders/:orderId/deletion', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const orderId = z.uuid().safeParse(req.params['orderId']);
+    const body = deleteCustomerDataRequestSchema.safeParse(req.body);
+    if (!workspaceId.success || !orderId.success || !body.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const actor = session(req);
+      const authorize = createAuthorize({
+        accessStore: dependencies.store,
+        assuranceLevel: actor.assuranceLevel,
+      });
+      // `record.delete` is the `deletion` permission, privileged for Owner/Finance
+      // (verified aal2). Requiring it explicitly means a deny override wins.
+      const decision = await authorize({
+        actorId: actor.actorId,
+        workspaceId: workspaceId.data,
+        action: 'record.delete',
+      });
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.deletionStore) {
+        sendStaffAuthError(res, req.id, 'internal_error', 500);
+        return;
+      }
+
+      const outcome = await dependencies.deletionStore.deleteCustomerData({
+        workspaceId: workspaceId.data,
+        actorId: actor.actorId,
+        requestId: req.id,
+        orderId: orderId.data,
+        reason: body.data.reason,
+      });
+      if (outcome.status === 'not_found') {
+        sendDomainError(res, req.id, 'order_not_found', 404);
+        return;
+      }
+      res.status(202).json({
+        orderId: orderId.data,
+        deletionId: outcome.deletionId,
+        ledgerStatus: 'pending_acknowledgement',
+        requestId: req.id,
+      });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
   router.post('/workspaces/:workspaceId/invitations', async (req, res) => {
     const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
     const body = inviteStaffRequestSchema.safeParse(req.body);
@@ -1176,6 +1302,260 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
       }
       // Idempotent: revoking an already-revoked credential returns its first revocation time.
       res.json({ id: credentialId.data, revokedAt: result.revokedAt, requestId: req.id });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  // ---- Partners and commissions (T19) ------------------------------------
+  // The partner directory is visible to any workspace reader (the Partners
+  // role); commission *amounts* are payout details gated behind `financial.read`
+  // (a Viewer sees states but no money). Marking a commission `carrier_paid`
+  // needs `financial.read`, which for owner/finance additionally requires a
+  // verified aal2 session; `partner_paid` stays disabled (OPEN_INPUTS #18).
+
+  const PAYOUT_DISABLED_REASON =
+    'Partner payout marking is disabled until B1 invoice approval exists or OPEN_INPUTS #18 defines an interim approval mechanism.';
+
+  router.get('/workspaces/:workspaceId/partners', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    if (!workspaceId.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const { actor, decision } = await decide(req, workspaceId.data, 'workspace.read');
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.partnerStore) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const partners = await dependencies.partnerStore.listPartners(
+        workspaceId.data,
+        actor.actorId,
+      );
+      res.json({ partners, requestId: req.id });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.get('/workspaces/:workspaceId/partners/:partnerId', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const partnerId = z.uuid().safeParse(req.params['partnerId']);
+    if (!workspaceId.success || !partnerId.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const { actor, decision } = await decide(req, workspaceId.data, 'workspace.read');
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.partnerStore) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const detail = await dependencies.partnerStore.getPartnerDetail(
+        workspaceId.data,
+        actor.actorId,
+        partnerId.data,
+      );
+      if (!detail) {
+        sendDomainError(res, req.id, 'not_found', 404);
+        return;
+      }
+      // Payout details (commission amounts) require `financial.read`; the same
+      // read decides whether the carrier-paid action is offered.
+      const finance = await decide(req, workspaceId.data, 'financial.read');
+      const canViewPayouts = finance.decision.allowed;
+      const commissions = detail.commissions.map((commission) => ({
+        ...commission,
+        amount: canViewPayouts ? commission.amount : null,
+      }));
+      res.json({
+        partner: detail.partner,
+        referredOrders: detail.referredOrders,
+        commissions,
+        canViewPayouts,
+        canMarkCarrierPaid: canViewPayouts,
+        partnerPaidEnabled: false,
+        payoutDisabledReason: PAYOUT_DISABLED_REASON,
+        requestId: req.id,
+      });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.post('/workspaces/:workspaceId/partners/:partnerId/commissions', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const partnerId = z.uuid().safeParse(req.params['partnerId']);
+    const body = changeCommissionStateRequestSchema.safeParse(req.body);
+    if (!workspaceId.success || !partnerId.success || !body.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      // Finance action: `financial.read` (which requires aal2 for owner/finance).
+      // The Partners role lacks it, so it can never mark a commission paid.
+      const { actor, decision } = await decide(req, workspaceId.data, 'financial.read');
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.partnerStore) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const outcome: CommissionStateOutcome = await dependencies.partnerStore.changeCommissionState(
+        {
+          workspaceId: workspaceId.data,
+          actorId: actor.actorId,
+          requestId: req.id,
+          partnerId: partnerId.data,
+          commissionId: body.data.commissionId,
+          toState: body.data.toState,
+        },
+      );
+      switch (outcome.status) {
+        case 'updated':
+          res.json({
+            commission: outcome.commission,
+            history: outcome.history,
+            requestId: req.id,
+          });
+          return;
+        case 'partner_not_found':
+        case 'commission_not_found':
+          sendDomainError(res, req.id, 'commission_not_found', 404);
+          return;
+        case 'invalid_transition':
+          sendDomainError(res, req.id, 'commission_state_invalid', 409);
+          return;
+        case 'partner_paid_disabled':
+          sendDomainError(res, req.id, 'feature_not_ready', 409);
+          return;
+      }
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  // ---- Documents (T17) ---------------------------------------------------
+  // Listing a document reveals only metadata (workspace.read); downloading the
+  // original requires the separately-grantable `document.download` permission
+  // (REQ 23; gate 5). Approve/reject is an order-management action.
+
+  router.get('/workspaces/:workspaceId/orders/:orderId/files', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const orderId = z.uuid().safeParse(req.params['orderId']);
+    if (!workspaceId.success || !orderId.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const { actor, decision } = await decide(req, workspaceId.data, 'workspace.read');
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.documentService) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const outcome = await dependencies.documentService.listForOrder({
+        workspaceId: workspaceId.data,
+        actorId: actor.actorId,
+        orderId: orderId.data,
+      });
+      if (outcome.status === 'not_found') {
+        sendDomainError(res, req.id, 'order_not_found', 404);
+        return;
+      }
+      res.json({ files: outcome.files.map(toStaffFile), requestId: req.id });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.post('/workspaces/:workspaceId/files/:fileId/review', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const fileId = z.uuid().safeParse(req.params['fileId']);
+    const body = reviewFileRequestSchema.safeParse(req.body);
+    if (!workspaceId.success || !fileId.success || !body.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const { actor, decision } = await decide(req, workspaceId.data, 'order.manage');
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.documentService) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const outcome = await dependencies.documentService.review({
+        workspaceId: workspaceId.data,
+        actorId: actor.actorId,
+        requestId: req.id,
+        fileId: fileId.data,
+        decision: body.data.decision,
+        ...(body.data.note ? { note: body.data.note } : {}),
+      });
+      if (outcome.status === 'not_found') {
+        sendDomainError(res, req.id, 'file_not_found', 404);
+        return;
+      }
+      res.json({ file: toStaffFile(outcome.file), requestId: req.id });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.post('/workspaces/:workspaceId/files/:fileId/download-link', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const fileId = z.uuid().safeParse(req.params['fileId']);
+    if (!workspaceId.success || !fileId.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      // Download of an original is gated on the explicit document.download
+      // permission — not merely workspace membership (REQ 23; gate 5).
+      const { actor, decision } = await decide(req, workspaceId.data, 'document.download');
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.documentService) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const outcome = await dependencies.documentService.issueDownload({
+        workspaceId: workspaceId.data,
+        actorId: actor.actorId,
+        fileId: fileId.data,
+      });
+      if (outcome.status === 'issued') {
+        res.json({
+          url: outcome.url,
+          expiresAt: outcome.expiresAt.toISOString(),
+          requestId: req.id,
+        });
+        return;
+      }
+      if (outcome.status === 'not_available') {
+        sendDomainError(res, req.id, 'file_not_available', 409);
+        return;
+      }
+      sendDomainError(res, req.id, 'file_not_found', 404);
     } catch {
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }

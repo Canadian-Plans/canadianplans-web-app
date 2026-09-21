@@ -124,7 +124,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -293,7 +299,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -468,7 +480,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -609,7 +627,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -779,7 +803,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -957,7 +987,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -1131,7 +1167,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -1305,7 +1347,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -1558,7 +1606,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -1799,7 +1853,220 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/staff/workspaces/{workspaceId}/reports/sources": {
+      "get": {
+        "operationId": "getSourceReport",
+        "summary": "Leads and orders by utm source/medium/campaign and by partner.",
+        "tags": ["staff"],
+        "security": [{ "staffSession": [] }],
+        "parameters": [
+          { "name": "workspaceId", "in": "path", "required": true, "schema": { "type": "string" } },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "from": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        },
+                        { "type": "null" }
+                      ]
+                    },
+                    "to": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        },
+                        { "type": "null" }
+                      ]
+                    },
+                    "groups": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "dimension": {
+                            "type": "string",
+                            "enum": ["utm_source", "utm_medium", "utm_campaign", "partner"]
+                          },
+                          "value": { "type": "string", "minLength": 1, "maxLength": 300 },
+                          "leads": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+                          "orders": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
+                        },
+                        "required": ["dimension", "value", "leads", "orders"],
+                        "additionalProperties": false
+                      }
+                    },
+                    "totals": {
+                      "type": "object",
+                      "properties": {
+                        "leads": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+                        "orders": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
+                      },
+                      "required": ["leads", "orders"],
+                      "additionalProperties": false
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["from", "to", "groups", "totals", "requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -1996,7 +2263,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -2138,7 +2411,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -2543,7 +2822,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -2708,7 +2993,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -2867,7 +3158,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -3976,7 +4273,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -5039,7 +5342,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -6184,7 +6493,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -7277,7 +7592,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -7458,7 +7779,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -7618,7 +7945,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -7796,7 +8129,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -7957,7 +8296,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -8186,7 +8531,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -9298,7 +9649,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -10388,7 +10745,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -11472,7 +11835,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -11531,92 +11900,37 @@
         }
       }
     },
-    "/api/v1/staff/workspaces/{workspaceId}/partners/{partnerId}/commissions": {
+    "/api/v1/staff/workspaces/{workspaceId}/orders/{orderId}/deletion": {
       "post": {
-        "operationId": "changeCommissionState",
-        "summary": "Advance a commission line state (Finance/Owner).",
+        "operationId": "deleteCustomerData",
+        "summary": "Delete a customer’s personal data for an order, keeping the commercial record.",
         "tags": ["staff"],
         "security": [{ "staffSession": [] }],
         "parameters": [
           { "name": "workspaceId", "in": "path", "required": true, "schema": { "type": "string" } },
-          { "name": "partnerId", "in": "path", "required": true, "schema": { "type": "string" } }
+          { "name": "orderId", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": {
+          "202": {
             "description": "Success.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "commission": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "format": "uuid",
-                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                        },
-                        "workspaceId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                        },
-                        "orderId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                        },
-                        "partnerId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                        },
-                        "ruleId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                        },
-                        "amount": {
-                          "type": "object",
-                          "properties": {
-                            "amountMinor": {
-                              "type": "integer",
-                              "minimum": -9007199254740991,
-                              "maximum": 9007199254740991
-                            },
-                            "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
-                          },
-                          "required": ["amountMinor", "currency"],
-                          "additionalProperties": false
-                        },
-                        "state": {
-                          "type": "string",
-                          "enum": ["earned", "carrier_paid", "partner_paid"]
-                        },
-                        "earnedAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
-                        },
-                        "updatedAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
-                        }
-                      },
-                      "required": [
-                        "id",
-                        "workspaceId",
-                        "orderId",
-                        "partnerId",
-                        "ruleId",
-                        "amount",
-                        "state",
-                        "earnedAt",
-                        "updatedAt"
-                      ],
-                      "additionalProperties": false
+                    "orderId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "deletionId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "ledgerStatus": {
+                      "type": "string",
+                      "enum": ["pending_acknowledgement", "acknowledged"]
                     },
                     "requestId": {
                       "type": "string",
@@ -11624,7 +11938,7 @@
                       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                     }
                   },
-                  "required": ["commission", "requestId"],
+                  "required": ["orderId", "deletionId", "ledgerStatus", "requestId"],
                   "additionalProperties": false
                 }
               }
@@ -11699,7 +12013,816 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "reason": { "type": "string", "minLength": 1, "maxLength": 500 } },
+                "required": ["reason"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/staff/workspaces/{workspaceId}/partners": {
+      "get": {
+        "operationId": "listPartners",
+        "summary": "List partners with referral codes and referred-order counts (Partners role).",
+        "tags": ["staff"],
+        "security": [{ "staffSession": [] }],
+        "parameters": [
+          { "name": "workspaceId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "partners": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                          },
+                          "workspaceId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                          },
+                          "name": { "type": "string", "minLength": 1 },
+                          "referralCode": { "type": "string", "minLength": 1 },
+                          "status": {
+                            "type": "string",
+                            "enum": ["pending", "approved", "suspended"]
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "referredOrderCount": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          "commissionLineCount": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "workspaceId",
+                          "name",
+                          "referralCode",
+                          "status",
+                          "createdAt",
+                          "referredOrderCount",
+                          "commissionLineCount"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["partners", "requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/staff/workspaces/{workspaceId}/partners/{partnerId}": {
+      "get": {
+        "operationId": "getPartner",
+        "summary": "Read one partner with referred orders and commission lines (payout amounts require financial.read).",
+        "tags": ["staff"],
+        "security": [{ "staffSession": [] }],
+        "parameters": [
+          { "name": "workspaceId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "partnerId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "partner": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "workspaceId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "name": { "type": "string", "minLength": 1 },
+                        "referralCode": { "type": "string", "minLength": 1 },
+                        "status": {
+                          "type": "string",
+                          "enum": ["pending", "approved", "suspended"]
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "workspaceId",
+                        "name",
+                        "referralCode",
+                        "status",
+                        "createdAt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "referredOrders": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                          },
+                          "reference": { "type": "string" },
+                          "fulfilmentStatus": {
+                            "type": "string",
+                            "enum": [
+                              "submitted",
+                              "in_progress",
+                              "awaiting_customer",
+                              "ready_for_delivery",
+                              "dispatched",
+                              "activated",
+                              "cancelled"
+                            ]
+                          },
+                          "submittedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          }
+                        },
+                        "required": ["id", "reference", "fulfilmentStatus", "submittedAt"],
+                        "additionalProperties": false
+                      }
+                    },
+                    "commissions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                          },
+                          "orderId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                          },
+                          "orderReference": { "type": "string" },
+                          "state": {
+                            "type": "string",
+                            "enum": ["earned", "carrier_paid", "partner_paid"]
+                          },
+                          "amount": {
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "amountMinor": {
+                                    "type": "integer",
+                                    "minimum": -9007199254740991,
+                                    "maximum": 9007199254740991
+                                  },
+                                  "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+                                },
+                                "required": ["amountMinor", "currency"],
+                                "additionalProperties": false
+                              },
+                              { "type": "null" }
+                            ]
+                          },
+                          "invoiceId": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              { "type": "null" }
+                            ]
+                          },
+                          "earnedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "orderId",
+                          "orderReference",
+                          "state",
+                          "amount",
+                          "invoiceId",
+                          "earnedAt",
+                          "updatedAt"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "canViewPayouts": { "type": "boolean" },
+                    "canMarkCarrierPaid": { "type": "boolean" },
+                    "partnerPaidEnabled": { "type": "boolean", "const": false },
+                    "payoutDisabledReason": { "type": "string" },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": [
+                    "partner",
+                    "referredOrders",
+                    "commissions",
+                    "canViewPayouts",
+                    "canMarkCarrierPaid",
+                    "partnerPaidEnabled",
+                    "payoutDisabledReason",
+                    "requestId"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/staff/workspaces/{workspaceId}/partners/{partnerId}/commissions": {
+      "post": {
+        "operationId": "changeCommissionState",
+        "summary": "Advance a commission line state (Finance/Owner).",
+        "tags": ["staff"],
+        "security": [{ "staffSession": [] }],
+        "parameters": [
+          { "name": "workspaceId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "partnerId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "commission": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "workspaceId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "orderId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "partnerId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "ruleId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "ruleSnapshot": {
+                          "type": "object",
+                          "properties": {
+                            "ruleId": {
+                              "type": "string",
+                              "format": "uuid",
+                              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                            },
+                            "ruleType": { "type": "string", "enum": ["fixed", "percentage"] },
+                            "value": {
+                              "type": "object",
+                              "properties": {
+                                "amountMinor": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991
+                                },
+                                "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+                              },
+                              "required": ["amountMinor", "currency"],
+                              "additionalProperties": false
+                            },
+                            "isTest": { "type": "boolean" },
+                            "effectiveFrom": {
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            "effectiveTo": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                                },
+                                { "type": "null" }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "ruleId",
+                            "ruleType",
+                            "value",
+                            "isTest",
+                            "effectiveFrom",
+                            "effectiveTo"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "amount": {
+                          "type": "object",
+                          "properties": {
+                            "amountMinor": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+                          },
+                          "required": ["amountMinor", "currency"],
+                          "additionalProperties": false
+                        },
+                        "state": {
+                          "type": "string",
+                          "enum": ["earned", "carrier_paid", "partner_paid"]
+                        },
+                        "invoiceId": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uuid",
+                              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                            },
+                            { "type": "null" }
+                          ]
+                        },
+                        "earnedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "workspaceId",
+                        "orderId",
+                        "partnerId",
+                        "ruleId",
+                        "ruleSnapshot",
+                        "amount",
+                        "state",
+                        "invoiceId",
+                        "earnedAt",
+                        "updatedAt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "history": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                          },
+                          "fromState": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": ["earned", "carrier_paid", "partner_paid"]
+                              },
+                              { "type": "null" }
+                            ]
+                          },
+                          "toState": {
+                            "type": "string",
+                            "enum": ["earned", "carrier_paid", "partner_paid"]
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          }
+                        },
+                        "required": ["id", "fromState", "toState", "createdAt"],
+                        "additionalProperties": false
+                      }
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["commission", "history", "requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -11794,6 +12917,11 @@
                           "format": "uuid",
                           "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                         },
+                        "invoiceNumber": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        },
                         "periodStart": {
                           "type": "string",
                           "format": "date",
@@ -11876,6 +13004,7 @@
                         "id",
                         "workspaceId",
                         "partnerId",
+                        "invoiceNumber",
                         "periodStart",
                         "periodEnd",
                         "status",
@@ -11967,7 +13096,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -12172,7 +13307,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -12480,7 +13621,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -12649,7 +13796,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -12868,7 +14021,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -13176,7 +14335,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -13453,7 +14618,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -13544,7 +14715,15 @@
         "summary": "Authorise a direct-to-R2 document upload.",
         "tags": ["website"],
         "security": [{ "websiteCredential": [] }],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Draft-Grant",
+            "in": "header",
+            "required": true,
+            "description": "Scoped grant token that authorises resuming this draft.",
+            "schema": { "type": "string" }
+          }
+        ],
         "responses": {
           "201": {
             "description": "Success.",
@@ -13651,7 +14830,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -13733,7 +14918,14 @@
         "tags": ["website"],
         "security": [{ "websiteCredential": [] }],
         "parameters": [
-          { "name": "uploadId", "in": "path", "required": true, "schema": { "type": "string" } }
+          { "name": "uploadId", "in": "path", "required": true, "schema": { "type": "string" } },
+          {
+            "name": "X-Draft-Grant",
+            "in": "header",
+            "required": true,
+            "description": "Scoped grant token that authorises resuming this draft.",
+            "schema": { "type": "string" }
+          }
         ],
         "responses": {
           "200": {
@@ -13779,7 +14971,7 @@
                         },
                         "status": {
                           "type": "string",
-                          "enum": ["quarantined", "available", "rejected", "tombstoned"]
+                          "enum": ["uploading", "verifying", "available", "rejected", "deleted"]
                         },
                         "checksumSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
                         "createdAt": {
@@ -13883,7 +15075,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -13941,6 +15139,696 @@
         "tags": ["website"],
         "security": [{ "websiteCredential": [] }],
         "parameters": [
+          { "name": "fileId", "in": "path", "required": true, "schema": { "type": "string" } },
+          {
+            "name": "X-Draft-Grant",
+            "in": "header",
+            "required": true,
+            "description": "Scoped grant token that authorises resuming this draft.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "url": { "type": "string", "format": "uri" },
+                    "expiresAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["url", "expiresAt", "requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/staff/workspaces/{workspaceId}/orders/{orderId}/files": {
+      "get": {
+        "operationId": "listWorkspaceFiles",
+        "summary": "List the documents attached to an order for the admin Documents panel.",
+        "tags": ["staff"],
+        "security": [{ "staffSession": [] }],
+        "parameters": [
+          { "name": "workspaceId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "orderId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "files": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                          },
+                          "workspaceId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                          },
+                          "parentType": { "type": "string", "enum": ["lead", "order"] },
+                          "parentId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                          },
+                          "documentType": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 64,
+                            "pattern": "^[a-z0-9_]+$"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": ["uploading", "verifying", "available", "rejected", "deleted"]
+                          },
+                          "contentType": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": ["application/pdf", "image/jpeg", "image/png"]
+                              },
+                              { "type": "null" }
+                            ]
+                          },
+                          "sizeBytes": {
+                            "anyOf": [
+                              { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+                              { "type": "null" }
+                            ]
+                          },
+                          "checksumSha256": {
+                            "anyOf": [
+                              { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                              { "type": "null" }
+                            ]
+                          },
+                          "rejectReason": {
+                            "anyOf": [{ "type": "string", "maxLength": 200 }, { "type": "null" }]
+                          },
+                          "revision": {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          "latestReview": {
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                  },
+                                  "decision": {
+                                    "type": "string",
+                                    "enum": ["approved", "rejected"]
+                                  },
+                                  "note": {
+                                    "anyOf": [
+                                      { "type": "string", "minLength": 1, "maxLength": 2000 },
+                                      { "type": "null" }
+                                    ]
+                                  },
+                                  "actorId": {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                  },
+                                  "createdAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                                  }
+                                },
+                                "required": ["id", "decision", "note", "actorId", "createdAt"],
+                                "additionalProperties": false
+                              },
+                              { "type": "null" }
+                            ]
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "workspaceId",
+                          "parentType",
+                          "parentId",
+                          "documentType",
+                          "status",
+                          "contentType",
+                          "sizeBytes",
+                          "checksumSha256",
+                          "rejectReason",
+                          "revision",
+                          "latestReview",
+                          "createdAt"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["files", "requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/staff/workspaces/{workspaceId}/files/{fileId}/review": {
+      "post": {
+        "operationId": "reviewWorkspaceFile",
+        "summary": "Approve or reject a document with an optional note.",
+        "tags": ["staff"],
+        "security": [{ "staffSession": [] }],
+        "parameters": [
+          { "name": "workspaceId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "fileId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "file": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "workspaceId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "parentType": { "type": "string", "enum": ["lead", "order"] },
+                        "parentId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "documentType": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "pattern": "^[a-z0-9_]+$"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": ["uploading", "verifying", "available", "rejected", "deleted"]
+                        },
+                        "contentType": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": ["application/pdf", "image/jpeg", "image/png"]
+                            },
+                            { "type": "null" }
+                          ]
+                        },
+                        "sizeBytes": {
+                          "anyOf": [
+                            { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+                            { "type": "null" }
+                          ]
+                        },
+                        "checksumSha256": {
+                          "anyOf": [
+                            { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                            { "type": "null" }
+                          ]
+                        },
+                        "rejectReason": {
+                          "anyOf": [{ "type": "string", "maxLength": 200 }, { "type": "null" }]
+                        },
+                        "revision": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "latestReview": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                },
+                                "decision": { "type": "string", "enum": ["approved", "rejected"] },
+                                "note": {
+                                  "anyOf": [
+                                    { "type": "string", "minLength": 1, "maxLength": 2000 },
+                                    { "type": "null" }
+                                  ]
+                                },
+                                "actorId": {
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                },
+                                "createdAt": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                                }
+                              },
+                              "required": ["id", "decision", "note", "actorId", "createdAt"],
+                              "additionalProperties": false
+                            },
+                            { "type": "null" }
+                          ]
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "workspaceId",
+                        "parentType",
+                        "parentId",
+                        "documentType",
+                        "status",
+                        "contentType",
+                        "sizeBytes",
+                        "checksumSha256",
+                        "rejectReason",
+                        "revision",
+                        "latestReview",
+                        "createdAt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["file", "requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "decision": { "type": "string", "enum": ["approved", "rejected"] },
+                  "note": { "type": "string", "minLength": 1, "maxLength": 2000 }
+                },
+                "required": ["decision"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/staff/workspaces/{workspaceId}/files/{fileId}/download-link": {
+      "post": {
+        "operationId": "createWorkspaceFileDownloadLink",
+        "summary": "Issue a short-lived signed download URL after a document-download permission check.",
+        "tags": ["staff"],
+        "security": [{ "staffSession": [] }],
+        "parameters": [
+          { "name": "workspaceId", "in": "path", "required": true, "schema": { "type": "string" } },
           { "name": "fileId", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
@@ -14038,7 +15926,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -14078,7 +15972,7 @@
     "/api/v1/website/tracking/otp": {
       "post": {
         "operationId": "requestTrackingOtp",
-        "summary": "Request or verify an order-tracking OTP.",
+        "summary": "Request a six-digit order-tracking code (always acknowledged neutrally).",
         "tags": ["website"],
         "security": [{ "websiteCredential": [] }],
         "parameters": [],
@@ -14088,47 +15982,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "type": "object",
-                      "properties": {
-                        "status": { "type": "string", "const": "challenge_sent" },
-                        "requestId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                        }
-                      },
-                      "required": ["status", "requestId"],
-                      "additionalProperties": false
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "status": { "type": "string", "const": "verified" },
-                        "grant": {
-                          "type": "object",
-                          "properties": {
-                            "token": { "type": "string", "minLength": 1 },
-                            "expiresAt": {
-                              "type": "string",
-                              "format": "date-time",
-                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
-                            }
-                          },
-                          "required": ["token", "expiresAt"],
-                          "additionalProperties": false
-                        },
-                        "requestId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-                        }
-                      },
-                      "required": ["status", "grant", "requestId"],
-                      "additionalProperties": false
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "const": "challenge_sent" },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                     }
-                  ]
+                  },
+                  "required": ["status", "requestId"],
+                  "additionalProperties": false
                 }
               }
             }
@@ -14202,7 +16066,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -14242,37 +16112,191 @@
           "content": {
             "application/json": {
               "schema": {
-                "oneOf": [
-                  {
-                    "type": "object",
-                    "properties": {
-                      "action": { "type": "string", "const": "request" },
-                      "email": {
-                        "type": "string",
-                        "maxLength": 254,
-                        "format": "email",
-                        "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
-                      },
-                      "orderReference": { "type": "string", "minLength": 1, "maxLength": 32 }
-                    },
-                    "required": ["action", "email", "orderReference"]
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "maxLength": 254,
+                    "format": "email",
+                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
                   },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "action": { "type": "string", "const": "verify" },
-                      "email": {
-                        "type": "string",
-                        "maxLength": 254,
-                        "format": "email",
-                        "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  "orderReference": { "type": "string", "minLength": 1, "maxLength": 32 }
+                },
+                "required": ["email", "orderReference"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/website/tracking/verify": {
+      "post": {
+        "operationId": "verifyTrackingOtp",
+        "summary": "Verify a six-digit code and receive a scoped 30-minute tracking grant.",
+        "tags": ["website"],
+        "security": [{ "websiteCredential": [] }],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "const": "verified" },
+                    "grant": {
+                      "type": "object",
+                      "properties": {
+                        "token": { "type": "string", "minLength": 1 },
+                        "expiresAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
                       },
-                      "orderReference": { "type": "string", "minLength": 1, "maxLength": 32 },
-                      "code": { "type": "string", "pattern": "^\\d{6}$" }
+                      "required": ["token", "expiresAt"],
+                      "additionalProperties": false
                     },
-                    "required": ["action", "email", "orderReference", "code"]
-                  }
-                ]
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["status", "grant", "requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "maxLength": 254,
+                    "format": "email",
+                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  },
+                  "orderReference": { "type": "string", "minLength": 1, "maxLength": 32 },
+                  "code": { "type": "string", "pattern": "^\\d{6}$" }
+                },
+                "required": ["email", "orderReference", "code"]
               }
             }
           }
@@ -14320,6 +16344,18 @@
                       "enum": ["not_required", "pending", "paid"]
                     },
                     "deliveryState": { "type": "string", "enum": ["none", "dispatched"] },
+                    "trackingReference": {
+                      "anyOf": [{ "type": "string", "maxLength": 120 }, { "type": "null" }]
+                    },
+                    "documentsRequired": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 64,
+                        "pattern": "^[a-z0-9_]+$"
+                      }
+                    },
                     "updatedAt": {
                       "type": "string",
                       "format": "date-time",
@@ -14336,6 +16372,8 @@
                     "fulfilmentStatus",
                     "paymentState",
                     "deliveryState",
+                    "trackingReference",
+                    "documentsRequired",
                     "updatedAt",
                     "requestId"
                   ],
@@ -14413,7 +16451,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",
@@ -14581,7 +16625,13 @@
                             "upload_invalid",
                             "unsupported_media_type",
                             "file_not_found",
+                            "file_not_available",
                             "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
                             "commission_not_found",
                             "commission_state_invalid",
                             "invoice_not_found",

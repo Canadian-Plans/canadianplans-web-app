@@ -2,6 +2,7 @@ import type { Server } from 'node:http';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   apiErrorResponseSchema,
+  deleteCustomerDataResponseSchema,
   inviteStaffResponseSchema,
   listWorkspaceJobsResponseSchema,
   listWorkspaceLeadsResponseSchema,
@@ -27,6 +28,11 @@ import type { OrderQueryStore } from '../src/orders/query-store.js';
 import type { OrderTransitionStore } from '../src/orders/transitions.js';
 import type { JobAdminStore, AdminJob } from '../src/jobs/store.js';
 import type { CatalogueStore } from '../src/catalogue/store.js';
+import type {
+  DeleteCustomerDataInput,
+  DeleteCustomerDataOutcome,
+  DeletionStore,
+} from '../src/deletion/store.js';
 
 const noopCredentialStore: WebsiteCredentialStore = {
   createCredential: async () => {
@@ -138,6 +144,19 @@ class MemoryLeadStore implements LeadStore {
   }
 }
 
+class MemoryDeletionStore implements DeletionStore {
+  readonly calls: DeleteCustomerDataInput[] = [];
+  result: DeleteCustomerDataOutcome = {
+    status: 'deleted',
+    deletionId: '70000000-0000-4000-8000-0000000000d1',
+  };
+
+  async deleteCustomerData(input: DeleteCustomerDataInput): Promise<DeleteCustomerDataOutcome> {
+    this.calls.push(input);
+    return this.result;
+  }
+}
+
 const workspace: StaffWorkspace = {
   id: WORKSPACE,
   slug: 'site-1',
@@ -179,6 +198,7 @@ let verifier: TokenVerifier;
 let store: MemoryStaffStore;
 let leadStore: MemoryLeadStore;
 let jobStore: MemoryJobStore;
+let deletionStore: MemoryDeletionStore;
 
 beforeEach(async () => {
   verifier = new TokenVerifier();
@@ -195,6 +215,7 @@ beforeEach(async () => {
   store = new MemoryStaffStore();
   leadStore = new MemoryLeadStore();
   jobStore = new MemoryJobStore();
+  deletionStore = new MemoryDeletionStore();
   jobStore.jobs = [{ ...sampleJob }];
   server = createApp({
     staff: {
@@ -206,6 +227,7 @@ beforeEach(async () => {
       orderQueryStore: noopOrderQueryStore,
       jobStore,
       catalogueStore: noopCatalogueStore,
+      deletionStore,
     },
   }).listen(0);
   await new Promise<void>((resolve) => server.once('listening', resolve));
@@ -323,6 +345,74 @@ describe('protected staff routes', () => {
     expect(response.status).toBe(201);
     expect(inviteStaffResponseSchema.parse(await response.json()).status).toBe('pending');
     expect(store.inviteStaff).toHaveBeenCalledOnce();
+  });
+
+  it('requires verified aal2 for customer-data deletion', async () => {
+    const orderId = '80000000-0000-4000-8000-0000000000d1';
+    const response = await fetch(
+      `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/orders/${orderId}/deletion`,
+      {
+        method: 'POST',
+        headers: { authorization: 'Bearer aal1-token', 'content-type': 'application/json' },
+        body: JSON.stringify({ reason: 'customer request' }),
+      },
+    );
+    expect(response.status).toBe(403);
+    expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe('mfa_required');
+    expect(deletionStore.calls).toHaveLength(0);
+  });
+
+  it('deletes customer data with a verified aal2 owner session', async () => {
+    const orderId = '80000000-0000-4000-8000-0000000000d1';
+    const response = await fetch(
+      `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/orders/${orderId}/deletion`,
+      {
+        method: 'POST',
+        headers: { authorization: 'Bearer aal2-token', 'content-type': 'application/json' },
+        body: JSON.stringify({ reason: 'customer request' }),
+      },
+    );
+    expect(response.status).toBe(202);
+    const body = deleteCustomerDataResponseSchema.parse(await response.json());
+    expect(body.deletionId).toBe('70000000-0000-4000-8000-0000000000d1');
+    expect(body.ledgerStatus).toBe('pending_acknowledgement');
+    expect(deletionStore.calls[0]).toMatchObject({
+      workspaceId: WORKSPACE,
+      orderId,
+      reason: 'customer request',
+    });
+  });
+
+  it('rejects a deletion without a reason', async () => {
+    const orderId = '80000000-0000-4000-8000-0000000000d1';
+    const response = await fetch(
+      `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/orders/${orderId}/deletion`,
+      {
+        method: 'POST',
+        headers: { authorization: 'Bearer aal2-token', 'content-type': 'application/json' },
+        body: JSON.stringify({}),
+      },
+    );
+    expect(response.status).toBe(400);
+    expect(deletionStore.calls).toHaveLength(0);
+  });
+
+  it('denies deletion to a role without the deletion permission', async () => {
+    store.access = { ...store.access, roles: ['viewer'] };
+    const orderId = '80000000-0000-4000-8000-0000000000d1';
+    const response = await fetch(
+      `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/orders/${orderId}/deletion`,
+      {
+        method: 'POST',
+        headers: { authorization: 'Bearer aal2-token', 'content-type': 'application/json' },
+        body: JSON.stringify({ reason: 'customer request' }),
+      },
+    );
+    expect(response.status).toBe(403);
+    expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe(
+      'permission_denied',
+    );
+    expect(deletionStore.calls).toHaveLength(0);
   });
 
   it('lists leads for any active member, with attribution, and applies the status filter', async () => {

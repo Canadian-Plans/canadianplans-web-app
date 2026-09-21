@@ -1,5 +1,12 @@
 import { z } from 'zod';
-import { deliveryStates, orderStatuses, paymentStates } from '@canadian-plans/types';
+import {
+  commissionRuleTypes,
+  commissionStates,
+  deliveryStates,
+  invoiceStatuses,
+  orderStatuses,
+  paymentStates,
+} from '@canadian-plans/types';
 
 /**
  * API-surface vocabularies shared across the order, partner, upload and
@@ -41,11 +48,18 @@ export type PartnerStatus = z.infer<typeof partnerStatusSchema>;
  * partner_paid. Phase A records earned and carrier_paid; partner_paid stays
  * disabled while OPEN_INPUTS #18 is unresolved.
  */
-export const commissionStateSchema = z.enum(['earned', 'carrier_paid', 'partner_paid']);
+export const commissionStateSchema = z.enum(commissionStates);
 export type CommissionState = z.infer<typeof commissionStateSchema>;
 
+/**
+ * How a commission rule computes its amount (T19). `percentage` cannot be
+ * applied to a live activation until OPEN_INPUTS #17 (basis + rounding) is set.
+ */
+export const commissionRuleTypeSchema = z.enum(commissionRuleTypes);
+export type CommissionRuleType = z.infer<typeof commissionRuleTypeSchema>;
+
 /** Invoice lifecycle. Approval freezes an invoice; regeneration for an approved period is a no-op. */
-export const invoiceStatusSchema = z.enum(['draft', 'approved']);
+export const invoiceStatusSchema = z.enum(invoiceStatuses);
 export type InvoiceStatus = z.infer<typeof invoiceStatusSchema>;
 
 /**

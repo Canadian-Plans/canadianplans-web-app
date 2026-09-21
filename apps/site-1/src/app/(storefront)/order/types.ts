@@ -69,6 +69,16 @@ export interface QuoteResult {
   quote: Quote;
 }
 
+/** The three allowed document media types (recorded decision). */
+export type DocumentContentType = 'application/pdf' | 'image/jpeg' | 'image/png';
+
+export type DocumentIntentResult =
+  | { ok: true; uploadId: string; url: string; method: 'PUT'; headers: Record<string, string> }
+  | { ok: false; message: string };
+
+export type DocumentFinalizeResult =
+  { ok: true; fileId: string; documentType: string } | { ok: false; message: string };
+
 export interface SubmitOrderResult {
   reference: string;
   orderId: string;

@@ -161,7 +161,8 @@ revokedAt === null`, but `createQuote`'s availability check is the
   provider's `fetchPublishedByProductKey` returning nothing — the
   `product_availability` row is not itself read on that path.
 - _Inferred:_ no activation or dispatch outbox handler exists yet
-  (`outboxJobTypes` in `jobs/src/index.ts` lists only the two above), which is
+  (`outboxJobTypes` in `jobs/src/index.ts` lists only acknowledgement email and
+  the lead/order analytics events), which is
   consistent with the OPEN_INPUTS gates rather than evidence they were
   resolved.
 

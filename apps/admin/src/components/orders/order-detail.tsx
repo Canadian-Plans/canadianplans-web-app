@@ -9,6 +9,7 @@ import { BackendError, getWorkspaceOrder, listOrderAssignees } from '../../lib/a
 import { useStaffSession } from '../staff-session-provider';
 import { OrderActions } from './order-actions';
 import { OrderChangeRequests, OrderNotes, OrderReminders } from './order-collaboration';
+import { OrderDocuments } from './order-documents';
 import {
   OrderCustomerPanel,
   OrderPlanPanel,
@@ -143,6 +144,11 @@ export function OrderDetailView({
             accessToken={accessToken ?? ''}
             order={order}
             write={write}
+          />
+          <OrderDocuments
+            workspaceId={workspaceId ?? ''}
+            accessToken={accessToken ?? ''}
+            orderId={orderId}
           />
           <OrderNotes
             workspaceId={workspaceId ?? ''}

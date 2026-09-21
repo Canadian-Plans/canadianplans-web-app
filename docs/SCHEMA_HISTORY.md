@@ -491,6 +491,46 @@ Both tables use the same `FOR ALL` policy for `app_runtime` comparing
 non-null `app.actor_id`, repeated in `WITH CHECK`. RLS is enabled **and forced**,
 so the table owner does not bypass it. Existing tenant tables are unchanged.
 
+## 0016_bumpy_puppet_master.sql
+
+Task: T21
+
+Date: 2026-09-20
+
+### Change
+
+- Added tenant table `app.deletion_intents` (id, workspace_id, action, subject_type, subject_id, status, reason, actor_id, ledger_ack_id, last_error_code, created_at, acknowledged_at), the local mirror that drives the external deletion ledger.
+- Constrained `status` to `pending|acknowledged|failed`, `action` to `delete_customer_data`, and `subject_type` to `order`, with `(workspace_id, id)` uniqueness and a `(workspace_id, status)` index.
+- No personal data is stored: identifiers and an action only. The staff reason is bounded by the API contract.
+
+### Why
+
+REQ 24 / REQ 34: a customer-data deletion must be recorded in a minimal ledger held outside any single application-database snapshot so a restore can replay it before reopening. This table is the restricted local intent (§13), not the durable ledger.
+
+### RLS
+
+Tenant RLS enabled and forced on `deletion_intents`, scoped to `app_runtime`, requiring transaction-local `app.workspace_id` and a non-null `app.actor_id`, repeated in `WITH CHECK`. Existing tables are unchanged.
+
+## 0017_worthless_synch.sql
+
+Task: T22
+
+Date: 2026-09-20
+
+### Change
+
+- Added tenant table `app.tracking_challenges` (id, workspace_id, order_id, email_hash, code_hash, status, attempts, expires_at, created_at, consumed_at), the one-time-code challenges for customer order tracking.
+- Constrained `status` to `pending|consumed` and `attempts >= 0`, with `(workspace_id, id)` uniqueness, an order FK and `(workspace_id, order_id, status)` / `(workspace_id, email_hash)` indexes.
+- Stores only keyed hashes bound to workspace, order and normalized email; the plaintext code is never persisted.
+
+### Why
+
+REQ 05 / IMPLEMENTATION_PLAN §5: a verified customer may track an order after a six-digit email code, with at most five attempts and a 10-minute expiry, and no enumeration of orders.
+
+### RLS
+
+Tenant RLS enabled and forced on `tracking_challenges`, scoped to `app_runtime`, requiring transaction-local `app.workspace_id` and a non-null `app.actor_id`, repeated in `WITH CHECK`.
+
 Each future entry follows this shape:
 
 ```
@@ -511,3 +551,42 @@ Date: <date applied>
 
 <policies added/changed, or "none — see invariant N for why">
 ```
+
+## 0016_futuristic_marvel_zombies.sql
+
+Task: T19
+Date: 2026-09-20
+
+### Change
+
+Adds the partner commission model, all workspace-scoped:
+
+- `commission_rules` — workspace-scoped, time-bounded rules (`rule_type`
+  fixed|percentage, `value_minor`, `currency`, `is_test`, `effective_from`,
+  nullable `effective_to`). Immutable: `app_runtime` gets SELECT/INSERT only.
+- `commission_lines` — one earned commission per activated order, with
+  `rule_snapshot` (JSONB), `amount_minor`, `currency`, `state`
+  (earned|carrier_paid|partner_paid) and nullable `invoice_id`. The unique
+  `(workspace_id, order_id)` is what guarantees exactly one line per order
+  (invariant 10). `app_runtime` gets SELECT/INSERT/UPDATE (state + invoice link).
+- `commission_line_events` — append-only state history; SELECT/INSERT only.
+- `invoices` / `invoice_lines` — tables only in Phase A (no generation UI).
+  One invoice per `(workspace_id, partner_id, period_start, period_end)`;
+  sequential `invoice_number` per workspace; a commission line links to at most
+  one invoice (`unique (workspace_id, commission_line_id)` on `invoice_lines`).
+
+### Why
+
+PLATFORM_CONTEXT.md §4 item 10 and REQ 31–33: commission is earned exactly once
+on activation with the rule snapshotted; rule changes never alter existing lines;
+commission state is independent of order status; invoice generation is idempotent
+(the uniqueness keys enforce this at the database, not in application code).
+
+### RLS
+
+Every table uses the standard `FOR ALL` `app_runtime` tenant policy comparing
+`workspace_id` to `app.workspace_id` with a non-null `app.actor_id`, repeated in
+`WITH CHECK`, RLS enabled and forced. Grants are the immutability lever:
+commission_rules and commission_line_events are SELECT/INSERT only (like
+offer_versions/audit_events); commission_lines and invoices/invoice_lines add
+UPDATE where a later transition legitimately mutates state.

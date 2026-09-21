@@ -306,4 +306,24 @@ databaseTest('DatabaseLeadStore (T11)', () => {
     expect(audits.every((event) => event.after.fullName === undefined)).toBe(true);
     expect(audits[1]?.after.changedFields).toEqual(['contact']);
   });
+
+  test('emits exactly one analytics_lead_saved outbox job per lead', async () => {
+    const created = await store.createLead({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      requestId: REQUEST_ID,
+      consentVersion: 'terms-2026-09',
+    });
+
+    const jobs = await admin<
+      { job_type: string; dedupe_key: string; payload: { leadId: string } }[]
+    >`
+      select job_type, dedupe_key, payload from app.outbox_jobs
+      where workspace_id = ${WORKSPACE}
+        and job_type = 'analytics_lead_saved'
+        and dedupe_key = ${created.lead.id}
+    `;
+    expect(jobs).toHaveLength(1);
+    expect(jobs[0]?.payload.leadId).toBe(created.lead.id);
+  });
 });

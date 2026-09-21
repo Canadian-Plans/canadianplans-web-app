@@ -37,6 +37,29 @@ export const partnerStatuses = tuple('pending', 'approved', 'suspended');
 export type PartnerStatus = (typeof partnerStatuses)[number];
 
 /**
+ * How a commission rule computes its amount (T19). `fixed` is a flat CAD amount
+ * per activation (integer minor units). `percentage` applies a rate to a basis
+ * whose exact definition and rounding are OPEN_INPUTS #17 — unresolved, so a
+ * percentage rule cannot be applied to a live activation yet.
+ */
+export const commissionRuleTypes = tuple('fixed', 'percentage');
+export type CommissionRuleType = (typeof commissionRuleTypes)[number];
+
+/**
+ * Commission line lifecycle (PLATFORM_CONTEXT.md §4 item 10): `earned` on
+ * activation → `carrier_paid` once the carrier has paid Canadian Plans →
+ * `partner_paid` once Canadian Plans has paid the partner. Phase A records
+ * `earned` and `carrier_paid`; `partner_paid` stays disabled while
+ * OPEN_INPUTS #18 is unresolved and B1 invoice approval does not exist.
+ */
+export const commissionStates = tuple('earned', 'carrier_paid', 'partner_paid');
+export type CommissionState = (typeof commissionStates)[number];
+
+/** Invoice lifecycle (T19 tables only): a `draft` is `approved` once, which freezes it. */
+export const invoiceStatuses = tuple('draft', 'approved');
+export type InvoiceStatus = (typeof invoiceStatuses)[number];
+
+/**
  * A lead is `incomplete` while the customer is still filling in the form
  * (repeated saves update the same row) and becomes `submitted` once it
  * converts to an order (T12). There is no separate "abandoned" state — an

@@ -1,6 +1,9 @@
 import { sql } from 'drizzle-orm';
 import {
+  commissionRuleTypes,
+  commissionStates,
   deliveryStates,
+  invoiceStatuses,
   leadStatuses,
   membershipStatuses,
   orderStatuses,
@@ -13,6 +16,7 @@ import {
 import {
   check,
   boolean,
+  date,
   foreignKey,
   index,
   integer,
@@ -62,6 +66,9 @@ const membershipStatusList = sql.raw(membershipStatuses.map((status) => `'${stat
 const partnerStatusList = sql.raw(partnerStatuses.map((status) => `'${status}'`).join(', '));
 const leadStatusList = sql.raw(leadStatuses.map((status) => `'${status}'`).join(', '));
 const orderStatusList = sql.raw(orderStatuses.map((status) => `'${status}'`).join(', '));
+const commissionRuleTypeList = sql.raw(commissionRuleTypes.map((type) => `'${type}'`).join(', '));
+const commissionStateList = sql.raw(commissionStates.map((state) => `'${state}'`).join(', '));
+const invoiceStatusList = sql.raw(invoiceStatuses.map((status) => `'${status}'`).join(', '));
 const paymentStateList = sql.raw(paymentStates.map((state) => `'${state}'`).join(', '));
 const deliveryStateList = sql.raw(deliveryStates.map((state) => `'${state}'`).join(', '));
 
@@ -262,6 +269,104 @@ export const partners = appSchema
       index('partners_workspace_id_status_idx').on(table.workspaceId, table.status),
       check('partners_status_check', sql`${table.status} in (${partnerStatusList})`),
       tenantPolicy('partners_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Commission rules (T19; REQ 32). A rule is workspace-scoped and time-bounded:
+ * the rule *in effect at activation time* is the one whose window contains that
+ * instant. Its full shape is snapshotted onto each commission line, so a later
+ * rule change never alters lines already earned (invariant 10). `valueMinor`
+ * is a flat CAD amount for `fixed` rules; for `percentage` it is a rate whose
+ * basis and rounding are OPEN_INPUTS #17 (unresolved — percentage rules cannot
+ * be applied to a live activation yet). `isTest` marks a placeholder rule that
+ * may only produce commission lines outside production (the TEST fixed-zero
+ * rule must never enter live immutable records). Rules are never updated or
+ * deleted — a change is a new row — so the runtime role gets only SELECT/INSERT.
+ */
+export const commissionRules = appSchema
+  .table(
+    'commission_rules',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      ruleType: text('rule_type').notNull(),
+      valueMinor: integer('value_minor').notNull(),
+      currency: text('currency').notNull(),
+      isTest: boolean('is_test').default(false).notNull(),
+      effectiveFrom: timestamp('effective_from', { withTimezone: true, mode: 'date' }).notNull(),
+      effectiveTo: timestamp('effective_to', { withTimezone: true, mode: 'date' }),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('commission_rules_workspace_id_id_unique').on(table.workspaceId, table.id),
+      check('commission_rules_type_check', sql`${table.ruleType} in (${commissionRuleTypeList})`),
+      check('commission_rules_value_nonnegative_check', sql`${table.valueMinor} >= 0`),
+      check(
+        'commission_rules_window_check',
+        sql`${table.effectiveTo} is null or ${table.effectiveTo} > ${table.effectiveFrom}`,
+      ),
+      index('commission_rules_workspace_effective_idx').on(
+        table.workspaceId,
+        table.effectiveFrom,
+        table.effectiveTo,
+      ),
+      tenantPolicy('commission_rules_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Invoices and their lines (T19 — tables only in Phase A; no generation UI).
+ * One draft invoice per partner per period; approval freezes it. Invoice
+ * numbers are sequential per workspace (REQ 33). Generation and approval land
+ * in B1, so the runtime role gets SELECT/INSERT/UPDATE but no code path writes
+ * these in Phase A.
+ */
+export const invoices = appSchema
+  .table(
+    'invoices',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      partnerId: uuid('partner_id').notNull(),
+      invoiceNumber: integer('invoice_number').notNull(),
+      periodStart: date('period_start').notNull(),
+      periodEnd: date('period_end').notNull(),
+      status: text('status').default('draft').notNull(),
+      totalMinor: integer('total_minor').default(0).notNull(),
+      currency: text('currency').notNull(),
+      approvedBy: uuid('approved_by'),
+      approvedAt: timestamp('approved_at', { withTimezone: true, mode: 'date' }),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('invoices_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('invoices_workspace_number_unique').on(table.workspaceId, table.invoiceNumber),
+      unique('invoices_workspace_partner_period_unique').on(
+        table.workspaceId,
+        table.partnerId,
+        table.periodStart,
+        table.periodEnd,
+      ),
+      foreignKey({
+        name: 'invoices_workspace_partner_fk',
+        columns: [table.workspaceId, table.partnerId],
+        foreignColumns: [partners.workspaceId, partners.id],
+      }),
+      check('invoices_status_check', sql`${table.status} in (${invoiceStatusList})`),
+      check('invoices_period_check', sql`${table.periodEnd} >= ${table.periodStart}`),
+      check(
+        'invoices_approved_state_check',
+        sql`(${table.status} = 'approved') = (${table.approvedAt} is not null)`,
+      ),
+      index('invoices_workspace_partner_idx').on(table.workspaceId, table.partnerId),
+      tenantPolicy('invoices_tenant_policy', table.workspaceId),
     ],
   )
   .enableRLS();
@@ -625,6 +730,157 @@ export const orders = appSchema
       index('orders_workspace_assignee_idx').on(table.workspaceId, table.assigneeId),
       index('orders_workspace_partner_idx').on(table.workspaceId, table.partnerId),
       tenantPolicy('orders_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * One earned commission for one activated order (invariant 10), with the rule
+ * snapshotted at activation. The unique `(workspace_id, order_id)` is what makes
+ * activation create *exactly one* line: a retried or concurrent activation
+ * conflicts on this key rather than inserting a second line. `amountMinor`,
+ * `currency`, `ruleId` and `ruleSnapshot` are the immutable financial facts;
+ * only `state` and `invoiceId` change afterwards, through audited Finance
+ * actions. `invoiceId` is nullable until B1 invoicing links the line.
+ */
+export const commissionLines = appSchema
+  .table(
+    'commission_lines',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      orderId: uuid('order_id').notNull(),
+      partnerId: uuid('partner_id').notNull(),
+      ruleId: uuid('rule_id').notNull(),
+      ruleSnapshot: jsonb('rule_snapshot').notNull(),
+      amountMinor: integer('amount_minor').notNull(),
+      currency: text('currency').notNull(),
+      state: text('state').default('earned').notNull(),
+      invoiceId: uuid('invoice_id'),
+      earnedAt: timestamp('earned_at', { withTimezone: true, mode: 'date' }).notNull(),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+        .defaultNow()
+        .notNull(),
+    },
+    (table) => [
+      unique('commission_lines_workspace_id_id_unique').on(table.workspaceId, table.id),
+      // Exactly one commission line per activated order (invariant 10).
+      unique('commission_lines_workspace_order_unique').on(table.workspaceId, table.orderId),
+      foreignKey({
+        name: 'commission_lines_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }),
+      foreignKey({
+        name: 'commission_lines_workspace_partner_fk',
+        columns: [table.workspaceId, table.partnerId],
+        foreignColumns: [partners.workspaceId, partners.id],
+      }),
+      foreignKey({
+        name: 'commission_lines_workspace_rule_fk',
+        columns: [table.workspaceId, table.ruleId],
+        foreignColumns: [commissionRules.workspaceId, commissionRules.id],
+      }),
+      foreignKey({
+        name: 'commission_lines_workspace_invoice_fk',
+        columns: [table.workspaceId, table.invoiceId],
+        foreignColumns: [invoices.workspaceId, invoices.id],
+      }),
+      check('commission_lines_state_check', sql`${table.state} in (${commissionStateList})`),
+      check('commission_lines_amount_nonnegative_check', sql`${table.amountMinor} >= 0`),
+      check(
+        'commission_lines_snapshot_object_check',
+        sql`jsonb_typeof(${table.ruleSnapshot}) = 'object'`,
+      ),
+      index('commission_lines_workspace_partner_idx').on(table.workspaceId, table.partnerId),
+      index('commission_lines_workspace_state_idx').on(table.workspaceId, table.state),
+      tenantPolicy('commission_lines_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Append-only state history for a commission line (REQ 32 — "state history").
+ * Every transition (including the initial `earned`) writes one row so the full
+ * carrier-paid / partner-paid trail is reconstructable. Immutable, so the
+ * runtime role gets only SELECT/INSERT, matching `audit_events`.
+ */
+export const commissionLineEvents = appSchema
+  .table(
+    'commission_line_events',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      commissionLineId: uuid('commission_line_id').notNull(),
+      actorId: uuid('actor_id').notNull(),
+      fromState: text('from_state'),
+      toState: text('to_state').notNull(),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('commission_line_events_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'commission_line_events_workspace_line_fk',
+        columns: [table.workspaceId, table.commissionLineId],
+        foreignColumns: [commissionLines.workspaceId, commissionLines.id],
+      }).onDelete('cascade'),
+      check(
+        'commission_line_events_from_state_check',
+        sql`${table.fromState} is null or ${table.fromState} in (${commissionStateList})`,
+      ),
+      check(
+        'commission_line_events_to_state_check',
+        sql`${table.toState} in (${commissionStateList})`,
+      ),
+      index('commission_line_events_workspace_line_created_idx').on(
+        table.workspaceId,
+        table.commissionLineId,
+        table.createdAt,
+      ),
+      tenantPolicy('commission_line_events_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+export const invoiceLines = appSchema
+  .table(
+    'invoice_lines',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      invoiceId: uuid('invoice_id').notNull(),
+      commissionLineId: uuid('commission_line_id').notNull(),
+      orderId: uuid('order_id').notNull(),
+      amountMinor: integer('amount_minor').notNull(),
+      currency: text('currency').notNull(),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('invoice_lines_workspace_id_id_unique').on(table.workspaceId, table.id),
+      // A commission line belongs to exactly one invoice (REQ 33).
+      unique('invoice_lines_workspace_commission_unique').on(
+        table.workspaceId,
+        table.commissionLineId,
+      ),
+      foreignKey({
+        name: 'invoice_lines_workspace_invoice_fk',
+        columns: [table.workspaceId, table.invoiceId],
+        foreignColumns: [invoices.workspaceId, invoices.id],
+      }).onDelete('cascade'),
+      foreignKey({
+        name: 'invoice_lines_workspace_commission_fk',
+        columns: [table.workspaceId, table.commissionLineId],
+        foreignColumns: [commissionLines.workspaceId, commissionLines.id],
+      }),
+      index('invoice_lines_workspace_invoice_idx').on(table.workspaceId, table.invoiceId),
+      tenantPolicy('invoice_lines_tenant_policy', table.workspaceId),
     ],
   )
   .enableRLS();
@@ -1183,38 +1439,87 @@ export const auditEvents = appSchema
   )
   .enableRLS();
 
-export const schema = {
-  workspaces,
-  memberships,
-  roles,
-  membershipRoles,
-  permissions,
-  membershipPermissions,
-  partners,
-  products,
-  offerVersions,
-  productAvailability,
-  catalogueSyncEvents,
-  catalogueSyncLeases,
-  catalogueSyncState,
-  leads,
-  draftGrants,
-  orders,
-  quotes,
-  orderStatusHistory,
-  orderAmendments,
-  orderChangeRequests,
-  orderNotes,
-  orderReminders,
-  idempotencyKeys,
-  outboxJobs,
-  outboxJobAlerts,
-  dispatchRecords,
-  paymentRecords,
-  serviceCredentials,
-  rateLimitBuckets,
-  auditEvents,
-};
+/**
+ * Local mirror of the external deletion ledger intent (T21, §13). It holds the
+ * logical operation the app committed and restricted; the durable event lives
+ * in the independent ledger. Identifiers and an action only — never the deleted
+ * personal data.
+ */
+export const deletionIntents = appSchema
+  .table(
+    'deletion_intents',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      action: text('action').notNull(),
+      subjectType: text('subject_type').notNull(),
+      subjectId: uuid('subject_id').notNull(),
+      status: text('status').notNull().default('pending'),
+      reason: text('reason'),
+      actorId: uuid('actor_id').notNull(),
+      ledgerAckId: text('ledger_ack_id'),
+      lastErrorCode: text('last_error_code'),
+      createdAt: createdAt(),
+      acknowledgedAt: timestamp('acknowledged_at', { withTimezone: true, mode: 'date' }),
+    },
+    (table) => [
+      unique('deletion_intents_workspace_id_id_unique').on(table.workspaceId, table.id),
+      check(
+        'deletion_intents_status_check',
+        sql`${table.status} in ('pending', 'acknowledged', 'failed')`,
+      ),
+      check('deletion_intents_action_check', sql`${table.action} in ('delete_customer_data')`),
+      check('deletion_intents_subject_type_check', sql`${table.subjectType} = 'order'`),
+      index('deletion_intents_workspace_status_idx').on(table.workspaceId, table.status),
+      tenantPolicy('deletion_intents_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * A customer order-tracking one-time-code challenge (T22, REQ 05). The code and
+ * the binding email are stored only as keyed hashes bound to workspace, order
+ * and normalized email; the plaintext code is never persisted. Consumed,
+ * expired or over-attempted challenges never verify.
+ */
+export const trackingChallenges = appSchema
+  .table(
+    'tracking_challenges',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      orderId: uuid('order_id').notNull(),
+      emailHash: text('email_hash').notNull(),
+      codeHash: text('code_hash').notNull(),
+      status: text('status').notNull().default('pending'),
+      attempts: integer('attempts').notNull().default(0),
+      expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
+      createdAt: createdAt(),
+      consumedAt: timestamp('consumed_at', { withTimezone: true, mode: 'date' }),
+    },
+    (table) => [
+      unique('tracking_challenges_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'tracking_challenges_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }).onDelete('cascade'),
+      check('tracking_challenges_status_check', sql`${table.status} in ('pending', 'consumed')`),
+      check('tracking_challenges_attempts_check', sql`${table.attempts} >= 0`),
+      index('tracking_challenges_workspace_order_status_idx').on(
+        table.workspaceId,
+        table.orderId,
+        table.status,
+      ),
+      index('tracking_challenges_workspace_email_idx').on(table.workspaceId, table.emailHash),
+      tenantPolicy('tracking_challenges_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
 
 export type Workspace = typeof workspaces.$inferSelect;
 export type Membership = typeof memberships.$inferSelect;
@@ -1223,6 +1528,11 @@ export type MembershipRole = typeof membershipRoles.$inferSelect;
 export type Permission = typeof permissions.$inferSelect;
 export type MembershipPermission = typeof membershipPermissions.$inferSelect;
 export type Partner = typeof partners.$inferSelect;
+export type CommissionRule = typeof commissionRules.$inferSelect;
+export type Invoice = typeof invoices.$inferSelect;
+export type CommissionLine = typeof commissionLines.$inferSelect;
+export type CommissionLineEvent = typeof commissionLineEvents.$inferSelect;
+export type InvoiceLine = typeof invoiceLines.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type OfferVersion = typeof offerVersions.$inferSelect;
 export type ProductAvailability = typeof productAvailability.$inferSelect;
@@ -1246,3 +1556,487 @@ export type PaymentRecord = typeof paymentRecords.$inferSelect;
 export type ServiceCredential = typeof serviceCredentials.$inferSelect;
 export type RateLimitBucket = typeof rateLimitBuckets.$inferSelect;
 export type AuditEvent = typeof auditEvents.$inferSelect;
+
+/**
+ * Uploaded document metadata (T17; REQ 22-25; IMPLEMENTATION_PLAN.md §8). One
+ * row per uploaded object with the full lifecycle from the task brief:
+ * `uploading` (intent issued, client uploading to the staging key) →
+ * `verifying` (finalize claimed; staging copied to the private candidate key
+ * the uploader cannot write to) → `available` (candidate verified by signature
+ * + checksum and atomically attached) or `rejected` (verification failed) →
+ * `deleted` (tombstoned, scheduled for cleanup). The object key, detected MIME,
+ * actual size and checksum are set only when verification succeeds. `record_type`
+ * is polymorphic (a lead or an order) so, like `audit_events`, ownership is
+ * enforced by the tenant RLS policy and the backend rather than a single
+ * composite FK. `object_key`/`staging_key`/`candidate_key` are random and never
+ * leak the customer's identity (REQ 22).
+ */
+export const files = appSchema
+  .table(
+    'files',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      recordType: text('record_type').notNull(),
+      recordId: uuid('record_id').notNull(),
+      documentType: text('document_type').notNull(),
+      bucket: text('bucket').notNull(),
+      /** The uploader-writable staging object the presigned PUT targets. */
+      stagingKey: text('staging_key').notNull(),
+      /** The private candidate the uploader cannot write to; set when finalize is claimed. */
+      candidateKey: text('candidate_key'),
+      /** The attached, verified object served to staff. Equals the candidate key. */
+      objectKey: text('object_key'),
+      declaredContentType: text('declared_content_type').notNull(),
+      detectedMime: text('detected_mime'),
+      declaredSizeBytes: integer('declared_size_bytes').notNull(),
+      sizeBytes: integer('size_bytes'),
+      checksumSha256: text('checksum_sha256'),
+      status: text('status').default('uploading').notNull(),
+      rejectReason: text('reject_reason'),
+      revision: integer('revision').default(1).notNull(),
+      /** Set on a superseded object when a replacement is attached to the same slot. */
+      supersededByFileId: uuid('superseded_by_file_id'),
+      uploadedBy: uuid('uploaded_by').notNull(),
+      expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
+      finalizedAt: timestamp('finalized_at', { withTimezone: true, mode: 'date' }),
+      deletedAt: timestamp('deleted_at', { withTimezone: true, mode: 'date' }),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+        .defaultNow()
+        .notNull(),
+    },
+    (table) => [
+      unique('files_workspace_id_id_unique').on(table.workspaceId, table.id),
+      uniqueIndex('files_staging_key_unique').on(table.stagingKey),
+      uniqueIndex('files_object_key_unique')
+        .on(table.objectKey)
+        .where(sql`${table.objectKey} is not null`),
+      check(
+        'files_status_check',
+        sql`${table.status} in ('uploading', 'verifying', 'available', 'rejected', 'deleted')`,
+      ),
+      check('files_record_type_check', sql`${table.recordType} in ('lead', 'order')`),
+      check(
+        'files_content_type_check',
+        sql`${table.declaredContentType} in ('application/pdf', 'image/jpeg', 'image/png')`,
+      ),
+      check('files_declared_size_check', sql`${table.declaredSizeBytes} > 0`),
+      check('files_size_check', sql`${table.sizeBytes} is null or ${table.sizeBytes} >= 0`),
+      check('files_revision_positive_check', sql`${table.revision} > 0`),
+      // An available object must carry the verified provenance; a non-available
+      // object must not (so an unchecked object can never look attached).
+      check(
+        'files_available_provenance_check',
+        sql`(
+          ${table.status} = 'available'
+          and ${table.objectKey} is not null
+          and ${table.detectedMime} is not null
+          and ${table.checksumSha256} is not null
+          and ${table.sizeBytes} is not null
+        ) or (
+          ${table.status} <> 'available'
+        )`,
+      ),
+      index('files_workspace_record_idx').on(
+        table.workspaceId,
+        table.recordType,
+        table.recordId,
+        table.status,
+      ),
+      index('files_workspace_status_expires_idx').on(
+        table.workspaceId,
+        table.status,
+        table.expiresAt,
+      ),
+      tenantPolicy('files_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Immutable provenance of every verified object (T17; REQ 23/24). One row is
+ * written when a file's candidate is attached; a replacement adds the next
+ * revision, so review/version history survives even after the current `files`
+ * row is tombstoned or scrubbed. `app_runtime` is granted only SELECT/INSERT.
+ */
+export const fileRevisions = appSchema
+  .table(
+    'file_revisions',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      fileId: uuid('file_id').notNull(),
+      revision: integer('revision').notNull(),
+      objectKey: text('object_key').notNull(),
+      detectedMime: text('detected_mime').notNull(),
+      sizeBytes: integer('size_bytes').notNull(),
+      checksumSha256: text('checksum_sha256').notNull(),
+      createdBy: uuid('created_by').notNull(),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('file_revisions_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('file_revisions_workspace_file_revision_unique').on(
+        table.workspaceId,
+        table.fileId,
+        table.revision,
+      ),
+      foreignKey({
+        name: 'file_revisions_workspace_file_fk',
+        columns: [table.workspaceId, table.fileId],
+        foreignColumns: [files.workspaceId, files.id],
+      }).onDelete('cascade'),
+      check('file_revisions_revision_positive_check', sql`${table.revision} > 0`),
+      index('file_revisions_workspace_file_idx').on(
+        table.workspaceId,
+        table.fileId,
+        table.revision,
+      ),
+      tenantPolicy('file_revisions_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Staff review decisions on a file (T17; admin Documents panel — approve/reject
+ * with a note). Append-only and independent of the signature-verification
+ * `status`: a file can be byte-verified (`available`) yet business-rejected by
+ * staff. Every decision records who and when (invariant 11).
+ */
+export const fileReviewEvents = appSchema
+  .table(
+    'file_review_events',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      fileId: uuid('file_id').notNull(),
+      actorId: uuid('actor_id').notNull(),
+      decision: text('decision').notNull(),
+      note: text('note'),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('file_review_events_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'file_review_events_workspace_file_fk',
+        columns: [table.workspaceId, table.fileId],
+        foreignColumns: [files.workspaceId, files.id],
+      }).onDelete('cascade'),
+      check(
+        'file_review_events_decision_check',
+        sql`${table.decision} in ('approved', 'rejected')`,
+      ),
+      check(
+        'file_review_events_note_check',
+        sql`${table.note} is null or char_length(${table.note}) between 1 and 2000`,
+      ),
+      index('file_review_events_workspace_file_created_idx').on(
+        table.workspaceId,
+        table.fileId,
+        table.createdAt,
+      ),
+      tenantPolicy('file_review_events_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+export type FileRecord = typeof files.$inferSelect;
+export type FileRevision = typeof fileRevisions.$inferSelect;
+export type FileReviewEvent = typeof fileReviewEvents.$inferSelect;
+
+/**
+ * One row per logical email send (T18/REQ 26-27). `messageId` is the stable
+ * logical job identifier used for provider-level dedupe, never regenerated on
+ * retry. `contactHash` is a keyed digest, never the raw address, so this table
+ * never carries an unhashed contact detail (§4 invariant 12).
+ */
+export const emailMessages = appSchema
+  .table(
+    'email_messages',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      messageId: uuid('message_id').notNull(),
+      template: text('template').notNull(),
+      messageClass: text('message_class').notNull(),
+      leadId: uuid('lead_id'),
+      orderId: uuid('order_id'),
+      contactHash: text('contact_hash').notNull(),
+      status: text('status').default('queued').notNull(),
+      providerId: text('provider_id'),
+      lastErrorCode: text('last_error_code'),
+      lastEventAt: timestamp('last_event_at', { withTimezone: true, mode: 'date' }),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+        .defaultNow()
+        .notNull(),
+    },
+    (table) => [
+      unique('email_messages_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('email_messages_workspace_message_id_unique').on(table.workspaceId, table.messageId),
+      check(
+        'email_messages_class_check',
+        sql`${table.messageClass} in ('transactional', 'marketing')`,
+      ),
+      check(
+        'email_messages_status_check',
+        sql`${table.status} in ('queued', 'sent', 'delivered', 'bounced', 'complained', 'failed', 'uncertain')`,
+      ),
+      foreignKey({
+        name: 'email_messages_workspace_lead_fk',
+        columns: [table.workspaceId, table.leadId],
+        foreignColumns: [leads.workspaceId, leads.id],
+      }),
+      foreignKey({
+        name: 'email_messages_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }),
+      index('email_messages_workspace_status_idx').on(table.workspaceId, table.status),
+      index('email_messages_workspace_contact_hash_idx').on(table.workspaceId, table.contactHash),
+      tenantPolicy('email_messages_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Deliverability suppression — hard bounce, complaint, or manual address
+ * block. Deliberately separate from `marketing_consents.marketingOptIn`
+ * (REQ 26): a marketing opt-out never lands here, and transactional sends
+ * only ever check this table, never the opt-out flag.
+ */
+export const emailSuppressions = appSchema
+  .table(
+    'email_suppressions',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      contactHash: text('contact_hash').notNull(),
+      reason: text('reason').notNull(),
+      sourceEventId: text('source_event_id'),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('email_suppressions_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('email_suppressions_workspace_contact_reason_unique').on(
+        table.workspaceId,
+        table.contactHash,
+        table.reason,
+      ),
+      check(
+        'email_suppressions_reason_check',
+        sql`${table.reason} in ('hard_bounce', 'complaint', 'manual')`,
+      ),
+      index('email_suppressions_workspace_contact_hash_idx').on(
+        table.workspaceId,
+        table.contactHash,
+      ),
+      tenantPolicy('email_suppressions_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Marketing opt-in state (CASL, REQ 34). Recorded per lead and/or order at
+ * capture with the consent version; unsubscribe writes a new row rather than
+ * mutating history so the capture record is preserved.
+ */
+export const marketingConsents = appSchema
+  .table(
+    'marketing_consents',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      leadId: uuid('lead_id'),
+      orderId: uuid('order_id'),
+      contactHash: text('contact_hash').notNull(),
+      marketingOptIn: boolean('marketing_opt_in').notNull(),
+      version: text('version').notNull(),
+      capturedAt: timestamp('captured_at', { withTimezone: true, mode: 'date' }).notNull(),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('marketing_consents_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'marketing_consents_workspace_lead_fk',
+        columns: [table.workspaceId, table.leadId],
+        foreignColumns: [leads.workspaceId, leads.id],
+      }),
+      foreignKey({
+        name: 'marketing_consents_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }),
+      check(
+        'marketing_consents_reference_check',
+        sql`${table.leadId} is not null or ${table.orderId} is not null`,
+      ),
+      index('marketing_consents_workspace_contact_hash_idx').on(
+        table.workspaceId,
+        table.contactHash,
+        table.capturedAt,
+      ),
+      tenantPolicy('marketing_consents_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Centrally stored follow-up due dates and eligibility (REQ 27). Staff can
+ * cancel a scheduled sequence; the runner re-checks lead/order state, consent
+ * and suppression immediately before sending, never trusting this row alone.
+ */
+export const followUpSchedules = appSchema
+  .table(
+    'follow_up_schedules',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      leadId: uuid('lead_id'),
+      orderId: uuid('order_id'),
+      template: text('template').notNull(),
+      dueAt: timestamp('due_at', { withTimezone: true, mode: 'date' }).notNull(),
+      status: text('status').default('scheduled').notNull(),
+      cancelledReason: text('cancelled_reason'),
+      cancelledByActorId: uuid('cancelled_by_actor_id'),
+      sentMessageId: uuid('sent_message_id'),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+        .defaultNow()
+        .notNull(),
+    },
+    (table) => [
+      unique('follow_up_schedules_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'follow_up_schedules_workspace_lead_fk',
+        columns: [table.workspaceId, table.leadId],
+        foreignColumns: [leads.workspaceId, leads.id],
+      }),
+      foreignKey({
+        name: 'follow_up_schedules_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }),
+      check(
+        'follow_up_schedules_reference_check',
+        sql`${table.leadId} is not null or ${table.orderId} is not null`,
+      ),
+      check(
+        'follow_up_schedules_status_check',
+        sql`${table.status} in ('scheduled', 'sent', 'cancelled', 'skipped')`,
+      ),
+      index('follow_up_schedules_workspace_due_idx').on(
+        table.workspaceId,
+        table.status,
+        table.dueAt,
+      ),
+      tenantPolicy('follow_up_schedules_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Verified provider delivery-event inbox (REQ 26). Deduplicated by provider
+ * event ID within a workspace/account so a replayed or duplicated webhook
+ * never double-applies a bounce/complaint suppression.
+ */
+export const emailProviderEvents = appSchema
+  .table(
+    'email_provider_events',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      providerEventId: text('provider_event_id').notNull(),
+      eventType: text('event_type').notNull(),
+      messageId: uuid('message_id'),
+      contactHash: text('contact_hash'),
+      receivedAt: timestamp('received_at', { withTimezone: true, mode: 'date' }).notNull(),
+      appliedAt: timestamp('applied_at', { withTimezone: true, mode: 'date' }),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('email_provider_events_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('email_provider_events_workspace_provider_event_unique').on(
+        table.workspaceId,
+        table.providerEventId,
+      ),
+      check(
+        'email_provider_events_type_check',
+        sql`${table.eventType} in ('delivered', 'bounce', 'complaint', 'reject')`,
+      ),
+      index('email_provider_events_workspace_message_idx').on(table.workspaceId, table.messageId),
+      tenantPolicy('email_provider_events_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+export type EmailMessageRow = typeof emailMessages.$inferSelect;
+export type EmailSuppressionRow = typeof emailSuppressions.$inferSelect;
+export type MarketingConsentRow = typeof marketingConsents.$inferSelect;
+export type FollowUpScheduleRow = typeof followUpSchedules.$inferSelect;
+export type EmailProviderEventRow = typeof emailProviderEvents.$inferSelect;
+
+export const schema = {
+  workspaces,
+  memberships,
+  roles,
+  membershipRoles,
+  permissions,
+  membershipPermissions,
+  partners,
+  commissionRules,
+  invoices,
+  commissionLines,
+  commissionLineEvents,
+  invoiceLines,
+  products,
+  offerVersions,
+  productAvailability,
+  catalogueSyncEvents,
+  catalogueSyncLeases,
+  catalogueSyncState,
+  leads,
+  draftGrants,
+  orders,
+  quotes,
+  orderStatusHistory,
+  orderAmendments,
+  orderChangeRequests,
+  orderNotes,
+  orderReminders,
+  idempotencyKeys,
+  outboxJobs,
+  outboxJobAlerts,
+  dispatchRecords,
+  paymentRecords,
+  serviceCredentials,
+  rateLimitBuckets,
+  auditEvents,
+  deletionIntents,
+  trackingChallenges,
+  files,
+  fileRevisions,
+  fileReviewEvents,
+  emailMessages,
+  emailSuppressions,
+  marketingConsents,
+  followUpSchedules,
+  emailProviderEvents,
+};

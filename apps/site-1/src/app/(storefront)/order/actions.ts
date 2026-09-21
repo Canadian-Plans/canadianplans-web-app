@@ -9,6 +9,8 @@ import { readOrderDraft, writeOrderDraft } from './draft';
 import type {
   ActionResult,
   CallbackInput,
+  DocumentFinalizeResult,
+  DocumentIntentResult,
   OrderDetailField,
   OrderDetailsInput,
   OrderFieldErrors,
@@ -284,6 +286,97 @@ export async function saveDocuments(
     return { ok: true, data: { leadId: updated.lead.id } };
   } catch (error) {
     return failureFrom(error);
+  }
+}
+
+const documentTypeSchema = z.string().regex(/^[a-z0-9_]{1,64}$/);
+const contentTypeSchema = z.enum(['application/pdf', 'image/jpeg', 'image/png']);
+const checksumSchema = z.string().regex(/^[a-f0-9]{64}$/);
+
+function documentErrorMessage(error: unknown): string {
+  if (error instanceof BackendError) {
+    if (error.code === 'draft_not_found' || error.code === 'draft_expired') {
+      return 'Your saved details have expired. Please start the order again.';
+    }
+    if (error.code === 'document_too_large') return 'That file is larger than the 10 MB limit.';
+    if (error.code === 'checklist_mismatch') {
+      return 'That document type is not requested for this plan.';
+    }
+    if (error.code === 'document_verification_failed') {
+      return 'That file could not be verified as a PDF, JPG or PNG. Please re-upload.';
+    }
+    if (error.code === 'feature_not_ready') {
+      return 'Document uploads are not enabled yet. Our team will collect them another way.';
+    }
+  }
+  return 'The document could not be uploaded. Please try again.';
+}
+
+/**
+ * T17 step 3: authorise a direct-to-R2 upload for one checklist document. The
+ * browser PUTs the file to the returned signed URL, then calls `finalizeDocument`.
+ * The service credential and draft grant stay on the server (in the httpOnly cookie).
+ */
+export async function createDocumentIntent(input: {
+  documentType: string;
+  fileName: string;
+  contentType: string;
+  sizeBytes: number;
+}): Promise<DocumentIntentResult> {
+  const documentType = documentTypeSchema.safeParse(input.documentType);
+  const contentType = contentTypeSchema.safeParse(input.contentType);
+  const fileName = z.string().min(1).max(255).safeParse(input.fileName);
+  const sizeBytes = z.number().int().positive().safeParse(input.sizeBytes);
+  if (!documentType.success || !contentType.success || !fileName.success || !sizeBytes.success) {
+    return { ok: false, message: 'That file cannot be uploaded.' };
+  }
+  const draft = await readOrderDraft();
+  if (!draft) return { ok: false, message: 'Your saved details have expired. Please start again.' };
+  try {
+    const intent = await getBackendClient().uploads.createIntent(
+      {
+        parentType: 'lead',
+        parentId: draft.leadId,
+        documentType: documentType.data,
+        fileName: fileName.data,
+        contentType: contentType.data,
+        sizeBytes: sizeBytes.data,
+      },
+      { draftGrant: draft.draftGrant },
+    );
+    return {
+      ok: true,
+      uploadId: intent.uploadId,
+      url: intent.url,
+      method: 'PUT',
+      headers: intent.headers,
+    };
+  } catch (error) {
+    return { ok: false, message: documentErrorMessage(error) };
+  }
+}
+
+/** T17 step 3: finalize the uploaded object; the backend verifies and attaches it. */
+export async function finalizeDocument(input: {
+  uploadId: string;
+  checksumSha256: string;
+}): Promise<DocumentFinalizeResult> {
+  const uploadId = z.uuid().safeParse(input.uploadId);
+  const checksum = checksumSchema.safeParse(input.checksumSha256);
+  if (!uploadId.success || !checksum.success) {
+    return { ok: false, message: 'That upload cannot be finalized.' };
+  }
+  const draft = await readOrderDraft();
+  if (!draft) return { ok: false, message: 'Your saved details have expired. Please start again.' };
+  try {
+    const finalized = await getBackendClient().uploads.finalize(
+      uploadId.data,
+      { checksumSha256: checksum.data },
+      { draftGrant: draft.draftGrant },
+    );
+    return { ok: true, fileId: finalized.file.id, documentType: finalized.file.documentType };
+  } catch (error) {
+    return { ok: false, message: documentErrorMessage(error) };
   }
 }
 

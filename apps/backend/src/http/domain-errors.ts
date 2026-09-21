@@ -35,6 +35,15 @@ const messages: Partial<Record<ApiErrorCode, string>> = {
   change_request_resolved: 'This change request has already been resolved.',
   invalid_request: 'The request body is invalid.',
   internal_error: 'An internal error occurred.',
+  upload_not_found: 'The upload does not exist for this draft.',
+  upload_expired: 'The upload authorisation has expired. Request a new upload.',
+  checklist_mismatch: 'That document type is not on this offer’s checklist.',
+  document_too_large: 'The document exceeds the 10 MB limit.',
+  document_verification_failed: 'The uploaded file failed signature or checksum verification.',
+  verification_in_progress: 'This upload is already being verified. Retry shortly.',
+  file_not_found: 'The document does not exist in this workspace.',
+  file_not_available: 'The document is not available for download.',
+  download_denied: 'You do not have permission to download this document.',
 };
 
 export function sendDomainError(

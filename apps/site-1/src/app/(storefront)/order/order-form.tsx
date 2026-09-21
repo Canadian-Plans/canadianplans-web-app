@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRef, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import type { Quote, RawAttribution, WebsiteOffer } from '@canadian-plans/contracts';
 import {
   Button,
@@ -10,16 +10,16 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  FileDrop,
   FormField,
   Input,
   ReviewCard,
   Stepper,
 } from '@canadian-plans/ui';
 
+import { trackPlanSelected } from '../../../lib/analytics';
 import { requestCallback, requestQuote, saveDetails, saveDocuments, submitOrder } from './actions';
+import { DocumentUploads } from './document-uploads';
 import type { ActionResult, OrderDetailsInput, OrderFieldErrors } from './types';
-
 const STEPS = [
   { id: 'plan', label: 'Plan' },
   { id: 'details', label: 'Details' },
@@ -123,6 +123,14 @@ export function OrderForm({
   const [busy, setBusy] = useState(false);
   const summaryRef = useRef<HTMLDivElement>(null);
   const stepRef = useRef<HTMLDivElement>(null);
+
+  const selectedProductId = selected?.productId;
+
+  // One `plan_selected` per chosen plan. The conversion events are server-side
+  // only, so the browser never double-counts an order.
+  useEffect(() => {
+    if (selectedProductId) trackPlanSelected(selectedProductId);
+  }, [selectedProductId]);
 
   /** Moves to a step and focuses its content, so keyboard users follow the flow. */
   function goToStep(index: number): void {
@@ -443,25 +451,16 @@ export function OrderForm({
           </CardTitle>
           <CardDescription>
             {documentsRequired
-              ? 'This plan asks for documents before activation. Uploads open in a later release; you can continue now.'
+              ? 'This plan asks for documents before activation. Upload them now, or continue and send them later.'
               : 'This plan does not require any documents.'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {documentsRequired ? (
-            <ul className="space-y-4">
-              {documentKeys.map((key) => (
-                <li key={key}>
-                  <FileDrop
-                    id={`order-document-${key}`}
-                    label={checklistLabel(key)}
-                    hint="PDF, JPG or PNG, up to 10 MB."
-                    accept="application/pdf,image/jpeg,image/png"
-                    note="Uploads are not enabled yet — nothing is sent from this step."
-                  />
-                </li>
-              ))}
-            </ul>
+            <DocumentUploads
+              documentKeys={documentKeys.filter((key) => key !== 'none')}
+              labelFor={checklistLabel}
+            />
           ) : (
             <p>Nothing to upload for this plan.</p>
           )}

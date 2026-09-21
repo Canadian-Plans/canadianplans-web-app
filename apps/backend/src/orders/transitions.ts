@@ -8,6 +8,8 @@ import {
 } from '@canadian-plans/db';
 import { orderFulfilmentStatusSchema, type OrderFulfilmentStatus } from '@canadian-plans/contracts';
 
+import type { CommissionActivationHook } from '../partners/activation.js';
+
 type TransitionDatabase = Pick<import('@canadian-plans/db').DatabaseClient, 'withTenantTx'>;
 const defaultDatabase: TransitionDatabase = { withTenantTx };
 
@@ -58,6 +60,15 @@ export interface TransitionPolicyContext {
   partnered: boolean;
   allowOperationalTransitions: boolean;
   /**
+   * Whether the commission-on-activation path is wired for a partnered order.
+   * A partnered order can only activate when a commission line can be created
+   * in the same transaction (invariant 10); until T19 wired that, partnered
+   * activation returned `feature_not_ready` unconditionally. The store still
+   * aborts (leaving state unchanged) if no valid rule is effective at
+   * activation — this flag only governs whether the attempt is allowed at all.
+   */
+  commissionConfigured?: boolean;
+  /**
    * Whether courier details accompany a Dispatched transition. The transition
    * store always requires them; the read-only projection used to render the
    * admin's buttons passes `true`, because the dialog collects them before the
@@ -75,7 +86,12 @@ export function validateTransition(
   | undefined {
   if (to === 'cancelled' && !context.reason?.trim()) return 'cancellation_reason_required';
   if (!allowedTransitions[from].has(to)) return 'illegal_transition';
-  if (to === 'activated' && context.partnered) return 'feature_not_ready';
+  // A partnered order can only activate once the commission path is wired
+  // (T19). Whether a valid rule is actually configured is enforced by the
+  // store when it attempts to create the line.
+  if (to === 'activated' && context.partnered && !context.commissionConfigured) {
+    return 'feature_not_ready';
+  }
   if (!context.allowOperationalTransitions && (to === 'dispatched' || to === 'activated')) {
     return 'feature_not_ready';
   }
@@ -92,7 +108,7 @@ export function validateTransition(
  */
 export function allowedTransitionsFor(
   from: OrderFulfilmentStatus,
-  policy: Omit<TransitionPolicyContext, 'reason' | 'dispatchProvided'>,
+  policy: Omit<TransitionPolicyContext, 'reason' | 'dispatchProvided' | 'commissionConfigured'>,
 ): OrderFulfilmentStatus[] {
   return [...allowedTransitions[from]].filter(
     (to) =>
@@ -103,6 +119,10 @@ export function allowedTransitionsFor(
         // hide the action.
         reason: to === 'cancelled' ? 'collected by the caller' : undefined,
         dispatchProvided: true,
+        // The commission-on-activation hook is wired whenever the store runs, so
+        // a partnered order's activate button appears alongside operational
+        // transitions; the write still aborts if no valid rule is configured.
+        commissionConfigured: policy.allowOperationalTransitions,
       }) === undefined,
   );
 }
@@ -116,6 +136,12 @@ export class DatabaseOrderTransitionStore implements OrderTransitionStore {
     private readonly database: TransitionDatabase = defaultDatabase,
     private readonly allowOperationalTransitions = false,
     private readonly now: () => Date = () => new Date(),
+    /**
+     * Commission-on-activation hook (invariant 10). When present, a partnered
+     * order may activate and its single commission line commits in the same
+     * transaction. When absent, partnered activation stays `feature_not_ready`.
+     */
+    private readonly commissionHook?: CommissionActivationHook,
   ) {}
 
   transition(input: TransitionOrderInput): Promise<TransitionOrderResult> {
@@ -136,15 +162,37 @@ export class DatabaseOrderTransitionStore implements OrderTransitionStore {
         if (!current) return { status: 'not_found' };
         if (current.version !== input.expectedVersion) return { status: 'version_conflict' };
         const currentStatus = orderFulfilmentStatusSchema.parse(current.status);
+        const partnered = current.partnerId !== null;
         const policyError = validateTransition(currentStatus, input.toStatus, {
           reason: input.reason,
-          partnered: current.partnerId !== null,
+          partnered,
           allowOperationalTransitions: this.allowOperationalTransitions,
+          commissionConfigured: partnered && this.commissionHook !== undefined,
           dispatchProvided: input.toStatus === 'dispatched' ? input.dispatch !== undefined : true,
         });
         if (policyError) return { status: policyError };
 
         const changedAt = this.now();
+
+        // Commission-on-activation (invariant 10): a partnered order's single
+        // commission line must commit atomically with its Activated status. If
+        // no valid rule is effective at activation (none configured, a
+        // percentage rule pending OPEN_INPUTS #17, or a TEST rule barred from
+        // production) the activation is rejected and order state is left
+        // unchanged — the transaction returns before any write.
+        if (input.toStatus === 'activated' && partnered && current.partnerId) {
+          if (!this.commissionHook) return { status: 'feature_not_ready' };
+          const commission = await this.commissionHook.onOrderActivated(tx, {
+            workspaceId: input.workspaceId,
+            actorId: input.actorId,
+            requestId: input.requestId,
+            orderId: input.orderId,
+            partnerId: current.partnerId,
+            now: changedAt,
+          });
+          if (commission.status === 'config_incomplete') return { status: 'feature_not_ready' };
+        }
+
         const nextVersion = current.version + 1;
         const [updated] = await tx
           .update(orders)
