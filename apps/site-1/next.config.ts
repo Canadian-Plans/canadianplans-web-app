@@ -27,8 +27,15 @@ const umamiOrigin = originOf(process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL);
 const sentryOrigin = originOf(process.env.NEXT_PUBLIC_SENTRY_DSN);
 
 // Sanity CDN / API hosts used by the storefront queries and the embedded Studio.
-const SANITY_CONNECT = ['https://*.sanity.io', 'https://*.apicdn.sanity.io', 'wss://*.api.sanity.io'];
+const SANITY_CONNECT = [
+  'https://*.sanity.io',
+  'https://*.apicdn.sanity.io',
+  'https://*.sanity-cdn.com',
+  'wss://*.api.sanity.io',
+];
 const SANITY_IMG = ['https://cdn.sanity.io'];
+// The Studio loads its realtime/presentation bridge from the Sanity CDN.
+const SANITY_STUDIO_SCRIPT = ['https://core.sanity-cdn.com'];
 
 function dedupe(values: (string | undefined)[]): string[] {
   return [...new Set(values.filter((value): value is string => Boolean(value)))];
@@ -54,7 +61,13 @@ function buildCsp(scope: 'storefront' | 'studio'): string {
     'img-src': dedupe(["'self'", 'data:', 'blob:', 'https:', ...SANITY_IMG]),
     'font-src': ["'self'", 'data:'],
     'style-src': ["'self'", "'unsafe-inline'"],
-    'script-src': dedupe(["'self'", "'unsafe-inline'", umamiOrigin, ...scriptExtra]),
+    'script-src': dedupe([
+      "'self'",
+      "'unsafe-inline'",
+      umamiOrigin,
+      ...(scope === 'studio' ? SANITY_STUDIO_SCRIPT : []),
+      ...scriptExtra,
+    ]),
     'connect-src': connect,
     'worker-src': ["'self'", 'blob:'],
     'manifest-src': ["'self'"],

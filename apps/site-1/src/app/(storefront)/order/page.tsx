@@ -11,8 +11,7 @@ import { OrderForm } from './order-form';
 
 export const metadata: Metadata = {
   title: 'Order a plan',
-  // REQ 10: preview deployments are never indexed.
-  robots: process.env.VERCEL_ENV === 'preview' ? { index: false, follow: false } : undefined,
+  // Preview/non-production noindex is applied centrally in the root layout (REQ 10).
 };
 
 /**

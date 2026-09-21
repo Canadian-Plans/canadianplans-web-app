@@ -178,6 +178,17 @@ Runs lead → quote → order → cancel every 15 minutes on the backend's in-pr
 
 Provisioning is a one-time, owner-run step (create the workspace row and one product row, add `synthetic:check` to the registry entry's scopes) — there is no seed script for it because it touches production, matching how the machine registry itself is deployment configuration, not application data (§4b).
 
+## Site 1 SEO (REQ 10)
+
+- `NEXT_PUBLIC_SITE_URL` — canonical public origin (e.g. `https://<domain>`), used
+  for `metadataBase`, `robots.txt` and `sitemap.xml`. Absent → `http://localhost:3001`.
+
+Indexability follows `VERCEL_ENV`: only `production` is indexable. Preview and
+local deployments emit `Disallow: /`, an empty sitemap, and a page-level
+`noindex` (set centrally in the root layout), so drafts/previews never reach a
+search index. `/studio` is `noindex` (via `next-sanity`) and disallowed in
+`robots.txt`.
+
 ## Site 1 backend (server only)
 
 - `SITE_1_BACKEND_URL`

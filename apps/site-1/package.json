@@ -28,6 +28,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@axe-core/playwright": "catalog:",
     "@canadian-plans/config": "workspace:*",
     "@playwright/test": "catalog:",
     "@tailwindcss/postcss": "catalog:",
