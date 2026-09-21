@@ -28,6 +28,8 @@ const messages: Partial<Record<ApiErrorCode, string>> = {
   illegal_transition: 'That order status transition is not allowed.',
   cancellation_reason_required: 'A cancellation reason is required.',
   dispatch_details_required: 'A courier is required to dispatch this order.',
+  documents_incomplete: 'Required documents are not yet approved for this order.',
+  document_override_reason_required: 'A reason is required to override the document checklist.',
   feature_not_ready: 'This order action is not enabled yet.',
   assignee_not_found: 'The assignee is not an active member of this workspace.',
   reminder_not_found: 'The reminder does not exist on this order.',

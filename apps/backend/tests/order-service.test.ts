@@ -270,3 +270,99 @@ describe('order transition policy', () => {
     ).toBe('feature_not_ready');
   });
 });
+
+describe('document prerequisite (OPEN_INPUTS #15)', () => {
+  const base = {
+    partnered: false,
+    allowOperationalTransitions: true,
+    commissionConfigured: true,
+  } as const;
+
+  it.each(['ready_for_delivery', 'dispatched', 'activated'] as const)(
+    'blocks %s while a required document is unsatisfied',
+    (to) => {
+      const from = to === 'ready_for_delivery' ? 'in_progress' : to === 'dispatched' ? 'ready_for_delivery' : 'dispatched';
+      expect(
+        validateTransition(from, to, { ...base, documentsSatisfied: false }),
+      ).toBe('documents_incomplete');
+    },
+  );
+
+  it('allows the transition once every required document is satisfied', () => {
+    expect(
+      validateTransition('ready_for_delivery', 'dispatched', {
+        ...base,
+        documentsSatisfied: true,
+        dispatchProvided: true,
+      }),
+    ).toBeUndefined();
+  });
+
+  it('treats an unevaluated checklist as satisfied (read-only projection)', () => {
+    expect(
+      validateTransition('in_progress', 'ready_for_delivery', base),
+    ).toBeUndefined();
+  });
+
+  it('does not gate transitions outside ready/dispatch/activate', () => {
+    // An order with outstanding documents can still move to awaiting_customer
+    // — that is usually how staff ask the customer for the missing document.
+    expect(
+      validateTransition('in_progress', 'awaiting_customer', {
+        ...base,
+        documentsSatisfied: false,
+      }),
+    ).toBeUndefined();
+  });
+
+  it('never blocks cancellation on documents', () => {
+    expect(
+      validateTransition('in_progress', 'cancelled', {
+        ...base,
+        documentsSatisfied: false,
+        reason: 'customer withdrew',
+      }),
+    ).toBeUndefined();
+  });
+
+  it('lets a reasoned override proceed despite missing documents', () => {
+    expect(
+      validateTransition('in_progress', 'ready_for_delivery', {
+        ...base,
+        documentsSatisfied: false,
+        documentOverride: { reason: 'ID verified by phone, ticket #441' },
+      }),
+    ).toBeUndefined();
+  });
+
+  it.each(['', '   '])('refuses an override whose reason is blank (%j)', (reason) => {
+    expect(
+      validateTransition('in_progress', 'ready_for_delivery', {
+        ...base,
+        documentsSatisfied: false,
+        documentOverride: { reason },
+      }),
+    ).toBe('document_override_reason_required');
+  });
+
+  it('does not let an override bypass any other rule', () => {
+    // The override is scoped to documents only — it must not rescue an
+    // illegal edge or a partnered activation with no commission path.
+    expect(
+      validateTransition('submitted', 'dispatched', {
+        ...base,
+        documentsSatisfied: false,
+        documentOverride: { reason: 'urgent' },
+      }),
+    ).toBe('illegal_transition');
+    expect(
+      validateTransition('dispatched', 'activated', {
+        ...base,
+        partnered: true,
+        commissionConfigured: false,
+        documentsSatisfied: false,
+        documentOverride: { reason: 'urgent' },
+      }),
+    ).toBe('feature_not_ready');
+  });
+});

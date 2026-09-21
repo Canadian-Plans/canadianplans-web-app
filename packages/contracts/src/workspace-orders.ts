@@ -309,12 +309,24 @@ export type GetWorkspaceOrderResponse = z.infer<typeof getWorkspaceOrderResponse
  */
 const withExpectedVersion = { expectedVersion: z.int().nonnegative() };
 
+/**
+ * Proceed to `ready_for_delivery`/`dispatched`/`activated` despite an
+ * unsatisfied document checklist (OPEN_INPUTS #15). Any holder of
+ * `order.manage` may override; the control is the mandatory reason, recorded
+ * in the audit event with the document types that were outstanding. Sending
+ * it when nothing is missing is harmless and records nothing.
+ */
+const withDocumentOverride = {
+  documentOverrideReason: z.string().min(1).max(2000).optional(),
+};
+
 export const patchWorkspaceOrderRequestSchema = z.discriminatedUnion('action', [
   z.object({
     action: z.literal('transition'),
     toStatus: orderFulfilmentStatusSchema,
     reason: z.string().min(1).max(2000).optional(),
     ...withExpectedVersion,
+    ...withDocumentOverride,
   }),
   z.object({
     action: z.literal('dispatch'),
@@ -322,8 +334,9 @@ export const patchWorkspaceOrderRequestSchema = z.discriminatedUnion('action', [
     trackingReference: z.string().min(1).max(120).optional(),
     dispatchDate: isoDateTimeSchema.optional(),
     ...withExpectedVersion,
+    ...withDocumentOverride,
   }),
-  z.object({ action: z.literal('activate'), ...withExpectedVersion }),
+  z.object({ action: z.literal('activate'), ...withExpectedVersion, ...withDocumentOverride }),
   z.object({
     action: z.literal('cancel'),
     reason: z.string().min(1).max(2000),

@@ -9,6 +9,11 @@ import {
 import { orderFulfilmentStatusSchema, type OrderFulfilmentStatus } from '@canadian-plans/contracts';
 
 import type { CommissionActivationHook } from '../partners/activation.js';
+import {
+  findUnsatisfiedDocuments,
+  requiredDocumentsFrom,
+  requiresDocumentPrerequisite,
+} from './document-prerequisite.js';
 
 type TransitionDatabase = Pick<import('@canadian-plans/db').DatabaseClient, 'withTenantTx'>;
 const defaultDatabase: TransitionDatabase = { withTenantTx };
@@ -41,6 +46,13 @@ export interface TransitionOrderInput {
   toStatus: OrderFulfilmentStatus;
   reason?: string;
   dispatch?: DispatchDetails;
+  /**
+   * Proceed despite an unsatisfied document checklist (OPEN_INPUTS #15). Any
+   * holder of `order.manage` may override — the control is not access but the
+   * mandatory reason, which is recorded in the status history and the audit
+   * event alongside exactly which documents were outstanding.
+   */
+  documentOverride?: { reason: string };
 }
 
 export type TransitionOrderResult =
@@ -52,7 +64,11 @@ export type TransitionOrderResult =
         | 'illegal_transition'
         | 'cancellation_reason_required'
         | 'dispatch_details_required'
+        | 'documents_incomplete'
+        | 'document_override_reason_required'
         | 'feature_not_ready';
+      /** Which required document types were outstanding (`documents_incomplete`). */
+      missingDocuments?: readonly string[];
     };
 
 export interface TransitionPolicyContext {
@@ -75,6 +91,15 @@ export interface TransitionPolicyContext {
    * write.
    */
   dispatchProvided?: boolean;
+  /**
+   * Whether the order's frozen document checklist is satisfied (OPEN_INPUTS
+   * #15). `undefined` means "not evaluated" and is treated as satisfied, so
+   * the read-only projection that renders admin's buttons does not have to
+   * query documents for every row; the write path always evaluates it.
+   */
+  documentsSatisfied?: boolean;
+  /** An explicit, reasoned override of the document prerequisite. */
+  documentOverride?: { reason: string };
 }
 
 export function validateTransition(
@@ -97,6 +122,12 @@ export function validateTransition(
   }
   if (to === 'dispatched' && context.dispatchProvided === false) {
     return 'dispatch_details_required';
+  }
+  // Document prerequisite (OPEN_INPUTS #15). An override is honoured only with
+  // a non-empty reason, so the audit trail can never record a bare override.
+  if (requiresDocumentPrerequisite(to) && context.documentsSatisfied === false) {
+    if (!context.documentOverride) return 'documents_incomplete';
+    if (!context.documentOverride.reason.trim()) return 'document_override_reason_required';
   }
   return undefined;
 }
@@ -154,6 +185,7 @@ export class DatabaseOrderTransitionStore implements OrderTransitionStore {
             status: orders.status,
             version: orders.version,
             partnerId: orders.partnerId,
+            snapshot: orders.snapshot,
           })
           .from(orders)
           .where(and(eq(orders.workspaceId, input.workspaceId), eq(orders.id, input.orderId)))
@@ -163,14 +195,34 @@ export class DatabaseOrderTransitionStore implements OrderTransitionStore {
         if (current.version !== input.expectedVersion) return { status: 'version_conflict' };
         const currentStatus = orderFulfilmentStatusSchema.parse(current.status);
         const partnered = current.partnerId !== null;
+
+        // Evaluated inside the same locked transaction as the transition, so a
+        // document reviewed concurrently cannot change the answer between the
+        // check and the write (OPEN_INPUTS #15).
+        let missingDocuments: readonly string[] = [];
+        if (requiresDocumentPrerequisite(input.toStatus)) {
+          missingDocuments = await findUnsatisfiedDocuments(tx, {
+            workspaceId: input.workspaceId,
+            orderId: input.orderId,
+            required: requiredDocumentsFrom(current.snapshot),
+          });
+        }
+
         const policyError = validateTransition(currentStatus, input.toStatus, {
           reason: input.reason,
           partnered,
           allowOperationalTransitions: this.allowOperationalTransitions,
           commissionConfigured: partnered && this.commissionHook !== undefined,
           dispatchProvided: input.toStatus === 'dispatched' ? input.dispatch !== undefined : true,
+          documentsSatisfied: missingDocuments.length === 0,
+          ...(input.documentOverride ? { documentOverride: input.documentOverride } : {}),
         });
-        if (policyError) return { status: policyError };
+        if (policyError) {
+          return policyError === 'documents_incomplete'
+            ? { status: policyError, missingDocuments }
+            : { status: policyError };
+        }
+        const overrodeDocuments = missingDocuments.length > 0;
 
         const changedAt = this.now();
 
@@ -243,7 +295,20 @@ export class DatabaseOrderTransitionStore implements OrderTransitionStore {
           entityId: input.orderId,
           requestId: input.requestId,
           before: { status: currentStatus, version: current.version },
-          after: { status: input.toStatus, version: nextVersion },
+          after: {
+            status: input.toStatus,
+            version: nextVersion,
+            // Only present when the document prerequisite was actually bypassed,
+            // so an ordinary transition's audit shape is unchanged.
+            ...(overrodeDocuments
+              ? {
+                  documentOverride: {
+                    reason: input.documentOverride?.reason.trim(),
+                    missingDocuments,
+                  },
+                }
+              : {}),
+          },
         });
         return {
           status: 'transitioned',
