@@ -1,0 +1,241 @@
+import { presignS3Url, signS3Request, type S3SigningConfig } from '@canadian-plans/adapters';
+
+/**
+ * Independent encrypted-archive object store (IMPLEMENTATION_PLAN §13):
+ * "Keep the runner unable to delete existing archives." The writer/reader/
+ * retention-admin roles are separate TypeScript interfaces on purpose — code
+ * holding only an `ArchiveWriter` reference cannot even call a delete method,
+ * matching the real Backblaze B2 application-key capability split (writer:
+ * listFiles+writeFiles only; recovery-reader: listFiles+readFiles only;
+ * retention-admin: adds deleteFiles). See docs/RUNBOOKS/restore.md.
+ */
+
+export interface ArchiveObjectMeta {
+  key: string;
+  sizeBytes: number;
+  versionId?: string;
+}
+
+export interface ArchiveWriter {
+  putObject(key: string, body: Uint8Array): Promise<{ versionId?: string }>;
+  listObjects(prefix: string): Promise<ArchiveObjectMeta[]>;
+}
+
+export interface ArchiveReader {
+  listObjects(prefix: string): Promise<ArchiveObjectMeta[]>;
+  getObject(key: string): Promise<Uint8Array | undefined>;
+}
+
+export interface ArchiveRetentionAdmin extends ArchiveReader {
+  deleteObject(key: string): Promise<void>;
+}
+
+async function s3Send(
+  config: S3SigningConfig,
+  req: Parameters<typeof signS3Request>[1],
+  fetchImpl: typeof fetch,
+  timeoutMs: number,
+): Promise<Response> {
+  const { url, headers } = signS3Request(config, req);
+  return fetchImpl(url, {
+    method: req.method,
+    headers,
+    body: req.body ? Buffer.from(req.body) : undefined,
+    redirect: 'error',
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+}
+
+function parseListObjectsV2(xml: string): ArchiveObjectMeta[] {
+  const results: ArchiveObjectMeta[] = [];
+  const contentsRegex = /<Contents>([\s\S]*?)<\/Contents>/g;
+  for (const match of xml.matchAll(contentsRegex)) {
+    const block = match[1] ?? '';
+    const key = /<Key>([\s\S]*?)<\/Key>/.exec(block)?.[1];
+    const size = /<Size>(\d+)<\/Size>/.exec(block)?.[1];
+    if (key) results.push({ key, sizeBytes: size ? Number(size) : 0 });
+  }
+  return results;
+}
+
+/** Writer credential: list + put only. Real B2 key must omit readFiles/deleteFiles. */
+export class S3ArchiveWriter implements ArchiveWriter {
+  constructor(
+    private readonly config: S3SigningConfig,
+    private readonly fetchImpl: typeof fetch = fetch,
+    private readonly timeoutMs = 30_000,
+  ) {}
+
+  async putObject(key: string, body: Uint8Array): Promise<{ versionId?: string }> {
+    const response = await s3Send(
+      this.config,
+      { method: 'PUT', key, headers: {}, body },
+      this.fetchImpl,
+      this.timeoutMs,
+    );
+    if (!response.ok) throw new Error(`archive_put_failed:${response.status}`);
+    return { versionId: response.headers.get('x-amz-version-id') ?? undefined };
+  }
+
+  async listObjects(prefix: string): Promise<ArchiveObjectMeta[]> {
+    const response = await s3Send(
+      this.config,
+      { method: 'GET', key: '', headers: {}, query: { 'list-type': '2', prefix } },
+      this.fetchImpl,
+      this.timeoutMs,
+    );
+    if (!response.ok) throw new Error(`archive_list_failed:${response.status}`);
+    return parseListObjectsV2(await response.text());
+  }
+}
+
+/** Recovery-reader credential: list + get only. Real B2 key must omit writeFiles/deleteFiles. */
+export class S3ArchiveReader implements ArchiveReader {
+  constructor(
+    private readonly config: S3SigningConfig,
+    private readonly fetchImpl: typeof fetch = fetch,
+    private readonly timeoutMs = 30_000,
+  ) {}
+
+  async listObjects(prefix: string): Promise<ArchiveObjectMeta[]> {
+    const response = await s3Send(
+      this.config,
+      { method: 'GET', key: '', headers: {}, query: { 'list-type': '2', prefix } },
+      this.fetchImpl,
+      this.timeoutMs,
+    );
+    if (!response.ok) throw new Error(`archive_list_failed:${response.status}`);
+    return parseListObjectsV2(await response.text());
+  }
+
+  async getObject(key: string): Promise<Uint8Array | undefined> {
+    const response = await s3Send(
+      this.config,
+      { method: 'GET', key, headers: {} },
+      this.fetchImpl,
+      this.timeoutMs,
+    );
+    if (response.status === 404) return undefined;
+    if (!response.ok) throw new Error(`archive_get_failed:${response.status}`);
+    return new Uint8Array(await response.arrayBuffer());
+  }
+}
+
+/** Retention-administrator credential: adds delete. Separate from the daily writer/reader. */
+export class S3ArchiveRetentionAdmin implements ArchiveRetentionAdmin {
+  private readonly reader: S3ArchiveReader;
+  constructor(
+    private readonly config: S3SigningConfig,
+    private readonly fetchImpl: typeof fetch = fetch,
+    private readonly timeoutMs = 30_000,
+  ) {
+    this.reader = new S3ArchiveReader(config, fetchImpl, timeoutMs);
+  }
+
+  listObjects(prefix: string): Promise<ArchiveObjectMeta[]> {
+    return this.reader.listObjects(prefix);
+  }
+
+  getObject(key: string): Promise<Uint8Array | undefined> {
+    return this.reader.getObject(key);
+  }
+
+  async deleteObject(key: string): Promise<void> {
+    const response = await s3Send(
+      this.config,
+      { method: 'DELETE', key, headers: {} },
+      this.fetchImpl,
+      this.timeoutMs,
+    );
+    if (!response.ok && response.status !== 404) {
+      throw new Error(`archive_delete_failed:${response.status}`);
+    }
+  }
+}
+
+export function presignArchiveGet(
+  config: S3SigningConfig,
+  key: string,
+  expiresInSeconds: number,
+): string {
+  return presignS3Url(config, { method: 'GET', key, expiresInSeconds });
+}
+
+// --- In-memory backend for tests and local rehearsals -----------------------
+
+type Capability = 'put' | 'list' | 'get' | 'delete';
+
+export class ArchiveCredentialDeniedError extends Error {
+  constructor(capability: Capability) {
+    super(`credential_denied:${capability}`);
+    this.name = 'ArchiveCredentialDeniedError';
+  }
+}
+
+interface StoredObject {
+  body: Uint8Array;
+  versionId: string;
+}
+
+/**
+ * A single shared in-memory backend with three independently scoped facades,
+ * mirroring the real B2 application-key split. Calling a method the facade's
+ * role does not hold throws `ArchiveCredentialDeniedError`, exactly like the
+ * real provider denying an unauthorized capability (docs/EVIDENCE/
+ * A0-recovery-spike.md: "Writer could create/list but read and delete raised
+ * credential_denied").
+ */
+export class InMemoryArchiveBackend {
+  private readonly objects = new Map<string, StoredObject>();
+  private versionCounter = 0;
+
+  scoped(capabilities: readonly Capability[]): ArchiveWriter & ArchiveRetentionAdmin {
+    const allowed = new Set(capabilities);
+    const require = (capability: Capability): void => {
+      if (!allowed.has(capability)) throw new ArchiveCredentialDeniedError(capability);
+    };
+    return {
+      putObject: async (key, body) => {
+        require('put');
+        const versionId = `v${++this.versionCounter}`;
+        this.objects.set(key, { body: structuredClone(body), versionId });
+        return { versionId };
+      },
+      listObjects: async (prefix) => {
+        require('list');
+        return [...this.objects.entries()]
+          .filter(([key]) => key.startsWith(prefix))
+          .map(([key, value]) => ({
+            key,
+            sizeBytes: value.body.byteLength,
+            versionId: value.versionId,
+          }));
+      },
+      getObject: async (key) => {
+        require('get');
+        return this.objects.get(key)?.body;
+      },
+      deleteObject: async (key) => {
+        require('delete');
+        this.objects.delete(key);
+      },
+    };
+  }
+
+  asWriter(): ArchiveWriter {
+    return this.scoped(['put', 'list']);
+  }
+
+  asReader(): ArchiveReader {
+    return this.scoped(['list', 'get']);
+  }
+
+  asRetentionAdmin(): ArchiveRetentionAdmin {
+    return this.scoped(['list', 'get', 'delete']);
+  }
+
+  /** Test/inspection helper only — never exposed through a role facade. */
+  size(): number {
+    return this.objects.size;
+  }
+}
