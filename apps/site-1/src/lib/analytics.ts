@@ -16,5 +16,5 @@ declare global {
 
 /** Records a plan selection. The value is the opaque product id — never contact data. */
 export function trackPlanSelected(productId: string): void {
-  window.umami?.track('plan_selected', { plan: productId });
+  window.umami?.track?.('plan_selected', { plan: productId });
 }

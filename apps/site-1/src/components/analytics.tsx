@@ -25,7 +25,12 @@ export function Analytics() {
     if (!ready || !window.umami) return;
     if (lastTracked.current === pathname) return;
     lastTracked.current = pathname;
-    window.umami.track();
+    // Defensive: a stubbed/partial umami global (e.g. a test double, or a
+    // script that hasn't finished self-initializing) may expose `window.umami`
+    // without a callable `track`. An uncaught throw here, inside an effect that
+    // runs on every page via the shared layout, takes down the whole client
+    // render tree — never let a third-party script shape crash the app.
+    window.umami.track?.();
   }, [ready, pathname]);
 
   if (!scriptUrl || !websiteId) return null;

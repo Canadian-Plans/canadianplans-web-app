@@ -22,4 +22,11 @@ describe('trackPlanSelected', () => {
     vi.stubGlobal('window', {});
     expect(() => trackPlanSelected('plan-x')).not.toThrow();
   });
+
+  it('is a no-op when window.umami exists but exposes no track function', () => {
+    // A script mid-initialization (or a test stub) can define `window.umami`
+    // before it is fully populated. This must never throw.
+    vi.stubGlobal('window', { umami: {} });
+    expect(() => trackPlanSelected('plan-x')).not.toThrow();
+  });
 });
