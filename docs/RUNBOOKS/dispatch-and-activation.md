@@ -16,27 +16,58 @@ activation gates") for the exact contract.
 - Every Finance/Owner privileged action needs a session that completed MFA
   this login (`aal2`).
 
-## Current production status: dispatch and activation are disabled
+## Current production status: opt-in, and gated on documents
 
-**As of this writing, production dispatch and activation are intentionally
-disabled** until OPEN_INPUTS #15 (transition prerequisites) and, for
-partnered orders, until activation can commit its commission line in the same
-transaction (invariant 10; OPEN_INPUTS #19 for partnered specifics) are
-resolved. This is enforced server-side by
-`ORDER_OPERATIONAL_TRANSITIONS` (`docs/ENV.md`): the backend **ignores** this
-flag entirely whenever `NODE_ENV=production`, so there is no way to enable
-these transitions on a production deployment by setting an environment
-variable — the gate is a deliberate code-level block, not a toggle.
+OPEN_INPUTS #15 is resolved (21 Sep 2026), so the blanket production block is
+gone. Two things now govern dispatch and activation:
 
-If you observe `409 feature_not_ready` when attempting to dispatch or
-activate an order in production, this is expected, current behaviour — it is
-not a bug and not something this runbook can unblock. Escalate to the owner
-only if OPEN_INPUTS #15/#19 have since been resolved and the flag was
-supposed to have followed.
+1. **`ORDER_OPERATIONAL_TRANSITIONS` must be set** to exactly `1` or `true`
+   on the deployment (`docs/ENV.md`). It is deliberately opt-in: while unset,
+   dispatch and activation return `409 feature_not_ready` in every
+   environment. Unsetting it is also the kill switch — it stops dispatch and
+   activation without a deploy.
+2. **The document prerequisite** below, which the switch never bypasses.
 
-Staging/test environments (`NODE_ENV` not `production`) can exercise both
-transitions synthetically by setting `ORDER_OPERATIONAL_TRANSITIONS=1` (or
-`true`) — this never has any effect in production regardless of value.
+For **partnered** orders, activation additionally requires the
+commission-on-activation path (invariant 10; OPEN_INPUTS #19 for partnered
+specifics) — see the activation section.
+
+If you see `409 feature_not_ready` on dispatch or activation, check the
+switch first; if it is set and the order is partnered, it is the commission
+path, not this gate.
+
+## The document prerequisite (OPEN_INPUTS #15)
+
+Before an order may reach `ready_for_delivery`, `dispatched` or `activated`,
+every document on **that order's** checklist must be approved.
+
+- "Required" is per plan/product: the offer's `documentChecklist`, frozen
+  into the order snapshot at submission. Editing a plan's checklist in Sanity
+  later never changes what an already-placed order requires.
+- A document counts only when it is attached **and** its latest staff review
+  is `approved`. An uploaded-but-unreviewed document does not count, and
+  neither does one whose most recent review was a rejection. If a customer
+  re-uploads after a rejection, approving the new file satisfies it.
+- **Payment is not a prerequisite.** Payment state is tracked but never
+  blocks fulfilment, because payment arrives both before and after delivery
+  depending on the customer.
+- A blocked attempt returns `409 documents_incomplete` and names the
+  outstanding document types in `details.missingDocuments`.
+
+### Overriding it
+
+Any staff member with `order.manage` (Orders or Owner) may proceed anyway by
+sending a `documentOverrideReason` with the transition. The control is not
+access — it is the reason, which is mandatory and recorded in the audit event
+together with exactly which documents were outstanding. An empty or
+whitespace-only reason is refused (`400
+document_override_reason_required`).
+
+Use it for a genuine out-of-band verification (ID confirmed by phone, a
+document accepted through another channel) and say so in the reason. The
+override is scoped to documents only: it cannot force an illegal status
+change, and it cannot activate a partnered order that has no usable
+commission rule.
 
 ## Normal dispatch flow (once enabled)
 
