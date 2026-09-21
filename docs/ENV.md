@@ -102,12 +102,21 @@ future public actions must bind their own expected action explicitly.
 
 ## Email (T18)
 
-- `EMAIL_PROVIDER` — backend-only, explicit selection: `fake` or `ses`. There is no third value and no implicit default; an unset or unrecognised value fails every email job closed with `provider_not_configured` rather than guessing. `fake` is only honoured outside `NODE_ENV=production`. Set to `fake` in CI and preview deployments; `ses` is the presumed live default, gated on OPEN_INPUTS #23 (production access, verified sender domain, quota) — see the T18 evidence/BLOCKERS note before flipping this in a real deployment.
+- `EMAIL_PROVIDER` — backend-only, explicit selection: `fake`, `resend`, or `ses`. There is no implicit default; an unset or unrecognised value fails every email job closed with `provider_not_configured` rather than guessing. `fake` is only honoured outside `NODE_ENV=production`. Set to `fake` in CI and preview deployments; `resend` is the live default (OPEN_INPUTS #23: Resend selected for launch); `ses` remains available but is deferred to a later migration.
 - `EMAIL_CONTACT_HASH_SECRET` — backend-only, at least 16 characters. Keys the HMAC used to match a contact against suppression/consent records without storing the raw address; rotating it invalidates existing unsubscribe links and orphans old suppression matches, so treat it as a durable secret, not a rotate-on-a-whim one.
-- `EMAIL_WEBHOOK_SHARED_SECRET` — backend-only shared secret gating `/api/v1/email/webhook/events`. Interim verification only: SES/SNS notifications should move to the provider's supported signed transport once OPEN_INPUTS #23 is resolved (see BLOCKERS).
+- `EMAIL_WEBHOOK_SHARED_SECRET` — backend-only shared secret gating `/api/v1/email/webhook/events`. Interim verification only: provider webhook notifications should move to the provider's supported signed transport (Resend's Svix signature, or SES/SNS) as a follow-up.
 - `MARKETING_CONSENT_VERSION` — the consent-version string recorded when a customer unsubscribes via the no-login link; defaults to `"1"` if unset.
 
-## AWS SES
+## Resend (current email provider)
+
+- `RESEND_API_KEY`
+- `RESEND_FROM_EMAIL` — must be an address on a domain verified in the Resend account
+- `RESEND_FROM_NAME`
+- `RESEND_REPLY_TO_EMAIL` — optional
+
+## AWS SES (deferred)
+
+Not selected for launch (OPEN_INPUTS #23); kept wired for a later migration off Resend.
 
 - `AWS_REGION`
 - `AWS_ACCESS_KEY_ID`

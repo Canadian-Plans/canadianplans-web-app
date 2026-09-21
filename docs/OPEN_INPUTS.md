@@ -28,9 +28,9 @@ Business questions that are not yet answered. **AI agents: never invent an answe
 | 18 | Whether to authorize a Phase A interim payout-approval method before B1 invoices exist | Before enabling partner payout marking | partner_paid disabled pending an approved interim workflow or B1 invoice approval | |
 | 19 | Carrier eligibility / activation evidence / who collects each fee / taxes | T9/T14 | TEST offers only until set | |
 | 20 | Cancellation after manual payment or activation — the manual staff process (no refund automation) | T14/T21 | flag for authorised review; no automated adjustment | |
-| 21 | Supabase Auth email (staff invites/recovery) — verified sender + custom SMTP, separate from the customer EmailAdapter | T5/T18 | needed before real staff-invite testing | |
+| 21 | Supabase Auth email (staff invites/recovery) — verified sender + custom SMTP, separate from the customer EmailAdapter | T5/T18 | needed before real staff-invite testing | Resend SMTP relay (`smtp.resend.com`) on the verified `canadianplans.com` domain, configured as Supabase's custom SMTP — resolved 21 Sep 2026 |
 | 22 | Staging setup — separate Free Supabase org, or a second paid project in the prod org (billing is per-org) | T0 | decide before hosted staging | Single live environment — no separate staging project |
-| 23 | Email provider selection, SES region/production access and sending quota, sender/event verification | T0 approval request / T18 integration / before live mail | SES preferred candidate; fake adapter in tests; no automatic provider fallback | |
+| 23 | Email provider selection, SES region/production access and sending quota, sender/event verification | T0 approval request / T18 integration / before live mail | SES preferred candidate; fake adapter in tests; no automatic provider fallback | Resend selected for launch (`EMAIL_PROVIDER=resend`, verified `canadianplans.com` domain); SES adapter kept wired for a later migration — resolved 21 Sep 2026 |
 | 24 | Terms/privacy content and its versioning per website (the disclosure version recorded when a draft lead is saved, and the terms version quoted at order submission) | T21 (content); T13 order form uses a placeholder | `TEST-disclosure-v1` in site-1 `site.config.ts` for the lead-save disclosure only — an order's accepted terms version always comes from the server-issued quote, never the storefront | |
 
 ## Deferred recovery objectives (do not block development)
@@ -77,7 +77,7 @@ Move rows here once decided, with the date. Don't delete them; a decided input t
 | — | Initial capacity | 100 orders/day target; verify representative burst behavior, not a capacity guarantee | 14 Sep 2026 |
 | — | Technology and cost | Managed services; use free plans where permitted, then upgrade the same services. Better/cheaper/easier technology may be proposed with rationale | 14 Sep 2026 |
 | — | Paid services | Necessary paid services acceptable at launch; Vercel Pro acceptable. Standard production baseline includes Supabase Pro; actual purchases remain owner actions | 14 Sep 2026 |
-| — | Email direction | AWS SES acceptable if suitable; production eligibility and selection remain input #23 | 14 Sep 2026 |
+| — | Email direction | Resend selected as the launch email provider (`EMAIL_PROVIDER=resend`); AWS SES adapter kept wired but deferred to a later migration | 21 Sep 2026 |
 | — | Maintenance | AI performs implementation and maintenance under owner's direction; owner handles account access, decisions and production deployment | 14 Sep 2026 |
 | — | Integrity vs availability | Temporarily stop new orders when necessary to preserve confirmed orders | 14 Sep 2026 |
 | — | Recovery baseline | Proceed with standard backups, separate encrypted archive, alerts and tested restore; exact recovery-time/loss objectives deferred | 14 Sep 2026 |

@@ -160,6 +160,62 @@ export class SesEmailAdapter implements EmailAdapter {
   }
 }
 
+/**
+ * Resend implementation, the current production email provider (OPEN_INPUTS
+ * #23: Resend selected for launch, AWS SES deferred — see
+ * docs/OPEN_INPUTS.md). Talks to Resend's HTTP API directly (no SDK
+ * dependency, matching the SES adapter's env-only, throw-at-construction
+ * fail-closed shape). Only wired for the explicit `EMAIL_PROVIDER=resend`
+ * opt-in (see apps/backend/src/jobs/providers.ts); `EMAIL_PROVIDER=fake` in
+ * CI/previews never reaches this class.
+ */
+export class ResendEmailAdapter implements EmailAdapter {
+  constructor(
+    private readonly config: {
+      apiKey: string;
+      sender: SenderIdentity;
+      apiUrl?: string;
+    },
+  ) {
+    if (!config.apiKey) throw new Error('Resend adapter requires an API key.');
+    if (!config.sender.fromAddress) throw new Error('Resend adapter requires a from address.');
+  }
+
+  async send(message: EmailMessage): Promise<ProviderDeliveryResult> {
+    const { subject, text, html } = renderTemplate(message);
+    try {
+      const response = await fetch(`${this.config.apiUrl ?? 'https://api.resend.com'}/emails`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: `${this.config.sender.fromName} <${this.config.sender.fromAddress}>`,
+          reply_to: this.config.sender.replyToAddress,
+          to: [message.toAddress],
+          subject,
+          text,
+          html,
+        }),
+      });
+      if (!response.ok) {
+        return { status: 'uncertain', errorCode: `resend_http_${response.status}` };
+      }
+      const body = (await response.json()) as { id?: string };
+      if (!body.id) return { status: 'uncertain', errorCode: 'resend_missing_message_id' };
+      return { status: 'delivered', providerId: body.id };
+    } catch (error) {
+      // A thrown network error after the request left the process is
+      // ambiguous — the message may already be queued by Resend — so this is
+      // uncertain, not failed, and the outbox/job layer decides whether to
+      // retry or reconcile.
+      const errorCode = error instanceof Error ? error.name : 'resend_send_error';
+      return { status: 'uncertain', errorCode };
+    }
+  }
+}
+
 function renderTemplate(message: EmailMessage): { subject: string; text: string; html?: string } {
   const ref = message.reference ?? message.variables?.reference ?? '';
   switch (message.template) {

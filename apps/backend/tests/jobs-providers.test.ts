@@ -88,6 +88,15 @@ describe('outbox provider configuration', () => {
       ),
     ).toThrow(/AWS_REGION/);
   });
+
+  it('fails closed when EMAIL_PROVIDER=resend is selected without the required sender env vars', () => {
+    expect(() =>
+      createOutboxJobHandlers(
+        { EMAIL_PROVIDER: 'resend', OUTBOX_ADAPTERS: 'fake', NODE_ENV: 'test' },
+        alwaysEligible,
+      ),
+    ).toThrow(/RESEND_API_KEY/);
+  });
 });
 
 describe('Umami analytics sink configuration', () => {

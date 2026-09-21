@@ -13,6 +13,7 @@ export {
   FakeAnalyticsSink,
   FakeEmailAdapter,
   FakeSuppressionLedgerPublisher,
+  ResendEmailAdapter,
   SesEmailAdapter,
   emailTemplates,
   messageClassForTemplate,

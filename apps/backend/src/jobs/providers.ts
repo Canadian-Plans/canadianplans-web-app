@@ -4,6 +4,7 @@ import {
   FakeEmailAdapter,
   FakeSuppressionLedgerPublisher,
   InMemoryDeletionLedger,
+  ResendEmailAdapter,
   SesEmailAdapter,
   UmamiAnalyticsSink,
   type AnalyticsSink,
@@ -88,22 +89,24 @@ function unconfiguredEmailAdapter(): EmailAdapter {
 
 /**
  * Selects the email provider explicitly. `fake` is the only value CI/preview
- * deployments use (per T18 brief); `ses` is the presumed default real
- * provider, gated behind OPEN_INPUTS #23 (production access, verified sender
- * domain, quota) — see BLOCKERS in the T18 report. There is no third value
- * and no automatic failover between the two.
+ * deployments use (per T18 brief); `resend` is the current production
+ * provider (OPEN_INPUTS #23: Resend selected for launch); `ses` remains
+ * available but deferred to a later migration. There is no automatic
+ * failover between providers.
  */
-export type EmailProviderName = 'fake' | 'ses';
+export type EmailProviderName = 'fake' | 'ses' | 'resend';
 
 function readEmailProvider(env: NodeJS.ProcessEnv): EmailProviderName | undefined {
-  return env.EMAIL_PROVIDER === 'fake' || env.EMAIL_PROVIDER === 'ses'
+  return env.EMAIL_PROVIDER === 'fake' ||
+    env.EMAIL_PROVIDER === 'ses' ||
+    env.EMAIL_PROVIDER === 'resend'
     ? env.EMAIL_PROVIDER
     : undefined;
 }
 
-function requireEnv(env: NodeJS.ProcessEnv, name: string): string {
+function requireEnv(env: NodeJS.ProcessEnv, name: string, provider: string): string {
   const value = env[name];
-  if (!value) throw new Error(`${name} is required when EMAIL_PROVIDER=ses.`);
+  if (!value) throw new Error(`${name} is required when EMAIL_PROVIDER=${provider}.`);
   return value;
 }
 
@@ -138,13 +141,22 @@ export function createOutboxJobHandlers(
     email = env.NODE_ENV === 'production' ? unconfiguredEmailAdapter() : new FakeEmailAdapter();
   } else if (emailProvider === 'ses') {
     email = new SesEmailAdapter({
-      region: requireEnv(env, 'AWS_REGION'),
+      region: requireEnv(env, 'AWS_REGION', 'ses'),
       sender: {
-        fromAddress: requireEnv(env, 'SES_FROM_EMAIL'),
-        fromName: requireEnv(env, 'SES_FROM_NAME'),
+        fromAddress: requireEnv(env, 'SES_FROM_EMAIL', 'ses'),
+        fromName: requireEnv(env, 'SES_FROM_NAME', 'ses'),
         replyToAddress: env.SES_REPLY_TO_EMAIL,
       },
       configurationSetName: env.SES_CONFIGURATION_SET_NAME,
+    });
+  } else if (emailProvider === 'resend') {
+    email = new ResendEmailAdapter({
+      apiKey: requireEnv(env, 'RESEND_API_KEY', 'resend'),
+      sender: {
+        fromAddress: requireEnv(env, 'RESEND_FROM_EMAIL', 'resend'),
+        fromName: requireEnv(env, 'RESEND_FROM_NAME', 'resend'),
+        replyToAddress: env.RESEND_REPLY_TO_EMAIL,
+      },
     });
   } else {
     // No email provider selected: email jobs fail per-job, but analytics and the
