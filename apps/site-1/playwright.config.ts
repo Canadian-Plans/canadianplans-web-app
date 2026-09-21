@@ -55,6 +55,10 @@ export default defineConfig({
       url: `${BACKEND_URL}/api/v1/health`,
       reuseExistingServer: false,
       timeout: 120_000,
+      // Diagnostic: surface a webServer crash after startup (not just a failed
+      // health check) directly in CI output instead of only "page couldn't load".
+      stdout: 'pipe',
+      stderr: 'pipe',
       env: {
         ...stringEnv(process.env),
         TEST_MIGRATION_DATABASE_URL: TEST_DATABASE_URL,
@@ -73,6 +77,8 @@ export default defineConfig({
       url: 'http://127.0.0.1:3101',
       reuseExistingServer: false,
       timeout: 120_000,
+      stdout: 'pipe',
+      stderr: 'pipe',
       env: {
         ...stringEnv(process.env),
         SITE_1_BACKEND_URL: BACKEND_URL,
