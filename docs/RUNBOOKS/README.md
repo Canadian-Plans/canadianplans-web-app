@@ -11,30 +11,26 @@ production recovery rehearsal.
 
 | Runbook | Added by |
 |---|---|
-| Staff onboarding and removal | T5 |
-| [CMS publishing and price-error handling](catalogue-sync.md) | T9/T10 |
+| [Staff onboarding and removal](staff-onboarding-removal.md) | T5 |
+| [CMS publishing and price-error handling](cms-publishing-and-price-error.md) (mechanism: [catalogue-sync.md](catalogue-sync.md)) | T9/T10 |
 | [Order submission integrity and retry handling](orders.md) | T12 |
 | [Outbox jobs](outbox-jobs.md) | T15 |
 | [Customer-data deletion](data-deletion.md) | T21 |
-| Failed-email recovery | T18 |
-| Dispatch and activation | T14/T19 |
-| Commission and invoice month-end | T19 |
+| [Failed-email recovery](failed-email-recovery.md) | T18 |
+| [Dispatch and activation](dispatch-and-activation.md) | T14/T19 |
+| [Commission and invoice month-end](commission-month-end.md) | T19 |
 | [Web security headers, CSRF and SameSite](web-security-headers.md) | REQ 37 / gate 12 |
 | [Observability and alerts (logging, error tracker, synthetic check, owner alerts)](alerts.md) | REQ 40 |
-| Backup alert response — see [alerts.md](alerts.md) | T24/T25 |
+| [Backup alert response](backup-alert-response.md) (mechanism: [alerts.md](alerts.md)) | T24/T25 |
 | [Full restore (A0 spike; production gate open)](restore.md) | T4R, completed by T24 |
 | Workspace provisioning | T4/T4P |
 | Export/import | Phase B (see PLATFORM_CONTEXT.md §6) |
-| Credential rotation | T25/T26 |
-| Release rollback | T1 CI/Vercel setup (this task) — see below |
-| Monthly cost review | T28 |
+| [Credential rotation](secret-rotation.md) | T25/T26 |
+| [Release rollback](release-rollback.md) | T1 CI/Vercel setup, expanded post-Railway-cutover |
+| [Monthly cost review](monthly-cost-review.md) | T28 |
 
-## Release rollback (interim, from T1)
+## Release rollback
 
-Nothing deploys automatically yet — the owner is the only one who promotes a
-Vercel deployment to production. Until a dedicated rollback runbook lands:
-
-1. Vercel keeps every previous production deployment; promote the last-known
-   good deployment from the Vercel dashboard.
-2. No destructive migration exists yet (T4+), so there is nothing to reverse
-   at the database level today.
+Superseded by the full runbook: [release-rollback.md](release-rollback.md),
+covering both the Railway-hosted backend and the two Vercel-hosted
+frontends post-cutover.

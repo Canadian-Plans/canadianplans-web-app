@@ -286,6 +286,45 @@ for orders that predate the consent column.
 same live authorization decision the mutations use, so the admin can render the
 right controls without re-deriving policy from role names.
 
+### Partners and commissions (T19)
+
+`GET /api/v1/staff/workspaces/{workspaceId}/partners` — any staff member
+with `workspace.read` sees the partner directory (records only, no money).
+
+`GET /api/v1/staff/workspaces/{workspaceId}/partners/{partnerId}` — partner
+detail with referred orders and commission lines. Commission `amount` is
+`null` unless the actor also holds `financial.read`; the response includes
+`canViewPayouts`, `canMarkCarrierPaid`, `partnerPaidEnabled: false`, and
+`payoutDisabledReason` — marking a line `partner_paid` is disabled in code
+until OPEN_INPUTS #18/B1 invoice approval exists (see
+`docs/RUNBOOKS/commission-month-end.md`).
+
+`POST /api/v1/staff/workspaces/{workspaceId}/partners/{partnerId}/commissions`
+— requires `financial.read` (Finance's privileged action, `aal2`). Body:
+`{ commissionId, toState }`. `earned → carrier_paid` succeeds;
+`→ partner_paid` returns `409 feature_not_ready`
+(`partner_paid_disabled`). Invalid state machine edges return
+`409 commission_state_invalid`.
+
+A commission line is created automatically, never through this route, when a
+partnered order activates (see "Dispatch and activation gates" below and
+`docs/RUNBOOKS/dispatch-and-activation.md`).
+
+### Documents (T17)
+
+`GET /api/v1/staff/workspaces/{workspaceId}/orders/{orderId}/files` —
+`workspace.read`; lists document metadata for the order.
+
+`POST /api/v1/staff/workspaces/{workspaceId}/files/{fileId}/review` —
+`order.manage`. Body: `{ decision, note? }`. Approves or rejects an uploaded
+document.
+
+`POST /api/v1/staff/workspaces/{workspaceId}/files/{fileId}/download-link` —
+requires the separately-grantable `document.download` permission (REQ 23;
+gate 5), not merely `workspace.read`. Issues a short-lived signed URL
+(`{ url, expiresAt }`); `409 file_not_available` if the file isn't ready,
+`404 file_not_found` otherwise.
+
 ### Customer-data deletion (T21)
 
 `POST /orders/{orderId}/deletion` clears the order payload/consent and the lead's
