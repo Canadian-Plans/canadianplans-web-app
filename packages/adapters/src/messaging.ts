@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 /**
  * Email templates T18 requires (REQ 26-27, IMPLEMENTATION_PLAN.md §9 "Email").
  * `abandoned_form_marketing` is the one marketing template; every other
@@ -169,6 +171,8 @@ export class SesEmailAdapter implements EmailAdapter {
  * opt-in (see apps/backend/src/jobs/providers.ts); `EMAIL_PROVIDER=fake` in
  * CI/previews never reaches this class.
  */
+const resendResponseSchema = z.object({ id: z.string().optional() });
+
 export class ResendEmailAdapter implements EmailAdapter {
   constructor(
     private readonly config: {
@@ -202,9 +206,11 @@ export class ResendEmailAdapter implements EmailAdapter {
       if (!response.ok) {
         return { status: 'uncertain', errorCode: `resend_http_${response.status}` };
       }
-      const body = (await response.json()) as { id?: string };
-      if (!body.id) return { status: 'uncertain', errorCode: 'resend_missing_message_id' };
-      return { status: 'delivered', providerId: body.id };
+      const parsed = resendResponseSchema.safeParse(await response.json());
+      if (!parsed.success || !parsed.data.id) {
+        return { status: 'uncertain', errorCode: 'resend_missing_message_id' };
+      }
+      return { status: 'delivered', providerId: parsed.data.id };
     } catch (error) {
       // A thrown network error after the request left the process is
       // ambiguous — the message may already be queued by Resend — so this is
