@@ -88,6 +88,22 @@ It never takes the allowed hostname from the request. Do not place live Turnstil
 credentials in previews. The current credential proof endpoint uses `lead-submit`;
 future public actions must bind their own expected action explicitly.
 
+## Per-endpoint rate limits (REQ 37)
+
+The public write surface carries a tighter per-endpoint budget on top of the
+coarse per-IP/per-credential ceiling in `requireWebsiteCredential`. Each budget
+is keyed by `(endpoint, workspace, IP)` and durable (the `rateLimitHit` SQL
+function). Defaults (per 60s): `leads` 30, `quotes` 30, `orders` 10, `tracking`
+20. Override per deployment; invalid/absent values fall back to the default:
+
+- `RATE_LIMIT_LEADS_MAX` / `RATE_LIMIT_LEADS_WINDOW`
+- `RATE_LIMIT_QUOTES_MAX` / `RATE_LIMIT_QUOTES_WINDOW`
+- `RATE_LIMIT_ORDERS_MAX` / `RATE_LIMIT_ORDERS_WINDOW`
+- `RATE_LIMIT_TRACKING_MAX` / `RATE_LIMIT_TRACKING_WINDOW`
+
+`WINDOW` is in seconds; both must be positive integers. `tracking` layers on top
+of the existing per-email/per-IP OTP limits, which are unchanged.
+
 ## Sanity
 
 - `NEXT_PUBLIC_SANITY_PROJECT_ID`

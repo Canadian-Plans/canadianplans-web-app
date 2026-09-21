@@ -45,11 +45,15 @@ import {
   TrackingService,
 } from '../tracking/service.js';
 import {
+  loadEndpointRateLimits,
+  requireEndpointRateLimit,
   requireScope,
   requireWebsiteCredential,
   websiteContext,
   type WebsiteAuthDependencies,
 } from '../website/session.js';
+
+const endpointRateLimits = loadEndpointRateLimits();
 
 export interface WebsiteRouteDependencies {
   auth: WebsiteAuthDependencies;
@@ -115,6 +119,7 @@ export function createQuoteRouter(dependencies: WebsiteRouteDependencies): Route
     '/quotes',
     requireWebsiteCredential(dependencies.auth),
     requireScope('quotes:create'),
+    requireEndpointRateLimit(dependencies.auth, 'quotes', endpointRateLimits.quotes),
     async (req, res) => {
       const body = createQuoteRequestSchema.safeParse(req.body);
       const grantToken = requireDraftGrant(req);
@@ -186,6 +191,7 @@ export function createOrderRouter(dependencies: WebsiteRouteDependencies): Route
     '/orders',
     requireWebsiteCredential(dependencies.auth),
     requireScope('orders:create'),
+    requireEndpointRateLimit(dependencies.auth, 'orders', endpointRateLimits.orders),
     async (req, res) => {
       const body = submitOrderRequestSchema.safeParse(req.body);
       const grantToken = requireDraftGrant(req);
@@ -345,7 +351,11 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
     }
   });
 
-  router.post('/leads', requireScope('leads:write'), async (req, res) => {
+  router.post(
+    '/leads',
+    requireScope('leads:write'),
+    requireEndpointRateLimit(dependencies.auth, 'leads', endpointRateLimits.leads),
+    async (req, res) => {
     const body = createLeadRequestSchema.safeParse(req.body);
     if (!body.success) {
       sendDomainError(res, req.id, 'validation_error', 400);
@@ -374,7 +384,11 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
     }
   });
 
-  router.patch('/leads/:leadId', requireScope('leads:write'), async (req, res) => {
+  router.patch(
+    '/leads/:leadId',
+    requireScope('leads:write'),
+    requireEndpointRateLimit(dependencies.auth, 'leads', endpointRateLimits.leads),
+    async (req, res) => {
     const leadId = z.uuid().safeParse(req.params['leadId']);
     const body = updateLeadRequestSchema.safeParse(req.body);
     if (!leadId.success || !body.success) {
@@ -645,6 +659,7 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
     '/tracking/otp',
     requireWebsiteCredential(dependencies.auth),
     requireScope('tracking:otp'),
+    requireEndpointRateLimit(dependencies.auth, 'tracking', endpointRateLimits.tracking),
     async (req, res) => {
       const startedAt = Date.now();
       const body = trackingOtpRequestSchema.safeParse(req.body);
@@ -695,6 +710,7 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
     '/tracking/verify',
     requireWebsiteCredential(dependencies.auth),
     requireScope('tracking:otp'),
+    requireEndpointRateLimit(dependencies.auth, 'tracking', endpointRateLimits.tracking),
     async (req, res) => {
       const body = trackingVerifyRequestSchema.safeParse(req.body);
       if (!body.success) {

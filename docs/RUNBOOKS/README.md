@@ -19,6 +19,7 @@ production recovery rehearsal.
 | Failed-email recovery | T18 |
 | Dispatch and activation | T14/T19 |
 | Commission and invoice month-end | T19 |
+| [Web security headers, CSRF and SameSite](web-security-headers.md) | REQ 37 / gate 12 |
 | [Observability and alerts (logging, error tracker, synthetic check, owner alerts)](alerts.md) | REQ 40 |
 | Backup alert response — see [alerts.md](alerts.md) | T24/T25 |
 | [Full restore (A0 spike; production gate open)](restore.md) | T4R, completed by T24 |
