@@ -33,8 +33,10 @@ Phase A behaviour, not a stopgap you need to route around.
   Phase A code only supports moving a commission to `carrier_paid`
   (`POST /workspaces/{id}/partners/{partnerId}/commissions`, requires
   `financial.read`). Marking `partner_paid` is **hard-disabled** in code —
-  the route returns `409 feature_not_ready` for that target state
-  (`PAYOUT_DISABLED_REASON` in `staff.ts`) until OPEN_INPUTS #18 defines an
+  the route returns `409 feature_not_ready` for that target state (the gate
+  itself is `apps/backend/src/partners/commission-state.ts`, which returns
+  `partner_paid_disabled` for any transition to `partner_paid`; `staff.ts`
+  translates that into the 409) until OPEN_INPUTS #18 defines an
   interim approval mechanism, or B1 ships real invoice approval. Do not look
   for a workaround; this is intentional.
 - **No invoice object exists in Phase A.** "Invoice month-end" today means:

@@ -47,7 +47,7 @@ deployment on either platform.
 4. Confirm no destructive database migration shipped between the bad release
    and the target rollback point — `docs/IMPLEMENTATION_PLAN.md` §19 records
    there was "nothing to reverse at the database level" as of T1; for any
-   later migration, check `docs/DB.md`/migration history and coordinate a
+   later migration, check `docs/SCHEMA_HISTORY.md` and coordinate a
    forward-fix instead of a rollback if a migration is not safely reversible.
    Never run a destructive down-migration against production without an
    explicit backup checkpoint ([restore.md](restore.md)) and owner approval.
