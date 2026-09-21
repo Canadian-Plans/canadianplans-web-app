@@ -223,6 +223,7 @@ describe('createBackendScheduler', () => {
       registry,
       runOutbox: vi.fn(async () => undefined),
       runCatalogueSync: vi.fn(async () => undefined),
+      runSyntheticCheck: vi.fn(async () => undefined),
     };
   }
 
@@ -266,6 +267,47 @@ describe('createBackendScheduler', () => {
     const expected = { actorId: ACTOR, authorizedWorkspaceIds: [WORKSPACE] };
     expect(deps.runOutbox).toHaveBeenCalledWith(expected);
     expect(deps.runCatalogueSync).toHaveBeenCalledWith(expected);
+    await scheduler?.stop();
+  });
+
+  it('starts outbox/catalogue-sync even when the synthetic check is unconfigured', async () => {
+    vi.useFakeTimers();
+    const deps = dependencies(registryWith([combined]));
+    const scheduler = createBackendScheduler(deps, {
+      env: baseEnv,
+      startupDelayMs: 0,
+      jitterMs: 0,
+      random: () => 0,
+    });
+    expect(scheduler).toBeDefined();
+    scheduler?.start();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(deps.runOutbox).toHaveBeenCalled();
+    expect(deps.runSyntheticCheck).not.toHaveBeenCalled();
+    await scheduler?.stop();
+  });
+
+  it('also runs the synthetic check once its scope is granted on the shared scheduler entry', async () => {
+    vi.useFakeTimers();
+    // Per docs/ENV.md, SYNTHETIC_CHECK_SELECTOR points at the same entry as
+    // JOB_RUNNER_SELECTOR/CATALOGUE_SYNC_SELECTOR (one CRON_SECRET, one
+    // entry) — the owner just grants it the additional `synthetic:check` scope.
+    const withSynthetic: MachineRegistryConfig['schedulers'][number] = {
+      ...combined,
+      scopes: ['outbox:run', 'reconcile:run', 'synthetic:check'],
+    };
+    const deps = dependencies(registryWith([withSynthetic]));
+    const scheduler = createBackendScheduler(deps, {
+      env: { ...baseEnv, SYNTHETIC_CHECK_SELECTOR: 'combined' },
+      startupDelayMs: 0,
+      jitterMs: 0,
+      random: () => 0,
+    });
+    scheduler?.start();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(deps.runSyntheticCheck).toHaveBeenCalledWith(
+      expect.objectContaining({ actorId: ACTOR }),
+    );
     await scheduler?.stop();
   });
 });

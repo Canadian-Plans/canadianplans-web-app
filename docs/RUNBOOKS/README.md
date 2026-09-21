@@ -19,7 +19,8 @@ production recovery rehearsal.
 | Failed-email recovery | T18 |
 | Dispatch and activation | T14/T19 |
 | Commission and invoice month-end | T19 |
-| Backup alert response | T24/T25 |
+| [Observability and alerts (logging, error tracker, synthetic check, owner alerts)](alerts.md) | REQ 40 |
+| Backup alert response — see [alerts.md](alerts.md) | T24/T25 |
 | [Full restore (A0 spike; production gate open)](restore.md) | T4R, completed by T24 |
 | Workspace provisioning | T4/T4P |
 | Export/import | Phase B (see PLATFORM_CONTEXT.md §6) |

@@ -1,5 +1,8 @@
 import express, { type ErrorRequestHandler, type Express, type RequestHandler } from 'express';
+import { createErrorTrackerFromEnv, type ErrorTracker } from '@canadian-plans/adapters';
+
 import { sendStaffAuthError } from './http/staff-errors.js';
+import { requestLog } from './http/requestLog.js';
 import { requestId } from './requestId.js';
 import { getHealth } from './routes/health.js';
 import {
@@ -35,6 +38,11 @@ import {
   createEmailRouter,
   type EmailRouteDependencies,
 } from './routes/email.js';
+import {
+  createDefaultSyntheticCheckRouteDependencies,
+  createSyntheticCheckRouter,
+  type SyntheticCheckRouteDependencies,
+} from './routes/synthetic-check.js';
 
 export interface CreateAppOptions {
   staff?: StaffRouteDependencies;
@@ -43,6 +51,8 @@ export interface CreateAppOptions {
   jobs?: JobsRouteDependencies;
   catalogueSync?: CatalogueSyncRouteDependencies;
   email?: EmailRouteDependencies;
+  syntheticCheck?: SyntheticCheckRouteDependencies;
+  errorTracker?: ErrorTracker;
 }
 
 function adminCors(): RequestHandler {
@@ -63,10 +73,31 @@ function adminCors(): RequestHandler {
   };
 }
 
-const invalidBodyError: ErrorRequestHandler = (_error, req, res, _next) => {
-  if (res.headersSent) return;
-  sendStaffAuthError(res, req.id, 'invalid_request', 400);
-};
+/**
+ * Last-resort handler for anything reaching Express's error path (a JSON
+ * parse failure, or any handler that calls `next(error)`). The error is
+ * always reported to the tracker with the request id before the client ever
+ * sees a response, so an induced failure is diagnosable without needing PII
+ * in the response body (invariant 12).
+ */
+function paramWorkspaceId(value: string | string[] | undefined): string | undefined {
+  return typeof value === 'string' ? value : undefined;
+}
+
+function createInvalidBodyError(errorTracker: ErrorTracker): ErrorRequestHandler {
+  return (error, req, res, _next) => {
+    errorTracker.captureException(error, {
+      requestId: req.id,
+      workspaceId: req.websiteContext?.workspaceId ?? paramWorkspaceId(req.params?.workspaceId),
+      actorId: req.staffSession?.actorId ?? req.websiteContext?.credentialId,
+      route: req.path,
+      release: process.env['RELEASE_SHA'] ?? 'unknown',
+      environment: process.env['DEPLOYMENT_ENV'] ?? process.env['NODE_ENV'],
+    });
+    if (res.headersSent) return;
+    sendStaffAuthError(res, req.id, 'invalid_request', 400);
+  };
+}
 
 /**
  * Builds the Express app without starting a listener — reused by the local
@@ -76,8 +107,10 @@ const invalidBodyError: ErrorRequestHandler = (_error, req, res, _next) => {
  */
 export function createApp(options: CreateAppOptions = {}): Express {
   const app = express();
+  const errorTracker = options.errorTracker ?? createErrorTrackerFromEnv();
 
   app.use(requestId);
+  app.use(requestLog);
   app.use(adminCors());
   app.use(
     '/api/v1/webhooks/sanity',
@@ -97,6 +130,12 @@ export function createApp(options: CreateAppOptions = {}): Express {
     ),
   );
   app.use(
+    '/api/internal/synthetic-check',
+    createSyntheticCheckRouter(
+      options.syntheticCheck ?? createDefaultSyntheticCheckRouteDependencies(),
+    ),
+  );
+  app.use(
     '/api/v1/staff',
     createStaffRouter(options.staff ?? createDefaultStaffRouteDependencies()),
   );
@@ -111,7 +150,7 @@ export function createApp(options: CreateAppOptions = {}): Express {
     '/api/v1/email',
     createEmailRouter(options.email ?? createDefaultEmailRouteDependencies()),
   );
-  app.use(invalidBodyError);
+  app.use(createInvalidBodyError(errorTracker));
 
   return app;
 }

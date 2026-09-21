@@ -1,10 +1,15 @@
+import { randomUUID } from 'node:crypto';
+
+import { createOwnerAlertChannelFromEnv, type OwnerAlertChannel } from '@canadian-plans/adapters';
 import type { MachineScopeName } from '@canadian-plans/types';
 
 import { loadDeploymentEnvironment } from './config/deployment.js';
 import { isConnectionLevelError, logRequestError } from './http/logger.js';
+import { INITIAL_QUEUE_HEALTH_STATE, trackQueueHealth, type QueueHealthState } from './jobs/queueMonitor.js';
 import type { MachineRegistry } from './machines/registry.js';
 import { createDefaultCatalogueSyncRouteDependencies } from './routes/catalogue-sync.js';
 import { createDefaultJobsRouteDependencies } from './routes/jobs.js';
+import { createDefaultSyntheticCheckRouteDependencies } from './routes/synthetic-check.js';
 
 /**
  * In-process scheduler for the long-lived Railway deployment (plan D2). Railway
@@ -20,14 +25,22 @@ import { createDefaultJobsRouteDependencies } from './routes/jobs.js';
 
 export const OUTBOX_INTERVAL_MS = 60_000;
 export const CATALOGUE_SYNC_INTERVAL_MS = 300_000;
+/** REQ 40 / IMPLEMENTATION_PLAN §10: "a later synthetic check" on the same in-process scheduler. */
+export const SYNTHETIC_CHECK_INTERVAL_MS = 15 * 60_000;
 
 const DEFAULT_STARTUP_DELAY_MS = 10_000;
 const DEFAULT_JITTER_MS = 5_000;
 const OUTBOX_PREFIX = 'scheduler:outbox';
 const CATALOGUE_SYNC_PREFIX = 'scheduler:catalogue_sync';
+const SYNTHETIC_CHECK_PREFIX = 'scheduler:synthetic_check';
 const SCHEDULER_ROUTE = 'scheduler';
+const SCHEDULER_ERROR_PREFIXES: Record<SchedulerTaskName, string> = {
+  outbox: OUTBOX_PREFIX,
+  catalogue_sync: CATALOGUE_SYNC_PREFIX,
+  synthetic_check: SYNTHETIC_CHECK_PREFIX,
+};
 
-export type SchedulerTaskName = 'outbox' | 'catalogue_sync';
+export type SchedulerTaskName = 'outbox' | 'catalogue_sync' | 'synthetic_check';
 
 export interface SchedulerTask {
   name: SchedulerTaskName;
@@ -74,7 +87,7 @@ export class SchedulerConfigurationError extends Error {
  */
 function logSchedulerError(input: SchedulerErrorInput): void {
   logRequestError({
-    requestId: input.name === 'outbox' ? OUTBOX_PREFIX : CATALOGUE_SYNC_PREFIX,
+    requestId: SCHEDULER_ERROR_PREFIXES[input.name],
     route: SCHEDULER_ROUTE,
     code: 'scheduler_task_failed',
     flag: isConnectionLevelError(input.error) ? 'retryable' : 'not_retryable',
@@ -151,10 +164,16 @@ export interface SchedulerRunInput {
   actorId: string;
 }
 
+export interface SyntheticCheckRunInput {
+  actorId: string;
+  requestId: string;
+}
+
 export interface BackendSchedulerDependencies {
   registry: MachineRegistry;
   runOutbox(input: SchedulerRunInput): Promise<unknown>;
   runCatalogueSync(input: SchedulerRunInput): Promise<unknown>;
+  runSyntheticCheck(input: SyntheticCheckRunInput): Promise<unknown>;
 }
 
 export interface BackendSchedulerConfig {
@@ -207,20 +226,41 @@ export function createBackendScheduler(
     secret,
     'reconcile:run',
   );
+  const tasks: SchedulerTask[] = [
+    {
+      name: 'outbox',
+      intervalMs: OUTBOX_INTERVAL_MS,
+      run: () => dependencies.runOutbox(outbox),
+    },
+    {
+      name: 'catalogue_sync',
+      intervalMs: CATALOGUE_SYNC_INTERVAL_MS,
+      run: () => dependencies.runCatalogueSync(catalogue),
+    },
+  ];
+  // Optional: the synthetic workspace/registry entry is provisioned
+  // separately (docs/RUNBOOKS/alerts.md). Its absence must never take down
+  // outbox/catalogue-sync, which are load-bearing — so this resolves best-
+  // effort and only adds the task when it succeeds, logging once otherwise.
+  try {
+    const synthetic = resolveIdentity(
+      dependencies.registry,
+      env['SYNTHETIC_CHECK_SELECTOR'],
+      secret,
+      'synthetic:check',
+    );
+    tasks.push({
+      name: 'synthetic_check',
+      intervalMs: SYNTHETIC_CHECK_INTERVAL_MS,
+      run: () =>
+        dependencies.runSyntheticCheck({ actorId: synthetic.actorId, requestId: randomUUID() }),
+    });
+  } catch (error) {
+    (config.onError ?? logSchedulerError)({ name: 'synthetic_check', error });
+  }
 
   return createScheduler({
-    tasks: [
-      {
-        name: 'outbox',
-        intervalMs: OUTBOX_INTERVAL_MS,
-        run: () => dependencies.runOutbox(outbox),
-      },
-      {
-        name: 'catalogue_sync',
-        intervalMs: CATALOGUE_SYNC_INTERVAL_MS,
-        run: () => dependencies.runCatalogueSync(catalogue),
-      },
-    ],
+    tasks,
     startupDelayMs: config.startupDelayMs,
     jitterMs: config.jitterMs,
     random: config.random,
@@ -236,9 +276,43 @@ export function createBackendScheduler(
 export function createDefaultSchedulerDependencies(): BackendSchedulerDependencies {
   const jobs = createDefaultJobsRouteDependencies();
   const catalogue = createDefaultCatalogueSyncRouteDependencies();
+  const synthetic = createDefaultSyntheticCheckRouteDependencies();
+  const alerts = createOwnerAlertChannelFromEnv();
+  let queueHealth = INITIAL_QUEUE_HEALTH_STATE;
   return {
     registry: jobs.registry,
-    runOutbox: (input) => jobs.run(input),
+    runOutbox: (input) => runOutboxWithQueueMonitor(jobs, alerts, input, (state) => (queueHealth = state), () => queueHealth),
     runCatalogueSync: (input) => catalogue.run(input),
+    runSyntheticCheck: (input) => synthetic.run(input),
   };
+}
+
+/**
+ * Wraps the real outbox runner with the failed-job-queue-growth alert
+ * (REQ 40). Kept as a small standalone function (rather than inline in the
+ * closure above) purely for readability — the actual detection logic lives
+ * in the pure, unit-tested {@link trackQueueHealth}.
+ */
+async function runOutboxWithQueueMonitor(
+  jobs: { run(input: SchedulerRunInput): Promise<{ failed: number; uncertain: number }> },
+  alerts: OwnerAlertChannel,
+  input: SchedulerRunInput,
+  setState: (state: QueueHealthState) => void,
+  getState: () => QueueHealthState,
+): Promise<unknown> {
+  const summary = await jobs.run(input);
+  const outcome = trackQueueHealth(getState(), summary, Date.now());
+  setState(outcome.nextState);
+  if (outcome.shouldAlert) {
+    await alerts
+      .send({
+        kind: 'job_queue_stuck',
+        detail: `failed:${summary.failed},uncertain:${summary.uncertain}`,
+        occurredAt: new Date().toISOString(),
+      })
+      .catch(() => {
+        // Best-effort — the outbox run itself already succeeded/failed independently.
+      });
+  }
+  return summary;
 }

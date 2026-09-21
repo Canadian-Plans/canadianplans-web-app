@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@canadian-plans/contracts": "workspace:*",
+    "@canadian-plans/observability": "workspace:*",
     "@canadian-plans/types": "workspace:*",
     "@canadian-plans/ui": "workspace:*",
     "@supabase/supabase-js": "2.116.0",
