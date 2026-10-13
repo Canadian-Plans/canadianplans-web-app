@@ -1,0 +1,5 @@
+import type { ReactNode } from 'react';
+import './legal.css';
+export default function Layout({ children }: { children: ReactNode }) {
+  return <div className="cp-design cp-legal">{children}</div>;
+}

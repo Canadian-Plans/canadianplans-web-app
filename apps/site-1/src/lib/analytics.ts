@@ -4,6 +4,7 @@
  * backend outbox, so the browser never double-counts a submission.
  */
 
+import { hasAnalyticsConsent } from './cookie-consent';
 export interface UmamiTracker {
   track: (name?: string, data?: Record<string, unknown>) => void;
 }
@@ -16,5 +17,5 @@ declare global {
 
 /** Records a plan selection. The value is the opaque product id — never contact data. */
 export function trackPlanSelected(productId: string): void {
-  window.umami?.track?.('plan_selected', { plan: productId });
+  if (hasAnalyticsConsent()) window.umami?.track?.('plan_selected', { plan: productId });
 }

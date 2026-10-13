@@ -1,0 +1,71 @@
+@reference '../(storefront)/globals.css';
+.cp-email-previews {
+  background: var(--cp-color-illustration-snow);
+  color: var(--cp-color-ink);
+  min-height: var(--cp-cookie-screen-height);
+}
+.cp-email-previews main {
+  padding: var(--cp-space-24) 0;
+}
+.cp-email-preview-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-space-12);
+  max-width: var(--cp-email-frame-width);
+  width: min(calc(100% - var(--cp-space-40)), var(--cp-email-frame-width));
+  margin-inline: auto;
+}
+.cp-email-preview-controls h1 {
+  font-size: var(--cp-text-24);
+  font-weight: var(--cp-weight-bold);
+}
+.cp-email-preview-controls p {
+  font-size: var(--cp-text-14);
+  color: var(--cp-color-slot-muted);
+}
+.cp-email-preview-controls nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--cp-space-8);
+}
+.cp-email-preview-controls nav a {
+  padding: var(--cp-space-12) var(--cp-space-16);
+  border-radius: var(--cp-radius-999);
+  background: var(--cp-color-white);
+  font-weight: var(--cp-weight-bold);
+}
+.cp-email-preview-controls [aria-current='page'] {
+  background: var(--cp-color-ink);
+  color: var(--cp-color-white);
+}
+.cp-email-preview-frame {
+  /* Reserve the largest desktop reference before the measured body height arrives. */
+  height: var(--cp-email-preview-initial-height);
+  display: block;
+  width: 100%;
+  max-width: var(--cp-email-frame-width);
+  border: 0;
+  margin: var(--cp-space-24) auto;
+}
+.cp-email-previews details {
+  max-width: var(--cp-email-frame-width);
+  width: min(calc(100% - var(--cp-space-40)), var(--cp-email-frame-width));
+  margin: var(--cp-space-12) auto;
+  padding: var(--cp-space-16);
+  border: var(--cp-border-thin) solid var(--cp-system-line);
+  border-radius: var(--cp-radius-12);
+}
+.cp-email-previews summary {
+  cursor: pointer;
+  font-weight: var(--cp-weight-bold);
+}
+.cp-email-previews pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: var(--cp-text-13);
+  padding-top: var(--cp-space-16);
+}
+.cp-email-previews :is(a, summary):focus-visible {
+  outline: var(--cp-border-strong) solid var(--cp-focus-color);
+  outline-offset: var(--cp-space-4);
+}

@@ -1,0 +1,230 @@
+{
+  "route": "/mobile-plans",
+  "results": [
+    {
+      "width": 390,
+      "assetRows": [
+        {
+          "src": "/design/mobile-plans/214-2-imgPhoneIcon.svg",
+          "width": 16,
+          "height": 16,
+          "expectedWidth": 16,
+          "expectedHeight": 16,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/106-65-imgMark.svg",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/214-2-imgIcon.svg",
+          "width": 22,
+          "height": 22,
+          "expectedWidth": 22,
+          "expectedHeight": 22,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/214-2-imgIcon1.svg",
+          "width": 24,
+          "height": 24,
+          "expectedWidth": 24,
+          "expectedHeight": 24,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/214-2-imgIconSliders.svg",
+          "width": 20,
+          "height": 20,
+          "expectedWidth": 20,
+          "expectedHeight": 20,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/214-2-imgIconChevronDown.svg",
+          "width": 20,
+          "height": 20,
+          "expectedWidth": 20,
+          "expectedHeight": 20,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/214-2-imgIconClose.svg",
+          "width": 16,
+          "height": 16,
+          "expectedWidth": 16,
+          "expectedHeight": 16,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/106-65-imgIcon.svg",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/106-65-imgIcon1.svg",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/106-65-imgPhotoIcon.svg",
+          "width": 22,
+          "height": 22,
+          "expectedWidth": 22,
+          "expectedHeight": 22,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/106-65-imgPhotoIcon.svg",
+          "width": 22,
+          "height": 22,
+          "expectedWidth": 22,
+          "expectedHeight": 22,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/106-65-imgPhotoIcon.svg",
+          "width": 22,
+          "height": 22,
+          "expectedWidth": 22,
+          "expectedHeight": 22,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/106-65-imgIcon1.svg",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/106-65-imgIcon.svg",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/106-65-imgFrame1.svg",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        }
+      ],
+      "violations": [],
+      "interactions": "passed",
+      "pageErrors": []
+    },
+    {
+      "width": 1440,
+      "assetRows": [
+        {
+          "src": "/design/mobile-plans/106-65-imgMark.svg",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        },
+        {
+          "src": "/design/legal/0-imgSearchIcon.svg",
+          "width": 18,
+          "height": 18,
+          "expectedWidth": 18,
+          "expectedHeight": 18,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/106-65-imgFrame.svg",
+          "width": 44,
+          "height": 26,
+          "expectedWidth": 44,
+          "expectedHeight": 26,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/106-65-imgIcon.svg",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/106-65-imgIcon1.svg",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/106-65-imgPhotoIcon.svg",
+          "width": 22,
+          "height": 22,
+          "expectedWidth": 22,
+          "expectedHeight": 22,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/106-65-imgPhotoIcon.svg",
+          "width": 22,
+          "height": 22,
+          "expectedWidth": 22,
+          "expectedHeight": 22,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/106-65-imgPhotoIcon.svg",
+          "width": 22,
+          "height": 22,
+          "expectedWidth": 22,
+          "expectedHeight": 22,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/106-65-imgIcon1.svg",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/106-65-imgIcon.svg",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/mobile-plans/106-65-imgFrame1.svg",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        }
+      ],
+      "violations": [],
+      "interactions": "passed",
+      "pageErrors": []
+    }
+  ],
+  "overflowWidths": [320, 390, 768, 1024, 1280, 1440]
+}

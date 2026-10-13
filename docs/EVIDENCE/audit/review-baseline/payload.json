@@ -1,0 +1,2134 @@
+[
+  {
+    "route": "/pre-arrival-sim/students",
+    "measuredRuns": 5,
+    "median": {
+      "htmlBytes": 135541,
+      "scriptBytes": 962183,
+      "executedFunctions": 1484
+    },
+    "runs": [
+      {
+        "htmlBytes": 135541,
+        "scriptBytes": 962183,
+        "executedFunctions": 1484,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8115-2da406c301bd2b77.js",
+            "decodedBytes": 11942
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5667-4bb774a22a4d701c.js",
+            "decodedBytes": 11145
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-sim)/pre-arrival-sim/students/page-af01b6788907e301.js",
+            "decodedBytes": 1567
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          }
+        ]
+      },
+      {
+        "htmlBytes": 135541,
+        "scriptBytes": 962183,
+        "executedFunctions": 1484,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8115-2da406c301bd2b77.js",
+            "decodedBytes": 11942
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5667-4bb774a22a4d701c.js",
+            "decodedBytes": 11145
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-sim)/pre-arrival-sim/students/page-af01b6788907e301.js",
+            "decodedBytes": 1567
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 135541,
+        "scriptBytes": 962183,
+        "executedFunctions": 1484,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8115-2da406c301bd2b77.js",
+            "decodedBytes": 11942
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5667-4bb774a22a4d701c.js",
+            "decodedBytes": 11145
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-sim)/pre-arrival-sim/students/page-af01b6788907e301.js",
+            "decodedBytes": 1567
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 135541,
+        "scriptBytes": 962183,
+        "executedFunctions": 1484,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8115-2da406c301bd2b77.js",
+            "decodedBytes": 11942
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5667-4bb774a22a4d701c.js",
+            "decodedBytes": 11145
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-sim)/pre-arrival-sim/students/page-af01b6788907e301.js",
+            "decodedBytes": 1567
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 135541,
+        "scriptBytes": 962183,
+        "executedFunctions": 1484,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5667-4bb774a22a4d701c.js",
+            "decodedBytes": 11145
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8115-2da406c301bd2b77.js",
+            "decodedBytes": 11942
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-sim)/pre-arrival-sim/students/page-af01b6788907e301.js",
+            "decodedBytes": 1567
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 135541,
+        "scriptBytes": 962183,
+        "executedFunctions": 1484,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8115-2da406c301bd2b77.js",
+            "decodedBytes": 11942
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5667-4bb774a22a4d701c.js",
+            "decodedBytes": 11145
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-sim)/pre-arrival-sim/students/page-af01b6788907e301.js",
+            "decodedBytes": 1567
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "route": "/pre-arrival-sim/from-india",
+    "measuredRuns": 5,
+    "median": {
+      "htmlBytes": 145412,
+      "scriptBytes": 962183,
+      "executedFunctions": 1484
+    },
+    "runs": [
+      {
+        "htmlBytes": 145412,
+        "scriptBytes": 962183,
+        "executedFunctions": 1484,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8115-2da406c301bd2b77.js",
+            "decodedBytes": 11942
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-sim)/pre-arrival-sim/from-india/page-af01b6788907e301.js",
+            "decodedBytes": 1567
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5667-4bb774a22a4d701c.js",
+            "decodedBytes": 11145
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 145412,
+        "scriptBytes": 962183,
+        "executedFunctions": 1484,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8115-2da406c301bd2b77.js",
+            "decodedBytes": 11942
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5667-4bb774a22a4d701c.js",
+            "decodedBytes": 11145
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-sim)/pre-arrival-sim/from-india/page-af01b6788907e301.js",
+            "decodedBytes": 1567
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 145412,
+        "scriptBytes": 962183,
+        "executedFunctions": 1484,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8115-2da406c301bd2b77.js",
+            "decodedBytes": 11942
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-sim)/pre-arrival-sim/from-india/page-af01b6788907e301.js",
+            "decodedBytes": 1567
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5667-4bb774a22a4d701c.js",
+            "decodedBytes": 11145
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 145412,
+        "scriptBytes": 962183,
+        "executedFunctions": 1484,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8115-2da406c301bd2b77.js",
+            "decodedBytes": 11942
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5667-4bb774a22a4d701c.js",
+            "decodedBytes": 11145
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-sim)/pre-arrival-sim/from-india/page-af01b6788907e301.js",
+            "decodedBytes": 1567
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 145412,
+        "scriptBytes": 962183,
+        "executedFunctions": 1484,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8115-2da406c301bd2b77.js",
+            "decodedBytes": 11942
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5667-4bb774a22a4d701c.js",
+            "decodedBytes": 11145
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-sim)/pre-arrival-sim/from-india/page-af01b6788907e301.js",
+            "decodedBytes": 1567
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 145412,
+        "scriptBytes": 962183,
+        "executedFunctions": 1484,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8115-2da406c301bd2b77.js",
+            "decodedBytes": 11942
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-sim)/pre-arrival-sim/from-india/page-af01b6788907e301.js",
+            "decodedBytes": 1567
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5667-4bb774a22a4d701c.js",
+            "decodedBytes": 11145
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "route": "/home-internet/vancouver",
+    "measuredRuns": 5,
+    "median": {
+      "htmlBytes": 176630,
+      "scriptBytes": 959853,
+      "executedFunctions": 1493
+    },
+    "runs": [
+      {
+        "htmlBytes": 176630,
+        "scriptBytes": 959853,
+        "executedFunctions": 1493,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5713-44107399de4a74f7.js",
+            "decodedBytes": 16418
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4366-34dca38261a68023.js",
+            "decodedBytes": 5721
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-internet)/home-internet/vancouver/page-9291acbe26dc0ef2.js",
+            "decodedBytes": 185
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 176630,
+        "scriptBytes": 959853,
+        "executedFunctions": 1493,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5713-44107399de4a74f7.js",
+            "decodedBytes": 16418
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4366-34dca38261a68023.js",
+            "decodedBytes": 5721
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-internet)/home-internet/vancouver/page-9291acbe26dc0ef2.js",
+            "decodedBytes": 185
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 176630,
+        "scriptBytes": 959853,
+        "executedFunctions": 1493,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5713-44107399de4a74f7.js",
+            "decodedBytes": 16418
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-internet)/home-internet/vancouver/page-9291acbe26dc0ef2.js",
+            "decodedBytes": 185
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4366-34dca38261a68023.js",
+            "decodedBytes": 5721
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 176630,
+        "scriptBytes": 959853,
+        "executedFunctions": 1494,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5713-44107399de4a74f7.js",
+            "decodedBytes": 16418
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-internet)/home-internet/vancouver/page-9291acbe26dc0ef2.js",
+            "decodedBytes": 185
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4366-34dca38261a68023.js",
+            "decodedBytes": 5721
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 176630,
+        "scriptBytes": 959853,
+        "executedFunctions": 1493,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5713-44107399de4a74f7.js",
+            "decodedBytes": 16418
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4366-34dca38261a68023.js",
+            "decodedBytes": 5721
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-internet)/home-internet/vancouver/page-9291acbe26dc0ef2.js",
+            "decodedBytes": 185
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 176630,
+        "scriptBytes": 959853,
+        "executedFunctions": 1493,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5713-44107399de4a74f7.js",
+            "decodedBytes": 16418
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4366-34dca38261a68023.js",
+            "decodedBytes": 5721
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-internet)/home-internet/vancouver/page-9291acbe26dc0ef2.js",
+            "decodedBytes": 185
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "route": "/home-internet/ontario",
+    "measuredRuns": 5,
+    "median": {
+      "htmlBytes": 174845,
+      "scriptBytes": 959853,
+      "executedFunctions": 1493
+    },
+    "runs": [
+      {
+        "htmlBytes": 174845,
+        "scriptBytes": 959853,
+        "executedFunctions": 1493,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5713-44107399de4a74f7.js",
+            "decodedBytes": 16418
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4366-34dca38261a68023.js",
+            "decodedBytes": 5721
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-internet)/home-internet/ontario/page-39fc17c948e59bf6.js",
+            "decodedBytes": 185
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 174845,
+        "scriptBytes": 959853,
+        "executedFunctions": 1493,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-internet)/home-internet/ontario/page-39fc17c948e59bf6.js",
+            "decodedBytes": 185
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5713-44107399de4a74f7.js",
+            "decodedBytes": 16418
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4366-34dca38261a68023.js",
+            "decodedBytes": 5721
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 174845,
+        "scriptBytes": 959853,
+        "executedFunctions": 1493,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5713-44107399de4a74f7.js",
+            "decodedBytes": 16418
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4366-34dca38261a68023.js",
+            "decodedBytes": 5721
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-internet)/home-internet/ontario/page-39fc17c948e59bf6.js",
+            "decodedBytes": 185
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 174845,
+        "scriptBytes": 959853,
+        "executedFunctions": 1493,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-internet)/home-internet/ontario/page-39fc17c948e59bf6.js",
+            "decodedBytes": 185
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5713-44107399de4a74f7.js",
+            "decodedBytes": 16418
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4366-34dca38261a68023.js",
+            "decodedBytes": 5721
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 174845,
+        "scriptBytes": 959853,
+        "executedFunctions": 1493,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4366-34dca38261a68023.js",
+            "decodedBytes": 5721
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5713-44107399de4a74f7.js",
+            "decodedBytes": 16418
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-internet)/home-internet/ontario/page-39fc17c948e59bf6.js",
+            "decodedBytes": 185
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      },
+      {
+        "htmlBytes": 174845,
+        "scriptBytes": 959853,
+        "executedFunctions": 1493,
+        "resources": [
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/webpack-6550fa8f82f6d40b.js",
+            "decodedBytes": 5241
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/29d54c39-6af97427874aaf04.js",
+            "decodedBytes": 201060
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5242-2f6ff72d315572c3.js",
+            "decodedBytes": 241378
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/main-app-f6021443068618a9.js",
+            "decodedBytes": 528
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6145-8ebb6ce79a95423b.js",
+            "decodedBytes": 29206
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4194-5fc6d40e26c76278.js",
+            "decodedBytes": 103648
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/8638-8f29666e269ff74a.js",
+            "decodedBytes": 134792
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4069-e370c145eab357b8.js",
+            "decodedBytes": 124809
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9716-4a3f87624b825d0f.js",
+            "decodedBytes": 27869
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4924-bf92a22cb8b7557f.js",
+            "decodedBytes": 11349
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6423-c02b81e5323e4aea.js",
+            "decodedBytes": 16112
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/5713-44107399de4a74f7.js",
+            "decodedBytes": 16418
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/4366-34dca38261a68023.js",
+            "decodedBytes": 5721
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/6304-7bd5fb4ac01cd83a.js",
+            "decodedBytes": 12619
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(category-internet)/home-internet/ontario/page-39fc17c948e59bf6.js",
+            "decodedBytes": 185
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/7720-8e013ea3eaaa0daf.js",
+            "decodedBytes": 7909
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(storefront)/layout-fcf8037cc32ed4a2.js",
+            "decodedBytes": 3804
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/9727-00fcfb08e8f2cda8.js",
+            "decodedBytes": 8259
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/not-found-ed8b8e36c62fe5b1.js",
+            "decodedBytes": 2364
+          },
+          {
+            "url": "http://127.0.0.1:3127/_next/static/chunks/app/(pre-arrival)/layout-8870794a87da8c57.js",
+            "decodedBytes": 6582
+          }
+        ]
+      }
+    ]
+  }
+]

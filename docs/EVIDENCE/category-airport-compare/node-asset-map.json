@@ -1,0 +1,74 @@
+{
+  "figma": {
+    "fileKey": "6zUS2WZbQn6NUhyjesA584",
+    "linkId": "link_6ab3a09ad1d881919483c9be3d9f01fc",
+    "frames": [
+      {
+        "route": "/pre-arrival-sim/toronto-pearson",
+        "desktop": "186:509",
+        "mobile": "256:988",
+        "desktopScreenshot": "figma-airport-1440.png",
+        "mobileScreenshot": "figma-airport-390.png"
+      },
+      {
+        "route": "/compare/rogers-vs-fido",
+        "desktop": "182:2",
+        "mobile": "255:516",
+        "desktopScreenshot": "figma-compare-1440.png",
+        "mobileScreenshot": "figma-compare-390.png"
+      }
+    ]
+  },
+  "assets": [
+    {
+      "purpose": "YYZ pass perforation",
+      "route": "/pre-arrival-sim/toronto-pearson",
+      "sourceNode": "186:595",
+      "sourceSvg": "airport-desktop-imgEllipse1.svg",
+      "localFile": "apps/site-1/public/design/category-airport-compare/airport-desktop-imgEllipse1.svg",
+      "intrinsic": "28x28",
+      "rendered": "28x28 inside source 24px-high clipping frame"
+    },
+    {
+      "purpose": "Mobile YYZ handset icon",
+      "route": "/pre-arrival-sim/toronto-pearson",
+      "sourceNode": "256:1041",
+      "sourceSvg": "airport-mobile-imgPhoneIcon.svg",
+      "localFile": "apps/site-1/public/design/category-airport-compare/airport-mobile-imgPhoneIcon.svg",
+      "intrinsic": "16x16",
+      "rendered": "16x16"
+    },
+    {
+      "purpose": "Rogers/Fido plan feature check",
+      "route": "/compare/rogers-vs-fido",
+      "sourceNode": "316:686",
+      "sourceSvg": "mobile-imgIconCheck.svg",
+      "localFile": "apps/site-1/public/design/category-rogers/mobile-imgIconCheck.svg",
+      "intrinsic": "18x18",
+      "rendered": "18x18",
+      "reuse": "Byte-exact match to Figma export; no duplicate copy."
+    },
+    {
+      "purpose": "Brand mark, search, menu, footer, image placeholders",
+      "route": "Both",
+      "source": "Byte-exact matches in public/design/components or public/design/legal; reused via @content/components componentAssets",
+      "localFiles": "apps/site-1/public/design/components/* and apps/site-1/public/design/legal/*",
+      "geometry": "Asset sizes declared by shared componentAssets and retained by CpAsset/CpImageSlot"
+    },
+    {
+      "purpose": "Rogers/Fido wordmarks and editorial image areas",
+      "route": "/compare/rogers-vs-fido",
+      "source": "Text wordmarks and image-slot placeholders in source frames",
+      "localFile": null,
+      "geometry": "Uses text / shared CpImageSlot; no substitute raster artwork"
+    }
+  ],
+  "fixtures": {
+    "airportPlans": ["preview-fido-essential", "preview-rogers-plus", "preview-rogers-unlimited"],
+    "comparisonPlans": [
+      { "id": "fido", "price": "$29/mo", "data": "20 GB", "previewOnly": true },
+      { "id": "rogers", "price": "$34/mo", "data": "25 GB", "previewOnly": true }
+    ],
+    "comparisonCheckout": "Not wired to pre-arrival checkout; plan CTAs link to carrier listing previews."
+  }
+}

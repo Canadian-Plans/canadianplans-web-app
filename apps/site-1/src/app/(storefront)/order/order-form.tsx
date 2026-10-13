@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { OrderConfirmation } from '@/components/shared/order-confirmation';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import type { Quote, RawAttribution, WebsiteOffer } from '@canadian-plans/contracts';
 import {
@@ -620,39 +621,10 @@ export function OrderForm({
   }
 
   function renderConfirmation() {
-    if (!reference) {
-      // Defensive: the confirmation step is unreachable without a reference.
-      return (
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              <h2 className="text-xl">Not saved</h2>
-            </CardTitle>
-            <CardDescription>
-              Your order was not saved. Please try again — no order exists yet.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      );
-    }
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            <h2 className="text-xl">Order received</h2>
-          </CardTitle>
-          <CardDescription>Keep this reference: it is how we track your order.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-semibold" data-testid="order-reference">
-            {reference}
-          </p>
-          <p className="mt-2 text-sm">
-            We&apos;ve emailed a confirmation to {details.email}. We&apos;ll contact you if we need
-            anything else.
-          </p>
-        </CardContent>
-      </Card>
+    return reference ? (
+      <OrderConfirmation kind="saved" reference={reference} email={details.email} />
+    ) : (
+      <OrderConfirmation kind="missing" />
     );
   }
 

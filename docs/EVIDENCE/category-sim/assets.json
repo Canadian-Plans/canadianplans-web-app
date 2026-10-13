@@ -1,0 +1,386 @@
+[
+  {
+    "frame": "students-desktop",
+    "variable": "imgMark",
+    "nodeId": "151:15",
+    "nodeName": "Mark",
+    "url": "https://www.figma.com/api/mcp/asset/4b6001be-bffe-4b5b-b425-7745812b5140.svg",
+    "file": "students-desktop-imgMark.svg"
+  },
+  {
+    "frame": "students-desktop",
+    "variable": "imgEllipse",
+    "nodeId": "151:26",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/0b67d7bb-c6cc-44ef-b79a-f66c9934d89e.svg",
+    "file": "students-desktop-imgEllipse.svg"
+  },
+  {
+    "frame": "students-desktop",
+    "variable": "imgEllipse1",
+    "nodeId": "151:88",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/3caf25f0-ebb2-4021-8212-e9aeee04259e.svg",
+    "file": "students-desktop-imgEllipse1.svg"
+  },
+  {
+    "frame": "students-desktop",
+    "variable": "imgEllipse2",
+    "nodeId": "151:128",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/a2805ec1-7910-4bad-babd-7d291a89cce7.svg",
+    "file": "students-desktop-imgEllipse2.svg"
+  },
+  {
+    "frame": "students-desktop",
+    "variable": "imgEllipse3",
+    "nodeId": "151:133",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/2d5c55c4-8a94-4385-9650-1e7ce90e66ce.svg",
+    "file": "students-desktop-imgEllipse3.svg"
+  },
+  {
+    "frame": "students-desktop",
+    "variable": "imgIcon",
+    "nodeId": "I316:624;312:10",
+    "nodeName": "Icon",
+    "url": "https://www.figma.com/api/mcp/asset/f37a0484-aa66-48ad-b6e8-888a68076c49.svg",
+    "file": "students-desktop-imgIcon.svg"
+  },
+  {
+    "frame": "students-desktop",
+    "variable": "imgIcon1",
+    "nodeId": "I316:638;312:3",
+    "nodeName": "Icon",
+    "url": "https://www.figma.com/api/mcp/asset/4f0b9ad9-ccdb-4dd7-83ce-516e29aed86a.svg",
+    "file": "students-desktop-imgIcon1.svg"
+  },
+  {
+    "frame": "students-desktop",
+    "variable": "imgEllipse4",
+    "nodeId": "153:45",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/046de163-08aa-44ff-9485-50511d47e19a.svg",
+    "file": "students-desktop-imgEllipse4.svg"
+  },
+  {
+    "frame": "students-desktop",
+    "variable": "imgEllipse5",
+    "nodeId": "153:53",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/f3fd187e-bb4b-4c7a-965a-d78cda9448f0.svg",
+    "file": "students-desktop-imgEllipse5.svg"
+  },
+  {
+    "frame": "students-desktop",
+    "variable": "imgEllipse6",
+    "nodeId": "153:61",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/d5dd79ee-e157-469e-ae64-7cf47e43db49.svg",
+    "file": "students-desktop-imgEllipse6.svg"
+  },
+  {
+    "frame": "students-desktop",
+    "variable": "imgFrame",
+    "nodeId": "153:154",
+    "nodeName": "Frame",
+    "url": "https://www.figma.com/api/mcp/asset/87976a8c-2410-433b-8db5-e0addc950294.svg",
+    "file": "students-desktop-imgFrame.svg"
+  },
+  {
+    "frame": "students-mobile",
+    "variable": "imgFrame",
+    "nodeId": "363:956",
+    "nodeName": "Frame",
+    "url": "https://www.figma.com/api/mcp/asset/217f4569-c343-4187-a39a-d8baded9bf1b.svg",
+    "file": "students-mobile-imgFrame.svg"
+  },
+  {
+    "frame": "students-mobile",
+    "variable": "imgMark",
+    "nodeId": "364:2165",
+    "nodeName": "Mark",
+    "url": "https://www.figma.com/api/mcp/asset/ef769f25-eec6-4223-bedc-64ccb45b4242.svg",
+    "file": "students-mobile-imgMark.svg"
+  },
+  {
+    "frame": "students-mobile",
+    "variable": "imgIcon",
+    "nodeId": "364:2170",
+    "nodeName": "Icon",
+    "url": "https://www.figma.com/api/mcp/asset/8f628077-67b7-4e68-afbb-41f006c346eb.svg",
+    "file": "students-mobile-imgIcon.svg"
+  },
+  {
+    "frame": "students-mobile",
+    "variable": "imgIcon1",
+    "nodeId": "364:2173",
+    "nodeName": "Icon",
+    "url": "https://www.figma.com/api/mcp/asset/0123d03a-c796-4020-a681-6cd059dadbc4.svg",
+    "file": "students-mobile-imgIcon1.svg"
+  },
+  {
+    "frame": "students-mobile",
+    "variable": "imgPhoneIcon",
+    "nodeId": "364:2155",
+    "nodeName": "Phone icon",
+    "url": "https://www.figma.com/api/mcp/asset/0dc0ef7f-83c5-45c8-93e6-18e66becc23f.svg",
+    "file": "students-mobile-imgPhoneIcon.svg"
+  },
+  {
+    "frame": "students-mobile",
+    "variable": "imgEllipse",
+    "nodeId": "251:60",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/5fc51424-e9d0-4e76-ac26-8c8c0635e309.svg",
+    "file": "students-mobile-imgEllipse.svg"
+  },
+  {
+    "frame": "students-mobile",
+    "variable": "imgEllipse1",
+    "nodeId": "252:5",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/ca319eeb-6ac9-4d76-8935-6285a62b3e29.svg",
+    "file": "students-mobile-imgEllipse1.svg"
+  },
+  {
+    "frame": "students-mobile",
+    "variable": "imgEllipse2",
+    "nodeId": "252:10",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/a5e6fc23-3d00-44b5-b86f-c8175989be79.svg",
+    "file": "students-mobile-imgEllipse2.svg"
+  },
+  {
+    "frame": "students-mobile",
+    "variable": "imgIcon2",
+    "nodeId": "I314:998;312:10",
+    "nodeName": "Icon",
+    "url": "https://www.figma.com/api/mcp/asset/2ca44c4e-760b-40bd-8670-ab851107ce59.svg",
+    "file": "students-mobile-imgIcon2.svg"
+  },
+  {
+    "frame": "students-mobile",
+    "variable": "imgIcon3",
+    "nodeId": "I314:1012;312:3",
+    "nodeName": "Icon",
+    "url": "https://www.figma.com/api/mcp/asset/b03b7561-b349-478f-b464-9d296eede506.svg",
+    "file": "students-mobile-imgIcon3.svg"
+  },
+  {
+    "frame": "students-mobile",
+    "variable": "imgEllipse3",
+    "nodeId": "252:217",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/918b344d-28a4-4f40-bb80-9ba4211af65f.svg",
+    "file": "students-mobile-imgEllipse3.svg"
+  },
+  {
+    "frame": "students-mobile",
+    "variable": "imgEllipse4",
+    "nodeId": "252:225",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/1d5baa1a-0b6f-45f1-a6e0-6aca4583cc5a.svg",
+    "file": "students-mobile-imgEllipse4.svg"
+  },
+  {
+    "frame": "students-mobile",
+    "variable": "imgEllipse5",
+    "nodeId": "252:233",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/10ad1921-daa5-4112-9538-f1ff54744c36.svg",
+    "file": "students-mobile-imgEllipse5.svg"
+  },
+  {
+    "frame": "india-desktop",
+    "variable": "imgMark",
+    "nodeId": "162:15",
+    "nodeName": "Mark",
+    "url": "https://www.figma.com/api/mcp/asset/a5df6db8-c919-4aba-b245-70131f30090a.svg",
+    "file": "india-desktop-imgMark.svg"
+  },
+  {
+    "frame": "india-desktop",
+    "variable": "imgEllipse",
+    "nodeId": "162:26",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/eecd1784-13ea-452d-a0ef-e246d41719dd.svg",
+    "file": "india-desktop-imgEllipse.svg"
+  },
+  {
+    "frame": "india-desktop",
+    "variable": "imgEllipse1",
+    "nodeId": "162:88",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/587de733-62fa-4c87-8878-2325f8c1a857.svg",
+    "file": "india-desktop-imgEllipse1.svg"
+  },
+  {
+    "frame": "india-desktop",
+    "variable": "imgEllipse2",
+    "nodeId": "162:128",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/d6fc9f7b-9332-451a-9f46-299f5538485f.svg",
+    "file": "india-desktop-imgEllipse2.svg"
+  },
+  {
+    "frame": "india-desktop",
+    "variable": "imgEllipse3",
+    "nodeId": "162:133",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/3ab19fea-ed0a-43ac-990c-dba4375bc85a.svg",
+    "file": "india-desktop-imgEllipse3.svg"
+  },
+  {
+    "frame": "india-desktop",
+    "variable": "imgIcon",
+    "nodeId": "I316:631;312:10",
+    "nodeName": "Icon",
+    "url": "https://www.figma.com/api/mcp/asset/6af0c6ca-79a7-4dce-83c0-3728fa83a123.svg",
+    "file": "india-desktop-imgIcon.svg"
+  },
+  {
+    "frame": "india-desktop",
+    "variable": "imgIcon1",
+    "nodeId": "I316:645;312:3",
+    "nodeName": "Icon",
+    "url": "https://www.figma.com/api/mcp/asset/e7f3dfa0-ee4a-43bb-9eec-4e3b552faf6f.svg",
+    "file": "india-desktop-imgIcon1.svg"
+  },
+  {
+    "frame": "india-desktop",
+    "variable": "imgEllipse4",
+    "nodeId": "162:340",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/3199dc25-015a-47ec-807c-98c3a7016997.svg",
+    "file": "india-desktop-imgEllipse4.svg"
+  },
+  {
+    "frame": "india-desktop",
+    "variable": "imgEllipse5",
+    "nodeId": "162:348",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/b2790bf8-85bc-43d4-aab5-05979d9b66fe.svg",
+    "file": "india-desktop-imgEllipse5.svg"
+  },
+  {
+    "frame": "india-desktop",
+    "variable": "imgEllipse6",
+    "nodeId": "162:356",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/90e43f50-06ec-4a4e-9a21-ebb2e964352c.svg",
+    "file": "india-desktop-imgEllipse6.svg"
+  },
+  {
+    "frame": "india-desktop",
+    "variable": "imgFrame",
+    "nodeId": "162:449",
+    "nodeName": "Frame",
+    "url": "https://www.figma.com/api/mcp/asset/494a2249-5657-4b9c-af4c-b2fad1017388.svg",
+    "file": "india-desktop-imgFrame.svg"
+  },
+  {
+    "frame": "india-mobile",
+    "variable": "imgFrame",
+    "nodeId": "363:956",
+    "nodeName": "Frame",
+    "url": "https://www.figma.com/api/mcp/asset/a3b4d96e-fb3f-447b-82c2-735dd3750f89.svg",
+    "file": "india-mobile-imgFrame.svg"
+  },
+  {
+    "frame": "india-mobile",
+    "variable": "imgMark",
+    "nodeId": "364:2165",
+    "nodeName": "Mark",
+    "url": "https://www.figma.com/api/mcp/asset/f1b9e897-3c32-41c2-9318-d90b0b7148fa.svg",
+    "file": "india-mobile-imgMark.svg"
+  },
+  {
+    "frame": "india-mobile",
+    "variable": "imgIcon",
+    "nodeId": "364:2170",
+    "nodeName": "Icon",
+    "url": "https://www.figma.com/api/mcp/asset/155b82c6-f5eb-42c2-ac61-e5b685a8a29a.svg",
+    "file": "india-mobile-imgIcon.svg"
+  },
+  {
+    "frame": "india-mobile",
+    "variable": "imgIcon1",
+    "nodeId": "364:2173",
+    "nodeName": "Icon",
+    "url": "https://www.figma.com/api/mcp/asset/398782db-5988-4727-be92-e1657f7333a8.svg",
+    "file": "india-mobile-imgIcon1.svg"
+  },
+  {
+    "frame": "india-mobile",
+    "variable": "imgPhoneIcon",
+    "nodeId": "364:2155",
+    "nodeName": "Phone icon",
+    "url": "https://www.figma.com/api/mcp/asset/6e4d0e4c-db6a-47e0-96fc-26da9c6b51f2.svg",
+    "file": "india-mobile-imgPhoneIcon.svg"
+  },
+  {
+    "frame": "india-mobile",
+    "variable": "imgEllipse",
+    "nodeId": "255:60",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/9336023c-0393-498a-bed3-17d1fd9fb085.svg",
+    "file": "india-mobile-imgEllipse.svg"
+  },
+  {
+    "frame": "india-mobile",
+    "variable": "imgEllipse1",
+    "nodeId": "255:112",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/a42b3e4c-5041-45ef-a2a2-c0ef40c3af8e.svg",
+    "file": "india-mobile-imgEllipse1.svg"
+  },
+  {
+    "frame": "india-mobile",
+    "variable": "imgEllipse2",
+    "nodeId": "255:117",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/60d279d4-08ec-46f6-bd1e-97e5abbeca82.svg",
+    "file": "india-mobile-imgEllipse2.svg"
+  },
+  {
+    "frame": "india-mobile",
+    "variable": "imgIcon2",
+    "nodeId": "I314:1005;312:10",
+    "nodeName": "Icon",
+    "url": "https://www.figma.com/api/mcp/asset/a990db34-6243-4eef-becd-841d1ea5c70f.svg",
+    "file": "india-mobile-imgIcon2.svg"
+  },
+  {
+    "frame": "india-mobile",
+    "variable": "imgIcon3",
+    "nodeId": "I314:1019;312:3",
+    "nodeName": "Icon",
+    "url": "https://www.figma.com/api/mcp/asset/bedb62a2-1790-4997-8986-a014f8402671.svg",
+    "file": "india-mobile-imgIcon3.svg"
+  },
+  {
+    "frame": "india-mobile",
+    "variable": "imgEllipse3",
+    "nodeId": "255:371",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/25039257-2ebe-4db5-ad3d-0dd293dc0570.svg",
+    "file": "india-mobile-imgEllipse3.svg"
+  },
+  {
+    "frame": "india-mobile",
+    "variable": "imgEllipse4",
+    "nodeId": "255:379",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/cbb953aa-41cf-4e61-82a6-8e03e979c90d.svg",
+    "file": "india-mobile-imgEllipse4.svg"
+  },
+  {
+    "frame": "india-mobile",
+    "variable": "imgEllipse5",
+    "nodeId": "255:387",
+    "nodeName": "Ellipse",
+    "url": "https://www.figma.com/api/mcp/asset/08bcd8a7-15c6-4c68-aaf0-926ebb341539.svg",
+    "file": "india-mobile-imgEllipse5.svg"
+  }
+]

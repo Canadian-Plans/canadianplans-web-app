@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { siteConfig } from '../site.config';
+import { useCookieConsent } from './shared/cookie-consent';
+import { hasAnalyticsConsent } from '@/lib/cookie-consent';
 
 /**
  * Umami integration (T20, REQ 35). Page views are the only client-side event
@@ -17,12 +19,17 @@ import { siteConfig } from '../site.config';
 
 export function Analytics() {
   const { scriptUrl, websiteId } = siteConfig.analytics;
+  const analyticsAllowed = useCookieConsent()?.analytics ?? false;
   const pathname = usePathname();
   const [ready, setReady] = useState(false);
   const lastTracked = useRef<string | undefined>(undefined);
 
   useEffect(() => {
-    if (!ready || !window.umami) return;
+    if (!analyticsAllowed) {
+      lastTracked.current = undefined;
+      return;
+    }
+    if (!ready || !window.umami || !hasAnalyticsConsent()) return;
     if (lastTracked.current === pathname) return;
     lastTracked.current = pathname;
     // Defensive: a stubbed/partial umami global (e.g. a test double, or a
@@ -31,9 +38,9 @@ export function Analytics() {
     // runs on every page via the shared layout, takes down the whole client
     // render tree — never let a third-party script shape crash the app.
     window.umami.track?.();
-  }, [ready, pathname]);
+  }, [ready, pathname, analyticsAllowed]);
 
-  if (!scriptUrl || !websiteId) return null;
+  if (!scriptUrl || !websiteId || !analyticsAllowed) return null;
 
   return (
     <Script

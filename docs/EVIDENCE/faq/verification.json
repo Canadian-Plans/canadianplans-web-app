@@ -1,0 +1,320 @@
+[
+  {
+    "width": 390,
+    "violations": [],
+    "geometry": [
+      {
+        "class": "cp-faq-page-hero cp-container",
+        "x": 20,
+        "y": 164,
+        "width": 350,
+        "height": 559
+      },
+      {
+        "class": "cp-faq-page-group",
+        "x": 0,
+        "y": 723,
+        "width": 390,
+        "height": 1060
+      },
+      {
+        "class": "cp-faq-page-group",
+        "x": 0,
+        "y": 1783,
+        "width": 390,
+        "height": 1107
+      },
+      {
+        "class": "cp-faq-page-group",
+        "x": 0,
+        "y": 2890,
+        "width": 390,
+        "height": 1053
+      },
+      {
+        "class": "cp-faq-page-final",
+        "x": 0,
+        "y": 3943,
+        "width": 390,
+        "height": 531
+      },
+      {
+        "class": "cp-faq-page-final-card cp-container",
+        "x": 20,
+        "y": 3991,
+        "width": 350,
+        "height": 435
+      },
+      {
+        "class": "cp-footer",
+        "x": 0,
+        "y": 4474,
+        "width": 390,
+        "height": 946.96875
+      }
+    ],
+    "assets": [
+      {
+        "src": "/design/faq/1-imgPhoneIcon.svg",
+        "node": "364:2155",
+        "loaded": true,
+        "width": 16,
+        "height": 16,
+        "declaredWidth": 16,
+        "declaredHeight": 16
+      },
+      {
+        "src": "/design/components/60-13-imgMark.svg",
+        "node": "60:16",
+        "loaded": true,
+        "width": 36,
+        "height": 36,
+        "declaredWidth": 36,
+        "declaredHeight": 36
+      },
+      {
+        "src": "/design/components/364-2163-imgIcon.svg",
+        "node": "364:2170",
+        "loaded": true,
+        "width": 22,
+        "height": 22,
+        "declaredWidth": 22,
+        "declaredHeight": 22
+      },
+      {
+        "src": "/design/components/364-2163-imgIcon1.svg",
+        "node": "364:2173",
+        "loaded": true,
+        "width": 24,
+        "height": 24,
+        "declaredWidth": 24,
+        "declaredHeight": 24
+      },
+      {
+        "src": "/design/faq/0-imgIconSearch.svg",
+        "node": "332:818",
+        "loaded": true,
+        "width": 20,
+        "height": 20,
+        "declaredWidth": 20,
+        "declaredHeight": 20
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "node": "312:3",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "node": "312:3",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "node": "68:54",
+        "loaded": true,
+        "width": 36,
+        "height": 36,
+        "declaredWidth": 36,
+        "declaredHeight": 36
+      }
+    ],
+    "errors": [],
+    "imageSlots": [
+      {
+        "width": 350,
+        "height": 200
+      },
+      {
+        "width": 350,
+        "height": 200
+      }
+    ],
+    "schema": "three source Q&A pairs match the visible expandable answers; server-rendered schema remains unchanged during local search",
+    "interactions": "19 disclosures, keyboard toggling, exclusive groups, question/answer/alias search, empty/clear, keyboard topics, global finder and CTA destinations passed",
+    "overflow": [
+      {
+        "viewport": 320,
+        "document": 320
+      },
+      {
+        "viewport": 390,
+        "document": 390
+      },
+      {
+        "viewport": 768,
+        "document": 768
+      },
+      {
+        "viewport": 1024,
+        "document": 1024
+      },
+      {
+        "viewport": 1280,
+        "document": 1280
+      },
+      {
+        "viewport": 1440,
+        "document": 1440
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "violations": [],
+    "geometry": [
+      {
+        "class": "cp-faq-page-hero cp-container",
+        "x": 120,
+        "y": 160,
+        "width": 1200,
+        "height": 413
+      },
+      {
+        "class": "cp-faq-page-group",
+        "x": 0,
+        "y": 573,
+        "width": 1440,
+        "height": 906
+      },
+      {
+        "class": "cp-faq-page-group",
+        "x": 0,
+        "y": 1479,
+        "width": 1440,
+        "height": 843
+      },
+      {
+        "class": "cp-faq-page-group",
+        "x": 0,
+        "y": 2322,
+        "width": 1440,
+        "height": 817
+      },
+      {
+        "class": "cp-faq-page-final",
+        "x": 0,
+        "y": 3139,
+        "width": 1440,
+        "height": 510
+      },
+      {
+        "class": "cp-faq-page-final-card cp-container",
+        "x": 120,
+        "y": 3139,
+        "width": 1200,
+        "height": 414
+      },
+      {
+        "class": "cp-footer",
+        "x": 0,
+        "y": 3649,
+        "width": 1440,
+        "height": 439.1875
+      }
+    ],
+    "assets": [
+      {
+        "src": "/design/components/60-13-imgMark.svg",
+        "node": "60:16",
+        "loaded": true,
+        "width": 36,
+        "height": 36,
+        "declaredWidth": 36,
+        "declaredHeight": 36
+      },
+      {
+        "src": "/design/legal/0-imgSearchIcon.svg",
+        "node": "361:1004",
+        "loaded": true,
+        "width": 18,
+        "height": 18,
+        "declaredWidth": 18,
+        "declaredHeight": 18
+      },
+      {
+        "src": "/design/faq/0-imgIconSearch.svg",
+        "node": "332:818",
+        "loaded": true,
+        "width": 20,
+        "height": 20,
+        "declaredWidth": 20,
+        "declaredHeight": 20
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "node": "312:3",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "node": "312:3",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "node": "68:54",
+        "loaded": true,
+        "width": 36,
+        "height": 36,
+        "declaredWidth": 36,
+        "declaredHeight": 36
+      }
+    ],
+    "errors": [],
+    "imageSlots": [
+      {
+        "width": 380,
+        "height": 240
+      },
+      {
+        "width": 380,
+        "height": 240
+      }
+    ],
+    "schema": "three source Q&A pairs match the visible expandable answers; server-rendered schema remains unchanged during local search",
+    "interactions": "19 disclosures, keyboard toggling, exclusive groups, question/answer/alias search, empty/clear, keyboard topics, global finder and CTA destinations passed",
+    "overflow": [
+      {
+        "viewport": 320,
+        "document": 320
+      },
+      {
+        "viewport": 390,
+        "document": 390
+      },
+      {
+        "viewport": 768,
+        "document": 768
+      },
+      {
+        "viewport": 1024,
+        "document": 1024
+      },
+      {
+        "viewport": 1280,
+        "document": 1280
+      },
+      {
+        "viewport": 1440,
+        "document": 1440
+      }
+    ]
+  }
+]

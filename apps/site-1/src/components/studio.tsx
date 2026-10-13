@@ -1,18 +1,20 @@
-'use client';
-import { NextStudio } from 'next-sanity/studio';
-import config, { studioConfigured } from '../../sanity.config';
+import { studioConfigured } from '../lib/studio-settings';
+import { siteConfig } from '../site.config';
+import { studioCopy } from '@content/metadata';
 
-export function Studio() {
+export async function Studio() {
+  if (studioConfigured) {
+    const { StudioClient } = await import('./studio-client');
+    return <StudioClient />;
+  }
   return (
-    <NextStudio config={config}>
-      {studioConfigured ? undefined : (
-        <main style={{ padding: '2rem', fontFamily: 'system-ui' }}>
-          <h1>Site 1 Studio</h1>
-          <p>Sanity project connection is pending T9.</p>
-          <p>Content editing is unavailable until the project and editor access are configured.</p>
-          <a href="/">Return to storefront</a>
-        </main>
-      )}
-    </NextStudio>
+    <main style={{ padding: 'var(--cp-space-32)', fontFamily: 'var(--cp-studio-font-family)' }}>
+      <h1>
+        {siteConfig.name} {studioCopy.suffix}
+      </h1>
+      <p>{studioCopy.pending}</p>
+      <p>{studioCopy.unavailable}</p>
+      <a href="/">{studioCopy.back}</a>
+    </main>
   );
 }

@@ -9,13 +9,32 @@ afterEach(() => {
 describe('trackPlanSelected', () => {
   it('emits a sanitized plan_selected event when Umami is loaded', () => {
     const track = vi.fn();
-    vi.stubGlobal('window', { umami: { track } });
+    vi.stubGlobal('window', {
+      umami: { track },
+      localStorage: {
+        getItem: () => JSON.stringify({ version: 1, analytics: true, marketing: false }),
+      },
+    });
 
     trackPlanSelected('90000000-0000-4000-8000-000000000001');
 
     expect(track).toHaveBeenCalledWith('plan_selected', {
       plan: '90000000-0000-4000-8000-000000000001',
     });
+  });
+
+  it('does not emit before opt-in or after withdrawal', () => {
+    const track = vi.fn();
+    let choice: string | null = null;
+    vi.stubGlobal('window', { umami: { track }, localStorage: { getItem: () => choice } });
+    trackPlanSelected('plan-x');
+    expect(track).not.toHaveBeenCalled();
+    choice = JSON.stringify({ version: 1, analytics: true, marketing: false });
+    trackPlanSelected('plan-x');
+    expect(track).toHaveBeenCalledTimes(1);
+    choice = JSON.stringify({ version: 1, analytics: false, marketing: false });
+    trackPlanSelected('plan-x');
+    expect(track).toHaveBeenCalledTimes(1);
   });
 
   it('is a no-op when Umami is not configured', () => {

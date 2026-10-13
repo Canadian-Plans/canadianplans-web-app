@@ -1,0 +1,800 @@
+[
+  {
+    "slug": "privacy",
+    "width": 390,
+    "geometry": [
+      {
+        "class": "cp-legal-header",
+        "id": "",
+        "x": 0,
+        "y": 108,
+        "width": 390,
+        "height": 322
+      },
+      {
+        "class": "cp-container cp-legal-body ",
+        "id": "",
+        "x": 20,
+        "y": 430,
+        "width": 350,
+        "height": 3348
+      },
+      {
+        "class": "cp-legal-contents",
+        "id": "",
+        "x": 20,
+        "y": 438,
+        "width": 350,
+        "height": 298
+      },
+      {
+        "class": "cp-legal-short",
+        "id": "",
+        "x": 20,
+        "y": 764,
+        "width": 350,
+        "height": 358
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 1150,
+        "width": 350,
+        "height": 168
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 1346,
+        "width": 350,
+        "height": 358
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 1732,
+        "width": 350,
+        "height": 168
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 1928,
+        "width": 350,
+        "height": 306
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 2262,
+        "width": 350,
+        "height": 142
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 2432,
+        "width": 350,
+        "height": 116
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 2576,
+        "width": 350,
+        "height": 246
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 2850,
+        "width": 350,
+        "height": 142
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 3020,
+        "width": 350,
+        "height": 142
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 3190,
+        "width": 350,
+        "height": 142
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 3360,
+        "width": 350,
+        "height": 116
+      },
+      {
+        "class": "cp-legal-contact",
+        "id": "",
+        "x": 20,
+        "y": 3504,
+        "width": 350,
+        "height": 234
+      },
+      {
+        "class": "cp-footer",
+        "id": "",
+        "x": 0,
+        "y": 3778,
+        "width": 390,
+        "height": 946.96875
+      }
+    ],
+    "assets": [
+      {
+        "src": "/design/legal/1-imgPhoneIcon.svg",
+        "width": 16,
+        "height": 16,
+        "naturalWidth": 16,
+        "naturalHeight": 16
+      },
+      {
+        "src": "/design/components/364-2163-imgMark.svg",
+        "width": 36,
+        "height": 36,
+        "naturalWidth": 36,
+        "naturalHeight": 36
+      },
+      {
+        "src": "/design/components/364-2163-imgIcon.svg",
+        "width": 22,
+        "height": 22,
+        "naturalWidth": 22,
+        "naturalHeight": 22
+      },
+      {
+        "src": "/design/components/364-2163-imgIcon1.svg",
+        "width": 24,
+        "height": 24,
+        "naturalWidth": 24,
+        "naturalHeight": 24
+      },
+      {
+        "src": "/design/legal/1-imgIcon2.svg",
+        "width": 18,
+        "height": 18,
+        "naturalWidth": 18,
+        "naturalHeight": 18
+      },
+      {
+        "src": "/design/legal/1-imgIcon2.svg",
+        "width": 18,
+        "height": 18,
+        "naturalWidth": 18,
+        "naturalHeight": 18
+      },
+      {
+        "src": "/design/legal/1-imgIcon2.svg",
+        "width": 18,
+        "height": 18,
+        "naturalWidth": 18,
+        "naturalHeight": 18
+      },
+      {
+        "src": "/design/legal/1-imgIcon2.svg",
+        "width": 18,
+        "height": 18,
+        "naturalWidth": 18,
+        "naturalHeight": 18
+      },
+      {
+        "src": "/design/legal/1-imgIcon3.svg",
+        "width": 20,
+        "height": 20,
+        "naturalWidth": 20,
+        "naturalHeight": 20
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "width": 36,
+        "height": 36,
+        "naturalWidth": 36,
+        "naturalHeight": 36
+      }
+    ],
+    "violations": [],
+    "overflow": false
+  },
+  {
+    "slug": "terms",
+    "width": 390,
+    "geometry": [
+      {
+        "class": "cp-legal-header",
+        "id": "",
+        "x": 0,
+        "y": 108,
+        "width": 390,
+        "height": 322
+      },
+      {
+        "class": "cp-container cp-legal-body ",
+        "id": "",
+        "x": 20,
+        "y": 430,
+        "width": 350,
+        "height": 3438
+      },
+      {
+        "class": "cp-legal-contents",
+        "id": "",
+        "x": 20,
+        "y": 438,
+        "width": 350,
+        "height": 298
+      },
+      {
+        "class": "cp-legal-short",
+        "id": "",
+        "x": 20,
+        "y": 764,
+        "width": 350,
+        "height": 410
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 1202,
+        "width": 350,
+        "height": 168
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 1398,
+        "width": 350,
+        "height": 142
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 1568,
+        "width": 350,
+        "height": 194
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 1790,
+        "width": 350,
+        "height": 168
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 1986,
+        "width": 350,
+        "height": 168
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 2182,
+        "width": 350,
+        "height": 194
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 2404,
+        "width": 350,
+        "height": 142
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 2574,
+        "width": 350,
+        "height": 168
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 2770,
+        "width": 350,
+        "height": 194
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 2992,
+        "width": 350,
+        "height": 116
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 3136,
+        "width": 350,
+        "height": 116
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 3280,
+        "width": 350,
+        "height": 142
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 20,
+        "y": 3450,
+        "width": 350,
+        "height": 116
+      },
+      {
+        "class": "cp-legal-contact",
+        "id": "",
+        "x": 20,
+        "y": 3594,
+        "width": 350,
+        "height": 234
+      },
+      {
+        "class": "cp-footer",
+        "id": "",
+        "x": 0,
+        "y": 3868,
+        "width": 390,
+        "height": 946.96875
+      }
+    ],
+    "assets": [
+      {
+        "src": "/design/legal/1-imgPhoneIcon.svg",
+        "width": 16,
+        "height": 16,
+        "naturalWidth": 16,
+        "naturalHeight": 16
+      },
+      {
+        "src": "/design/components/364-2163-imgMark.svg",
+        "width": 36,
+        "height": 36,
+        "naturalWidth": 36,
+        "naturalHeight": 36
+      },
+      {
+        "src": "/design/components/364-2163-imgIcon.svg",
+        "width": 22,
+        "height": 22,
+        "naturalWidth": 22,
+        "naturalHeight": 22
+      },
+      {
+        "src": "/design/components/364-2163-imgIcon1.svg",
+        "width": 24,
+        "height": 24,
+        "naturalWidth": 24,
+        "naturalHeight": 24
+      },
+      {
+        "src": "/design/legal/1-imgIcon2.svg",
+        "width": 18,
+        "height": 18,
+        "naturalWidth": 18,
+        "naturalHeight": 18
+      },
+      {
+        "src": "/design/legal/1-imgIcon2.svg",
+        "width": 18,
+        "height": 18,
+        "naturalWidth": 18,
+        "naturalHeight": 18
+      },
+      {
+        "src": "/design/legal/1-imgIcon2.svg",
+        "width": 18,
+        "height": 18,
+        "naturalWidth": 18,
+        "naturalHeight": 18
+      },
+      {
+        "src": "/design/legal/1-imgIcon2.svg",
+        "width": 18,
+        "height": 18,
+        "naturalWidth": 18,
+        "naturalHeight": 18
+      },
+      {
+        "src": "/design/legal/1-imgIcon3.svg",
+        "width": 20,
+        "height": 20,
+        "naturalWidth": 20,
+        "naturalHeight": 20
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "width": 36,
+        "height": 36,
+        "naturalWidth": 36,
+        "naturalHeight": 36
+      }
+    ],
+    "violations": [],
+    "overflow": false
+  },
+  {
+    "slug": "privacy",
+    "width": 1440,
+    "geometry": [
+      {
+        "class": "cp-legal-header",
+        "id": "",
+        "x": 0,
+        "y": 120.296875,
+        "width": 1440,
+        "height": 352
+      },
+      {
+        "class": "cp-container cp-legal-body ",
+        "id": "",
+        "x": 120,
+        "y": 472.296875,
+        "width": 1200,
+        "height": 2329
+      },
+      {
+        "class": "cp-legal-contents",
+        "id": "",
+        "x": 120,
+        "y": 528.296875,
+        "width": 280,
+        "height": 442
+      },
+      {
+        "class": "cp-legal-short",
+        "id": "",
+        "x": 464,
+        "y": 528.296875,
+        "width": 856,
+        "height": 236
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 804.296875,
+        "width": 856,
+        "height": 99
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 943.296875,
+        "width": 856,
+        "height": 215
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 1198.296875,
+        "width": 856,
+        "height": 99
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 1337.296875,
+        "width": 856,
+        "height": 241
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 1618.296875,
+        "width": 856,
+        "height": 99
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 1757.296875,
+        "width": 856,
+        "height": 99
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 1896.296875,
+        "width": 856,
+        "height": 125
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 2061.296875,
+        "width": 856,
+        "height": 99
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 2200.296875,
+        "width": 856,
+        "height": 99
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 2339.296875,
+        "width": 856,
+        "height": 99
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 2478.296875,
+        "width": 856,
+        "height": 73
+      },
+      {
+        "class": "cp-legal-contact",
+        "id": "",
+        "x": 464,
+        "y": 2591.296875,
+        "width": 856,
+        "height": 114
+      },
+      {
+        "class": "cp-footer",
+        "id": "",
+        "x": 0,
+        "y": 2801.296875,
+        "width": 1440,
+        "height": 440.5
+      }
+    ],
+    "assets": [
+      {
+        "src": "/design/components/364-2163-imgMark.svg",
+        "width": 36,
+        "height": 36,
+        "naturalWidth": 36,
+        "naturalHeight": 36
+      },
+      {
+        "src": "/design/legal/0-imgSearchIcon.svg",
+        "width": 18,
+        "height": 18,
+        "naturalWidth": 18,
+        "naturalHeight": 18
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "width": 36,
+        "height": 36,
+        "naturalWidth": 36,
+        "naturalHeight": 36
+      }
+    ],
+    "violations": [],
+    "overflow": false
+  },
+  {
+    "slug": "terms",
+    "width": 1440,
+    "geometry": [
+      {
+        "class": "cp-legal-header",
+        "id": "",
+        "x": 0,
+        "y": 120.296875,
+        "width": 1440,
+        "height": 352
+      },
+      {
+        "class": "cp-container cp-legal-body ",
+        "id": "",
+        "x": 120,
+        "y": 472.296875,
+        "width": 1200,
+        "height": 2425
+      },
+      {
+        "class": "cp-legal-contents",
+        "id": "",
+        "x": 120,
+        "y": 528.296875,
+        "width": 280,
+        "height": 518
+      },
+      {
+        "class": "cp-legal-short",
+        "id": "",
+        "x": 464,
+        "y": 528.296875,
+        "width": 856,
+        "height": 262
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 830.296875,
+        "width": 856,
+        "height": 99
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 969.296875,
+        "width": 856,
+        "height": 99
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 1108.296875,
+        "width": 856,
+        "height": 125
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 1273.296875,
+        "width": 856,
+        "height": 99
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 1412.296875,
+        "width": 856,
+        "height": 99
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 1551.296875,
+        "width": 856,
+        "height": 125
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 1716.296875,
+        "width": 856,
+        "height": 99
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 1855.296875,
+        "width": 856,
+        "height": 99
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 1994.296875,
+        "width": 856,
+        "height": 125
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 2159.296875,
+        "width": 856,
+        "height": 99
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 2298.296875,
+        "width": 856,
+        "height": 73
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 2411.296875,
+        "width": 856,
+        "height": 99
+      },
+      {
+        "class": "cp-legal-section",
+        "id": "",
+        "x": 464,
+        "y": 2550.296875,
+        "width": 856,
+        "height": 73
+      },
+      {
+        "class": "cp-legal-contact",
+        "id": "",
+        "x": 464,
+        "y": 2663.296875,
+        "width": 856,
+        "height": 138
+      },
+      {
+        "class": "cp-footer",
+        "id": "",
+        "x": 0,
+        "y": 2897.296875,
+        "width": 1440,
+        "height": 440.5
+      }
+    ],
+    "assets": [
+      {
+        "src": "/design/components/364-2163-imgMark.svg",
+        "width": 36,
+        "height": 36,
+        "naturalWidth": 36,
+        "naturalHeight": 36
+      },
+      {
+        "src": "/design/legal/0-imgSearchIcon.svg",
+        "width": 18,
+        "height": 18,
+        "naturalWidth": 18,
+        "naturalHeight": 18
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "width": 36,
+        "height": 36,
+        "naturalWidth": 36,
+        "naturalHeight": 36
+      }
+    ],
+    "violations": [],
+    "overflow": false
+  }
+]

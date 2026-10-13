@@ -1,0 +1,179 @@
+{
+  "geometry": [
+    {
+      "section": "cp-internet-hero",
+      "height": 672.640625
+    },
+    {
+      "section": "cp-internet-quick",
+      "height": 232.84375
+    },
+    {
+      "section": "speed-finder",
+      "height": 679.25
+    },
+    {
+      "section": "internet-plans",
+      "height": 704.109375
+    },
+    {
+      "section": "compare",
+      "height": 796.1875
+    },
+    {
+      "section": "cp-internet-tv cp-internet-section",
+      "height": 370.4375
+    },
+    {
+      "section": "installation",
+      "height": 884.59375
+    },
+    {
+      "section": "coverage",
+      "height": 664.9375
+    },
+    {
+      "section": "cp-internet-reviews cp-internet-section",
+      "height": 480
+    },
+    {
+      "section": "faq",
+      "height": 853
+    },
+    {
+      "section": "cp-internet-final cp-internet-section",
+      "height": 509.78125
+    }
+  ],
+  "initialAudit": [],
+  "initialAssets": [
+    {
+      "src": "/design/home-internet/106-34-imgMark.svg",
+      "width": 36,
+      "height": 36,
+      "expectedWidth": 36,
+      "expectedHeight": 36,
+      "loaded": true
+    },
+    {
+      "src": "/design/legal/0-imgSearchIcon.svg",
+      "width": 18,
+      "height": 18,
+      "expectedWidth": 18,
+      "expectedHeight": 18,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgIcon.svg",
+      "width": 32,
+      "height": 32,
+      "expectedWidth": 32,
+      "expectedHeight": 32,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgIcon.svg",
+      "width": 32,
+      "height": 32,
+      "expectedWidth": 32,
+      "expectedHeight": 32,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgIconRouter.svg",
+      "width": 28,
+      "height": 28,
+      "expectedWidth": 28,
+      "expectedHeight": 28,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgIconWifi.svg",
+      "width": 28,
+      "height": 28,
+      "expectedWidth": 28,
+      "expectedHeight": 28,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgIconWrench.svg",
+      "width": 28,
+      "height": 28,
+      "expectedWidth": 28,
+      "expectedHeight": 28,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgIcon1.svg",
+      "width": 32,
+      "height": 32,
+      "expectedWidth": 32,
+      "expectedHeight": 32,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgEllipse1.svg",
+      "width": 16,
+      "height": 16,
+      "expectedWidth": 16,
+      "expectedHeight": 16,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgEllipse1.svg",
+      "width": 16,
+      "height": 16,
+      "expectedWidth": 16,
+      "expectedHeight": 16,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgEllipse1.svg",
+      "width": 16,
+      "height": 16,
+      "expectedWidth": 16,
+      "expectedHeight": 16,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgEllipse2.svg",
+      "width": 16,
+      "height": 16,
+      "expectedWidth": 16,
+      "expectedHeight": 16,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgEllipse3.svg",
+      "width": 40,
+      "height": 40,
+      "expectedWidth": 40,
+      "expectedHeight": 40,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgEllipse4.svg",
+      "width": 40,
+      "height": 40,
+      "expectedWidth": 40,
+      "expectedHeight": 40,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgEllipse5.svg",
+      "width": 40,
+      "height": 40,
+      "expectedWidth": 40,
+      "expectedHeight": 40,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgFrame.svg",
+      "width": 36,
+      "height": 36,
+      "expectedWidth": 36,
+      "expectedHeight": 36,
+      "loaded": true
+    }
+  ]
+}

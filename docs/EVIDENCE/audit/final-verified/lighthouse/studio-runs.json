@@ -1,0 +1,2288 @@
+[
+  {
+    "index": 0,
+    "scores": {
+      "performance": 89,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 66
+    },
+    "metrics": {
+      "first-contentful-paint": 1212.7236,
+      "largest-contentful-paint": 3531.4472,
+      "total-blocking-time": 136,
+      "cumulative-layout-shift": 0,
+      "speed-index": 1212.7236
+    },
+    "failures": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "displayValue": "1.2 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "displayValue": "3.5 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "displayValue": "140 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "displayValue": "130 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "displayValue": "3.5 s"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "displayValue": "Est savings of 151 KiB",
+        "details": {
+          "type": "opportunity",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "source",
+                "valueType": "code"
+              },
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceBytes"
+              },
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceWastedBytes"
+              },
+              "label": "Est Savings"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/3-ku2512pq295.js",
+              "totalBytes": 85962,
+              "wastedBytes": 75131,
+              "wastedPercent": 87.39957547358725
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/0o332livecdd5.js",
+              "totalBytes": 47803,
+              "wastedBytes": 31970,
+              "wastedPercent": 66.87743308267041
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/09om9d6_itz7x.js",
+              "totalBytes": 64687,
+              "wastedBytes": 25971,
+              "wastedPercent": 40.14945652173913
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1rge81yykklnt.js",
+              "totalBytes": 34795,
+              "wastedBytes": 21269,
+              "wastedPercent": 61.12626293931693
+            }
+          ],
+          "overallSavingsMs": 770,
+          "overallSavingsBytes": 154341,
+          "sortedBy": ["wastedBytes"],
+          "debugData": {
+            "type": "debugdata",
+            "metricSavings": {
+              "FCP": 0,
+              "LCP": 770
+            }
+          }
+        }
+      },
+      {
+        "id": "is-crawlable",
+        "title": "Page is blocked from indexing",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "source",
+              "valueType": "code",
+              "label": "Blocking Directive Source"
+            }
+          ],
+          "items": [
+            {
+              "source": {
+                "type": "node",
+                "lhId": "1-14-META",
+                "path": "1,HTML,0,HEAD,24,META",
+                "selector": "head > meta",
+                "boundingRect": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "snippet": "<meta name=\"robots\" content=\"noindex, nofollow\" />",
+                "nodeLabel": "head > meta"
+              }
+            },
+            {
+              "source": {
+                "type": "source-location",
+                "url": "http://127.0.0.1:3152/robots.txt",
+                "urlProvider": "network",
+                "line": 1,
+                "column": 0
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "legacy-javascript-insight",
+        "title": "Legacy JavaScript",
+        "displayValue": "Est savings of 15 KiB",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "location",
+                "valueType": "source-location"
+              },
+              "label": "URL"
+            },
+            {
+              "key": null,
+              "valueType": "code",
+              "subItemsHeading": {
+                "key": "signal"
+              },
+              "label": ""
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "label": "Wasted bytes"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+              "wastedBytes": 15201,
+              "subItems": {
+                "type": "subitems",
+                "items": [
+                  {
+                    "signal": "Array.prototype.at",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 1117
+                    }
+                  },
+                  {
+                    "signal": "Array.prototype.flat",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 505
+                    }
+                  },
+                  {
+                    "signal": "Array.prototype.flatMap",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 618
+                    }
+                  },
+                  {
+                    "signal": "Object.fromEntries",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 994
+                    }
+                  },
+                  {
+                    "signal": "Object.hasOwn",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 1252
+                    }
+                  },
+                  {
+                    "signal": "String.prototype.trimEnd",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 247
+                    }
+                  },
+                  {
+                    "signal": "String.prototype.trimStart",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 162
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "wastedBytes": 15201
+          }
+        }
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "list-section",
+              "value": {
+                "type": "network-tree",
+                "chains": {
+                  "731326CD56A565EA467A917E3B8AAF96": {
+                    "url": "http://127.0.0.1:3152/studio",
+                    "navStartToEndTime": 40,
+                    "transferSize": 6752,
+                    "isLongest": true,
+                    "children": {
+                      "33368.5": {
+                        "url": "http://127.0.0.1:3152/_next/static/chunks/1fubktus_ly62.css",
+                        "navStartToEndTime": 49,
+                        "transferSize": 21161,
+                        "isLongest": true,
+                        "children": {}
+                      },
+                      "33368.3": {
+                        "url": "http://127.0.0.1:3152/_next/static/chunks/2ugru1kv5t4l4.css",
+                        "navStartToEndTime": 47,
+                        "transferSize": 5915,
+                        "children": {}
+                      },
+                      "33368.4": {
+                        "url": "http://127.0.0.1:3152/_next/static/chunks/1xoa-zlw1nqrz.css",
+                        "navStartToEndTime": 46,
+                        "transferSize": 2425,
+                        "children": {}
+                      }
+                    }
+                  }
+                },
+                "longestChain": {
+                  "duration": 49
+                }
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnected origins",
+              "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+              "value": {
+                "type": "text",
+                "value": "no origins were preconnected"
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnect candidates",
+              "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4.",
+              "value": {
+                "type": "text",
+                "value": "No additional origins are good candidates for preconnecting"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "displayValue": "Est savings of 450 ms",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedMs",
+              "valueType": "timespanMs",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1fubktus_ly62.css",
+              "totalBytes": 21161,
+              "wastedMs": 606
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/2ugru1kv5t4l4.css",
+              "totalBytes": 5915,
+              "wastedMs": 156
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1xoa-zlw1nqrz.css",
+              "totalBytes": 2425,
+              "wastedMs": 306
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "scores": {
+      "performance": 96,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 66
+    },
+    "metrics": {
+      "first-contentful-paint": 1210.125,
+      "largest-contentful-paint": 2570.25,
+      "total-blocking-time": 105,
+      "cumulative-layout-shift": 0,
+      "speed-index": 1210.125
+    },
+    "failures": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "displayValue": "1.2 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "displayValue": "2.6 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "displayValue": "110 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "displayValue": "110 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "displayValue": "3.2 s"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "displayValue": "Est savings of 151 KiB",
+        "details": {
+          "type": "opportunity",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "source",
+                "valueType": "code"
+              },
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceBytes"
+              },
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceWastedBytes"
+              },
+              "label": "Est Savings"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/3-ku2512pq295.js",
+              "totalBytes": 85962,
+              "wastedBytes": 75131,
+              "wastedPercent": 87.39957547358725
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/0o332livecdd5.js",
+              "totalBytes": 47803,
+              "wastedBytes": 31970,
+              "wastedPercent": 66.87743308267041
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/09om9d6_itz7x.js",
+              "totalBytes": 64687,
+              "wastedBytes": 25971,
+              "wastedPercent": 40.14945652173913
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1rge81yykklnt.js",
+              "totalBytes": 34795,
+              "wastedBytes": 21269,
+              "wastedPercent": 61.12626293931693
+            }
+          ],
+          "overallSavingsMs": 310,
+          "overallSavingsBytes": 154341,
+          "sortedBy": ["wastedBytes"],
+          "debugData": {
+            "type": "debugdata",
+            "metricSavings": {
+              "FCP": 0,
+              "LCP": 310
+            }
+          }
+        }
+      },
+      {
+        "id": "is-crawlable",
+        "title": "Page is blocked from indexing",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "source",
+              "valueType": "code",
+              "label": "Blocking Directive Source"
+            }
+          ],
+          "items": [
+            {
+              "source": {
+                "type": "node",
+                "lhId": "1-14-META",
+                "path": "1,HTML,0,HEAD,24,META",
+                "selector": "head > meta",
+                "boundingRect": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "snippet": "<meta name=\"robots\" content=\"noindex, nofollow\" />",
+                "nodeLabel": "head > meta"
+              }
+            },
+            {
+              "source": {
+                "type": "source-location",
+                "url": "http://127.0.0.1:3152/robots.txt",
+                "urlProvider": "network",
+                "line": 1,
+                "column": 0
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "legacy-javascript-insight",
+        "title": "Legacy JavaScript",
+        "displayValue": "Est savings of 15 KiB",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "location",
+                "valueType": "source-location"
+              },
+              "label": "URL"
+            },
+            {
+              "key": null,
+              "valueType": "code",
+              "subItemsHeading": {
+                "key": "signal"
+              },
+              "label": ""
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "label": "Wasted bytes"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+              "wastedBytes": 15201,
+              "subItems": {
+                "type": "subitems",
+                "items": [
+                  {
+                    "signal": "Array.prototype.at",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 1117
+                    }
+                  },
+                  {
+                    "signal": "Array.prototype.flat",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 505
+                    }
+                  },
+                  {
+                    "signal": "Array.prototype.flatMap",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 618
+                    }
+                  },
+                  {
+                    "signal": "Object.fromEntries",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 994
+                    }
+                  },
+                  {
+                    "signal": "Object.hasOwn",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 1252
+                    }
+                  },
+                  {
+                    "signal": "String.prototype.trimEnd",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 247
+                    }
+                  },
+                  {
+                    "signal": "String.prototype.trimStart",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 162
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "wastedBytes": 15201
+          }
+        }
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "list-section",
+              "value": {
+                "type": "network-tree",
+                "chains": {
+                  "C657233B55D08CA6E390666C33B3CAAE": {
+                    "url": "http://127.0.0.1:3152/studio",
+                    "navStartToEndTime": 19,
+                    "transferSize": 6752,
+                    "isLongest": true,
+                    "children": {
+                      "30252.5": {
+                        "url": "http://127.0.0.1:3152/_next/static/chunks/1fubktus_ly62.css",
+                        "navStartToEndTime": 29,
+                        "transferSize": 21161,
+                        "isLongest": true,
+                        "children": {}
+                      },
+                      "30252.4": {
+                        "url": "http://127.0.0.1:3152/_next/static/chunks/1xoa-zlw1nqrz.css",
+                        "navStartToEndTime": 27,
+                        "transferSize": 2425,
+                        "children": {}
+                      },
+                      "30252.3": {
+                        "url": "http://127.0.0.1:3152/_next/static/chunks/2ugru1kv5t4l4.css",
+                        "navStartToEndTime": 26,
+                        "transferSize": 5915,
+                        "children": {}
+                      }
+                    }
+                  }
+                },
+                "longestChain": {
+                  "duration": 29
+                }
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnected origins",
+              "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+              "value": {
+                "type": "text",
+                "value": "no origins were preconnected"
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnect candidates",
+              "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4.",
+              "value": {
+                "type": "text",
+                "value": "No additional origins are good candidates for preconnecting"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "displayValue": "Est savings of 450 ms",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedMs",
+              "valueType": "timespanMs",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1fubktus_ly62.css",
+              "totalBytes": 21161,
+              "wastedMs": 605
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1xoa-zlw1nqrz.css",
+              "totalBytes": 2425,
+              "wastedMs": 305
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/2ugru1kv5t4l4.css",
+              "totalBytes": 5915,
+              "wastedMs": 155
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "scores": {
+      "performance": 96,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 66
+    },
+    "metrics": {
+      "first-contentful-paint": 1210.9082,
+      "largest-contentful-paint": 2571.8163999999997,
+      "total-blocking-time": 97.5,
+      "cumulative-layout-shift": 0,
+      "speed-index": 1210.9082
+    },
+    "failures": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "displayValue": "1.2 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "displayValue": "2.6 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "displayValue": "100 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "displayValue": "100 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "displayValue": "3.4 s"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "displayValue": "Est savings of 151 KiB",
+        "details": {
+          "type": "opportunity",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "source",
+                "valueType": "code"
+              },
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceBytes"
+              },
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceWastedBytes"
+              },
+              "label": "Est Savings"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/3-ku2512pq295.js",
+              "totalBytes": 85962,
+              "wastedBytes": 75131,
+              "wastedPercent": 87.39957547358725
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/0o332livecdd5.js",
+              "totalBytes": 47803,
+              "wastedBytes": 31970,
+              "wastedPercent": 66.87743308267041
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/09om9d6_itz7x.js",
+              "totalBytes": 64687,
+              "wastedBytes": 25971,
+              "wastedPercent": 40.14945652173913
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1rge81yykklnt.js",
+              "totalBytes": 34795,
+              "wastedBytes": 21269,
+              "wastedPercent": 61.12626293931693
+            }
+          ],
+          "overallSavingsMs": 310,
+          "overallSavingsBytes": 154341,
+          "sortedBy": ["wastedBytes"],
+          "debugData": {
+            "type": "debugdata",
+            "metricSavings": {
+              "FCP": 0,
+              "LCP": 310
+            }
+          }
+        }
+      },
+      {
+        "id": "is-crawlable",
+        "title": "Page is blocked from indexing",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "source",
+              "valueType": "code",
+              "label": "Blocking Directive Source"
+            }
+          ],
+          "items": [
+            {
+              "source": {
+                "type": "node",
+                "lhId": "1-14-META",
+                "path": "1,HTML,0,HEAD,24,META",
+                "selector": "head > meta",
+                "boundingRect": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "snippet": "<meta name=\"robots\" content=\"noindex, nofollow\" />",
+                "nodeLabel": "head > meta"
+              }
+            },
+            {
+              "source": {
+                "type": "source-location",
+                "url": "http://127.0.0.1:3152/robots.txt",
+                "urlProvider": "network",
+                "line": 1,
+                "column": 0
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "legacy-javascript-insight",
+        "title": "Legacy JavaScript",
+        "displayValue": "Est savings of 15 KiB",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "location",
+                "valueType": "source-location"
+              },
+              "label": "URL"
+            },
+            {
+              "key": null,
+              "valueType": "code",
+              "subItemsHeading": {
+                "key": "signal"
+              },
+              "label": ""
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "label": "Wasted bytes"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+              "wastedBytes": 15201,
+              "subItems": {
+                "type": "subitems",
+                "items": [
+                  {
+                    "signal": "Array.prototype.at",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 1117
+                    }
+                  },
+                  {
+                    "signal": "Array.prototype.flat",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 505
+                    }
+                  },
+                  {
+                    "signal": "Array.prototype.flatMap",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 618
+                    }
+                  },
+                  {
+                    "signal": "Object.fromEntries",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 994
+                    }
+                  },
+                  {
+                    "signal": "Object.hasOwn",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 1252
+                    }
+                  },
+                  {
+                    "signal": "String.prototype.trimEnd",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 247
+                    }
+                  },
+                  {
+                    "signal": "String.prototype.trimStart",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 162
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "wastedBytes": 15201
+          }
+        }
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "list-section",
+              "value": {
+                "type": "network-tree",
+                "chains": {
+                  "505AE38D05E6EF736B9ED5A597D3A3EE": {
+                    "url": "http://127.0.0.1:3152/studio",
+                    "navStartToEndTime": 75,
+                    "transferSize": 6752,
+                    "isLongest": true,
+                    "children": {
+                      "2112.5": {
+                        "url": "http://127.0.0.1:3152/_next/static/chunks/1fubktus_ly62.css",
+                        "navStartToEndTime": 87,
+                        "transferSize": 21161,
+                        "isLongest": true,
+                        "children": {}
+                      },
+                      "2112.3": {
+                        "url": "http://127.0.0.1:3152/_next/static/chunks/2ugru1kv5t4l4.css",
+                        "navStartToEndTime": 85,
+                        "transferSize": 5915,
+                        "children": {}
+                      },
+                      "2112.4": {
+                        "url": "http://127.0.0.1:3152/_next/static/chunks/1xoa-zlw1nqrz.css",
+                        "navStartToEndTime": 84,
+                        "transferSize": 2425,
+                        "children": {}
+                      }
+                    }
+                  }
+                },
+                "longestChain": {
+                  "duration": 87
+                }
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnected origins",
+              "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+              "value": {
+                "type": "text",
+                "value": "no origins were preconnected"
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnect candidates",
+              "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4.",
+              "value": {
+                "type": "text",
+                "value": "No additional origins are good candidates for preconnecting"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "displayValue": "Est savings of 450 ms",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedMs",
+              "valueType": "timespanMs",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1fubktus_ly62.css",
+              "totalBytes": 21161,
+              "wastedMs": 605
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/2ugru1kv5t4l4.css",
+              "totalBytes": 5915,
+              "wastedMs": 155
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1xoa-zlw1nqrz.css",
+              "totalBytes": 2425,
+              "wastedMs": 305
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "scores": {
+      "performance": 96,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 66
+    },
+    "metrics": {
+      "first-contentful-paint": 1209.7675,
+      "largest-contentful-paint": 2569.535,
+      "total-blocking-time": 114,
+      "cumulative-layout-shift": 0,
+      "speed-index": 1209.7675
+    },
+    "failures": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "displayValue": "1.2 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "displayValue": "2.6 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "displayValue": "110 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "displayValue": "110 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "displayValue": "3.2 s"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "displayValue": "Est savings of 151 KiB",
+        "details": {
+          "type": "opportunity",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "source",
+                "valueType": "code"
+              },
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceBytes"
+              },
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceWastedBytes"
+              },
+              "label": "Est Savings"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/3-ku2512pq295.js",
+              "totalBytes": 85962,
+              "wastedBytes": 75131,
+              "wastedPercent": 87.39957547358725
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/0o332livecdd5.js",
+              "totalBytes": 47803,
+              "wastedBytes": 31970,
+              "wastedPercent": 66.87743308267041
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/09om9d6_itz7x.js",
+              "totalBytes": 64687,
+              "wastedBytes": 25971,
+              "wastedPercent": 40.14945652173913
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1rge81yykklnt.js",
+              "totalBytes": 34795,
+              "wastedBytes": 21269,
+              "wastedPercent": 61.12626293931693
+            }
+          ],
+          "overallSavingsMs": 310,
+          "overallSavingsBytes": 154341,
+          "sortedBy": ["wastedBytes"],
+          "debugData": {
+            "type": "debugdata",
+            "metricSavings": {
+              "FCP": 0,
+              "LCP": 310
+            }
+          }
+        }
+      },
+      {
+        "id": "is-crawlable",
+        "title": "Page is blocked from indexing",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "source",
+              "valueType": "code",
+              "label": "Blocking Directive Source"
+            }
+          ],
+          "items": [
+            {
+              "source": {
+                "type": "node",
+                "lhId": "1-14-META",
+                "path": "1,HTML,0,HEAD,24,META",
+                "selector": "head > meta",
+                "boundingRect": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "snippet": "<meta name=\"robots\" content=\"noindex, nofollow\" />",
+                "nodeLabel": "head > meta"
+              }
+            },
+            {
+              "source": {
+                "type": "source-location",
+                "url": "http://127.0.0.1:3152/robots.txt",
+                "urlProvider": "network",
+                "line": 1,
+                "column": 0
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "legacy-javascript-insight",
+        "title": "Legacy JavaScript",
+        "displayValue": "Est savings of 15 KiB",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "location",
+                "valueType": "source-location"
+              },
+              "label": "URL"
+            },
+            {
+              "key": null,
+              "valueType": "code",
+              "subItemsHeading": {
+                "key": "signal"
+              },
+              "label": ""
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "label": "Wasted bytes"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+              "wastedBytes": 15201,
+              "subItems": {
+                "type": "subitems",
+                "items": [
+                  {
+                    "signal": "Array.prototype.at",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 1117
+                    }
+                  },
+                  {
+                    "signal": "Array.prototype.flat",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 505
+                    }
+                  },
+                  {
+                    "signal": "Array.prototype.flatMap",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 618
+                    }
+                  },
+                  {
+                    "signal": "Object.fromEntries",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 994
+                    }
+                  },
+                  {
+                    "signal": "Object.hasOwn",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 1252
+                    }
+                  },
+                  {
+                    "signal": "String.prototype.trimEnd",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 247
+                    }
+                  },
+                  {
+                    "signal": "String.prototype.trimStart",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 162
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "wastedBytes": 15201
+          }
+        }
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "list-section",
+              "value": {
+                "type": "network-tree",
+                "chains": {
+                  "957A89DAE1CDB98FA1DBA6A7FFDAF1FD": {
+                    "url": "http://127.0.0.1:3152/studio",
+                    "navStartToEndTime": 32,
+                    "transferSize": 6752,
+                    "isLongest": true,
+                    "children": {
+                      "42004.5": {
+                        "url": "http://127.0.0.1:3152/_next/static/chunks/1fubktus_ly62.css",
+                        "navStartToEndTime": 42,
+                        "transferSize": 21161,
+                        "isLongest": true,
+                        "children": {}
+                      },
+                      "42004.3": {
+                        "url": "http://127.0.0.1:3152/_next/static/chunks/2ugru1kv5t4l4.css",
+                        "navStartToEndTime": 40,
+                        "transferSize": 5915,
+                        "children": {}
+                      },
+                      "42004.4": {
+                        "url": "http://127.0.0.1:3152/_next/static/chunks/1xoa-zlw1nqrz.css",
+                        "navStartToEndTime": 39,
+                        "transferSize": 2425,
+                        "children": {}
+                      }
+                    }
+                  }
+                },
+                "longestChain": {
+                  "duration": 42
+                }
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnected origins",
+              "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+              "value": {
+                "type": "text",
+                "value": "no origins were preconnected"
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnect candidates",
+              "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4.",
+              "value": {
+                "type": "text",
+                "value": "No additional origins are good candidates for preconnecting"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "displayValue": "Est savings of 450 ms",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedMs",
+              "valueType": "timespanMs",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1fubktus_ly62.css",
+              "totalBytes": 21161,
+              "wastedMs": 605
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/2ugru1kv5t4l4.css",
+              "totalBytes": 5915,
+              "wastedMs": 155
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1xoa-zlw1nqrz.css",
+              "totalBytes": 2425,
+              "wastedMs": 305
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "scores": {
+      "performance": 96,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 66
+    },
+    "metrics": {
+      "first-contentful-paint": 1210.1806,
+      "largest-contentful-paint": 2570.3612000000007,
+      "total-blocking-time": 114.5,
+      "cumulative-layout-shift": 0,
+      "speed-index": 1210.1806
+    },
+    "failures": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "displayValue": "1.2 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "displayValue": "2.6 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "displayValue": "110 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "displayValue": "110 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "displayValue": "3.4 s"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "displayValue": "Est savings of 151 KiB",
+        "details": {
+          "type": "opportunity",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "source",
+                "valueType": "code"
+              },
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceBytes"
+              },
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceWastedBytes"
+              },
+              "label": "Est Savings"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/3-ku2512pq295.js",
+              "totalBytes": 85962,
+              "wastedBytes": 75131,
+              "wastedPercent": 87.39957547358725
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/0o332livecdd5.js",
+              "totalBytes": 47803,
+              "wastedBytes": 31970,
+              "wastedPercent": 66.87743308267041
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/09om9d6_itz7x.js",
+              "totalBytes": 64687,
+              "wastedBytes": 25971,
+              "wastedPercent": 40.14945652173913
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1rge81yykklnt.js",
+              "totalBytes": 34795,
+              "wastedBytes": 21269,
+              "wastedPercent": 61.12626293931693
+            }
+          ],
+          "overallSavingsMs": 310,
+          "overallSavingsBytes": 154341,
+          "sortedBy": ["wastedBytes"],
+          "debugData": {
+            "type": "debugdata",
+            "metricSavings": {
+              "FCP": 0,
+              "LCP": 310
+            }
+          }
+        }
+      },
+      {
+        "id": "is-crawlable",
+        "title": "Page is blocked from indexing",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "source",
+              "valueType": "code",
+              "label": "Blocking Directive Source"
+            }
+          ],
+          "items": [
+            {
+              "source": {
+                "type": "node",
+                "lhId": "1-14-META",
+                "path": "1,HTML,0,HEAD,24,META",
+                "selector": "head > meta",
+                "boundingRect": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "snippet": "<meta name=\"robots\" content=\"noindex, nofollow\" />",
+                "nodeLabel": "head > meta"
+              }
+            },
+            {
+              "source": {
+                "type": "source-location",
+                "url": "http://127.0.0.1:3152/robots.txt",
+                "urlProvider": "network",
+                "line": 1,
+                "column": 0
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "legacy-javascript-insight",
+        "title": "Legacy JavaScript",
+        "displayValue": "Est savings of 15 KiB",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "location",
+                "valueType": "source-location"
+              },
+              "label": "URL"
+            },
+            {
+              "key": null,
+              "valueType": "code",
+              "subItemsHeading": {
+                "key": "signal"
+              },
+              "label": ""
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "label": "Wasted bytes"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+              "wastedBytes": 15201,
+              "subItems": {
+                "type": "subitems",
+                "items": [
+                  {
+                    "signal": "Array.prototype.at",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 1117
+                    }
+                  },
+                  {
+                    "signal": "Array.prototype.flat",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 505
+                    }
+                  },
+                  {
+                    "signal": "Array.prototype.flatMap",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 618
+                    }
+                  },
+                  {
+                    "signal": "Object.fromEntries",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 994
+                    }
+                  },
+                  {
+                    "signal": "Object.hasOwn",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 1252
+                    }
+                  },
+                  {
+                    "signal": "String.prototype.trimEnd",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 247
+                    }
+                  },
+                  {
+                    "signal": "String.prototype.trimStart",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 162
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "wastedBytes": 15201
+          }
+        }
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "list-section",
+              "value": {
+                "type": "network-tree",
+                "chains": {
+                  "E204FDE35BEA7D35541ADE2277AC4962": {
+                    "url": "http://127.0.0.1:3152/studio",
+                    "navStartToEndTime": 38,
+                    "transferSize": 6752,
+                    "isLongest": true,
+                    "children": {
+                      "15156.5": {
+                        "url": "http://127.0.0.1:3152/_next/static/chunks/1fubktus_ly62.css",
+                        "navStartToEndTime": 47,
+                        "transferSize": 21161,
+                        "isLongest": true,
+                        "children": {}
+                      },
+                      "15156.3": {
+                        "url": "http://127.0.0.1:3152/_next/static/chunks/2ugru1kv5t4l4.css",
+                        "navStartToEndTime": 46,
+                        "transferSize": 5915,
+                        "children": {}
+                      },
+                      "15156.4": {
+                        "url": "http://127.0.0.1:3152/_next/static/chunks/1xoa-zlw1nqrz.css",
+                        "navStartToEndTime": 45,
+                        "transferSize": 2425,
+                        "children": {}
+                      }
+                    }
+                  }
+                },
+                "longestChain": {
+                  "duration": 47
+                }
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnected origins",
+              "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+              "value": {
+                "type": "text",
+                "value": "no origins were preconnected"
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnect candidates",
+              "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4.",
+              "value": {
+                "type": "text",
+                "value": "No additional origins are good candidates for preconnecting"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "displayValue": "Est savings of 450 ms",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedMs",
+              "valueType": "timespanMs",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1fubktus_ly62.css",
+              "totalBytes": 21161,
+              "wastedMs": 605
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/2ugru1kv5t4l4.css",
+              "totalBytes": 5915,
+              "wastedMs": 155
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1xoa-zlw1nqrz.css",
+              "totalBytes": 2425,
+              "wastedMs": 305
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "index": 5,
+    "scores": {
+      "performance": 96,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 66
+    },
+    "metrics": {
+      "first-contentful-paint": 1210.8317,
+      "largest-contentful-paint": 2571.6634000000004,
+      "total-blocking-time": 102,
+      "cumulative-layout-shift": 0,
+      "speed-index": 1210.8317
+    },
+    "failures": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "displayValue": "1.2 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "displayValue": "2.6 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "displayValue": "100 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "displayValue": "100 ms"
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "displayValue": "3.2 s"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "displayValue": "Est savings of 151 KiB",
+        "details": {
+          "type": "opportunity",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "source",
+                "valueType": "code"
+              },
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceBytes"
+              },
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceWastedBytes"
+              },
+              "label": "Est Savings"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/3-ku2512pq295.js",
+              "totalBytes": 85962,
+              "wastedBytes": 75131,
+              "wastedPercent": 87.39957547358725
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/0o332livecdd5.js",
+              "totalBytes": 47803,
+              "wastedBytes": 31970,
+              "wastedPercent": 66.87743308267041
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/09om9d6_itz7x.js",
+              "totalBytes": 64687,
+              "wastedBytes": 25971,
+              "wastedPercent": 40.14945652173913
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1rge81yykklnt.js",
+              "totalBytes": 34795,
+              "wastedBytes": 21269,
+              "wastedPercent": 61.12626293931693
+            }
+          ],
+          "overallSavingsMs": 310,
+          "overallSavingsBytes": 154341,
+          "sortedBy": ["wastedBytes"],
+          "debugData": {
+            "type": "debugdata",
+            "metricSavings": {
+              "FCP": 0,
+              "LCP": 310
+            }
+          }
+        }
+      },
+      {
+        "id": "is-crawlable",
+        "title": "Page is blocked from indexing",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "source",
+              "valueType": "code",
+              "label": "Blocking Directive Source"
+            }
+          ],
+          "items": [
+            {
+              "source": {
+                "type": "node",
+                "lhId": "1-14-META",
+                "path": "1,HTML,0,HEAD,24,META",
+                "selector": "head > meta",
+                "boundingRect": {
+                  "top": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "snippet": "<meta name=\"robots\" content=\"noindex, nofollow\" />",
+                "nodeLabel": "head > meta"
+              }
+            },
+            {
+              "source": {
+                "type": "source-location",
+                "url": "http://127.0.0.1:3152/robots.txt",
+                "urlProvider": "network",
+                "line": 1,
+                "column": 0
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "legacy-javascript-insight",
+        "title": "Legacy JavaScript",
+        "displayValue": "Est savings of 15 KiB",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "location",
+                "valueType": "source-location"
+              },
+              "label": "URL"
+            },
+            {
+              "key": null,
+              "valueType": "code",
+              "subItemsHeading": {
+                "key": "signal"
+              },
+              "label": ""
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "label": "Wasted bytes"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+              "wastedBytes": 15201,
+              "subItems": {
+                "type": "subitems",
+                "items": [
+                  {
+                    "signal": "Array.prototype.at",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 1117
+                    }
+                  },
+                  {
+                    "signal": "Array.prototype.flat",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 505
+                    }
+                  },
+                  {
+                    "signal": "Array.prototype.flatMap",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 618
+                    }
+                  },
+                  {
+                    "signal": "Object.fromEntries",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 994
+                    }
+                  },
+                  {
+                    "signal": "Object.hasOwn",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 1252
+                    }
+                  },
+                  {
+                    "signal": "String.prototype.trimEnd",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 247
+                    }
+                  },
+                  {
+                    "signal": "String.prototype.trimStart",
+                    "location": {
+                      "type": "source-location",
+                      "url": "http://127.0.0.1:3152/_next/static/chunks/1k4yrmxgvatur.js",
+                      "urlProvider": "network",
+                      "line": 0,
+                      "column": 162
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "wastedBytes": 15201
+          }
+        }
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "list-section",
+              "value": {
+                "type": "network-tree",
+                "chains": {
+                  "59D360BAC626E0E20511FD44841890D8": {
+                    "url": "http://127.0.0.1:3152/studio",
+                    "navStartToEndTime": 64,
+                    "transferSize": 6752,
+                    "isLongest": true,
+                    "children": {
+                      "30396.5": {
+                        "url": "http://127.0.0.1:3152/_next/static/chunks/1fubktus_ly62.css",
+                        "navStartToEndTime": 74,
+                        "transferSize": 21161,
+                        "isLongest": true,
+                        "children": {}
+                      },
+                      "30396.3": {
+                        "url": "http://127.0.0.1:3152/_next/static/chunks/2ugru1kv5t4l4.css",
+                        "navStartToEndTime": 72,
+                        "transferSize": 5915,
+                        "children": {}
+                      },
+                      "30396.4": {
+                        "url": "http://127.0.0.1:3152/_next/static/chunks/1xoa-zlw1nqrz.css",
+                        "navStartToEndTime": 72,
+                        "transferSize": 2425,
+                        "children": {}
+                      }
+                    }
+                  }
+                },
+                "longestChain": {
+                  "duration": 74
+                }
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnected origins",
+              "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+              "value": {
+                "type": "text",
+                "value": "no origins were preconnected"
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnect candidates",
+              "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4.",
+              "value": {
+                "type": "text",
+                "value": "No additional origins are good candidates for preconnecting"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "displayValue": "Est savings of 450 ms",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedMs",
+              "valueType": "timespanMs",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1fubktus_ly62.css",
+              "totalBytes": 21161,
+              "wastedMs": 605
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/2ugru1kv5t4l4.css",
+              "totalBytes": 5915,
+              "wastedMs": 155
+            },
+            {
+              "url": "http://127.0.0.1:3152/_next/static/chunks/1xoa-zlw1nqrz.css",
+              "totalBytes": 2425,
+              "wastedMs": 305
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

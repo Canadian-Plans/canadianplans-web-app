@@ -1,0 +1,58 @@
+[
+  {
+    "route": "sim-students",
+    "width": 390,
+    "equalDimensions": true,
+    "rawPixelsEqual": true,
+    "changedPixels": 0
+  },
+  {
+    "route": "sim-students",
+    "width": 1440,
+    "equalDimensions": true,
+    "rawPixelsEqual": true,
+    "changedPixels": 0
+  },
+  {
+    "route": "sim-india",
+    "width": 390,
+    "equalDimensions": true,
+    "rawPixelsEqual": true,
+    "changedPixels": 0
+  },
+  {
+    "route": "sim-india",
+    "width": 1440,
+    "equalDimensions": true,
+    "rawPixelsEqual": true,
+    "changedPixels": 0
+  },
+  {
+    "route": "internet-vancouver",
+    "width": 390,
+    "equalDimensions": true,
+    "rawPixelsEqual": true,
+    "changedPixels": 0
+  },
+  {
+    "route": "internet-vancouver",
+    "width": 1440,
+    "equalDimensions": true,
+    "rawPixelsEqual": true,
+    "changedPixels": 0
+  },
+  {
+    "route": "internet-ontario",
+    "width": 390,
+    "equalDimensions": true,
+    "rawPixelsEqual": true,
+    "changedPixels": 0
+  },
+  {
+    "route": "internet-ontario",
+    "width": 1440,
+    "equalDimensions": true,
+    "rawPixelsEqual": true,
+    "changedPixels": 0
+  }
+]

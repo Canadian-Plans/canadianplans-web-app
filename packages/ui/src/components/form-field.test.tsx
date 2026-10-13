@@ -5,6 +5,27 @@ import { FormField } from './form-field';
 import { Input } from './input';
 
 describe('FormField', () => {
+  it('supports an error icon before the hint without changing control associations', () => {
+    render(
+      <FormField
+        id="preview-email"
+        label="Preview email"
+        hint="Hint"
+        error="Fix email"
+        errorBeforeHint
+        errorIcon={<span aria-hidden="true">!</span>}
+      >
+        <Input />
+      </FormField>,
+    );
+    const error = screen.getByRole('alert');
+    const hint = document.getElementById('preview-email-hint');
+    expect(error.nextElementSibling).toBe(hint);
+    expect(error.querySelector('[aria-hidden="true"]')?.textContent).toBe('!');
+    expect(screen.getByLabelText('Preview email').getAttribute('aria-describedby')).toBe(
+      'preview-email-hint preview-email-error',
+    );
+  });
   it('associates the label, hint and error with the child control', () => {
     render(
       <FormField

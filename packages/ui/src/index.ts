@@ -59,6 +59,8 @@ export {
 export { Separator } from './components/separator';
 export {
   Sheet,
+  SheetClose,
+  SheetTrigger,
   SheetPortal,
   SheetOverlay,
   SheetContent,

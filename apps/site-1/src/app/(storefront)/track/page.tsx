@@ -1,4 +1,10 @@
 import { TrackClient } from './track-client';
+import { metadataCopy } from '@content/metadata';
+import { pageMetadata } from '@/lib/page-metadata';
+export const metadata = pageMetadata('/track', {
+  title: metadataCopy.trackTitle,
+  robots: { index: false, follow: false },
+});
 
 export default function Page() {
   return (
