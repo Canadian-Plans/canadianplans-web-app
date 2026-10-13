@@ -254,8 +254,8 @@ export function RogersPageContent() {
             </div>
           </div>
           <div className="cp-catrog-brand-links">
-            <a href="/mobile-plans/fido">{c.comparison.brandLinks[0]}</a>
-            <a href="/mobile-plans/chatr">{c.comparison.brandLinks[1]}</a>
+            <a href="/mobile-plans#mobile-plans">{c.comparison.brandLinks[0]}</a>
+            <a href="/mobile-plans#mobile-plans">{c.comparison.brandLinks[1]}</a>
           </div>
         </div>
       </section>

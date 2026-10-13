@@ -264,8 +264,8 @@ export const categoryRogers = {
     {
       title: 'Other brands',
       links: [
-        ['Fido plans →', '/mobile-plans/fido'],
-        ['Chatr plans →', '/mobile-plans/chatr'],
+        ['Fido plans →', '/mobile-plans#mobile-plans'],
+        ['Chatr plans →', '/mobile-plans#mobile-plans'],
       ],
     },
     {
@@ -273,7 +273,7 @@ export const categoryRogers = {
       desktopLink: ['Seniors →', '/mobile-plans'],
       links: [
         ['Unlimited data →', '/mobile-plans'],
-        ['No credit check →', '/mobile-plans/chatr'],
+        ['No credit check →', '/mobile-plans#mobile-plans'],
         ['Students →', '/pre-arrival-sim/students'],
       ],
     },
@@ -281,7 +281,7 @@ export const categoryRogers = {
       title: 'Compare',
       links: [
         ['Rogers vs Fido →', '/compare/rogers-vs-fido'],
-        ['Fido vs Chatr →', '/compare/fido-vs-chatr'],
+        ['Fido vs Chatr →', '/mobile-plans#brand-comparison'],
         ['Prepaid vs postpaid →', '/mobile-plans'],
       ],
     },
