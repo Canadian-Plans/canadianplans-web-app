@@ -2,6 +2,7 @@ import { chromium } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { format } from 'prettier';
 import { installAuditContext } from './audit-context.mjs';
 
 const origin = process.env.AUDIT_ORIGIN ?? 'http://127.0.0.1:3127';
@@ -205,7 +206,10 @@ try {
   await browser.close();
 }
 
-await writeFile(path.join(evidence, 'verification.json'), `${JSON.stringify(report, null, 2)}\n`);
+await writeFile(
+  path.join(evidence, 'verification.json'),
+  await format(JSON.stringify(report), { parser: 'json' }),
+);
 process.stdout.write(
   `${JSON.stringify({ widths: report.widths, interactions: report.interactions, axe: { 390: report.axe390, 1440: report.axe1440 }, errors: report.errors }, null, 2)}\n`,
 );
