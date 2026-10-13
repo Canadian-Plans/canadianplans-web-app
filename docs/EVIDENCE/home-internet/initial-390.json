@@ -1,0 +1,195 @@
+{
+  "geometry": [
+    {
+      "section": "cp-internet-hero",
+      "height": 1020.890625
+    },
+    {
+      "section": "cp-internet-quick",
+      "height": 405.6875
+    },
+    {
+      "section": "speed-finder",
+      "height": 1104.875
+    },
+    {
+      "section": "internet-plans",
+      "height": 1860.46875
+    },
+    {
+      "section": "compare",
+      "height": 857.921875
+    },
+    {
+      "section": "cp-internet-tv cp-internet-section",
+      "height": 597.84375
+    },
+    {
+      "section": "installation",
+      "height": 1446
+    },
+    {
+      "section": "coverage",
+      "height": 1177.3125
+    },
+    {
+      "section": "cp-internet-reviews cp-internet-section",
+      "height": 1151.625
+    },
+    {
+      "section": "faq",
+      "height": 1088.125
+    },
+    {
+      "section": "cp-internet-final cp-internet-section",
+      "height": 558.375
+    }
+  ],
+  "initialAudit": [],
+  "initialAssets": [
+    {
+      "src": "/design/home-internet/212-51-imgPhoneIcon.svg",
+      "width": 16,
+      "height": 16,
+      "expectedWidth": 16,
+      "expectedHeight": 16,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgMark.svg",
+      "width": 36,
+      "height": 36,
+      "expectedWidth": 36,
+      "expectedHeight": 36,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/212-51-imgIcon.svg",
+      "width": 22,
+      "height": 22,
+      "expectedWidth": 22,
+      "expectedHeight": 22,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/212-51-imgIcon1.svg",
+      "width": 24,
+      "height": 24,
+      "expectedWidth": 24,
+      "expectedHeight": 24,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgIcon.svg",
+      "width": 32,
+      "height": 32,
+      "expectedWidth": 32,
+      "expectedHeight": 32,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgIcon.svg",
+      "width": 32,
+      "height": 32,
+      "expectedWidth": 32,
+      "expectedHeight": 32,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgIconRouter.svg",
+      "width": 28,
+      "height": 28,
+      "expectedWidth": 28,
+      "expectedHeight": 28,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgIconWifi.svg",
+      "width": 28,
+      "height": 28,
+      "expectedWidth": 28,
+      "expectedHeight": 28,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgIconWrench.svg",
+      "width": 28,
+      "height": 28,
+      "expectedWidth": 28,
+      "expectedHeight": 28,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgIcon1.svg",
+      "width": 32,
+      "height": 32,
+      "expectedWidth": 32,
+      "expectedHeight": 32,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgEllipse1.svg",
+      "width": 16,
+      "height": 16,
+      "expectedWidth": 16,
+      "expectedHeight": 16,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgEllipse1.svg",
+      "width": 16,
+      "height": 16,
+      "expectedWidth": 16,
+      "expectedHeight": 16,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgEllipse1.svg",
+      "width": 16,
+      "height": 16,
+      "expectedWidth": 16,
+      "expectedHeight": 16,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgEllipse2.svg",
+      "width": 16,
+      "height": 16,
+      "expectedWidth": 16,
+      "expectedHeight": 16,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgEllipse3.svg",
+      "width": 40,
+      "height": 40,
+      "expectedWidth": 40,
+      "expectedHeight": 40,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgEllipse4.svg",
+      "width": 40,
+      "height": 40,
+      "expectedWidth": 40,
+      "expectedHeight": 40,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgEllipse5.svg",
+      "width": 40,
+      "height": 40,
+      "expectedWidth": 40,
+      "expectedHeight": 40,
+      "loaded": true
+    },
+    {
+      "src": "/design/home-internet/106-34-imgFrame.svg",
+      "width": 36,
+      "height": 36,
+      "expectedWidth": 36,
+      "expectedHeight": 36,
+      "loaded": true
+    }
+  ]
+}

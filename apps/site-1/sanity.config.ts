@@ -3,16 +3,16 @@ import { schemaTypes } from '@canadian-plans/contracts/cms';
 import { defineConfig } from 'sanity';
 import { presentationTool } from 'sanity/presentation';
 import { structureTool } from 'sanity/structure';
+import { siteConfig } from './src/site.config';
+import { studioProjectId as projectId, studioDataset as dataset } from './src/lib/studio-settings';
+export { studioConfigured } from './src/lib/studio-settings';
 
 // Browser-safe CMS identifiers only. No project is provisioned by T3.
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID?.trim();
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET?.trim();
-export const studioConfigured = Boolean(projectId && dataset);
 export default defineConfig(
   projectId && dataset
     ? {
         name: 'site-1',
-        title: 'Site 1 Studio',
+        title: `${siteConfig.name} Studio`,
         basePath: '/studio',
         projectId,
         dataset,

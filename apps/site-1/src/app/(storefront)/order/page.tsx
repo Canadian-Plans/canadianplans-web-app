@@ -1,3 +1,4 @@
+import { pageMetadata } from '@/lib/page-metadata';
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { Card, CardDescription, CardHeader, CardTitle } from '@canadian-plans/ui';
@@ -9,11 +10,11 @@ import { captureRawAttribution, type SearchParams } from '@/lib/attribution';
 import { readOrderDraft } from './draft';
 import { OrderForm } from './order-form';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata('/order', {
   title: 'Order a plan',
-  // REQ 10: preview deployments are never indexed.
-  robots: process.env.VERCEL_ENV === 'preview' ? { index: false, follow: false } : undefined,
-};
+  robots: { index: false, follow: false },
+  // Preview/non-production noindex is applied centrally in the root layout (REQ 10).
+});
 
 /**
  * Step 1 (server side). The plan list comes from the backend's published-offer

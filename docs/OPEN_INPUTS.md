@@ -8,7 +8,6 @@ Business questions that are not yet answered. **AI agents: never invent an answe
 
 | # | Input | Needed by | Placeholder in use | Answer |
 |---|---|---|---|---|
-| 1 | Website 1 name | T3 | `SITE_1_NAME_PLACEHOLDER` in `site.config.ts` | |
 | 2 | Website 1 domain | T0 DNS / T18 sender / T28 launch | non-production preview URL | |
 | 3 | Real Rogers plan list — names, data allowance, contract terms | T9 | 3 TEST offers in Sanity test dataset | |
 | 4 | Real prices — recurring charge, one-time fees, amount payable today, per plan | T9 / before live publishing | Illustrative TEST prices | |
@@ -57,6 +56,8 @@ Move rows here once decided, with the date. Don't delete them; a decided input t
 
 | # | Input | Answer | Decided |
 |---|---|---|---|
+| 1 | Website 1 name | Canadian Plans; public code configuration and Studio title updated. Technical identifier remains `site-1`; domain and legal billing identity remain separate inputs | 12 Oct 2026 |
+| — | Website 1 visual design and service sequence | Owner-supplied Canadian Plans Figma reference; mobility first, internet and TV later. Implementation follows DESIGN_TO_CODE_PLAN.md and existing platform invariants | 12 Oct 2026 |
 | — | Region for data and functions | Canada preferred; superseded 14 Sep 2026 — Supabase project provisioned in us-west-2 is acceptable | 9 Sep 2026 |
 | — | Analytics tool | Umami | 9 Sep 2026 |
 | — | Malware scanning on uploads | Not at launch — deliberate; signature verification only | 9 Sep 2026 |

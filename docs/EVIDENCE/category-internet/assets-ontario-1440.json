@@ -1,0 +1,194 @@
+[
+  {
+    "src": "/design/home-internet/106-34-imgMark.svg",
+    "width": 36,
+    "height": 36,
+    "expectedWidth": 36,
+    "expectedHeight": 36,
+    "loaded": true
+  },
+  {
+    "src": "/design/legal/0-imgSearchIcon.svg",
+    "width": 18,
+    "height": 18,
+    "expectedWidth": 18,
+    "expectedHeight": 18,
+    "loaded": true
+  },
+  {
+    "src": "/design/category-internet/ontario-desktop-imgEllipse1.svg",
+    "width": 420,
+    "height": 300,
+    "expectedWidth": 420,
+    "expectedHeight": 300,
+    "loaded": true
+  },
+  {
+    "src": "/_next/image?url=%2Fdesign%2Fcategory-internet%2Fontario-desktop-imgCoverageFill.png&w=750&q=75",
+    "width": 340,
+    "height": 300,
+    "expectedWidth": 340,
+    "expectedHeight": 300,
+    "loaded": true
+  },
+  {
+    "src": "/_next/image?url=%2Fdesign%2Fcategory-internet%2Fontario-desktop-imgCoverageRing.png&w=750&q=75",
+    "width": 340,
+    "height": 300,
+    "expectedWidth": 340,
+    "expectedHeight": 300,
+    "loaded": true
+  },
+  {
+    "src": "/design/category-internet/ontario-desktop-imgEllipse2.svg",
+    "width": 22,
+    "height": 22,
+    "expectedWidth": 22,
+    "expectedHeight": 22,
+    "loaded": true
+  },
+  {
+    "src": "/design/category-internet/ontario-desktop-imgEllipse2.svg",
+    "width": 22,
+    "height": 22,
+    "expectedWidth": 22,
+    "expectedHeight": 22,
+    "loaded": true
+  },
+  {
+    "src": "/design/category-internet/ontario-desktop-imgEllipse2.svg",
+    "width": 22,
+    "height": 22,
+    "expectedWidth": 22,
+    "expectedHeight": 22,
+    "loaded": true
+  },
+  {
+    "src": "/design/category-internet/ontario-desktop-imgEllipse2.svg",
+    "width": 22,
+    "height": 22,
+    "expectedWidth": 22,
+    "expectedHeight": 22,
+    "loaded": true
+  },
+  {
+    "src": "/design/category-internet/ontario-desktop-imgEllipse3.svg",
+    "width": 12,
+    "height": 12,
+    "expectedWidth": 12,
+    "expectedHeight": 12,
+    "loaded": true
+  },
+  {
+    "src": "/design/category-internet/ontario-desktop-imgEllipse4.svg",
+    "width": 36,
+    "height": 36,
+    "expectedWidth": 36,
+    "expectedHeight": 36,
+    "loaded": true
+  },
+  {
+    "src": "/design/category-internet/ontario-desktop-imgEllipse5.svg",
+    "width": 36,
+    "height": 36,
+    "expectedWidth": 36,
+    "expectedHeight": 36,
+    "loaded": true
+  },
+  {
+    "src": "/design/components/312-2-imgIcon.svg",
+    "width": 32,
+    "height": 32,
+    "expectedWidth": 32,
+    "expectedHeight": 32,
+    "loaded": true
+  },
+  {
+    "src": "/design/components/312-2-imgIcon.svg",
+    "width": 32,
+    "height": 32,
+    "expectedWidth": 32,
+    "expectedHeight": 32,
+    "loaded": true
+  },
+  {
+    "src": "/design/components/312-2-imgIcon.svg",
+    "width": 32,
+    "height": 32,
+    "expectedWidth": 32,
+    "expectedHeight": 32,
+    "loaded": true
+  },
+  {
+    "src": "/design/components/312-2-imgIcon.svg",
+    "width": 32,
+    "height": 32,
+    "expectedWidth": 32,
+    "expectedHeight": 32,
+    "loaded": true
+  },
+  {
+    "src": "/design/category-internet/ontario-mobile-imgFrame1.svg",
+    "width": 16,
+    "height": 16,
+    "expectedWidth": 16,
+    "expectedHeight": 16,
+    "loaded": true
+  },
+  {
+    "src": "/design/category-internet/ontario-mobile-imgFrame1.svg",
+    "width": 16,
+    "height": 16,
+    "expectedWidth": 16,
+    "expectedHeight": 16,
+    "loaded": true
+  },
+  {
+    "src": "/design/category-internet/ontario-mobile-imgFrame1.svg",
+    "width": 16,
+    "height": 16,
+    "expectedWidth": 16,
+    "expectedHeight": 16,
+    "loaded": true
+  },
+  {
+    "src": "/design/components/312-2-imgIcon.svg",
+    "width": 32,
+    "height": 32,
+    "expectedWidth": 32,
+    "expectedHeight": 32,
+    "loaded": true
+  },
+  {
+    "src": "/design/category-internet/ontario-desktop-imgEllipse6.svg",
+    "width": 40,
+    "height": 40,
+    "expectedWidth": 40,
+    "expectedHeight": 40,
+    "loaded": true
+  },
+  {
+    "src": "/design/category-internet/ontario-desktop-imgEllipse7.svg",
+    "width": 40,
+    "height": 40,
+    "expectedWidth": 40,
+    "expectedHeight": 40,
+    "loaded": true
+  },
+  {
+    "src": "/design/category-internet/ontario-desktop-imgEllipse8.svg",
+    "width": 40,
+    "height": 40,
+    "expectedWidth": 40,
+    "expectedHeight": 40,
+    "loaded": true
+  },
+  {
+    "src": "/design/home-internet/106-34-imgFrame.svg",
+    "width": 36,
+    "height": 36,
+    "expectedWidth": 36,
+    "expectedHeight": 36,
+    "loaded": true
+  }
+]

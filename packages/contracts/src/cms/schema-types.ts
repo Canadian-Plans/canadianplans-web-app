@@ -24,6 +24,25 @@ export const PRODUCT_TYPE_VALUES = ['sim'] as const;
 export type ProductType = (typeof PRODUCT_TYPE_VALUES)[number];
 const PRODUCT_TYPE_VALUES_LIST: readonly string[] = PRODUCT_TYPE_VALUES;
 
+/**
+ * Service lines an offer can belong to. Site 1 launches with mobility only;
+ * internet and TV are defined here so they slot in later without a schema
+ * rebuild, but no live offer uses them until that work is done.
+ */
+export const SERVICE_VALUES = ['mobility', 'internet', 'tv'] as const;
+export type ServiceValue = (typeof SERVICE_VALUES)[number];
+const SERVICE_VALUES_LIST: readonly string[] = SERVICE_VALUES;
+const SERVICE_TITLES: Record<ServiceValue, string> = {
+  mobility: 'Mobility',
+  internet: 'Internet',
+  tv: 'TV / Cable',
+};
+
+/** Mobility audiences (REQ 04). A plan may serve one or both. */
+export const AUDIENCE_VALUES = ['newcomer', 'canadian'] as const;
+export type AudienceValue = (typeof AUDIENCE_VALUES)[number];
+const AUDIENCE_VALUES_LIST: readonly string[] = AUDIENCE_VALUES;
+
 /** Section object types: page.sections' discriminated union member types. */
 const sectionHero = defineType({
   name: 'sectionHero',
@@ -93,11 +112,51 @@ const sectionPlanGrid = defineType({
     }),
     defineField({ name: 'heading', title: 'Heading', type: 'string' }),
     defineField({
+      name: 'mode',
+      title: 'How to choose plans',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Hand-pick specific plans', value: 'pick' },
+          { title: 'Automatically show plans by area', value: 'auto' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'pick',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: 'offers',
       title: 'Offers',
+      description: 'The exact plans to show, in order.',
       type: 'array',
+      hidden: ({ parent }) => readStringField(parent, 'mode') !== 'pick',
       of: [defineArrayMember({ type: 'reference', to: [{ type: 'offer' }] })],
-      validation: (Rule) => Rule.required().min(1).unique(),
+      validation: (Rule) =>
+        Rule.unique().custom((value, context) => {
+          if (readStringField(context.parent, 'mode') !== 'pick') return true;
+          return Array.isArray(value) && value.length > 0 ? true : 'Pick at least one plan';
+        }),
+    }),
+    defineField({
+      name: 'filterService',
+      title: 'Service',
+      type: 'string',
+      hidden: ({ parent }) => readStringField(parent, 'mode') !== 'auto',
+      options: {
+        list: SERVICE_VALUES.map((value) => ({ title: SERVICE_TITLES[value], value })),
+        layout: 'radio',
+      },
+      initialValue: 'mobility',
+    }),
+    defineField({
+      name: 'filterAudiences',
+      title: 'Audiences',
+      description: 'Show plans matching any of these audiences. Leave empty for all.',
+      type: 'array',
+      hidden: ({ parent }) => readStringField(parent, 'mode') !== 'auto',
+      of: [defineArrayMember({ type: 'string', options: { list: [...AUDIENCE_VALUES] } })],
+      options: { layout: 'tags' },
     }),
   ],
   preview: { select: { title: 'heading' } },
@@ -266,6 +325,251 @@ const sectionImageText = defineType({
   preview: { select: { title: 'heading' } },
 });
 
+/**
+ * Reads a string field off an unknown Studio `parent`/document value without a
+ * type assertion (the ESLint config bans `as` casts and `any`). Used by the
+ * conditional `hidden`/`validation` callbacks below.
+ */
+function readStringField(source: unknown, field: string): string | undefined {
+  if (typeof source !== 'object' || source === null) return undefined;
+  const value: unknown = Reflect.get(source, field);
+  return typeof value === 'string' ? value : undefined;
+}
+
+/**
+ * Reusable link picker (REQ 07): points at one of the editor's own pages or an
+ * external web address. Used everywhere a link is chosen — navigation, section
+ * buttons, footer — so "add a page, link it anywhere" needs no code change.
+ */
+const linkObject = defineType({
+  name: 'link',
+  title: 'Link',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'label',
+      title: 'Label',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'kind',
+      title: 'Link type',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'One of my pages', value: 'internal' },
+          { title: 'External web address', value: 'external' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'internal',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'internal',
+      title: 'Page',
+      type: 'reference',
+      to: [{ type: 'page' }, { type: 'countryPage' }],
+      hidden: ({ parent }) => readStringField(parent, 'kind') !== 'internal',
+      validation: (Rule) =>
+        Rule.custom((value, context) =>
+          readStringField(context.parent, 'kind') === 'internal' && !value ? 'Select a page' : true,
+        ),
+    }),
+    defineField({
+      name: 'external',
+      title: 'Web address',
+      type: 'url',
+      hidden: ({ parent }) => readStringField(parent, 'kind') !== 'external',
+      validation: (Rule) =>
+        Rule.custom((value, context) =>
+          readStringField(context.parent, 'kind') === 'external' && !value
+            ? 'Enter a web address'
+            : true,
+        ),
+    }),
+  ],
+  preview: { select: { title: 'label', subtitle: 'kind' } },
+});
+
+/** Section object: numbered "how it works" steps. */
+const sectionSteps = defineType({
+  name: 'sectionSteps',
+  title: 'Steps / how it works',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'schemaVersion',
+      title: 'Schema version',
+      type: 'number',
+      initialValue: 1,
+      validation: (Rule) => Rule.required().integer().min(1),
+    }),
+    defineField({ name: 'heading', title: 'Heading', type: 'string' }),
+    defineField({
+      name: 'steps',
+      title: 'Steps',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'stepItem',
+          fields: [
+            defineField({
+              name: 'title',
+              title: 'Title',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({ name: 'description', title: 'Description', type: 'text' }),
+          ],
+          preview: { select: { title: 'title' } },
+        }),
+      ],
+      validation: (Rule) => Rule.required().min(1),
+    }),
+  ],
+  preview: { select: { title: 'heading' } },
+});
+
+/** Section object: grid of icon + short-blurb features. */
+const sectionFeatures = defineType({
+  name: 'sectionFeatures',
+  title: 'Feature list',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'schemaVersion',
+      title: 'Schema version',
+      type: 'number',
+      initialValue: 1,
+      validation: (Rule) => Rule.required().integer().min(1),
+    }),
+    defineField({ name: 'heading', title: 'Heading', type: 'string' }),
+    defineField({
+      name: 'features',
+      title: 'Features',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'featureItem',
+          fields: [
+            defineField({
+              name: 'title',
+              title: 'Title',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({ name: 'description', title: 'Description', type: 'text' }),
+            defineField({
+              name: 'icon',
+              title: 'Icon name',
+              description: 'Optional icon identifier from the site icon set.',
+              type: 'string',
+            }),
+          ],
+          preview: { select: { title: 'title' } },
+        }),
+      ],
+      validation: (Rule) => Rule.required().min(1),
+    }),
+  ],
+  preview: { select: { title: 'heading' } },
+});
+
+/** Section object: a row of trust/partner logos. */
+const sectionLogos = defineType({
+  name: 'sectionLogos',
+  title: 'Logos / trust bar',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'schemaVersion',
+      title: 'Schema version',
+      type: 'number',
+      initialValue: 1,
+      validation: (Rule) => Rule.required().integer().min(1),
+    }),
+    defineField({ name: 'heading', title: 'Heading', type: 'string' }),
+    defineField({
+      name: 'logos',
+      title: 'Logos',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'logoItem',
+          fields: [
+            defineField({
+              name: 'image',
+              title: 'Logo image',
+              type: 'image',
+              options: { hotspot: true },
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'alt',
+              title: 'Alt text',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+          ],
+          preview: { select: { title: 'alt', media: 'image' } },
+        }),
+      ],
+      validation: (Rule) => Rule.required().min(1),
+    }),
+  ],
+  preview: { select: { title: 'heading' } },
+});
+
+/** Section object: highlight numbers with labels. */
+const sectionStats = defineType({
+  name: 'sectionStats',
+  title: 'Stats / highlights',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'schemaVersion',
+      title: 'Schema version',
+      type: 'number',
+      initialValue: 1,
+      validation: (Rule) => Rule.required().integer().min(1),
+    }),
+    defineField({ name: 'heading', title: 'Heading', type: 'string' }),
+    defineField({
+      name: 'stats',
+      title: 'Stats',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'statItem',
+          fields: [
+            defineField({
+              name: 'value',
+              title: 'Value',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'label',
+              title: 'Label',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+          ],
+          preview: { select: { title: 'value', subtitle: 'label' } },
+        }),
+      ],
+      validation: (Rule) => Rule.required().min(1),
+    }),
+  ],
+  preview: { select: { title: 'heading' } },
+});
+
 export const pageSectionTypes = [
   sectionHero,
   sectionRichText,
@@ -274,7 +578,14 @@ export const pageSectionTypes = [
   sectionTestimonials,
   sectionCta,
   sectionImageText,
+  sectionSteps,
+  sectionFeatures,
+  sectionLogos,
+  sectionStats,
 ] satisfies SchemaTypeDefinition[];
+
+/** Shared object types (not documents, not page sections). */
+export const objectTypes = [linkObject] satisfies SchemaTypeDefinition[];
 
 /** Shared page-sections array field, reused by `page` and `countryPage`. */
 function sectionsField() {
@@ -315,6 +626,46 @@ const siteSettings = defineType({
       title: 'Site name',
       type: 'string',
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'brand',
+      title: 'Brand',
+      description:
+        'Light branding applied across the site. The overall design system lives in code.',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'logo',
+          title: 'Logo',
+          type: 'image',
+          options: { hotspot: true },
+        }),
+        defineField({
+          name: 'logoAlt',
+          title: 'Logo alt text',
+          type: 'string',
+        }),
+        defineField({
+          name: 'primaryColor',
+          title: 'Primary colour',
+          description: 'Hex value, e.g. #C8102E.',
+          type: 'string',
+          validation: (Rule) =>
+            Rule.regex(/^#([0-9a-fA-F]{6})$/, { name: 'hex colour' }).error(
+              'Use a 6-digit hex colour like #C8102E',
+            ),
+        }),
+        defineField({
+          name: 'accentColor',
+          title: 'Accent colour',
+          description: 'Optional hex value.',
+          type: 'string',
+          validation: (Rule) =>
+            Rule.regex(/^#([0-9a-fA-F]{6})$/, { name: 'hex colour' }).error(
+              'Use a 6-digit hex colour like #1D4ED8',
+            ),
+        }),
+      ],
     }),
     defineField({
       name: 'defaultSeo',
@@ -412,38 +763,68 @@ const navigation = defineType({
               validation: (Rule) => Rule.required(),
             }),
             defineField({
-              name: 'href',
-              title: 'Link',
+              name: 'style',
+              title: 'Menu style',
               type: 'string',
+              options: {
+                list: [
+                  { title: 'Simple link', value: 'simple' },
+                  { title: 'Mega menu', value: 'mega' },
+                ],
+                layout: 'radio',
+              },
+              initialValue: 'simple',
               validation: (Rule) => Rule.required(),
             }),
             defineField({
-              name: 'children',
-              title: 'Submenu items',
+              name: 'link',
+              title: 'Link',
+              description: 'Where a simple menu item points.',
+              type: 'link',
+              hidden: ({ parent }) => readStringField(parent, 'style') !== 'simple',
+            }),
+            defineField({
+              name: 'columns',
+              title: 'Mega menu columns',
               type: 'array',
+              hidden: ({ parent }) => readStringField(parent, 'style') !== 'mega',
               of: [
                 defineArrayMember({
                   type: 'object',
-                  name: 'navigationChildItem',
+                  name: 'megaMenuColumn',
                   fields: [
+                    defineField({ name: 'heading', title: 'Column heading', type: 'string' }),
                     defineField({
-                      name: 'label',
-                      title: 'Label',
-                      type: 'string',
-                      validation: (Rule) => Rule.required(),
-                    }),
-                    defineField({
-                      name: 'href',
-                      title: 'Link',
-                      type: 'string',
-                      validation: (Rule) => Rule.required(),
+                      name: 'links',
+                      title: 'Links',
+                      type: 'array',
+                      of: [defineArrayMember({ type: 'link' })],
+                      validation: (Rule) => Rule.required().min(1),
                     }),
                   ],
+                  preview: { select: { title: 'heading' } },
                 }),
               ],
             }),
+            defineField({
+              name: 'promo',
+              title: 'Mega menu promo box',
+              type: 'object',
+              hidden: ({ parent }) => readStringField(parent, 'style') !== 'mega',
+              fields: [
+                defineField({
+                  name: 'image',
+                  title: 'Image',
+                  type: 'image',
+                  options: { hotspot: true },
+                }),
+                defineField({ name: 'heading', title: 'Heading', type: 'string' }),
+                defineField({ name: 'text', title: 'Text', type: 'text' }),
+                defineField({ name: 'button', title: 'Button', type: 'link' }),
+              ],
+            }),
           ],
-          preview: { select: { title: 'label', subtitle: 'href' } },
+          preview: { select: { title: 'label', subtitle: 'style' } },
         }),
       ],
       validation: (Rule) => Rule.required().min(1),
@@ -640,6 +1021,39 @@ const offer = defineType({
       title: 'Offer name',
       type: 'string',
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'service',
+      title: 'Service',
+      description: 'Which service line this plan belongs to.',
+      type: 'string',
+      options: {
+        list: SERVICE_VALUES.map((value) => ({ title: SERVICE_TITLES[value], value })),
+        layout: 'radio',
+      },
+      initialValue: 'mobility',
+      validation: (Rule) =>
+        Rule.required().custom((value) =>
+          typeof value === 'string' && SERVICE_VALUES_LIST.includes(value)
+            ? true
+            : `Must be one of: ${SERVICE_VALUES.join(', ')}`,
+        ),
+    }),
+    defineField({
+      name: 'audiences',
+      title: 'Audiences',
+      description: 'Who this plan is for (used by mobility). Leave empty if not applicable.',
+      type: 'array',
+      of: [defineArrayMember({ type: 'string', options: { list: [...AUDIENCE_VALUES] } })],
+      options: { layout: 'tags' },
+      validation: (Rule) =>
+        Rule.unique().custom((values) => {
+          if (!Array.isArray(values)) return true;
+          const invalid = values.filter(
+            (value) => typeof value !== 'string' || !AUDIENCE_VALUES_LIST.includes(value),
+          );
+          return invalid.length === 0 ? true : `Unknown audience(s): ${invalid.join(', ')}`;
+        }),
     }),
     defineField({
       name: 'currency',
@@ -874,7 +1288,11 @@ export const documentTypes = [
 ] satisfies SchemaTypeDefinition[];
 
 /** Full schema type list for `sanity.config.ts`'s `schema.types`. */
-export const schemaTypes = [...documentTypes, ...pageSectionTypes] satisfies SchemaTypeDefinition[];
+export const schemaTypes = [
+  ...documentTypes,
+  ...pageSectionTypes,
+  ...objectTypes,
+] satisfies SchemaTypeDefinition[];
 
 /** Singleton document type names — Studio structure should offer exactly one instance. */
 export const SINGLETON_DOCUMENT_TYPES = ['siteSettings', 'navigation'] as const;

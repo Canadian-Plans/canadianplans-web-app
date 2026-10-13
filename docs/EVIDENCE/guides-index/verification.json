@@ -1,0 +1,618 @@
+[
+  {
+    "width": 390,
+    "geometry": [
+      {
+        "class": "cp-guides-hero",
+        "y": 164,
+        "width": 390,
+        "height": 584
+      },
+      {
+        "class": "cp-guides-results",
+        "y": 748,
+        "width": 390,
+        "height": 1687
+      },
+      {
+        "class": "cp-guides-featured",
+        "y": 788,
+        "width": 350,
+        "height": 524
+      },
+      {
+        "class": "cp-guides-grid",
+        "y": 1336,
+        "width": 350,
+        "height": 979
+      },
+      {
+        "class": "cp-guides-questions",
+        "y": 2435,
+        "width": 390,
+        "height": 736
+      },
+      {
+        "class": "cp-guides-final",
+        "y": 3171,
+        "width": 390,
+        "height": 570
+      },
+      {
+        "class": "cp-container cp-guides-final-card",
+        "y": 3219,
+        "width": 350,
+        "height": 474
+      },
+      {
+        "class": "cp-footer",
+        "y": 3741,
+        "width": 390,
+        "height": 946.96875
+      }
+    ],
+    "details": [
+      {
+        "class": "cp-guides-eyebrow",
+        "text": "Newcomer guides",
+        "height": 16,
+        "width": 340
+      },
+      {
+        "class": "",
+        "text": "Plain answers for your move to",
+        "height": 138,
+        "width": 340
+      },
+      {
+        "class": "cp-guides-intro",
+        "text": "Phones, internet and your firs",
+        "height": 87,
+        "width": 340
+      },
+      {
+        "class": "cp-guides-search",
+        "text": "Search",
+        "height": 63,
+        "width": 350
+      },
+      {
+        "class": "cp-guides-topics",
+        "text": "All guidesMoving to CanadaPhon",
+        "height": 152,
+        "width": 350
+      },
+      {
+        "class": "cp-image-slot cp-guides-featured-image",
+        "text": "ImageNewcomer unpacking a suit",
+        "height": 200,
+        "width": 350
+      },
+      {
+        "class": "cp-guides-card-copy",
+        "text": "Featured · Moving to CanadaYou",
+        "height": 308,
+        "width": 350
+      },
+      {
+        "class": "cp-guides-card",
+        "text": "ImageStudent checking her phon",
+        "height": 149,
+        "width": 350
+      },
+      {
+        "class": "cp-guides-card",
+        "text": "ImagePhysical SIM card next to",
+        "height": 149,
+        "width": 350
+      },
+      {
+        "class": "cp-guides-card",
+        "text": "ImageWi-Fi router on a shelf i",
+        "height": 149,
+        "width": 350
+      },
+      {
+        "class": "cp-guides-card",
+        "text": "ImageNewcomer choosing a plan ",
+        "height": 149,
+        "width": 350
+      },
+      {
+        "class": "cp-guides-card",
+        "text": "ImageRogers, Fido and Chatr SI",
+        "height": 149,
+        "width": 350
+      },
+      {
+        "class": "cp-guides-card",
+        "text": "ImageVideo call with family ba",
+        "height": 174,
+        "width": 350
+      },
+      {
+        "class": "",
+        "text": "Can I get a Canadian number be",
+        "height": 90,
+        "width": 350
+      },
+      {
+        "class": "",
+        "text": "Which carrier is cheapest in C",
+        "height": 90,
+        "width": 350
+      },
+      {
+        "class": "",
+        "text": "Do I need a SIN to get a phone",
+        "height": 90,
+        "width": 350
+      },
+      {
+        "class": "",
+        "text": "How do I build credit as a new",
+        "height": 90,
+        "width": 350
+      },
+      {
+        "class": "",
+        "text": "How long does internet install",
+        "height": 90,
+        "width": 350
+      },
+      {
+        "class": "",
+        "text": "Can I keep my number if I chan",
+        "height": 90,
+        "width": 350
+      }
+    ],
+    "violations": [],
+    "assets": [
+      {
+        "src": "/design/guides-index/1-imgPhoneIcon.svg",
+        "loaded": true,
+        "width": 16,
+        "height": 16,
+        "declaredWidth": 16,
+        "declaredHeight": 16
+      },
+      {
+        "src": "/design/components/60-13-imgMark.svg",
+        "loaded": true,
+        "width": 36,
+        "height": 36,
+        "declaredWidth": 36,
+        "declaredHeight": 36
+      },
+      {
+        "src": "/design/components/364-2163-imgIcon.svg",
+        "loaded": true,
+        "width": 22,
+        "height": 22,
+        "declaredWidth": 22,
+        "declaredHeight": 22
+      },
+      {
+        "src": "/design/components/364-2163-imgIcon1.svg",
+        "loaded": true,
+        "width": 24,
+        "height": 24,
+        "declaredWidth": 24,
+        "declaredHeight": 24
+      },
+      {
+        "src": "/design/components/312-9-imgIcon.svg",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "loaded": true,
+        "width": 36,
+        "height": 36,
+        "declaredWidth": 36,
+        "declaredHeight": 36
+      }
+    ],
+    "errors": [],
+    "imageSlots": [
+      {
+        "width": 350,
+        "height": 200,
+        "captionSize": "13px",
+        "labelSize": "12px"
+      },
+      {
+        "width": 104,
+        "height": 104,
+        "captionSize": "12px",
+        "labelSize": "12px"
+      },
+      {
+        "width": 104,
+        "height": 104,
+        "captionSize": "12px",
+        "labelSize": "12px"
+      },
+      {
+        "width": 104,
+        "height": 104,
+        "captionSize": "12px",
+        "labelSize": "12px"
+      },
+      {
+        "width": 104,
+        "height": 104,
+        "captionSize": "12px",
+        "labelSize": "12px"
+      },
+      {
+        "width": 104,
+        "height": 104,
+        "captionSize": "12px",
+        "labelSize": "12px"
+      },
+      {
+        "width": 104,
+        "height": 104,
+        "captionSize": "12px",
+        "labelSize": "12px"
+      }
+    ],
+    "overflow": [
+      {
+        "viewport": 320,
+        "document": 320
+      },
+      {
+        "viewport": 390,
+        "document": 390
+      },
+      {
+        "viewport": 768,
+        "document": 768
+      },
+      {
+        "viewport": 1024,
+        "document": 1024
+      },
+      {
+        "viewport": 1280,
+        "document": 1280
+      },
+      {
+        "viewport": 1440,
+        "document": 1440
+      }
+    ],
+    "interactions": "show more and focus, combined topics/search, empty/clear, keyboard filters/skip, article navigation, global finder and advisor CTA passed"
+  },
+  {
+    "width": 1440,
+    "geometry": [
+      {
+        "class": "cp-guides-hero",
+        "y": 160,
+        "width": 1440,
+        "height": 543
+      },
+      {
+        "class": "cp-guides-results",
+        "y": 703,
+        "width": 1440,
+        "height": 1410
+      },
+      {
+        "class": "cp-guides-featured",
+        "y": 759,
+        "width": 1200,
+        "height": 454
+      },
+      {
+        "class": "cp-guides-grid",
+        "y": 1237,
+        "width": 1200,
+        "height": 724
+      },
+      {
+        "class": "cp-guides-questions",
+        "y": 2113,
+        "width": 1440,
+        "height": 456
+      },
+      {
+        "class": "cp-guides-final",
+        "y": 2569,
+        "width": 1440,
+        "height": 550
+      },
+      {
+        "class": "cp-container cp-guides-final-card",
+        "y": 2569,
+        "width": 1200,
+        "height": 454
+      },
+      {
+        "class": "cp-footer",
+        "y": 3119,
+        "width": 1440,
+        "height": 439.1875
+      }
+    ],
+    "details": [
+      {
+        "class": "cp-guides-eyebrow",
+        "text": "Newcomer guides",
+        "height": 16,
+        "width": 145.015625
+      },
+      {
+        "class": "",
+        "text": "Plain answers for your move to",
+        "height": 152,
+        "width": 920
+      },
+      {
+        "class": "cp-guides-intro",
+        "text": "Phones, internet and your firs",
+        "height": 58,
+        "width": 640
+      },
+      {
+        "class": "cp-guides-search",
+        "text": "Search",
+        "height": 63,
+        "width": 640
+      },
+      {
+        "class": "cp-guides-topics",
+        "text": "All guidesMoving to CanadaPhon",
+        "height": 54,
+        "width": 784.515625
+      },
+      {
+        "class": "cp-image-slot cp-guides-featured-image",
+        "text": "ImageNewcomer unpacking a suit",
+        "height": 454,
+        "width": 560
+      },
+      {
+        "class": "cp-guides-card-copy",
+        "text": "Featured · Moving to CanadaYou",
+        "height": 454,
+        "width": 640
+      },
+      {
+        "class": "cp-guides-card",
+        "text": "ImageStudent checking her phon",
+        "height": 338,
+        "width": 386
+      },
+      {
+        "class": "cp-guides-card",
+        "text": "ImagePhysical SIM card next to",
+        "height": 338,
+        "width": 386
+      },
+      {
+        "class": "cp-guides-card",
+        "text": "ImageWi-Fi router on a shelf i",
+        "height": 338,
+        "width": 386
+      },
+      {
+        "class": "cp-guides-card",
+        "text": "ImageNewcomer choosing a plan ",
+        "height": 366,
+        "width": 386
+      },
+      {
+        "class": "cp-guides-card",
+        "text": "ImageRogers, Fido and Chatr SI",
+        "height": 366,
+        "width": 386
+      },
+      {
+        "class": "cp-guides-card",
+        "text": "ImageVideo call with family ba",
+        "height": 366,
+        "width": 386
+      },
+      {
+        "class": "",
+        "text": "Can I get a Canadian number be",
+        "height": 68,
+        "width": 592
+      },
+      {
+        "class": "",
+        "text": "Which carrier is cheapest in C",
+        "height": 68,
+        "width": 592
+      },
+      {
+        "class": "",
+        "text": "Do I need a SIN to get a phone",
+        "height": 68,
+        "width": 592
+      },
+      {
+        "class": "",
+        "text": "How do I build credit as a new",
+        "height": 68,
+        "width": 592
+      },
+      {
+        "class": "",
+        "text": "How long does internet install",
+        "height": 68,
+        "width": 592
+      },
+      {
+        "class": "",
+        "text": "Can I keep my number if I chan",
+        "height": 68,
+        "width": 592
+      }
+    ],
+    "violations": [],
+    "assets": [
+      {
+        "src": "/design/components/60-13-imgMark.svg",
+        "loaded": true,
+        "width": 36,
+        "height": 36,
+        "declaredWidth": 36,
+        "declaredHeight": 36
+      },
+      {
+        "src": "/design/legal/0-imgSearchIcon.svg",
+        "loaded": true,
+        "width": 18,
+        "height": 18,
+        "declaredWidth": 18,
+        "declaredHeight": 18
+      },
+      {
+        "src": "/design/components/312-9-imgIcon.svg",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "loaded": true,
+        "width": 36,
+        "height": 36,
+        "declaredWidth": 36,
+        "declaredHeight": 36
+      }
+    ],
+    "errors": [],
+    "imageSlots": [
+      {
+        "width": 560,
+        "height": 454,
+        "captionSize": "13px",
+        "labelSize": "12px"
+      },
+      {
+        "width": 383,
+        "height": 180,
+        "captionSize": "13px",
+        "labelSize": "12px"
+      },
+      {
+        "width": 383,
+        "height": 180,
+        "captionSize": "13px",
+        "labelSize": "12px"
+      },
+      {
+        "width": 383,
+        "height": 180,
+        "captionSize": "13px",
+        "labelSize": "12px"
+      },
+      {
+        "width": 383,
+        "height": 180,
+        "captionSize": "13px",
+        "labelSize": "12px"
+      },
+      {
+        "width": 383,
+        "height": 180,
+        "captionSize": "13px",
+        "labelSize": "12px"
+      },
+      {
+        "width": 383,
+        "height": 180,
+        "captionSize": "13px",
+        "labelSize": "12px"
+      }
+    ],
+    "overflow": [
+      {
+        "viewport": 320,
+        "document": 320
+      },
+      {
+        "viewport": 390,
+        "document": 390
+      },
+      {
+        "viewport": 768,
+        "document": 768
+      },
+      {
+        "viewport": 1024,
+        "document": 1024
+      },
+      {
+        "viewport": 1280,
+        "document": 1280
+      },
+      {
+        "viewport": 1440,
+        "document": 1440
+      }
+    ],
+    "interactions": "show more and focus, combined topics/search, empty/clear, keyboard filters/skip, article navigation, global finder and advisor CTA passed"
+  }
+]

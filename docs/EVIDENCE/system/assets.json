@@ -1,0 +1,394 @@
+[
+  {
+    "name": "0-imgFrame.svg",
+    "hash": "c583a3d22290bc276cd34cb21eaae0b98dbd4f5949aea0aeedf1e866d4c27931",
+    "width": 56,
+    "height": 56,
+    "src": "/design/system/0-imgFrame.svg"
+  },
+  {
+    "name": "0-imgFrame1.svg",
+    "hash": "d17e5fd2bf3e0a14256c6e1cb7d630e20237383eddba8b8dcd074503bddab4d5",
+    "width": 20,
+    "height": 20,
+    "src": "/design/system/0-imgFrame1.svg"
+  },
+  {
+    "name": "0-imgFrame2.svg",
+    "hash": "fbac16dac1f1241cf96d47d9471cfb720f3b1c8ff043d13ce80862c733faacd1",
+    "width": 22,
+    "height": 22,
+    "src": "/design/system/0-imgFrame2.svg"
+  },
+  {
+    "name": "0-imgFrame3.svg",
+    "hash": "2ad98f75780675c0a291e0c11fffcf1b3e2082c948777c362e517d195c1ca9ae",
+    "width": 22,
+    "height": 22,
+    "src": "/design/system/0-imgFrame3.svg"
+  },
+  {
+    "name": "0-imgFrame4.svg",
+    "hash": "6106f842562a348db72cde622cea981d2c9c1703f608638a7bc3d7c8ab6bfe23",
+    "width": 22,
+    "height": 22,
+    "src": "/design/system/0-imgFrame4.svg"
+  },
+  {
+    "name": "0-imgFrame5.svg",
+    "hash": "dffb09cf4668f95f4281e4a5ae1958320e998d48d19af2c8874a53328b211832",
+    "width": 22,
+    "height": 22,
+    "src": "/design/system/0-imgFrame5.svg"
+  },
+  {
+    "name": "0-imgFrame6.svg",
+    "hash": "51c40f39354f2d490a0acfedf723d78b96df243b4a7bb7d2553b01ba7a6dcd45",
+    "width": 36,
+    "height": 36,
+    "src": "/design/components/363-1002-imgFrame.svg"
+  },
+  {
+    "name": "0-imgIcon.svg",
+    "hash": "e631423bc4447a3d7cf0cecb0e923d325ce4e90431f9058dc5c516d0ec37a69b",
+    "width": 20,
+    "height": 20,
+    "src": "/design/system/0-imgIcon.svg"
+  },
+  {
+    "name": "0-imgMark.svg",
+    "hash": "033ec8f6ba8f6b78d035fb7362ef073c973c28ed8004b3d33bd9f34387c0ebf7",
+    "width": 36,
+    "height": 36,
+    "src": "/design/components/364-2163-imgMark.svg"
+  },
+  {
+    "name": "0-imgSearchIcon.svg",
+    "hash": "e9cd855ea79cb7f899803a5f7d05ce83a302ccf5f2742761c1db6bfeb1784865",
+    "width": 18,
+    "height": 18,
+    "src": "/design/legal/0-imgSearchIcon.svg"
+  },
+  {
+    "name": "1-imgFrame.svg",
+    "hash": "51c40f39354f2d490a0acfedf723d78b96df243b4a7bb7d2553b01ba7a6dcd45",
+    "width": 36,
+    "height": 36,
+    "src": "/design/components/363-1002-imgFrame.svg"
+  },
+  {
+    "name": "1-imgFrame1.svg",
+    "hash": "dc7e988dd1e4d7d1e970d0bbc110d2f3b371700521ec93dc217fec5430382f7a",
+    "width": 44,
+    "height": 44,
+    "src": "/design/system/1-imgFrame1.svg"
+  },
+  {
+    "name": "1-imgFrame2.svg",
+    "hash": "d17e5fd2bf3e0a14256c6e1cb7d630e20237383eddba8b8dcd074503bddab4d5",
+    "width": 20,
+    "height": 20,
+    "src": "/design/system/0-imgFrame1.svg"
+  },
+  {
+    "name": "1-imgFrame3.svg",
+    "hash": "fbac16dac1f1241cf96d47d9471cfb720f3b1c8ff043d13ce80862c733faacd1",
+    "width": 22,
+    "height": 22,
+    "src": "/design/system/0-imgFrame2.svg"
+  },
+  {
+    "name": "1-imgFrame4.svg",
+    "hash": "2ad98f75780675c0a291e0c11fffcf1b3e2082c948777c362e517d195c1ca9ae",
+    "width": 22,
+    "height": 22,
+    "src": "/design/system/0-imgFrame3.svg"
+  },
+  {
+    "name": "1-imgFrame5.svg",
+    "hash": "6106f842562a348db72cde622cea981d2c9c1703f608638a7bc3d7c8ab6bfe23",
+    "width": 22,
+    "height": 22,
+    "src": "/design/system/0-imgFrame4.svg"
+  },
+  {
+    "name": "1-imgFrame6.svg",
+    "hash": "0321538fa40dcfa052b782180f203378de01001984d474d319db9250666aec87",
+    "width": 22,
+    "height": 22,
+    "src": "/design/system/1-imgFrame6.svg"
+  },
+  {
+    "name": "1-imgIcon.svg",
+    "hash": "460a376b06c815353096dc552c8a9a52f5bf2432c4471c8d903cf56364df2e83",
+    "width": 22,
+    "height": 22,
+    "src": "/design/components/364-2163-imgIcon.svg"
+  },
+  {
+    "name": "1-imgIcon1.svg",
+    "hash": "0f75b1bad987c3a9426c30a373abdf4b9fc5601f34c0fd39bc75cd67c98024cd",
+    "width": 24,
+    "height": 24,
+    "src": "/design/components/364-2163-imgIcon1.svg"
+  },
+  {
+    "name": "1-imgIcon2.svg",
+    "hash": "e631423bc4447a3d7cf0cecb0e923d325ce4e90431f9058dc5c516d0ec37a69b",
+    "width": 20,
+    "height": 20,
+    "src": "/design/system/0-imgIcon.svg"
+  },
+  {
+    "name": "1-imgMark.svg",
+    "hash": "033ec8f6ba8f6b78d035fb7362ef073c973c28ed8004b3d33bd9f34387c0ebf7",
+    "width": 36,
+    "height": 36,
+    "src": "/design/components/364-2163-imgMark.svg"
+  },
+  {
+    "name": "1-imgPhoneIcon.svg",
+    "hash": "4112188d80b1cf436f979f9d96d6b1337f6bd64b87ef93be26315edc61d1a881",
+    "width": 16,
+    "height": 16,
+    "src": "/design/system/1-imgPhoneIcon.svg"
+  },
+  {
+    "name": "2-imgFrame.svg",
+    "hash": "d17e5fd2bf3e0a14256c6e1cb7d630e20237383eddba8b8dcd074503bddab4d5",
+    "width": 20,
+    "height": 20,
+    "src": "/design/system/0-imgFrame1.svg"
+  },
+  {
+    "name": "2-imgFrame1.svg",
+    "hash": "51c40f39354f2d490a0acfedf723d78b96df243b4a7bb7d2553b01ba7a6dcd45",
+    "width": 36,
+    "height": 36,
+    "src": "/design/components/363-1002-imgFrame.svg"
+  },
+  {
+    "name": "2-imgIcon.svg",
+    "hash": "e631423bc4447a3d7cf0cecb0e923d325ce4e90431f9058dc5c516d0ec37a69b",
+    "width": 20,
+    "height": 20,
+    "src": "/design/system/0-imgIcon.svg"
+  },
+  {
+    "name": "2-imgMark.svg",
+    "hash": "033ec8f6ba8f6b78d035fb7362ef073c973c28ed8004b3d33bd9f34387c0ebf7",
+    "width": 36,
+    "height": 36,
+    "src": "/design/components/364-2163-imgMark.svg"
+  },
+  {
+    "name": "2-imgSearchIcon.svg",
+    "hash": "e9cd855ea79cb7f899803a5f7d05ce83a302ccf5f2742761c1db6bfeb1784865",
+    "width": 18,
+    "height": 18,
+    "src": "/design/legal/0-imgSearchIcon.svg"
+  },
+  {
+    "name": "3-imgFrame.svg",
+    "hash": "51c40f39354f2d490a0acfedf723d78b96df243b4a7bb7d2553b01ba7a6dcd45",
+    "width": 36,
+    "height": 36,
+    "src": "/design/components/363-1002-imgFrame.svg"
+  },
+  {
+    "name": "3-imgFrame1.svg",
+    "hash": "d17e5fd2bf3e0a14256c6e1cb7d630e20237383eddba8b8dcd074503bddab4d5",
+    "width": 20,
+    "height": 20,
+    "src": "/design/system/0-imgFrame1.svg"
+  },
+  {
+    "name": "3-imgIcon.svg",
+    "hash": "460a376b06c815353096dc552c8a9a52f5bf2432c4471c8d903cf56364df2e83",
+    "width": 22,
+    "height": 22,
+    "src": "/design/components/364-2163-imgIcon.svg"
+  },
+  {
+    "name": "3-imgIcon1.svg",
+    "hash": "0f75b1bad987c3a9426c30a373abdf4b9fc5601f34c0fd39bc75cd67c98024cd",
+    "width": 24,
+    "height": 24,
+    "src": "/design/components/364-2163-imgIcon1.svg"
+  },
+  {
+    "name": "3-imgIcon2.svg",
+    "hash": "e631423bc4447a3d7cf0cecb0e923d325ce4e90431f9058dc5c516d0ec37a69b",
+    "width": 20,
+    "height": 20,
+    "src": "/design/system/0-imgIcon.svg"
+  },
+  {
+    "name": "3-imgMark.svg",
+    "hash": "033ec8f6ba8f6b78d035fb7362ef073c973c28ed8004b3d33bd9f34387c0ebf7",
+    "width": 36,
+    "height": 36,
+    "src": "/design/components/364-2163-imgMark.svg"
+  },
+  {
+    "name": "3-imgPhoneIcon.svg",
+    "hash": "5e86cc702efe434b257ce11f3ad99b93537e3f45079b4e47768e0a7f4b20d44d",
+    "width": 16,
+    "height": 16,
+    "src": "/design/legal/1-imgPhoneIcon.svg"
+  },
+  {
+    "name": "4-imgFrame.svg",
+    "hash": "51c40f39354f2d490a0acfedf723d78b96df243b4a7bb7d2553b01ba7a6dcd45",
+    "width": 36,
+    "height": 36,
+    "src": "/design/components/363-1002-imgFrame.svg"
+  },
+  {
+    "name": "4-imgIcon.svg",
+    "hash": "2a36357527a5f1776fd61844ac707a44f064f4a8adbffdd3c2d3cddd7109212d",
+    "width": 22,
+    "height": 26,
+    "src": "/design/system/4-imgIcon.svg"
+  },
+  {
+    "name": "4-imgIcon1.svg",
+    "hash": "2d04da6be5cd78fa07c49f7c1feb7af3a5eb86136075de8265db0df0797e7268",
+    "width": 22,
+    "height": 22,
+    "src": "/design/system/4-imgIcon1.svg"
+  },
+  {
+    "name": "4-imgIcon2.svg",
+    "hash": "2da8965c321071c304dd1cae0eda8d5c301371cfc6c714996870dc23bef8a099",
+    "width": 22,
+    "height": 22,
+    "src": "/design/system/4-imgIcon2.svg"
+  },
+  {
+    "name": "4-imgIcon3.svg",
+    "hash": "7322f65a2b25a85f52ab2a2fc2bfb39ef4ff830d381e2e13b42cbcc2ef484078",
+    "width": 22,
+    "height": 22,
+    "src": "/design/system/4-imgIcon3.svg"
+  },
+  {
+    "name": "4-imgIcon4.svg",
+    "hash": "718635e95fdab861db5514a5d74c633d8b7723e26e8f046f3974fe6ffa51d55b",
+    "width": 32,
+    "height": 32,
+    "src": "/design/components/312-2-imgIcon.svg"
+  },
+  {
+    "name": "4-imgMark.svg",
+    "hash": "033ec8f6ba8f6b78d035fb7362ef073c973c28ed8004b3d33bd9f34387c0ebf7",
+    "width": 36,
+    "height": 36,
+    "src": "/design/components/364-2163-imgMark.svg"
+  },
+  {
+    "name": "4-imgSearchIcon.svg",
+    "hash": "e9cd855ea79cb7f899803a5f7d05ce83a302ccf5f2742761c1db6bfeb1784865",
+    "width": 18,
+    "height": 18,
+    "src": "/design/legal/0-imgSearchIcon.svg"
+  },
+  {
+    "name": "5-imgFrame.svg",
+    "hash": "51c40f39354f2d490a0acfedf723d78b96df243b4a7bb7d2553b01ba7a6dcd45",
+    "width": 36,
+    "height": 36,
+    "src": "/design/components/363-1002-imgFrame.svg"
+  },
+  {
+    "name": "5-imgIcon.svg",
+    "hash": "460a376b06c815353096dc552c8a9a52f5bf2432c4471c8d903cf56364df2e83",
+    "width": 22,
+    "height": 22,
+    "src": "/design/components/364-2163-imgIcon.svg"
+  },
+  {
+    "name": "5-imgIcon1.svg",
+    "hash": "0f75b1bad987c3a9426c30a373abdf4b9fc5601f34c0fd39bc75cd67c98024cd",
+    "width": 24,
+    "height": 24,
+    "src": "/design/components/364-2163-imgIcon1.svg"
+  },
+  {
+    "name": "5-imgIcon2.svg",
+    "hash": "2a36357527a5f1776fd61844ac707a44f064f4a8adbffdd3c2d3cddd7109212d",
+    "width": 22,
+    "height": 26,
+    "src": "/design/system/4-imgIcon.svg"
+  },
+  {
+    "name": "5-imgIcon3.svg",
+    "hash": "718635e95fdab861db5514a5d74c633d8b7723e26e8f046f3974fe6ffa51d55b",
+    "width": 32,
+    "height": 32,
+    "src": "/design/components/312-2-imgIcon.svg"
+  },
+  {
+    "name": "5-imgIcon4.svg",
+    "hash": "2d04da6be5cd78fa07c49f7c1feb7af3a5eb86136075de8265db0df0797e7268",
+    "width": 22,
+    "height": 22,
+    "src": "/design/system/4-imgIcon1.svg"
+  },
+  {
+    "name": "5-imgIcon5.svg",
+    "hash": "2da8965c321071c304dd1cae0eda8d5c301371cfc6c714996870dc23bef8a099",
+    "width": 22,
+    "height": 22,
+    "src": "/design/system/4-imgIcon2.svg"
+  },
+  {
+    "name": "5-imgIcon6.svg",
+    "hash": "7322f65a2b25a85f52ab2a2fc2bfb39ef4ff830d381e2e13b42cbcc2ef484078",
+    "width": 22,
+    "height": 22,
+    "src": "/design/system/4-imgIcon3.svg"
+  },
+  {
+    "name": "5-imgMark.svg",
+    "hash": "033ec8f6ba8f6b78d035fb7362ef073c973c28ed8004b3d33bd9f34387c0ebf7",
+    "width": 36,
+    "height": 36,
+    "src": "/design/components/364-2163-imgMark.svg"
+  },
+  {
+    "name": "5-imgPhoneIcon.svg",
+    "hash": "5e86cc702efe434b257ce11f3ad99b93537e3f45079b4e47768e0a7f4b20d44d",
+    "width": 16,
+    "height": 16,
+    "src": "/design/legal/1-imgPhoneIcon.svg"
+  },
+  {
+    "name": "8-imgToggleOff.svg",
+    "hash": "8c9b33a59fdf4a6d47c91264908b259ec42917daa1d997d78abfd413ddeb8b1a",
+    "width": 48,
+    "height": 28,
+    "src": "/design/system/8-imgToggleOff.svg"
+  },
+  {
+    "name": "8-imgToggleOn.svg",
+    "hash": "895ddea0b5addbd53079cce6e8a6b21ee6c2bdfd535523daf4718623d1361bed",
+    "width": 48,
+    "height": 28,
+    "src": "/design/system/8-imgToggleOn.svg"
+  },
+  {
+    "name": "9-imgToggleOff.svg",
+    "hash": "8c9b33a59fdf4a6d47c91264908b259ec42917daa1d997d78abfd413ddeb8b1a",
+    "width": 48,
+    "height": 28,
+    "src": "/design/system/8-imgToggleOff.svg"
+  },
+  {
+    "name": "9-imgToggleOn.svg",
+    "hash": "895ddea0b5addbd53079cce6e8a6b21ee6c2bdfd535523daf4718623d1361bed",
+    "width": 48,
+    "height": 28,
+    "src": "/design/system/8-imgToggleOn.svg"
+  }
+]

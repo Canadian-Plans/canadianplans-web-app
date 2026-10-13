@@ -1,0 +1,932 @@
+{
+  "origin": "http://127.0.0.1:3127",
+  "createdAt": "2026-10-13T11:16:15.897Z",
+  "pages": {
+    "vancouver": {
+      "route": "/home-internet/vancouver",
+      "widths": {
+        "320": {
+          "scrollWidth": 320,
+          "clientWidth": 320
+        },
+        "390": {
+          "scrollWidth": 390,
+          "clientWidth": 390,
+          "sections": [
+            {
+              "name": "cp-catnet-hero",
+              "height": 806.65625
+            },
+            {
+              "name": "cp-catnet-meta",
+              "height": 281
+            },
+            {
+              "name": "local-stats",
+              "height": 655.53125
+            },
+            {
+              "name": "coverage",
+              "height": 1003.4375
+            },
+            {
+              "name": "cp-catnet-section cp-catnet-tips-section",
+              "height": 494.1875
+            },
+            {
+              "name": "plans",
+              "height": 1547.234375
+            },
+            {
+              "name": "cp-catnet-steps-section",
+              "height": 581.375
+            },
+            {
+              "name": "guide",
+              "height": 1552.203125
+            },
+            {
+              "name": "cp-catnet-section cp-catnet-reviews-section",
+              "height": 1181.1875
+            },
+            {
+              "name": "faq",
+              "height": 891
+            },
+            {
+              "name": "cp-catnet-section cp-catnet-explore-section",
+              "height": 963.6875
+            },
+            {
+              "name": "cp-catnet-final cp-catnet-container",
+              "height": 565.78125
+            }
+          ]
+        },
+        "768": {
+          "scrollWidth": 768,
+          "clientWidth": 768
+        },
+        "1024": {
+          "scrollWidth": 1024,
+          "clientWidth": 1024
+        },
+        "1440": {
+          "scrollWidth": 1440,
+          "clientWidth": 1440,
+          "sections": [
+            {
+              "name": "cp-catnet-hero",
+              "height": 731.25
+            },
+            {
+              "name": "cp-catnet-meta",
+              "height": 120.5
+            },
+            {
+              "name": "local-stats",
+              "height": 416.640625
+            },
+            {
+              "name": "coverage",
+              "height": 631.25
+            },
+            {
+              "name": "cp-catnet-section cp-catnet-tips-section",
+              "height": 544.5
+            },
+            {
+              "name": "plans",
+              "height": 698.296875
+            },
+            {
+              "name": "cp-catnet-steps-section",
+              "height": 387.59375
+            },
+            {
+              "name": "guide",
+              "height": 1049.25
+            },
+            {
+              "name": "cp-catnet-section cp-catnet-reviews-section",
+              "height": 467.6875
+            },
+            {
+              "name": "faq",
+              "height": 766
+            },
+            {
+              "name": "cp-catnet-section cp-catnet-explore-section",
+              "height": 472.296875
+            },
+            {
+              "name": "cp-catnet-final cp-catnet-container",
+              "height": 597.375
+            }
+          ]
+        }
+      },
+      "form": {
+        "invalid": {
+          "message": "Preview only Enter a complete Canadian postal code, such as the example shown.",
+          "focused": true
+        },
+        "available": "Preview only Sample state: an example plan is shown for this postal code. This is not a live availability result.",
+        "unavailable": "Preview only Sample state: no example plan is shown for this postal code. This is not a live coverage decision."
+      },
+      "headings": [
+        {
+          "level": "H1",
+          "text": "Home internet in Vancouver, installed in about 3 days."
+        },
+        {
+          "level": "H2",
+          "text": "How much is home internet in Vancouver?"
+        },
+        {
+          "level": "H2",
+          "text": "Coverage by neighbourhood"
+        },
+        {
+          "level": "H3",
+          "text": "Downtown & West End"
+        },
+        {
+          "level": "H3",
+          "text": "Yaletown & False Creek"
+        },
+        {
+          "level": "H3",
+          "text": "Kitsilano & Fairview"
+        },
+        {
+          "level": "H3",
+          "text": "Mount Pleasant & Main"
+        },
+        {
+          "level": "H3",
+          "text": "East Vancouver"
+        },
+        {
+          "level": "H3",
+          "text": "Kerrisdale & Marpole"
+        },
+        {
+          "level": "H3",
+          "text": "UBC area"
+        },
+        {
+          "level": "H3",
+          "text": "South Vancouver"
+        },
+        {
+          "level": "H3",
+          "text": "Downtown & West End"
+        },
+        {
+          "level": "H3",
+          "text": "Yaletown & False Creek"
+        },
+        {
+          "level": "H3",
+          "text": "Kitsilano & Fairview"
+        },
+        {
+          "level": "H3",
+          "text": "Mount Pleasant & Main"
+        },
+        {
+          "level": "H3",
+          "text": "East Vancouver"
+        },
+        {
+          "level": "H3",
+          "text": "Kerrisdale & Marpole"
+        },
+        {
+          "level": "H3",
+          "text": "UBC area"
+        },
+        {
+          "level": "H3",
+          "text": "South Vancouver"
+        },
+        {
+          "level": "H2",
+          "text": "Tips for your type of home"
+        },
+        {
+          "level": "H3",
+          "text": "Apartment or condo"
+        },
+        {
+          "level": "H3",
+          "text": "Basement suite"
+        },
+        {
+          "level": "H3",
+          "text": "House"
+        },
+        {
+          "level": "H3",
+          "text": "Student housing"
+        },
+        {
+          "level": "H2",
+          "text": "Internet plans in Vancouver"
+        },
+        {
+          "level": "H3",
+          "text": "Up to 500 Mbps"
+        },
+        {
+          "level": "H3",
+          "text": "Up to 150 Mbps"
+        },
+        {
+          "level": "H3",
+          "text": "Up to 1 Gbps"
+        },
+        {
+          "level": "H3",
+          "text": "Up to 1.5 Gbps"
+        },
+        {
+          "level": "H2",
+          "text": "How to get home internet in 3 steps"
+        },
+        {
+          "level": "H3",
+          "text": "Check your address"
+        },
+        {
+          "level": "H3",
+          "text": "An advisor calls you"
+        },
+        {
+          "level": "H3",
+          "text": "A technician installs it"
+        },
+        {
+          "level": "H2",
+          "text": "Internet in Vancouver: a renter’s guide"
+        },
+        {
+          "level": "H3",
+          "text": "How fast should my internet be in Vancouver?"
+        },
+        {
+          "level": "H3",
+          "text": "Do I need my landlord’s permission?"
+        },
+        {
+          "level": "H3",
+          "text": "Fibre or cable — what’s the difference?"
+        },
+        {
+          "level": "H3",
+          "text": "Key facts"
+        },
+        {
+          "level": "H2",
+          "text": "Newcomers recommend us."
+        },
+        {
+          "level": "H2",
+          "text": "Vancouver internet questions"
+        },
+        {
+          "level": "H2",
+          "text": "Explore more"
+        },
+        {
+          "level": "H3",
+          "text": "Nearby cities"
+        },
+        {
+          "level": "H3",
+          "text": "Plans & bundles"
+        },
+        {
+          "level": "H3",
+          "text": "Guides"
+        },
+        {
+          "level": "H2",
+          "text": "Online on move‑in day in Vancouver."
+        },
+        {
+          "level": "H2",
+          "text": "Pre-arrival SIM"
+        },
+        {
+          "level": "H2",
+          "text": "Home Internet"
+        },
+        {
+          "level": "H2",
+          "text": "Mobile Plans"
+        },
+        {
+          "level": "H2",
+          "text": "Help"
+        }
+      ],
+      "assets": [
+        {
+          "src": "/design/category-internet/vancouver-desktop-imgEllipse1.svg",
+          "intrinsicWidth": 420,
+          "intrinsicHeight": 300,
+          "renderedWidth": 420,
+          "renderedHeight": 300,
+          "visible": true
+        },
+        {
+          "src": "/design/category-internet/vancouver-mobile-imgEllipse.svg",
+          "intrinsicWidth": 420,
+          "intrinsicHeight": 300,
+          "renderedWidth": 0,
+          "renderedHeight": 0,
+          "visible": false
+        },
+        {
+          "src": "/_next/image?url=%2Fdesign%2Fcategory-internet%2Fvancouver-desktop-imgCoverageFill.png&w=750&q=75",
+          "intrinsicWidth": 384,
+          "intrinsicHeight": 339,
+          "renderedWidth": 340,
+          "renderedHeight": 300,
+          "visible": true
+        },
+        {
+          "src": "/_next/image?url=%2Fdesign%2Fcategory-internet%2Fvancouver-mobile-imgCoverageFill.png&w=750&q=75",
+          "intrinsicWidth": 384,
+          "intrinsicHeight": 339,
+          "renderedWidth": 0,
+          "renderedHeight": 0,
+          "visible": false
+        },
+        {
+          "src": "/_next/image?url=%2Fdesign%2Fcategory-internet%2Fvancouver-desktop-imgCoverageRing.png&w=750&q=75",
+          "intrinsicWidth": 384,
+          "intrinsicHeight": 339,
+          "renderedWidth": 340,
+          "renderedHeight": 300,
+          "visible": true
+        },
+        {
+          "src": "/_next/image?url=%2Fdesign%2Fcategory-internet%2Fvancouver-mobile-imgCoverageRing.png&w=750&q=75",
+          "intrinsicWidth": 384,
+          "intrinsicHeight": 339,
+          "renderedWidth": 0,
+          "renderedHeight": 0,
+          "visible": false
+        },
+        {
+          "src": "/design/category-internet/vancouver-desktop-imgEllipse2.svg",
+          "intrinsicWidth": 22,
+          "intrinsicHeight": 22,
+          "renderedWidth": 22,
+          "renderedHeight": 22,
+          "visible": true
+        },
+        {
+          "src": "/design/category-internet/vancouver-mobile-imgEllipse1.svg",
+          "intrinsicWidth": 22,
+          "intrinsicHeight": 22,
+          "renderedWidth": 0,
+          "renderedHeight": 0,
+          "visible": false
+        },
+        {
+          "src": "/design/category-internet/vancouver-desktop-imgEllipse2.svg",
+          "intrinsicWidth": 22,
+          "intrinsicHeight": 22,
+          "renderedWidth": 22,
+          "renderedHeight": 22,
+          "visible": true
+        },
+        {
+          "src": "/design/category-internet/vancouver-mobile-imgEllipse1.svg",
+          "intrinsicWidth": 22,
+          "intrinsicHeight": 22,
+          "renderedWidth": 0,
+          "renderedHeight": 0,
+          "visible": false
+        },
+        {
+          "src": "/design/category-internet/vancouver-desktop-imgEllipse2.svg",
+          "intrinsicWidth": 22,
+          "intrinsicHeight": 22,
+          "renderedWidth": 22,
+          "renderedHeight": 22,
+          "visible": true
+        },
+        {
+          "src": "/design/category-internet/vancouver-mobile-imgEllipse1.svg",
+          "intrinsicWidth": 22,
+          "intrinsicHeight": 22,
+          "renderedWidth": 0,
+          "renderedHeight": 0,
+          "visible": false
+        },
+        {
+          "src": "/design/category-internet/vancouver-desktop-imgEllipse2.svg",
+          "intrinsicWidth": 22,
+          "intrinsicHeight": 22,
+          "renderedWidth": 22,
+          "renderedHeight": 22,
+          "visible": true
+        },
+        {
+          "src": "/design/category-internet/vancouver-mobile-imgEllipse1.svg",
+          "intrinsicWidth": 22,
+          "intrinsicHeight": 22,
+          "renderedWidth": 0,
+          "renderedHeight": 0,
+          "visible": false
+        },
+        {
+          "src": "/design/category-internet/vancouver-desktop-imgEllipse3.svg",
+          "intrinsicWidth": 12,
+          "intrinsicHeight": 12,
+          "renderedWidth": 12,
+          "renderedHeight": 12,
+          "visible": true
+        }
+      ],
+      "axe": {
+        "violations": []
+      },
+      "keyboardFocus": {
+        "tag": "A",
+        "visible": true
+      }
+    },
+    "ontario": {
+      "route": "/home-internet/ontario",
+      "widths": {
+        "320": {
+          "scrollWidth": 320,
+          "clientWidth": 320
+        },
+        "390": {
+          "scrollWidth": 390,
+          "clientWidth": 390,
+          "sections": [
+            {
+              "name": "cp-catnet-hero",
+              "height": 781.15625
+            },
+            {
+              "name": "cp-catnet-meta",
+              "height": 281
+            },
+            {
+              "name": "local-stats",
+              "height": 655.4375
+            },
+            {
+              "name": "coverage",
+              "height": 923.59375
+            },
+            {
+              "name": "cp-catnet-section cp-catnet-tips-section",
+              "height": 494.1875
+            },
+            {
+              "name": "plans",
+              "height": 1547.234375
+            },
+            {
+              "name": "cp-catnet-steps-section",
+              "height": 581.375
+            },
+            {
+              "name": "guide",
+              "height": 1552.203125
+            },
+            {
+              "name": "cp-catnet-section cp-catnet-reviews-section",
+              "height": 1181.1875
+            },
+            {
+              "name": "faq",
+              "height": 901.78125
+            },
+            {
+              "name": "cp-catnet-section cp-catnet-explore-section",
+              "height": 871.6875
+            },
+            {
+              "name": "cp-catnet-final cp-catnet-container",
+              "height": 565.78125
+            }
+          ]
+        },
+        "768": {
+          "scrollWidth": 768,
+          "clientWidth": 768
+        },
+        "1024": {
+          "scrollWidth": 1024,
+          "clientWidth": 1024
+        },
+        "1440": {
+          "scrollWidth": 1440,
+          "clientWidth": 1440,
+          "sections": [
+            {
+              "name": "cp-catnet-hero",
+              "height": 655.25
+            },
+            {
+              "name": "cp-catnet-meta",
+              "height": 120.5
+            },
+            {
+              "name": "local-stats",
+              "height": 416.640625
+            },
+            {
+              "name": "coverage",
+              "height": 616.5
+            },
+            {
+              "name": "cp-catnet-section cp-catnet-tips-section",
+              "height": 544.5
+            },
+            {
+              "name": "plans",
+              "height": 698.296875
+            },
+            {
+              "name": "cp-catnet-steps-section",
+              "height": 387.59375
+            },
+            {
+              "name": "guide",
+              "height": 1049.25
+            },
+            {
+              "name": "cp-catnet-section cp-catnet-reviews-section",
+              "height": 467.6875
+            },
+            {
+              "name": "faq",
+              "height": 766
+            },
+            {
+              "name": "cp-catnet-section cp-catnet-explore-section",
+              "height": 472.296875
+            },
+            {
+              "name": "cp-catnet-final cp-catnet-container",
+              "height": 597.375
+            }
+          ]
+        }
+      },
+      "form": {
+        "invalid": {
+          "message": "Preview only Enter a complete Canadian postal code, such as the example shown.",
+          "focused": true
+        },
+        "available": "Preview only Sample state: an example plan is shown for this postal code. This is not a live availability result.",
+        "unavailable": "Preview only Sample state: no example plan is shown for this postal code. This is not a live coverage decision."
+      },
+      "headings": [
+        {
+          "level": "H1",
+          "text": "Home internet across Ontario, city by city."
+        },
+        {
+          "level": "H2",
+          "text": "How much is home internet in Ontario?"
+        },
+        {
+          "level": "H2",
+          "text": "Pick your city"
+        },
+        {
+          "level": "H3",
+          "text": "Toronto"
+        },
+        {
+          "level": "H3",
+          "text": "Ottawa"
+        },
+        {
+          "level": "H3",
+          "text": "Mississauga"
+        },
+        {
+          "level": "H3",
+          "text": "Hamilton"
+        },
+        {
+          "level": "H3",
+          "text": "London"
+        },
+        {
+          "level": "H3",
+          "text": "Kitchener"
+        },
+        {
+          "level": "H3",
+          "text": "Windsor"
+        },
+        {
+          "level": "H3",
+          "text": "Vaughan"
+        },
+        {
+          "level": "H3",
+          "text": "Toronto"
+        },
+        {
+          "level": "H3",
+          "text": "Ottawa"
+        },
+        {
+          "level": "H3",
+          "text": "Mississauga"
+        },
+        {
+          "level": "H3",
+          "text": "Hamilton"
+        },
+        {
+          "level": "H3",
+          "text": "London"
+        },
+        {
+          "level": "H3",
+          "text": "Kitchener"
+        },
+        {
+          "level": "H3",
+          "text": "Windsor"
+        },
+        {
+          "level": "H3",
+          "text": "Vaughan"
+        },
+        {
+          "level": "H2",
+          "text": "Tips for your type of home"
+        },
+        {
+          "level": "H3",
+          "text": "Apartment or condo"
+        },
+        {
+          "level": "H3",
+          "text": "Basement suite"
+        },
+        {
+          "level": "H3",
+          "text": "House"
+        },
+        {
+          "level": "H3",
+          "text": "Student housing"
+        },
+        {
+          "level": "H2",
+          "text": "Internet plans across Ontario"
+        },
+        {
+          "level": "H3",
+          "text": "Up to 500 Mbps"
+        },
+        {
+          "level": "H3",
+          "text": "Up to 150 Mbps"
+        },
+        {
+          "level": "H3",
+          "text": "Up to 1 Gbps"
+        },
+        {
+          "level": "H3",
+          "text": "Up to 1.5 Gbps"
+        },
+        {
+          "level": "H2",
+          "text": "How to get home internet in 3 steps"
+        },
+        {
+          "level": "H3",
+          "text": "Check your address"
+        },
+        {
+          "level": "H3",
+          "text": "An advisor calls you"
+        },
+        {
+          "level": "H3",
+          "text": "A technician installs it"
+        },
+        {
+          "level": "H2",
+          "text": "Internet in Ontario: a renter’s guide"
+        },
+        {
+          "level": "H3",
+          "text": "How fast should my internet be?"
+        },
+        {
+          "level": "H3",
+          "text": "Do I need my landlord’s permission?"
+        },
+        {
+          "level": "H3",
+          "text": "Fibre or cable — what’s the difference?"
+        },
+        {
+          "level": "H3",
+          "text": "Key facts"
+        },
+        {
+          "level": "H2",
+          "text": "Newcomers recommend us."
+        },
+        {
+          "level": "H2",
+          "text": "Ontario internet questions"
+        },
+        {
+          "level": "H2",
+          "text": "Explore more"
+        },
+        {
+          "level": "H3",
+          "text": "Ontario cities"
+        },
+        {
+          "level": "H3",
+          "text": "Plans & bundles"
+        },
+        {
+          "level": "H3",
+          "text": "Guides"
+        },
+        {
+          "level": "H2",
+          "text": "Online on move‑in day in Ontario."
+        },
+        {
+          "level": "H2",
+          "text": "Pre-arrival SIM"
+        },
+        {
+          "level": "H2",
+          "text": "Home Internet"
+        },
+        {
+          "level": "H2",
+          "text": "Mobile Plans"
+        },
+        {
+          "level": "H2",
+          "text": "Help"
+        }
+      ],
+      "assets": [
+        {
+          "src": "/design/category-internet/ontario-desktop-imgEllipse1.svg",
+          "intrinsicWidth": 420,
+          "intrinsicHeight": 300,
+          "renderedWidth": 420,
+          "renderedHeight": 300,
+          "visible": true
+        },
+        {
+          "src": "/design/category-internet/ontario-mobile-imgEllipse.svg",
+          "intrinsicWidth": 420,
+          "intrinsicHeight": 300,
+          "renderedWidth": 0,
+          "renderedHeight": 0,
+          "visible": false
+        },
+        {
+          "src": "/_next/image?url=%2Fdesign%2Fcategory-internet%2Fontario-desktop-imgCoverageFill.png&w=750&q=75",
+          "intrinsicWidth": 384,
+          "intrinsicHeight": 339,
+          "renderedWidth": 340,
+          "renderedHeight": 300,
+          "visible": true
+        },
+        {
+          "src": "/_next/image?url=%2Fdesign%2Fcategory-internet%2Fontario-mobile-imgCoverageFill.png&w=750&q=75",
+          "intrinsicWidth": 384,
+          "intrinsicHeight": 339,
+          "renderedWidth": 0,
+          "renderedHeight": 0,
+          "visible": false
+        },
+        {
+          "src": "/_next/image?url=%2Fdesign%2Fcategory-internet%2Fontario-desktop-imgCoverageRing.png&w=750&q=75",
+          "intrinsicWidth": 384,
+          "intrinsicHeight": 339,
+          "renderedWidth": 340,
+          "renderedHeight": 300,
+          "visible": true
+        },
+        {
+          "src": "/_next/image?url=%2Fdesign%2Fcategory-internet%2Fontario-mobile-imgCoverageRing.png&w=750&q=75",
+          "intrinsicWidth": 384,
+          "intrinsicHeight": 339,
+          "renderedWidth": 0,
+          "renderedHeight": 0,
+          "visible": false
+        },
+        {
+          "src": "/design/category-internet/ontario-desktop-imgEllipse2.svg",
+          "intrinsicWidth": 22,
+          "intrinsicHeight": 22,
+          "renderedWidth": 22,
+          "renderedHeight": 22,
+          "visible": true
+        },
+        {
+          "src": "/design/category-internet/ontario-mobile-imgEllipse1.svg",
+          "intrinsicWidth": 22,
+          "intrinsicHeight": 22,
+          "renderedWidth": 0,
+          "renderedHeight": 0,
+          "visible": false
+        },
+        {
+          "src": "/design/category-internet/ontario-desktop-imgEllipse2.svg",
+          "intrinsicWidth": 22,
+          "intrinsicHeight": 22,
+          "renderedWidth": 22,
+          "renderedHeight": 22,
+          "visible": true
+        },
+        {
+          "src": "/design/category-internet/ontario-mobile-imgEllipse1.svg",
+          "intrinsicWidth": 22,
+          "intrinsicHeight": 22,
+          "renderedWidth": 0,
+          "renderedHeight": 0,
+          "visible": false
+        },
+        {
+          "src": "/design/category-internet/ontario-desktop-imgEllipse2.svg",
+          "intrinsicWidth": 22,
+          "intrinsicHeight": 22,
+          "renderedWidth": 22,
+          "renderedHeight": 22,
+          "visible": true
+        },
+        {
+          "src": "/design/category-internet/ontario-mobile-imgEllipse1.svg",
+          "intrinsicWidth": 22,
+          "intrinsicHeight": 22,
+          "renderedWidth": 0,
+          "renderedHeight": 0,
+          "visible": false
+        },
+        {
+          "src": "/design/category-internet/ontario-desktop-imgEllipse2.svg",
+          "intrinsicWidth": 22,
+          "intrinsicHeight": 22,
+          "renderedWidth": 22,
+          "renderedHeight": 22,
+          "visible": true
+        },
+        {
+          "src": "/design/category-internet/ontario-mobile-imgEllipse1.svg",
+          "intrinsicWidth": 22,
+          "intrinsicHeight": 22,
+          "renderedWidth": 0,
+          "renderedHeight": 0,
+          "visible": false
+        },
+        {
+          "src": "/design/category-internet/ontario-desktop-imgEllipse3.svg",
+          "intrinsicWidth": 12,
+          "intrinsicHeight": 12,
+          "renderedWidth": 12,
+          "renderedHeight": 12,
+          "visible": true
+        }
+      ],
+      "axe": {
+        "violations": []
+      },
+      "keyboardFocus": {
+        "tag": "A",
+        "visible": true
+      }
+    }
+  },
+  "orderHandoff": {
+    "status": 200,
+    "title": "Get connected | Home Internet",
+    "selected": true
+  },
+  "errors": []
+}

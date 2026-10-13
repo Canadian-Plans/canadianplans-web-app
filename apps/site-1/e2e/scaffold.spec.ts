@@ -1,15 +1,15 @@
 import { expect, test } from '@playwright/test';
 
 const pages = [
-  ['/', 'Welcome to Site 1'],
+  ['/', 'Canadian SIM & internet plans for newcomers.'],
   ['/plans', 'Plans'],
   ['/plans/test-plan', 'Plan details'],
   ['/order', 'Order your SIM plan'],
   ['/track', 'Track your order'],
-  ['/privacy', 'Privacy'],
-  ['/terms', 'Terms'],
-  ['/studio', 'Site 1 Studio'],
-  ['/studio/structure', 'Site 1 Studio'],
+  ['/privacy', 'Privacy Policy'],
+  ['/terms', 'Terms of Service'],
+  ['/studio', 'Canadian Plans Studio'],
+  ['/studio/structure', 'Canadian Plans Studio'],
 ];
 for (const [path, heading] of pages) {
   if (!path || !heading) throw new Error('Missing route fixture');
@@ -43,6 +43,12 @@ for (const [path, heading] of pages) {
 }
 
 test('keyboard skip link and navigation work', async ({ page }) => {
+  await page.addInitScript(() =>
+    localStorage.setItem(
+      'canadian-plans.cookie-choices.v1',
+      JSON.stringify({ version: 1, analytics: false, marketing: false }),
+    ),
+  );
   await page.route('https://analytics.example.test/script.js', (route) =>
     route.fulfill({ body: '' }),
   );
@@ -51,9 +57,17 @@ test('keyboard skip link and navigation work', async ({ page }) => {
   await expect(page.getByRole('link', { name: 'Skip to main content' })).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page.locator('main')).toBeFocused();
-  await page.getByRole('navigation').getByRole('link', { name: 'Plans', exact: true }).focus();
-  await page.keyboard.press('Enter');
-  await expect(page).toHaveURL(/\/plans$/);
+  if (test.info().project.name === 'mobile') {
+    await page.getByRole('button', { name: 'Open menu', exact: true }).click();
+    await page.getByRole('dialog').getByRole('link', { name: 'Mobile Plans', exact: true }).click();
+  } else {
+    await page
+      .getByRole('navigation', { name: 'Main navigation' })
+      .getByRole('link', { name: 'Mobile Plans', exact: true })
+      .focus();
+    await page.keyboard.press('Enter');
+  }
+  await expect(page).toHaveURL(/#popular-plans$/);
 });
 
 test('Umami loads only with complete public configuration', async ({ page }) => {
@@ -66,6 +80,8 @@ test('Umami loads only with complete public configuration', async ({ page }) => 
     });
   });
   await page.goto('/');
+  await expect(page.locator('script#umami')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Accept all', exact: true }).click();
   if (process.env['TEST_UMAMI_ENABLED'] === '1') {
     await expect(page.locator('html')).toHaveAttribute('data-umami-loaded', 'true');
     await expect(page.locator('script#umami')).toHaveAttribute('data-website-id', 'test-website');

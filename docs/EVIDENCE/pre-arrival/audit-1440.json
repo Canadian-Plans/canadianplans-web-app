@@ -1,0 +1,136 @@
+{
+  "width": 1440,
+  "geometry": [
+    {
+      "section": "cp-arrival-hero",
+      "height": 752.84375
+    },
+    {
+      "section": "cp-arrival-quick",
+      "height": 232.84375
+    },
+    {
+      "section": "plans",
+      "height": 1091.734375
+    },
+    {
+      "section": "cp-arrival-why cp-arrival-section",
+      "height": 881.1875
+    },
+    {
+      "section": "compare",
+      "height": 737.4375
+    },
+    {
+      "section": "how-it-works",
+      "height": 600.09375
+    },
+    {
+      "section": "requirements",
+      "height": 856.875
+    },
+    {
+      "section": "cp-arrival-reviews cp-arrival-section",
+      "height": 480
+    },
+    {
+      "section": "faq",
+      "height": 790
+    },
+    {
+      "section": "cp-arrival-final cp-arrival-section",
+      "height": 600.96875
+    }
+  ],
+  "assets": [
+    {
+      "src": "/design/pre-arrival/106-13-imgMark.svg",
+      "width": 36,
+      "height": 36,
+      "expectedWidth": 36,
+      "expectedHeight": 36,
+      "loaded": true
+    },
+    {
+      "src": "/design/legal/0-imgSearchIcon.svg",
+      "width": 18,
+      "height": 18,
+      "expectedWidth": 18,
+      "expectedHeight": 18,
+      "loaded": true
+    },
+    {
+      "src": "/design/pre-arrival/108-112-imgIcon.svg",
+      "width": 32,
+      "height": 32,
+      "expectedWidth": 32,
+      "expectedHeight": 32,
+      "loaded": true
+    },
+    {
+      "src": "/design/pre-arrival/108-112-imgIcon.svg",
+      "width": 32,
+      "height": 32,
+      "expectedWidth": 32,
+      "expectedHeight": 32,
+      "loaded": true
+    },
+    {
+      "src": "/design/pre-arrival/108-112-imgIcon.svg",
+      "width": 32,
+      "height": 32,
+      "expectedWidth": 32,
+      "expectedHeight": 32,
+      "loaded": true
+    },
+    {
+      "src": "/design/pre-arrival/108-112-imgIcon.svg",
+      "width": 32,
+      "height": 32,
+      "expectedWidth": 32,
+      "expectedHeight": 32,
+      "loaded": true
+    },
+    {
+      "src": "/design/components/66-43-imgEllipse.svg",
+      "width": 40,
+      "height": 40,
+      "expectedWidth": 40,
+      "expectedHeight": 40,
+      "loaded": true
+    },
+    {
+      "src": "/design/components/66-51-imgEllipse.svg",
+      "width": 40,
+      "height": 40,
+      "expectedWidth": 40,
+      "expectedHeight": 40,
+      "loaded": true
+    },
+    {
+      "src": "/design/components/66-59-imgEllipse.svg",
+      "width": 40,
+      "height": 40,
+      "expectedWidth": 40,
+      "expectedHeight": 40,
+      "loaded": true
+    },
+    {
+      "src": "/design/pre-arrival/108-112-imgIcon.svg",
+      "width": 32,
+      "height": 32,
+      "expectedWidth": 32,
+      "expectedHeight": 32,
+      "loaded": true
+    },
+    {
+      "src": "/design/pre-arrival/109-183-imgFrame.svg",
+      "width": 36,
+      "height": 36,
+      "expectedWidth": 36,
+      "expectedHeight": 36,
+      "loaded": true
+    }
+  ],
+  "accessibility": []
+}

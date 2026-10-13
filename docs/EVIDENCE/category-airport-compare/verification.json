@@ -1,0 +1,496 @@
+{
+  "origin": "http://127.0.0.1:3127",
+  "date": "2026-10-13T11:25:27.752Z",
+  "routes": [
+    {
+      "route": "/pre-arrival-sim/toronto-pearson",
+      "width": 390,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "sections": [
+        "hero",
+        "quick",
+        "plans",
+        "steps",
+        "documents",
+        "guide",
+        "reviews",
+        "faq",
+        "explore",
+        "final"
+      ],
+      "assets": [
+        {
+          "src": "/design/category-airport-compare/airport-mobile-imgPhoneIcon.svg",
+          "width": 16,
+          "height": 16,
+          "expectedWidth": 16,
+          "expectedHeight": 16,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/60-13-imgMark.svg",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/364-2163-imgIcon.svg",
+          "width": 22,
+          "height": 22,
+          "expectedWidth": 22,
+          "expectedHeight": 22,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/364-2163-imgIcon1.svg",
+          "width": 24,
+          "height": 24,
+          "expectedWidth": 24,
+          "expectedHeight": 24,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-airport-compare/airport-desktop-imgEllipse1.svg",
+          "width": 28,
+          "height": 28,
+          "expectedWidth": 28,
+          "expectedHeight": 28,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-airport-compare/airport-desktop-imgEllipse1.svg",
+          "width": 28,
+          "height": 28,
+          "expectedWidth": 28,
+          "expectedHeight": 28,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-9-imgIcon.svg",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-2-imgIcon.svg",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-2-imgIcon.svg",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/68-50-imgFrame.svg",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        }
+      ],
+      "accessibility": [],
+      "keyboardAndInteraction": "passed",
+      "consoleErrors": []
+    },
+    {
+      "route": "/pre-arrival-sim/toronto-pearson",
+      "width": 1440,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440
+      },
+      "sections": [
+        "hero",
+        "quick",
+        "plans",
+        "steps",
+        "documents",
+        "guide",
+        "reviews",
+        "faq",
+        "explore",
+        "final"
+      ],
+      "assets": [
+        {
+          "src": "/design/components/60-13-imgMark.svg",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        },
+        {
+          "src": "/design/legal/0-imgSearchIcon.svg",
+          "width": 18,
+          "height": 18,
+          "expectedWidth": 18,
+          "expectedHeight": 18,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-airport-compare/airport-desktop-imgEllipse1.svg",
+          "width": 28,
+          "height": 28,
+          "expectedWidth": 28,
+          "expectedHeight": 28,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-airport-compare/airport-desktop-imgEllipse1.svg",
+          "width": 28,
+          "height": 28,
+          "expectedWidth": 28,
+          "expectedHeight": 28,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-9-imgIcon.svg",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-2-imgIcon.svg",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-2-imgIcon.svg",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/68-50-imgFrame.svg",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        }
+      ],
+      "accessibility": [],
+      "keyboardAndInteraction": "passed",
+      "consoleErrors": []
+    },
+    {
+      "route": "/pre-arrival-sim/toronto-pearson",
+      "width": 320,
+      "overflow": {
+        "viewport": 320,
+        "document": 320
+      }
+    },
+    {
+      "route": "/pre-arrival-sim/toronto-pearson",
+      "width": 768,
+      "overflow": {
+        "viewport": 768,
+        "document": 768
+      }
+    },
+    {
+      "route": "/pre-arrival-sim/toronto-pearson",
+      "width": 1024,
+      "overflow": {
+        "viewport": 1024,
+        "document": 1024
+      }
+    },
+    {
+      "route": "/compare/rogers-vs-fido",
+      "width": 390,
+      "overflow": {
+        "viewport": 390,
+        "document": 390
+      },
+      "sections": [
+        "breadcrumb",
+        "hero",
+        "quick",
+        "scorecard",
+        "plans",
+        "recommendations",
+        "three-carriers",
+        "switching",
+        "guide",
+        "reviews",
+        "faq",
+        "explore",
+        "final"
+      ],
+      "assets": [
+        {
+          "src": "/design/category-airport-compare/airport-mobile-imgPhoneIcon.svg",
+          "width": 16,
+          "height": 16,
+          "expectedWidth": 16,
+          "expectedHeight": 16,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/60-13-imgMark.svg",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/364-2163-imgIcon.svg",
+          "width": 22,
+          "height": 22,
+          "expectedWidth": 22,
+          "expectedHeight": 22,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/364-2163-imgIcon1.svg",
+          "width": 24,
+          "height": 24,
+          "expectedWidth": 24,
+          "expectedHeight": 24,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+          "width": 18,
+          "height": 18,
+          "expectedWidth": 18,
+          "expectedHeight": 18,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+          "width": 18,
+          "height": 18,
+          "expectedWidth": 18,
+          "expectedHeight": 18,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+          "width": 18,
+          "height": 18,
+          "expectedWidth": 18,
+          "expectedHeight": 18,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+          "width": 18,
+          "height": 18,
+          "expectedWidth": 18,
+          "expectedHeight": 18,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+          "width": 18,
+          "height": 18,
+          "expectedWidth": 18,
+          "expectedHeight": 18,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+          "width": 18,
+          "height": 18,
+          "expectedWidth": 18,
+          "expectedHeight": 18,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-2-imgIcon.svg",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-2-imgIcon.svg",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/68-50-imgFrame.svg",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        }
+      ],
+      "accessibility": [],
+      "keyboardAndInteraction": "passed",
+      "consoleErrors": []
+    },
+    {
+      "route": "/compare/rogers-vs-fido",
+      "width": 1440,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440
+      },
+      "sections": [
+        "breadcrumb",
+        "hero",
+        "quick",
+        "scorecard",
+        "plans",
+        "recommendations",
+        "three-carriers",
+        "switching",
+        "guide",
+        "reviews",
+        "faq",
+        "explore",
+        "final"
+      ],
+      "assets": [
+        {
+          "src": "/design/components/60-13-imgMark.svg",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        },
+        {
+          "src": "/design/legal/0-imgSearchIcon.svg",
+          "width": 18,
+          "height": 18,
+          "expectedWidth": 18,
+          "expectedHeight": 18,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+          "width": 18,
+          "height": 18,
+          "expectedWidth": 18,
+          "expectedHeight": 18,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+          "width": 18,
+          "height": 18,
+          "expectedWidth": 18,
+          "expectedHeight": 18,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+          "width": 18,
+          "height": 18,
+          "expectedWidth": 18,
+          "expectedHeight": 18,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+          "width": 18,
+          "height": 18,
+          "expectedWidth": 18,
+          "expectedHeight": 18,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+          "width": 18,
+          "height": 18,
+          "expectedWidth": 18,
+          "expectedHeight": 18,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+          "width": 18,
+          "height": 18,
+          "expectedWidth": 18,
+          "expectedHeight": 18,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-2-imgIcon.svg",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-2-imgIcon.svg",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/68-50-imgFrame.svg",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        }
+      ],
+      "accessibility": [],
+      "keyboardAndInteraction": "passed",
+      "consoleErrors": []
+    },
+    {
+      "route": "/compare/rogers-vs-fido",
+      "width": 320,
+      "overflow": {
+        "viewport": 320,
+        "document": 320
+      }
+    },
+    {
+      "route": "/compare/rogers-vs-fido",
+      "width": 768,
+      "overflow": {
+        "viewport": 768,
+        "document": 768
+      }
+    },
+    {
+      "route": "/compare/rogers-vs-fido",
+      "width": 1024,
+      "overflow": {
+        "viewport": 1024,
+        "document": 1024
+      }
+    }
+  ]
+}
