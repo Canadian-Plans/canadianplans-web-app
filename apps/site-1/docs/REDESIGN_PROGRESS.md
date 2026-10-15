@@ -100,7 +100,7 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
   old preview examples, shown as "typical"; verify before launch. The TV-bundle FAQ was
   removed (TV is a later phase); basement-suite and moving FAQs await approved answers.
   The Vancouver credit-history answer now also appears on Ontario.
-- Cleanup after all landing pages move: unused `public/design/category-sim/` and
-  `public/design/category-rogers/` assets (the airport page still uses one Rogers icon).
+- Done 15 Oct: removed the unused `public/design/category-{sim,rogers,airport-compare,internet}/`
+  assets and their 136 `--cp-cat{sim,ac,net,rog}-*` tokens.
 - Plan cards still show “$60/$80 in store” comparison prices from the pre-arrival fixtures;
   confirm the source before launch.
