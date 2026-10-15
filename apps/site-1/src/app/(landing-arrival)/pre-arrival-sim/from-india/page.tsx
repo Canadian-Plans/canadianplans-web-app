@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
-import { arrivalChrome, arrivalChromeAssets, arrivalFooter } from '@content/pre-arrival';
+import { siteChromeWithPromo, siteFooter } from '@content/site-chrome';
 import { fromIndiaLanding, fromIndiaPlanHeading } from '@content/landing/from-india';
-import { Footer, PromoStrip, UtilityBar } from '@/components/shared/chrome';
-import { ArrivalNavigation, PlanPicker } from '@/components/pre-arrival/interactive';
+import { Footer } from '@/components/shared/chrome';
+import { SiteHeader } from '@/components/shared/site-header';
+import { PlanPicker } from '@/components/pre-arrival/interactive';
+import { componentAssets } from '@content/components';
 import { LandingPage } from '@/components/landing/landing-page';
 import { pageMetadata } from '@/lib/page-metadata';
 
+const siteFooterBrand = 'Canadian Plans';
 const page = fromIndiaLanding;
 
 export const metadata: Metadata = pageMetadata(page.path, {
@@ -20,19 +23,18 @@ export default function FromIndiaPage() {
       <a className="cp-arrival-skip" href={`#${page.mainId}`}>
         {page.skip}
       </a>
-      <UtilityBar content={arrivalChrome} assets={arrivalChromeAssets} planHref="#plans" />
-      <ArrivalNavigation />
-      <PromoStrip content={arrivalChrome} />
+      <SiteHeader
+        planHref="#plans"
+        content={siteChromeWithPromo('Moving in? Add home internet from $55/mo.', {
+          label: 'See home internet →',
+          href: '/home-internet',
+        })}
+      />
       <LandingPage
         content={page}
         slots={{ plans: <PlanPicker defaultAudience="student" heading={fromIndiaPlanHeading} /> }}
       />
-      <Footer
-        brand={arrivalChrome.brand}
-        content={arrivalFooter}
-        assets={arrivalChromeAssets}
-        brandHref="/"
-      />
+      <Footer brand={siteFooterBrand} content={siteFooter} assets={componentAssets} brandHref="/" />
     </>
   );
 }

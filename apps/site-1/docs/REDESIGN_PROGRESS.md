@@ -21,6 +21,13 @@ is not `done` below.**
 - All pages stay `noindex` until the owner publishes; going indexable is not part of
   this work.
 
+## Site header and footer
+
+Redesigned pages use `SiteHeader` (`src/components/shared/site-header.tsx`) with
+`siteChrome` / `siteChromeWithPromo` and `siteFooter` from `content/site-chrome.ts`: real
+links instead of the old per-page `#plans` / `#contact` placeholders. Move each page onto
+them as it is redone; the home page and the four category pages switch in the polish pass.
+
 ## Approach
 
 SEO landing pages share one kit (`src/components/landing/*`, styles in
@@ -51,8 +58,8 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
 | 1   | `/pre-arrival-sim/students`                                                                  | done   | landing kit built; moved to `(landing-arrival)`                              |
 | 2   | `/pre-arrival-sim/from-india`                                                                | done   | old `(category-sim)` route group removed                                     |
 | 3   | `/mobile-plans/rogers`                                                                       | done   | uses `/mobile-plans` browser pre-filtered to Rogers; old route group removed |
-| 4   | `/pre-arrival-sim/toronto-pearson`                                                           | todo   |                                                                              |
-| 5   | `/compare/rogers-vs-fido`                                                                    | todo   |                                                                              |
+| 4   | `/pre-arrival-sim/toronto-pearson`                                                           | done   |                                                                              |
+| 5   | `/compare/rogers-vs-fido`                                                                    | done   | old airport/compare route group removed                                      |
 | 6   | `/home-internet/ontario`                                                                     | todo   |                                                                              |
 | 7   | `/home-internet/vancouver`                                                                   | todo   |                                                                              |
 | 8   | `/about`                                                                                     | todo   |                                                                              |
@@ -81,6 +88,14 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
   editorial score, so the two pages agree. Real Rogers offers are still needed.
 - Rogers: the old "number transfer usually the same day (VERIFY)" claim was dropped from the
   switching steps until confirmed.
+- Rogers vs Fido: now compares the site's own preview plans (Fido from $45/60 GB prepaid,
+  Rogers from $55/100 GB postpaid) instead of the old page's separate $29/$34 prepaid
+  examples, which also contradicted each other on US roaming. Page topic widened from
+  "prepaid" to Rogers vs Fido overall.
+- Toronto Pearson: four FAQ answers (WiFi to activate, flight changes, family orders, other
+  airports) still awaiting approved content.
+- Footer: TV bundles, Surrey and Toronto internet links removed (no such pages; TV is a
+  later phase). Cookie settings opens the existing consent dialog.
 - Cleanup after all landing pages move: unused `public/design/category-sim/` and
   `public/design/category-rogers/` assets (the airport page still uses one Rogers icon).
 - Plan cards still show “$60/$80 in store” comparison prices from the pre-arrival fixtures;

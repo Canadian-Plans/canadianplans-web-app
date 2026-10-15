@@ -1,4 +1,4 @@
-import { mobileChrome, mobileCopy } from '../mobile-plans';
+import { mobileCopy } from '../mobile-plans';
 import { landingBreadcrumb, landingFaqIntro, landingSkip } from './shared';
 import type { LandingPageContent } from './types';
 
@@ -266,10 +266,4 @@ export const rogersPlansHeading = {
   eyebrow: 'Rogers plans',
   title: 'Every Rogers plan we offer',
   note: 'Showing Rogers. Clear the brand filter to compare Fido and Chatr.',
-};
-
-/** Mobile chrome with the promo pointing at this page's switching steps. */
-export const rogersChrome = {
-  ...mobileChrome,
-  promoLink: { ...mobileChrome.promoLink, href: '#switch' },
 };

@@ -1,13 +1,11 @@
 import type { Metadata } from 'next';
+import { siteChromeWithPromo, siteFooter } from '@content/site-chrome';
+import { componentAssets } from '@content/components';
 import { CpSectionHeading } from '@canadian-plans/ui/canadian-plans';
-import { mobileChrome, mobileChromeAssets, mobileFooter } from '@content/mobile-plans';
-import { rogersChrome, rogersLanding, rogersPlansHeading } from '@content/landing/rogers';
-import { Footer, PromoStrip, UtilityBar } from '@/components/shared/chrome';
-import {
-  MobilePlanBrowser,
-  MobilePlansNavigation,
-  MobilePlansProvider,
-} from '@/components/mobile-plans/interactive';
+import { rogersLanding, rogersPlansHeading } from '@content/landing/rogers';
+import { Footer } from '@/components/shared/chrome';
+import { SiteHeader } from '@/components/shared/site-header';
+import { MobilePlanBrowser, MobilePlansProvider } from '@/components/mobile-plans/interactive';
 import { LandingPage } from '@/components/landing/landing-page';
 import { defaultMobileFilters } from '@/lib/mobile-plan-filters';
 import { pageMetadata } from '@/lib/page-metadata';
@@ -26,9 +24,16 @@ export default function RogersPage() {
       <a className="cp-mobile-skip" href={`#${page.mainId}`}>
         {page.skip}
       </a>
-      <UtilityBar content={mobileChrome} assets={mobileChromeAssets} planHref="#mobile-plans" />
-      <MobilePlansNavigation />
-      <PromoStrip content={rogersChrome} />
+      <SiteHeader
+        planHref="/mobile-plans#mobile-plans"
+        content={siteChromeWithPromo(
+          'Switching carriers? Keep your number. We handle the transfer.',
+          {
+            label: 'How switching works →',
+            href: '#switch',
+          },
+        )}
+      />
       <LandingPage
         content={page}
         slots={{
@@ -50,12 +55,7 @@ export default function RogersPage() {
           ),
         }}
       />
-      <Footer
-        brand={mobileChrome.brand}
-        content={mobileFooter}
-        assets={mobileChromeAssets}
-        brandHref="/"
-      />
+      <Footer brand="Canadian Plans" content={siteFooter} assets={componentAssets} brandHref="/" />
     </MobilePlansProvider>
   );
 }
