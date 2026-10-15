@@ -20,10 +20,17 @@ export const businessCopy = {
     businessName: { label: 'Business name', placeholder: 'e.g. Maple Street Café' },
     name: { label: 'Your name', placeholder: 'First and last name' },
     email: { label: 'Email', placeholder: 'you@business.ca' },
-    phone: { label: 'Phone', hint: 'Optional. Include the country code if outside Canada.', placeholder: '+1 604 555 0100' },
+    phone: {
+      label: 'Phone',
+      hint: 'Optional. Include the country code if outside Canada.',
+      placeholder: '+1 604 555 0100',
+    },
     postalCode: { label: 'Business postal code', placeholder: 'e.g. V3T 1Z2' },
     need: { label: 'What do you need?', placeholder: 'Choose one', indicator: '▾' },
-    notes: { label: 'Anything else? (optional)', placeholder: 'Number of staff, opening hours, current provider…' },
+    notes: {
+      label: 'Anything else? (optional)',
+      placeholder: 'Number of staff, opening hours, current provider…',
+    },
     submit: 'Request my quote',
     pending: 'Checking…',
     result:

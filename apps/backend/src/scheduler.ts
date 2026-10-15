@@ -5,7 +5,11 @@ import type { MachineScopeName } from '@canadian-plans/types';
 
 import { loadDeploymentEnvironment } from './config/deployment.js';
 import { isConnectionLevelError, logRequestError } from './http/logger.js';
-import { INITIAL_QUEUE_HEALTH_STATE, trackQueueHealth, type QueueHealthState } from './jobs/queueMonitor.js';
+import {
+  INITIAL_QUEUE_HEALTH_STATE,
+  trackQueueHealth,
+  type QueueHealthState,
+} from './jobs/queueMonitor.js';
 import type { MachineRegistry } from './machines/registry.js';
 import { createDefaultCatalogueSyncRouteDependencies } from './routes/catalogue-sync.js';
 import { createDefaultJobsRouteDependencies } from './routes/jobs.js';
@@ -281,7 +285,14 @@ export function createDefaultSchedulerDependencies(): BackendSchedulerDependenci
   let queueHealth = INITIAL_QUEUE_HEALTH_STATE;
   return {
     registry: jobs.registry,
-    runOutbox: (input) => runOutboxWithQueueMonitor(jobs, alerts, input, (state) => (queueHealth = state), () => queueHealth),
+    runOutbox: (input) =>
+      runOutboxWithQueueMonitor(
+        jobs,
+        alerts,
+        input,
+        (state) => (queueHealth = state),
+        () => queueHealth,
+      ),
     runCatalogueSync: (input) => catalogue.run(input),
     runSyntheticCheck: (input) => synthetic.run(input),
   };

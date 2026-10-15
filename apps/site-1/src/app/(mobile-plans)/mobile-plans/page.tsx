@@ -54,9 +54,16 @@ export default function MobilePlansPage() {
           <section id="brand-comparison" className="cp-mobile-section cp-mobile-comparison">
             <div className="cp-container">
               <CpSectionHeading
-                content={{ title: [copy.comparison.title], description: copy.comparison.description }}
+                content={{
+                  title: [copy.comparison.title],
+                  description: copy.comparison.description,
+                }}
               />
-              <div className="cp-mobile-brand-table" role="table" aria-label={copy.comparison.title}>
+              <div
+                className="cp-mobile-brand-table"
+                role="table"
+                aria-label={copy.comparison.title}
+              >
                 <div role="row" className="cp-mobile-brand-table-head">
                   <span role="columnheader" className="cp-mobile-brand-label">
                     <span className="sr-only">{chromeAccessibility.comparisonFeature}</span>

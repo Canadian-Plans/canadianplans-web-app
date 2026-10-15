@@ -23,7 +23,8 @@ export function requestLog(req: Request, res: Response, next: NextFunction): voi
       requestId: req.id,
       workspaceId: req.websiteContext?.workspaceId ?? paramWorkspaceId(req.params?.workspaceId),
       actorId: req.staffSession?.actorId ?? req.websiteContext?.credentialId,
-      route: (req.route?.path ? `${req.baseUrl}${req.route.path}` : req.baseUrl || req.path) || req.path,
+      route:
+        (req.route?.path ? `${req.baseUrl}${req.route.path}` : req.baseUrl || req.path) || req.path,
       durationMs,
       extra: { status: res.statusCode, method: req.method },
     });

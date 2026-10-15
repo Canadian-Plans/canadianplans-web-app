@@ -85,7 +85,9 @@ function isPiiFieldName(key: string): boolean {
 /** Redacts email/phone-shaped substrings inside a string that survives by key. */
 function scrubStringContent(value: string): string {
   const bounded =
-    value.length > MAX_STRING_LENGTH ? `${value.slice(0, MAX_STRING_LENGTH)}${TRUNCATED_SUFFIX}` : value;
+    value.length > MAX_STRING_LENGTH
+      ? `${value.slice(0, MAX_STRING_LENGTH)}${TRUNCATED_SUFFIX}`
+      : value;
   return bounded.replace(EMAIL_PATTERN, REDACTED).replace(PHONE_PATTERN, REDACTED);
 }
 

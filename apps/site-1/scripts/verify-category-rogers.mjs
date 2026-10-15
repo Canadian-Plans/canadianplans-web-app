@@ -206,7 +206,10 @@ try {
   await browser.close();
 }
 
-await writeFile(path.join(evidence, 'verification.json'), await format(JSON.stringify(report), { parser: 'json' }));
+await writeFile(
+  path.join(evidence, 'verification.json'),
+  await format(JSON.stringify(report), { parser: 'json' }),
+);
 process.stdout.write(
   `${JSON.stringify({ widths: report.widths, interactions: report.interactions, axe: { 390: report.axe390, 1440: report.axe1440 }, errors: report.errors }, null, 2)}\n`,
 );

@@ -38,9 +38,7 @@ export interface LedgerCheckpoint {
   signatureHex: string;
 }
 
-function canonicalCheckpointPayload(
-  checkpoint: Omit<LedgerCheckpoint, 'signatureHex'>,
-): string {
+function canonicalCheckpointPayload(checkpoint: Omit<LedgerCheckpoint, 'signatureHex'>): string {
   return JSON.stringify({
     schemaVersion: checkpoint.schemaVersion,
     sequence: checkpoint.sequence,
@@ -117,7 +115,10 @@ export async function reconcileLedger(options: ReconcileOptions): Promise<Reconc
     return { status: 'restore_fail_closed', reason: 'checkpoint_invalid_signature' };
   }
   const nowMs = now().getTime();
-  if (Number.isNaN(Date.parse(checkpoint.issuedAt)) || Number.isNaN(Date.parse(checkpoint.expiresAt))) {
+  if (
+    Number.isNaN(Date.parse(checkpoint.issuedAt)) ||
+    Number.isNaN(Date.parse(checkpoint.expiresAt))
+  ) {
     return { status: 'restore_fail_closed', reason: 'checkpoint_malformed' };
   }
   if (new Date(checkpoint.expiresAt).getTime() <= nowMs) {

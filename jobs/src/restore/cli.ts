@@ -100,7 +100,10 @@ async function main(): Promise<void> {
 
 main().catch((error: unknown) => {
   console.error(
-    JSON.stringify({ event: 'restore_failed', message: error instanceof Error ? error.message : String(error) }),
+    JSON.stringify({
+      event: 'restore_failed',
+      message: error instanceof Error ? error.message : String(error),
+    }),
   );
   createErrorTrackerFromEnv().captureException(error, {
     requestId: process.env.RESTORE_RUN_ID?.trim() || 'restore',

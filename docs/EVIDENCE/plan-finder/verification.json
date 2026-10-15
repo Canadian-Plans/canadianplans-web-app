@@ -919,12 +919,5 @@
     "/dev/components",
     "/plans"
   ],
-  "overflowWidths": [
-    320,
-    390,
-    768,
-    1024,
-    1280,
-    1440
-  ]
+  "overflowWidths": [320, 390, 768, 1024, 1280, 1440]
 }

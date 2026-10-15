@@ -14,7 +14,11 @@ import type { Decryptor, Encryptor } from '../backup/encryptor.js';
 
 const LEDGER_KEY = 'checkpoint-key';
 
-async function seedArchive(): Promise<{ reader: ArchiveReader; decryptor: Decryptor; encryptor: Encryptor }> {
+async function seedArchive(): Promise<{
+  reader: ArchiveReader;
+  decryptor: Decryptor;
+  encryptor: Encryptor;
+}> {
   const backend = new InMemoryArchiveBackend();
   const { publicKeyBase64, privateKeyBase64 } = generateTestRecipientKeyPair();
   const encryptor: Encryptor = new TestEnvelopeEncryptor(publicKeyBase64);
@@ -87,7 +91,8 @@ describe('runRestore', () => {
     const report = await runRestore(deps);
     expect(report.reopened).toBe(true);
     expect(report.measuredLossWindowMs).toBe(
-      new Date('2026-09-14T05:00:00.000Z').getTime() - new Date('2026-09-14T02:00:00.000Z').getTime(),
+      new Date('2026-09-14T05:00:00.000Z').getTime() -
+        new Date('2026-09-14T02:00:00.000Z').getTime(),
     );
   });
 
@@ -152,7 +157,10 @@ describe('runRestore', () => {
 
   it('fails closed when Auth recovery fails, even though the archive is fully verified', async () => {
     const deps = await baseDeps({
-      verifyAuthRecovery: async () => ({ status: 'failed' as const, detail: 'no_totp_factor_recovered' }),
+      verifyAuthRecovery: async () => ({
+        status: 'failed' as const,
+        detail: 'no_totp_factor_recovered',
+      }),
     })();
     const report = await runRestore(deps);
     expect(report.reopened).toBe(false);

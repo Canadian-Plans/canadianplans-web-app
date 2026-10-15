@@ -281,10 +281,15 @@ describe('document prerequisite (OPEN_INPUTS #15)', () => {
   it.each(['ready_for_delivery', 'dispatched', 'activated'] as const)(
     'blocks %s while a required document is unsatisfied',
     (to) => {
-      const from = to === 'ready_for_delivery' ? 'in_progress' : to === 'dispatched' ? 'ready_for_delivery' : 'dispatched';
-      expect(
-        validateTransition(from, to, { ...base, documentsSatisfied: false }),
-      ).toBe('documents_incomplete');
+      const from =
+        to === 'ready_for_delivery'
+          ? 'in_progress'
+          : to === 'dispatched'
+            ? 'ready_for_delivery'
+            : 'dispatched';
+      expect(validateTransition(from, to, { ...base, documentsSatisfied: false })).toBe(
+        'documents_incomplete',
+      );
     },
   );
 
@@ -299,9 +304,7 @@ describe('document prerequisite (OPEN_INPUTS #15)', () => {
   });
 
   it('treats an unevaluated checklist as satisfied (read-only projection)', () => {
-    expect(
-      validateTransition('in_progress', 'ready_for_delivery', base),
-    ).toBeUndefined();
+    expect(validateTransition('in_progress', 'ready_for_delivery', base)).toBeUndefined();
   });
 
   it('does not gate transitions outside ready/dispatch/activate', () => {

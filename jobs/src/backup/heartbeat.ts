@@ -28,9 +28,7 @@ export async function publishHeartbeat(writer: ArchiveWriter, heartbeat: Heartbe
 }
 
 export type HeartbeatReadResult =
-  | { status: 'ok'; heartbeat: Heartbeat }
-  | { status: 'missing' }
-  | { status: 'malformed' };
+  { status: 'ok'; heartbeat: Heartbeat } | { status: 'missing' } | { status: 'malformed' };
 
 export async function readLatestHeartbeat(reader: ArchiveReader): Promise<HeartbeatReadResult> {
   const bytes = await reader.getObject(HEARTBEAT_KEY);

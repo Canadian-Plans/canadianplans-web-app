@@ -1,7 +1,6 @@
 import { CpButton, CpFaqAccordion, type FaqItemContent } from '@canadian-plans/ui/canadian-plans';
 import type { RedesignFaqIntro } from '@content/category-redesign';
 
-
 /** FAQ section: intro + grey help card beside the accordion. Homepage and category pages. */
 export function RedesignFaqSection({
   intro,

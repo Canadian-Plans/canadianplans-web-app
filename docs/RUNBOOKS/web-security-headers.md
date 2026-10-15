@@ -11,14 +11,14 @@ Both apps set these on every route via Next's `headers()`
 ([`apps/site-1/next.config.ts`](../../apps/site-1/next.config.ts),
 [`apps/admin/next.config.ts`](../../apps/admin/next.config.ts)):
 
-| Header | Value | Purpose |
-|---|---|---|
-| `Content-Security-Policy` | see below | Restrict script/connect/img/frame sources |
-| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains; preload` | Force HTTPS |
-| `X-Frame-Options` | `DENY` (storefront/admin), `SAMEORIGIN` (`/studio`) | Clickjacking |
-| `X-Content-Type-Options` | `nosniff` | MIME sniffing |
-| `Referrer-Policy` | `strict-origin-when-cross-origin` | No PII in referrers (invariant 12) |
-| `Permissions-Policy` | `camera=(), microphone=(), geolocation=(), payment=(), usb=()` | Deny unused APIs |
+| Header                      | Value                                                          | Purpose                                   |
+| --------------------------- | -------------------------------------------------------------- | ----------------------------------------- |
+| `Content-Security-Policy`   | see below                                                      | Restrict script/connect/img/frame sources |
+| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains; preload`                 | Force HTTPS                               |
+| `X-Frame-Options`           | `DENY` (storefront/admin), `SAMEORIGIN` (`/studio`)            | Clickjacking                              |
+| `X-Content-Type-Options`    | `nosniff`                                                      | MIME sniffing                             |
+| `Referrer-Policy`           | `strict-origin-when-cross-origin`                              | No PII in referrers (invariant 12)        |
+| `Permissions-Policy`        | `camera=(), microphone=(), geolocation=(), payment=(), usb=()` | Deny unused APIs                          |
 
 ### CSP
 

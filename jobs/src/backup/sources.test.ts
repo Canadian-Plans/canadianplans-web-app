@@ -40,7 +40,16 @@ describe('SupabaseCliDatabaseExporter', () => {
     expect(result.historySchema).toEqual(bytes);
     expect(result.historyData).toEqual(bytes);
     expect(calls).toHaveLength(5);
-    expect(calls[0]).toEqual(['supabase', 'db', 'dump', '--db-url', 'postgres://source/db', '-f', '/tmp/fake-path', '--role-only']);
+    expect(calls[0]).toEqual([
+      'supabase',
+      'db',
+      'dump',
+      '--db-url',
+      'postgres://source/db',
+      '-f',
+      '/tmp/fake-path',
+      '--role-only',
+    ]);
     expect(calls[2]!.join(' ')).toContain('--use-copy --data-only');
   });
 
@@ -72,8 +81,20 @@ describe('PsqlReferencedObjectManifestSource', () => {
     const source = new PsqlReferencedObjectManifestSource('postgres://source/db', run);
     const objects = await source.listReferencedObjects();
     expect(objects).toEqual([
-      { workspaceId: 'w1', bucket: 'canadian-plans-site-1', objectKey: 'objects/abc', checksumSha256: 'deadbeef', sizeBytes: 1024 },
-      { workspaceId: 'w2', bucket: 'canadian-plans-site-1', objectKey: 'objects/def', checksumSha256: 'feedface', sizeBytes: 2048 },
+      {
+        workspaceId: 'w1',
+        bucket: 'canadian-plans-site-1',
+        objectKey: 'objects/abc',
+        checksumSha256: 'deadbeef',
+        sizeBytes: 1024,
+      },
+      {
+        workspaceId: 'w2',
+        bucket: 'canadian-plans-site-1',
+        objectKey: 'objects/def',
+        checksumSha256: 'feedface',
+        sizeBytes: 2048,
+      },
     ]);
   });
 
@@ -114,7 +135,8 @@ const r2Config: S3SigningConfig = {
 
 describe('S3R2SourceReader', () => {
   it('fetches an object with the SigV4-signed request', async () => {
-    const fakeFetch: typeof fetch = async () => new Response(new Uint8Array([1, 2, 3]), { status: 200 });
+    const fakeFetch: typeof fetch = async () =>
+      new Response(new Uint8Array([1, 2, 3]), { status: 200 });
     const reader = new S3R2SourceReader(() => r2Config, fakeFetch);
     expect(await reader.getObject('canadian-plans-site-1', 'objects/abc')).toEqual(
       new Uint8Array([1, 2, 3]),
@@ -130,9 +152,7 @@ describe('S3R2SourceReader', () => {
 
 describe('FakeR2SourceReader', () => {
   it('keys objects by bucket/key', async () => {
-    const reader = new FakeR2SourceReader(
-      new Map([['bucket/key', new Uint8Array([9])]]),
-    );
+    const reader = new FakeR2SourceReader(new Map([['bucket/key', new Uint8Array([9])]]));
     expect(await reader.getObject('bucket', 'key')).toEqual(new Uint8Array([9]));
     expect(await reader.getObject('bucket', 'other')).toBeUndefined();
   });

@@ -27,33 +27,65 @@ describe('trackQueueHealth', () => {
     state = outcome.nextState;
     expect(outcome.shouldAlert).toBe(false);
 
-    outcome = trackQueueHealth(state, { failed: 3, uncertain: 0 }, T0 + QUEUE_STUCK_THRESHOLD_MS + 1);
+    outcome = trackQueueHealth(
+      state,
+      { failed: 3, uncertain: 0 },
+      T0 + QUEUE_STUCK_THRESHOLD_MS + 1,
+    );
     expect(outcome.shouldAlert).toBe(true);
   });
 
   it('does not re-alert on every subsequent tick while still struggling', () => {
-    let state = trackQueueHealth(INITIAL_QUEUE_HEALTH_STATE, { failed: 1, uncertain: 0 }, T0).nextState;
-    let outcome = trackQueueHealth(state, { failed: 1, uncertain: 0 }, T0 + QUEUE_STUCK_THRESHOLD_MS + 1);
+    let state = trackQueueHealth(
+      INITIAL_QUEUE_HEALTH_STATE,
+      { failed: 1, uncertain: 0 },
+      T0,
+    ).nextState;
+    let outcome = trackQueueHealth(
+      state,
+      { failed: 1, uncertain: 0 },
+      T0 + QUEUE_STUCK_THRESHOLD_MS + 1,
+    );
     expect(outcome.shouldAlert).toBe(true);
     state = outcome.nextState;
 
-    outcome = trackQueueHealth(state, { failed: 1, uncertain: 0 }, T0 + QUEUE_STUCK_THRESHOLD_MS + 60_000);
+    outcome = trackQueueHealth(
+      state,
+      { failed: 1, uncertain: 0 },
+      T0 + QUEUE_STUCK_THRESHOLD_MS + 60_000,
+    );
     expect(outcome.shouldAlert).toBe(false);
   });
 
   it('resets and can alert again after a recovery and a new episode', () => {
-    let state = trackQueueHealth(INITIAL_QUEUE_HEALTH_STATE, { failed: 1, uncertain: 0 }, T0).nextState;
-    let outcome = trackQueueHealth(state, { failed: 1, uncertain: 0 }, T0 + QUEUE_STUCK_THRESHOLD_MS + 1);
+    let state = trackQueueHealth(
+      INITIAL_QUEUE_HEALTH_STATE,
+      { failed: 1, uncertain: 0 },
+      T0,
+    ).nextState;
+    let outcome = trackQueueHealth(
+      state,
+      { failed: 1, uncertain: 0 },
+      T0 + QUEUE_STUCK_THRESHOLD_MS + 1,
+    );
     state = outcome.nextState;
     expect(outcome.shouldAlert).toBe(true);
 
     // Recovers.
-    outcome = trackQueueHealth(state, { failed: 0, uncertain: 0 }, T0 + QUEUE_STUCK_THRESHOLD_MS + 2);
+    outcome = trackQueueHealth(
+      state,
+      { failed: 0, uncertain: 0 },
+      T0 + QUEUE_STUCK_THRESHOLD_MS + 2,
+    );
     state = outcome.nextState;
     expect(state.strugglingSinceMs).toBeUndefined();
 
     // Struggles again — a fresh episode restarts the clock.
-    outcome = trackQueueHealth(state, { failed: 1, uncertain: 0 }, T0 + 10 * QUEUE_STUCK_THRESHOLD_MS);
+    outcome = trackQueueHealth(
+      state,
+      { failed: 1, uncertain: 0 },
+      T0 + 10 * QUEUE_STUCK_THRESHOLD_MS,
+    );
     expect(outcome.shouldAlert).toBe(false);
   });
 });

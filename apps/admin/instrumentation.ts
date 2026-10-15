@@ -6,10 +6,7 @@ import { randomUUID } from 'node:crypto';
  * error boundary (`src/app/global-error.tsx`) cannot see. Never logs the
  * request URL/headers/body; only a fresh request id and the route.
  */
-export async function onRequestError(
-  error: unknown,
-  request: { path?: string },
-): Promise<void> {
+export async function onRequestError(error: unknown, request: { path?: string }): Promise<void> {
   const { captureException } = await import('./src/lib/error-tracking');
   captureException(error, {
     requestId: randomUUID(),

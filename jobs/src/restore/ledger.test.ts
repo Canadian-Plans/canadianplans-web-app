@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { reconcileLedger, signCheckpoint, type LedgerEventRecord, type LedgerReader } from './ledger.js';
+import {
+  reconcileLedger,
+  signCheckpoint,
+  type LedgerEventRecord,
+  type LedgerReader,
+} from './ledger.js';
 
 const KEY = 'checkpoint-verification-key';
 
@@ -80,26 +85,38 @@ describe('reconcileLedger', () => {
       now: () => new Date('2026-09-14T01:30:00.000Z'),
       replay: async () => {},
     });
-    expect(result).toEqual({ status: 'restore_fail_closed', reason: 'ledger_unavailable_or_malformed' });
+    expect(result).toEqual({
+      status: 'restore_fail_closed',
+      reason: 'ledger_unavailable_or_malformed',
+    });
   });
 
   it('fails closed on a tampered checkpoint signature', async () => {
     const events = [baseEvent()];
     const checkpoint = { ...checkpointFor(events), signatureHex: 'ff'.repeat(32) };
-    const reader: LedgerReader = { listEvents: async () => events, getFreshCheckpoint: async () => checkpoint };
+    const reader: LedgerReader = {
+      listEvents: async () => events,
+      getFreshCheckpoint: async () => checkpoint,
+    };
     const result = await reconcileLedger({
       reader,
       verificationKey: KEY,
       now: () => new Date('2026-09-14T01:30:00.000Z'),
       replay: async () => {},
     });
-    expect(result).toEqual({ status: 'restore_fail_closed', reason: 'checkpoint_invalid_signature' });
+    expect(result).toEqual({
+      status: 'restore_fail_closed',
+      reason: 'checkpoint_invalid_signature',
+    });
   });
 
   it('fails closed on a stale/expired checkpoint', async () => {
     const events = [baseEvent()];
     const checkpoint = checkpointFor(events, new Date('2026-09-01T00:00:00.000Z'));
-    const reader: LedgerReader = { listEvents: async () => events, getFreshCheckpoint: async () => checkpoint };
+    const reader: LedgerReader = {
+      listEvents: async () => events,
+      getFreshCheckpoint: async () => checkpoint,
+    };
     const result = await reconcileLedger({
       reader,
       verificationKey: KEY,
@@ -113,7 +130,10 @@ describe('reconcileLedger', () => {
     const events = [baseEvent(), baseEvent({ eventId: 'op-2' })];
     // Checkpoint only attests to one of the two events.
     const checkpoint = checkpointFor([events[0]!]);
-    const reader: LedgerReader = { listEvents: async () => events, getFreshCheckpoint: async () => checkpoint };
+    const reader: LedgerReader = {
+      listEvents: async () => events,
+      getFreshCheckpoint: async () => checkpoint,
+    };
     const result = await reconcileLedger({
       reader,
       verificationKey: KEY,
@@ -126,20 +146,29 @@ describe('reconcileLedger', () => {
   it('fails closed on an event carrying a forbidden raw PII field', async () => {
     const events = [{ ...baseEvent(), email: 'someone@example.com' }];
     const checkpoint = checkpointFor([baseEvent()]);
-    const reader: LedgerReader = { listEvents: async () => events, getFreshCheckpoint: async () => checkpoint };
+    const reader: LedgerReader = {
+      listEvents: async () => events,
+      getFreshCheckpoint: async () => checkpoint,
+    };
     const result = await reconcileLedger({
       reader,
       verificationKey: KEY,
       now: () => new Date('2026-09-14T01:30:00.000Z'),
       replay: async () => {},
     });
-    expect(result).toEqual({ status: 'restore_fail_closed', reason: 'ledger_unavailable_or_malformed' });
+    expect(result).toEqual({
+      status: 'restore_fail_closed',
+      reason: 'ledger_unavailable_or_malformed',
+    });
   });
 
   it('fails closed when replaying an event throws', async () => {
     const events = [baseEvent()];
     const checkpoint = checkpointFor(events);
-    const reader: LedgerReader = { listEvents: async () => events, getFreshCheckpoint: async () => checkpoint };
+    const reader: LedgerReader = {
+      listEvents: async () => events,
+      getFreshCheckpoint: async () => checkpoint,
+    };
     const result = await reconcileLedger({
       reader,
       verificationKey: KEY,

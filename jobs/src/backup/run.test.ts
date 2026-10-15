@@ -2,7 +2,11 @@ import { sha256Hex } from '@canadian-plans/adapters';
 import { describe, expect, it } from 'vitest';
 
 import { InMemoryArchiveBackend } from './archive-store.js';
-import { generateTestRecipientKeyPair, TestEnvelopeDecryptor, TestEnvelopeEncryptor } from './encryptor.js';
+import {
+  generateTestRecipientKeyPair,
+  TestEnvelopeDecryptor,
+  TestEnvelopeEncryptor,
+} from './encryptor.js';
 import { readLatestHeartbeat } from './heartbeat.js';
 import { InMemoryBackupLease } from './lease.js';
 import { verifyManifestArtifacts, backupManifestSchema } from './manifest.js';
@@ -113,7 +117,9 @@ describe('runBackup', () => {
   it('fails closed when a referenced object exists but its checksum does not match', async () => {
     const { backend, deps } = baseDeps();
     deps.r2Source = new FakeR2SourceReader(
-      new Map([['canadian-plans-site-1/objects/passport.pdf', new TextEncoder().encode('tampered')]]),
+      new Map([
+        ['canadian-plans-site-1/objects/passport.pdf', new TextEncoder().encode('tampered')],
+      ]),
     );
     await expect(runBackup(deps)).rejects.toBeInstanceOf(BackupIncompleteError);
     expect((await readLatestHeartbeat(backend.asReader())).status).toBe('missing');

@@ -1,9 +1,9 @@
 ---
 name: supabase
-description: "Implement or troubleshoot Canadian Plans Supabase Auth, Postgres/RLS, pooling, CLI or MCP access. Use for Supabase-specific behavior; generic SQL tuning belongs to supabase-postgres-best-practices."
+description: 'Implement or troubleshoot Canadian Plans Supabase Auth, Postgres/RLS, pooling, CLI or MCP access. Use for Supabase-specific behavior; generic SQL tuning belongs to supabase-postgres-best-practices.'
 metadata:
   author: supabase
-  version: "0.1.2"
+  version: '0.1.2'
 ---
 
 # Supabase

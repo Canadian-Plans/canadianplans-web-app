@@ -30,7 +30,12 @@ function releaseTag(): string {
 }
 
 function environmentTag(): string {
-  return process.env.NEXT_PUBLIC_DEPLOYMENT_ENV ?? process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? 'unknown';
+  return (
+    process.env.NEXT_PUBLIC_DEPLOYMENT_ENV ??
+    process.env.VERCEL_ENV ??
+    process.env.NODE_ENV ??
+    'unknown'
+  );
 }
 
 /**

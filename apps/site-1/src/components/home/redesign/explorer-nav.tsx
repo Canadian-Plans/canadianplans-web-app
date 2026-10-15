@@ -8,7 +8,13 @@ export interface ExplorerNavItem {
 }
 
 /** Sticky category nav with scroll-spy; becomes a swipeable chip row on narrow screens. */
-export function ExplorerNav({ items, label }: { items: readonly ExplorerNavItem[]; label: string }) {
+export function ExplorerNav({
+  items,
+  label,
+}: {
+  items: readonly ExplorerNavItem[];
+  label: string;
+}) {
   const [active, setActive] = useState(items[0]?.id ?? '');
   const lockUntil = useRef(0);
   const navRef = useRef<HTMLElement>(null);
@@ -36,7 +42,10 @@ export function ExplorerNav({ items, label }: { items: readonly ExplorerNavItem[
     const nav = navRef.current;
     const chip = nav?.querySelector<HTMLElement>(`[data-target="${active}"]`);
     if (nav && chip && nav.scrollWidth > nav.clientWidth) {
-      nav.scrollTo({ left: chip.offsetLeft - nav.clientWidth / 2 + chip.clientWidth / 2, behavior: 'smooth' });
+      nav.scrollTo({
+        left: chip.offsetLeft - nav.clientWidth / 2 + chip.clientWidth / 2,
+        behavior: 'smooth',
+      });
     }
   }, [active]);
 
@@ -51,7 +60,9 @@ export function ExplorerNav({ items, label }: { items: readonly ExplorerNavItem[
           aria-current={active === item.id ? 'true' : undefined}
           onClick={(event) => {
             event.preventDefault();
-            document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document
+              .getElementById(item.id)
+              ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
             lockUntil.current = Date.now() + 900;
             setActive(item.id);
           }}

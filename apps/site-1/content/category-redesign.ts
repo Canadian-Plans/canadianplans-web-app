@@ -31,7 +31,11 @@ export interface CategoryPageContent {
     readonly separator: string;
   };
   readonly hero: { readonly description: string; readonly action: string };
-  readonly quick?: { readonly eyebrow: string; readonly title: string; readonly description: string };
+  readonly quick?: {
+    readonly eyebrow: string;
+    readonly title: string;
+    readonly description: string;
+  };
   readonly faq: RedesignFaqIntro;
 }
 
@@ -57,7 +61,10 @@ export const categoryPages = {
       label: arrivalCopy.breadcrumbLabel,
       separator: arrivalCopy.separator,
     },
-    hero: { description: arrivalCopy.hero.description, action: banner('pre-arrival').banner.action },
+    hero: {
+      description: arrivalCopy.hero.description,
+      action: banner('pre-arrival').banner.action,
+    },
     quick: arrivalCopy.quick,
     faq: {
       eyebrow: arrivalCopy.faq.heading.eyebrow,
@@ -74,7 +81,10 @@ export const categoryPages = {
       label: internetCopy.breadcrumbLabel,
       separator: internetCopy.separator,
     },
-    hero: { description: internetCopy.hero.description, action: banner('home-internet').banner.action },
+    hero: {
+      description: internetCopy.hero.description,
+      action: banner('home-internet').banner.action,
+    },
     quick: internetCopy.quick,
     faq: {
       eyebrow: internetCopy.faq.heading.eyebrow,

@@ -114,7 +114,9 @@ export async function runBackup(deps: BackupRunDependencies): Promise<BackupRunS
       capturedAt: startedAt,
       sourceIds: deps.sourceIds,
       toolVersions: deps.toolVersions,
-      artifacts: [...namedArtifacts.entries()].map(([name, bytes]) => manifestArtifact(name, bytes)),
+      artifacts: [...namedArtifacts.entries()].map(([name, bytes]) =>
+        manifestArtifact(name, bytes),
+      ),
       counts: {
         referencedObjects: referenced.length,
         sanityDocuments: sanity.documentCount,

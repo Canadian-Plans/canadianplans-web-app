@@ -40,7 +40,12 @@ export default function HomePage() {
         <RedesignFaq />
         <FinalCta />
       </main>
-      <Footer brand={homeChrome.brand} content={homeFooter} assets={componentAssets} brandHref="/" />
+      <Footer
+        brand={homeChrome.brand}
+        content={homeFooter}
+        assets={componentAssets}
+        brandHref="/"
+      />
     </>
   );
 }

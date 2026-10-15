@@ -118,7 +118,12 @@ async function runSteps(
     },
   });
   if (submitOutcome.status !== 'created' && submitOutcome.status !== 'existing') {
-    return { status: 'failed', step: 'order', code: submitOutcome.status, durationMs: durationMs() };
+    return {
+      status: 'failed',
+      step: 'order',
+      code: submitOutcome.status,
+      durationMs: durationMs(),
+    };
   }
 
   setStep('cancel');
@@ -132,7 +137,12 @@ async function runSteps(
     reason: CANCEL_REASON,
   });
   if (cancelOutcome.status !== 'transitioned') {
-    return { status: 'failed', step: 'cancel', code: cancelOutcome.status, durationMs: durationMs() };
+    return {
+      status: 'failed',
+      step: 'cancel',
+      code: cancelOutcome.status,
+      durationMs: durationMs(),
+    };
   }
 
   return {

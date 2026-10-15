@@ -333,7 +333,9 @@
     max-width: var(--cp-about-dealer-copy-width);
   }
   .cp-about-final {
-    padding-block: var(--cp-space-96); /* Electric Blue: the grey dealer band needs air before the CTA. */
+    padding-block: var(
+      --cp-space-96
+    ); /* Electric Blue: the grey dealer band needs air before the CTA. */
   }
   .cp-about-final-card {
     padding: var(--cp-space-88) var(--cp-space-80);

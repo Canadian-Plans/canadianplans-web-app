@@ -1,9 +1,6 @@
 {
   "origin": "http://127.0.0.1:3127",
-  "routes": [
-    "/pre-arrival-sim/students",
-    "/pre-arrival-sim/from-india"
-  ],
+  "routes": ["/pre-arrival-sim/students", "/pre-arrival-sim/from-india"],
   "results": [
     {
       "route": "/pre-arrival-sim/students",
@@ -772,12 +769,6 @@
       "runtimeErrors": []
     }
   ],
-  "overflowWidths": [
-    320,
-    390,
-    768,
-    1024,
-    1440
-  ],
+  "overflowWidths": [320, 390, 768, 1024, 1440],
   "runtimeErrors": []
 }

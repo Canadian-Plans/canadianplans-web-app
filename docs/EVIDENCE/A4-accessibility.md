@@ -8,12 +8,12 @@ axe-core 4.10.2 (tags `wcag2a, wcag2aa, wcag21a, wcag21aa`) run against the
 storefront (`site-1`) dev server. **Zero serious or critical violations**, and
 exactly one `<h1>` on each page:
 
-| Route | serious/critical | lower (moderate/minor) | `<h1>` |
-|---|---|---|---|
-| `/` | 0 | 0 | 1 |
-| `/plans` | 0 | 0 | 1 |
-| `/order` | 0 | 0 | 1 ("Order your SIM plan") |
-| `/track` | 0 | 0 | 1 |
+| Route    | serious/critical | lower (moderate/minor) | `<h1>`                    |
+| -------- | ---------------- | ---------------------- | ------------------------- |
+| `/`      | 0                | 0                      | 1                         |
+| `/plans` | 0                | 0                      | 1                         |
+| `/order` | 0                | 0                      | 1 ("Order your SIM plan") |
+| `/track` | 0                | 0                      | 1                         |
 
 The `/order` scan above is the initial render. The full multi-step order flow
 (with a populated offer list from the backend) is scanned in CI by
@@ -27,7 +27,7 @@ one-`<h1>` assertion.
   (`.../sitemap.ts`) verified against the real handlers.
   - Production (`VERCEL_ENV=production`): `allow /`, `disallow /studio, /api`,
     `sitemap`/`host` set; sitemap lists `/ , /plans, /order, /track, /privacy,
-    /terms` as absolute canonical URLs.
+/terms` as absolute canonical URLs.
   - Non-production (preview/local): `Disallow: /` and an empty sitemap.
 - Preview/non-production pages carry a page-level `noindex` (root layout).
 - `/studio` is `noindex` (via `next-sanity` metadata) and disallowed in robots.

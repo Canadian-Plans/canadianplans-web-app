@@ -285,13 +285,13 @@
     padding: var(--cp-space-24) var(--cp-space-24) var(--cp-space-28);
   }
 }
-.cp-home-journey-card[data-tone='sky']{
+.cp-home-journey-card[data-tone='sky'] {
   background: var(--cp-color-sky);
 }
-.cp-home-journey-card[data-tone='lemon']{
+.cp-home-journey-card[data-tone='lemon'] {
   background: var(--cp-color-lemon);
 }
-.cp-home-journey-card[data-tone='pink']{
+.cp-home-journey-card[data-tone='pink'] {
   background: var(--cp-color-pink);
 }
 
@@ -546,4 +546,3 @@
 .cp-home-internet-price-mobile .cp-price-circle p {
   font-size: var(--cp-text-12);
 }
-

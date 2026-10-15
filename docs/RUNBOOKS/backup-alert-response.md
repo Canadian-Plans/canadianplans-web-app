@@ -38,7 +38,7 @@ of one cannot silently corrupt or hide from another.
 ## Immediate response
 
 1. **This alert on its own is not an active incident** — data is not lost;
-   it means the *next* backup either hasn't run recently enough or didn't
+   it means the _next_ backup either hasn't run recently enough or didn't
    verify cleanly. Do not disable public traffic or begin the
    [restore.md](restore.md) incident procedure based on this alert alone.
 2. Open the failed/triggering GitHub Actions run for `backup-monitor.yml`

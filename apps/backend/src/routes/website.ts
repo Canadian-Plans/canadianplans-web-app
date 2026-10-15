@@ -356,85 +356,87 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
     requireScope('leads:write'),
     requireEndpointRateLimit(dependencies.auth, 'leads', endpointRateLimits.leads),
     async (req, res) => {
-    const body = createLeadRequestSchema.safeParse(req.body);
-    if (!body.success) {
-      sendDomainError(res, req.id, 'validation_error', 400);
-      return;
-    }
+      const body = createLeadRequestSchema.safeParse(req.body);
+      if (!body.success) {
+        sendDomainError(res, req.id, 'validation_error', 400);
+        return;
+      }
 
-    try {
-      const ctx = websiteContext(req);
-      const result = await dependencies.leads.store.createLead({
-        workspaceId: ctx.workspaceId,
-        actorId: ctx.credentialId,
-        requestId: req.id,
-        contact: body.data.contact,
-        form: body.data.form,
-        productId: body.data.productId,
-        attribution: body.data.attribution,
-        consentVersion: body.data.consentVersion,
-      });
-      res.status(201).json({
-        lead: result.lead,
-        draftGrant: result.grant,
-        requestId: req.id,
-      });
-    } catch {
-      sendDomainError(res, req.id, 'internal_error', 500);
-    }
-  });
+      try {
+        const ctx = websiteContext(req);
+        const result = await dependencies.leads.store.createLead({
+          workspaceId: ctx.workspaceId,
+          actorId: ctx.credentialId,
+          requestId: req.id,
+          contact: body.data.contact,
+          form: body.data.form,
+          productId: body.data.productId,
+          attribution: body.data.attribution,
+          consentVersion: body.data.consentVersion,
+        });
+        res.status(201).json({
+          lead: result.lead,
+          draftGrant: result.grant,
+          requestId: req.id,
+        });
+      } catch {
+        sendDomainError(res, req.id, 'internal_error', 500);
+      }
+    },
+  );
 
   router.patch(
     '/leads/:leadId',
     requireScope('leads:write'),
     requireEndpointRateLimit(dependencies.auth, 'leads', endpointRateLimits.leads),
     async (req, res) => {
-    const leadId = z.uuid().safeParse(req.params['leadId']);
-    const body = updateLeadRequestSchema.safeParse(req.body);
-    if (!leadId.success || !body.success) {
-      sendDomainError(res, req.id, 'validation_error', 400);
-      return;
-    }
+      const leadId = z.uuid().safeParse(req.params['leadId']);
+      const body = updateLeadRequestSchema.safeParse(req.body);
+      if (!leadId.success || !body.success) {
+        sendDomainError(res, req.id, 'validation_error', 400);
+        return;
+      }
 
-    const grantToken = requireDraftGrant(req);
-    if (!grantToken) {
-      sendDomainError(res, req.id, 'draft_not_found', 401);
-      return;
-    }
-
-    try {
-      const ctx = websiteContext(req);
-      const outcome = await dependencies.leads.store.updateLead({
-        workspaceId: ctx.workspaceId,
-        actorId: ctx.credentialId,
-        requestId: req.id,
-        leadId: leadId.data,
-        grantToken,
-        contact: body.data.contact,
-        form: body.data.form,
-        productId: body.data.productId,
-        attribution: body.data.attribution,
-        consentVersion: body.data.consentVersion,
-      });
-
-      if (outcome.status === 'grant_invalid') {
+      const grantToken = requireDraftGrant(req);
+      if (!grantToken) {
         sendDomainError(res, req.id, 'draft_not_found', 401);
         return;
       }
-      if (outcome.status === 'grant_expired') {
-        sendDomainError(res, req.id, 'draft_expired', 401);
-        return;
-      }
-      if (outcome.status === 'draft_submitted') {
-        sendDomainError(res, req.id, 'draft_already_submitted', 409);
-        return;
-      }
 
-      res.json({ lead: outcome.lead, requestId: req.id });
-    } catch {
-      sendDomainError(res, req.id, 'internal_error', 500);
-    }
-  });
+      try {
+        const ctx = websiteContext(req);
+        const outcome = await dependencies.leads.store.updateLead({
+          workspaceId: ctx.workspaceId,
+          actorId: ctx.credentialId,
+          requestId: req.id,
+          leadId: leadId.data,
+          grantToken,
+          contact: body.data.contact,
+          form: body.data.form,
+          productId: body.data.productId,
+          attribution: body.data.attribution,
+          consentVersion: body.data.consentVersion,
+        });
+
+        if (outcome.status === 'grant_invalid') {
+          sendDomainError(res, req.id, 'draft_not_found', 401);
+          return;
+        }
+        if (outcome.status === 'grant_expired') {
+          sendDomainError(res, req.id, 'draft_expired', 401);
+          return;
+        }
+        if (outcome.status === 'draft_submitted') {
+          sendDomainError(res, req.id, 'draft_already_submitted', 409);
+          return;
+        }
+
+        res.json({ lead: outcome.lead, requestId: req.id });
+      } catch {
+        sendDomainError(res, req.id, 'internal_error', 500);
+      }
+    },
+  );
 
   // ---- Customer document uploads (T17) -----------------------------------
   // The service credential proves the workspace; the draft grant proves which

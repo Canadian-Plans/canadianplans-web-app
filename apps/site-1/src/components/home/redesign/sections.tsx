@@ -1,9 +1,4 @@
-import {
-  CpButton,
-  CpCtaBand,
-  CpFeatureRow,
-  CpSwipeRow,
-} from '@canadian-plans/ui/canadian-plans';
+import { CpButton, CpCtaBand, CpFeatureRow, CpSwipeRow } from '@canadian-plans/ui/canadian-plans';
 import {
   categoryHrefs,
   homeRedesign,
@@ -191,7 +186,14 @@ export function Testimonials() {
 
 /* ---------- FAQ ---------- */
 export function RedesignFaq() {
-  return <RedesignFaqSection intro={homeRedesign.faq} items={homeRedesignFaq} name="home-faq" defaultOpenId="carrier" />;
+  return (
+    <RedesignFaqSection
+      intro={homeRedesign.faq}
+      items={homeRedesignFaq}
+      name="home-faq"
+      defaultOpenId="carrier"
+    />
+  );
 }
 
 /* ---------- Final CTA ---------- */

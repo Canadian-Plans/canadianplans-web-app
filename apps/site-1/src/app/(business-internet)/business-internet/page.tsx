@@ -38,7 +38,12 @@ export default function BusinessInternetPage() {
         faqItems={businessFaq}
         plans={<BusinessQuoteForm />}
       />
-      <Footer brand={businessChrome.brand} content={businessFooter} assets={businessAssets} brandHref="/" />
+      <Footer
+        brand={businessChrome.brand}
+        content={businessFooter}
+        assets={businessAssets}
+        brandHref="/"
+      />
     </>
   );
 }

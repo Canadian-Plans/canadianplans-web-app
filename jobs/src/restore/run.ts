@@ -1,6 +1,10 @@
 import type { ArchiveReader } from '../backup/archive-store.js';
 import type { Decryptor } from '../backup/encryptor.js';
-import { backupManifestSchema, verifyManifestArtifacts, type BackupManifest } from '../backup/manifest.js';
+import {
+  backupManifestSchema,
+  verifyManifestArtifacts,
+  type BackupManifest,
+} from '../backup/manifest.js';
 import { reconcileLedger, type LedgerEventRecord, type LedgerReader } from './ledger.js';
 
 /**
@@ -127,11 +131,18 @@ export async function runRestore(deps: RestoreDependencies): Promise<RestoreRepo
   }
   const verification = verifyManifestArtifacts(manifest, decrypted);
   if (verification.ok === false) {
-    return fail(deps.runId, 'artifact_fetch_and_decrypt', 'artifact_verification_failed', startedAt, now, {
-      manifest,
-      missingArtifacts: [...new Set([...missingArtifacts, ...verification.missing])],
-      mismatchedArtifacts: verification.mismatched,
-    });
+    return fail(
+      deps.runId,
+      'artifact_fetch_and_decrypt',
+      'artifact_verification_failed',
+      startedAt,
+      now,
+      {
+        manifest,
+        missingArtifacts: [...new Set([...missingArtifacts, ...verification.missing])],
+        mismatchedArtifacts: verification.mismatched,
+      },
+    );
   }
 
   if (deps.applyArtifact) {
@@ -142,10 +153,17 @@ export async function runRestore(deps: RestoreDependencies): Promise<RestoreRepo
   // database is never sufficient proof of usable access on its own.
   const authRecovery = await deps.verifyAuthRecovery();
   if (authRecovery.status !== 'ok') {
-    return fail(deps.runId, 'auth_recovery', authRecovery.detail ?? 'auth_recovery_failed', startedAt, now, {
-      manifest,
-      authRecovery,
-    });
+    return fail(
+      deps.runId,
+      'auth_recovery',
+      authRecovery.detail ?? 'auth_recovery_failed',
+      startedAt,
+      now,
+      {
+        manifest,
+        authRecovery,
+      },
+    );
   }
 
   // 4. Reconcile the independent ledger and replay before anything reopens.
@@ -166,12 +184,19 @@ export async function runRestore(deps: RestoreDependencies): Promise<RestoreRepo
   // consistency, RLS probes) — supplied by the caller against the isolated target.
   const postRestoreChecks = deps.postRestoreChecks ? await deps.postRestoreChecks() : undefined;
   if (postRestoreChecks && !postRestoreChecks.ok) {
-    return fail(deps.runId, 'post_restore_checks', postRestoreChecks.detail ?? 'post_restore_checks_failed', startedAt, now, {
-      manifest,
-      authRecovery,
-      ledgerReplayedEventIds: ledgerResult.replayedEventIds,
-      postRestoreChecks,
-    });
+    return fail(
+      deps.runId,
+      'post_restore_checks',
+      postRestoreChecks.detail ?? 'post_restore_checks_failed',
+      startedAt,
+      now,
+      {
+        manifest,
+        authRecovery,
+        ledgerReplayedEventIds: ledgerResult.replayedEventIds,
+        postRestoreChecks,
+      },
+    );
   }
 
   const completedAt = now();

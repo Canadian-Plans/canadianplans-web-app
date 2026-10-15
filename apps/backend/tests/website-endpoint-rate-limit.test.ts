@@ -18,10 +18,7 @@ import type {
 import type { StaffStore } from '../src/staff/store.js';
 import type { WebsiteCredentialStore } from '../src/website/store.js';
 import { generateServiceSecret } from '../src/website/credential.js';
-import {
-  DEFAULT_ENDPOINT_RATE_LIMITS,
-  loadEndpointRateLimits,
-} from '../src/website/session.js';
+import { DEFAULT_ENDPOINT_RATE_LIMITS, loadEndpointRateLimits } from '../src/website/session.js';
 
 const WORKSPACE = '10000000-0000-4000-8000-000000000101';
 const CREDENTIAL = '80000000-0000-4000-8000-000000000201';
@@ -199,7 +196,10 @@ describe('loadEndpointRateLimits', () => {
   });
 
   it('rejects non-positive overrides', () => {
-    const limits = loadEndpointRateLimits({ RATE_LIMIT_LEADS_MAX: '0', RATE_LIMIT_LEADS_WINDOW: '-1' });
+    const limits = loadEndpointRateLimits({
+      RATE_LIMIT_LEADS_MAX: '0',
+      RATE_LIMIT_LEADS_WINDOW: '-1',
+    });
     expect(limits.leads).toEqual(DEFAULT_ENDPOINT_RATE_LIMITS.leads);
   });
 });

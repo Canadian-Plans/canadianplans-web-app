@@ -101,9 +101,7 @@
           ],
           "overallSavingsMs": 330,
           "overallSavingsBytes": 152446,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -560,9 +558,7 @@
               "duration": 35.336000000000006
             }
           ],
-          "sortedBy": [
-            "duration"
-          ]
+          "sortedBy": ["duration"]
         }
       },
       {
@@ -626,9 +622,7 @@
           ],
           "overallSavingsMs": 710,
           "overallSavingsBytes": 152348,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -1061,9 +1055,7 @@
           ],
           "overallSavingsMs": 320,
           "overallSavingsBytes": 152446,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -1525,9 +1517,7 @@
               "duration": 10.983999999999998
             }
           ],
-          "sortedBy": [
-            "duration"
-          ]
+          "sortedBy": ["duration"]
         }
       },
       {
@@ -1591,9 +1581,7 @@
           ],
           "overallSavingsMs": 340,
           "overallSavingsBytes": 152446,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -2060,9 +2048,7 @@
           ],
           "overallSavingsMs": 770,
           "overallSavingsBytes": 152348,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -2495,9 +2481,7 @@
           ],
           "overallSavingsMs": 450,
           "overallSavingsBytes": 152446,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {

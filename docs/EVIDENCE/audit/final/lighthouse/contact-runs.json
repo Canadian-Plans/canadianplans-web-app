@@ -101,9 +101,7 @@
           ],
           "overallSavingsMs": 170,
           "overallSavingsBytes": 146464,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -536,9 +534,7 @@
           ],
           "overallSavingsMs": 320,
           "overallSavingsBytes": 146464,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -1000,9 +996,7 @@
               "duration": 10.031999999999996
             }
           ],
-          "sortedBy": [
-            "duration"
-          ]
+          "sortedBy": ["duration"]
         }
       },
       {
@@ -1066,9 +1060,7 @@
           ],
           "overallSavingsMs": 320,
           "overallSavingsBytes": 146464,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -1535,9 +1527,7 @@
           ],
           "overallSavingsMs": 310,
           "overallSavingsBytes": 146464,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -2004,9 +1994,7 @@
           ],
           "overallSavingsMs": 170,
           "overallSavingsBytes": 146464,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -2473,9 +2461,7 @@
           ],
           "overallSavingsMs": 310,
           "overallSavingsBytes": 146464,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {

@@ -736,9 +736,7 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         orderId: orderId.data,
         expectedVersion: body.data.expectedVersion,
         ...transition,
-        ...(documentOverrideReason
-          ? { documentOverride: { reason: documentOverrideReason } }
-          : {}),
+        ...(documentOverrideReason ? { documentOverride: { reason: documentOverrideReason } } : {}),
       });
       switch (outcome.status) {
         case 'transitioned':

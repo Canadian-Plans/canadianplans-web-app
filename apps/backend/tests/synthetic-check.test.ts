@@ -24,7 +24,9 @@ const QUOTE_FIXTURE: Quote = {
   productId: PRODUCT,
   offerVersionId: '91000000-0000-4000-8000-000000000901',
   currency: 'CAD',
-  charges: [{ code: 'recurring', label: 'Recurring charge', amount: { amountMinor: 1, currency: 'CAD' } }],
+  charges: [
+    { code: 'recurring', label: 'Recurring charge', amount: { amountMinor: 1, currency: 'CAD' } },
+  ],
   total: { amountMinor: 1, currency: 'CAD' },
   amountPayableToday: { amountMinor: 1, currency: 'CAD' },
   paymentRequired: false,
@@ -88,22 +90,46 @@ describe('runSyntheticOrderCheck', () => {
   it('reports the quote step when quote creation fails', async () => {
     const dependencies = baseDependencies();
     dependencies.quotes = { createQuote: async () => ({ status: 'offer_unavailable' }) };
-    const result = await runSyntheticOrderCheck(dependencies, { actorId: ACTOR, requestId: REQUEST });
-    expect(result).toEqual({ status: 'failed', step: 'quote', code: 'offer_unavailable', durationMs: expect.any(Number) });
+    const result = await runSyntheticOrderCheck(dependencies, {
+      actorId: ACTOR,
+      requestId: REQUEST,
+    });
+    expect(result).toEqual({
+      status: 'failed',
+      step: 'quote',
+      code: 'offer_unavailable',
+      durationMs: expect.any(Number),
+    });
   });
 
   it('reports the order step when order submission fails', async () => {
     const dependencies = baseDependencies();
     dependencies.orders = { submit: async () => ({ status: 'quote_expired' }) };
-    const result = await runSyntheticOrderCheck(dependencies, { actorId: ACTOR, requestId: REQUEST });
-    expect(result).toEqual({ status: 'failed', step: 'order', code: 'quote_expired', durationMs: expect.any(Number) });
+    const result = await runSyntheticOrderCheck(dependencies, {
+      actorId: ACTOR,
+      requestId: REQUEST,
+    });
+    expect(result).toEqual({
+      status: 'failed',
+      step: 'order',
+      code: 'quote_expired',
+      durationMs: expect.any(Number),
+    });
   });
 
   it('reports the cancel step when the cleanup transition fails', async () => {
     const dependencies = baseDependencies();
     dependencies.transitions = { transition: async () => ({ status: 'version_conflict' }) };
-    const result = await runSyntheticOrderCheck(dependencies, { actorId: ACTOR, requestId: REQUEST });
-    expect(result).toEqual({ status: 'failed', step: 'cancel', code: 'version_conflict', durationMs: expect.any(Number) });
+    const result = await runSyntheticOrderCheck(dependencies, {
+      actorId: ACTOR,
+      requestId: REQUEST,
+    });
+    expect(result).toEqual({
+      status: 'failed',
+      step: 'cancel',
+      code: 'version_conflict',
+      durationMs: expect.any(Number),
+    });
   });
 
   it('reports the step in progress when a dependency throws unexpectedly', async () => {
@@ -113,7 +139,15 @@ describe('runSyntheticOrderCheck', () => {
         throw new Error('connection_refused');
       },
     };
-    const result = await runSyntheticOrderCheck(dependencies, { actorId: ACTOR, requestId: REQUEST });
-    expect(result).toEqual({ status: 'failed', step: 'lead', code: 'connection_refused', durationMs: expect.any(Number) });
+    const result = await runSyntheticOrderCheck(dependencies, {
+      actorId: ACTOR,
+      requestId: REQUEST,
+    });
+    expect(result).toEqual({
+      status: 'failed',
+      step: 'lead',
+      code: 'connection_refused',
+      durationMs: expect.any(Number),
+    });
   });
 });

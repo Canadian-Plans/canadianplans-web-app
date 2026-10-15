@@ -11,7 +11,11 @@ import {
   runBackup,
   type DatabaseExporter,
 } from '../src/backup/index.js';
-import { FakeR2SourceReader, FakeReferencedObjectManifestSource, FakeSanityExporter } from '../src/backup/sources.js';
+import {
+  FakeR2SourceReader,
+  FakeReferencedObjectManifestSource,
+  FakeSanityExporter,
+} from '../src/backup/sources.js';
 import { runMonitor, requiresAlert } from '../src/monitor/index.js';
 import { runRetention } from '../src/retention/index.js';
 import { runRestore, signCheckpoint, type LedgerReader } from '../src/restore/index.js';
@@ -156,7 +160,8 @@ describe('A4 backup/restore rehearsal (synthetic data, local isolated harness)',
     // Measured, not guaranteed (REQ 43): backup captured at 02:00, incident
     // detected at 05:30 the next day — the actual synthetic loss window.
     expect(restoreReport.measuredLossWindowMs).toBe(
-      new Date('2026-09-15T05:30:00.000Z').getTime() - new Date('2026-09-14T02:00:00.000Z').getTime(),
+      new Date('2026-09-15T05:30:00.000Z').getTime() -
+        new Date('2026-09-14T02:00:00.000Z').getTime(),
     );
 
     // eslint-disable-next-line no-console
@@ -184,7 +189,11 @@ describe('A4 backup/restore rehearsal (synthetic data, local isolated harness)',
           },
         ]),
         r2Source: new FakeR2SourceReader(new Map()),
-        sanity: new FakeSanityExporter({ archive: new Uint8Array(), documentCount: 0, assetCount: 0 }),
+        sanity: new FakeSanityExporter({
+          archive: new Uint8Array(),
+          documentCount: 0,
+          assetCount: 0,
+        }),
         sourceIds: {},
         toolVersions: {},
       }),
@@ -228,7 +237,9 @@ describe('A4 backup/restore rehearsal (synthetic data, local isolated harness)',
     };
 
     // Case 1: corrupt ciphertext (manifest tampered after upload).
-    const corruptedManifest = Buffer.from((await backend.asReader().getObject('run-negative/manifest.json.enc'))!);
+    const corruptedManifest = Buffer.from(
+      (await backend.asReader().getObject('run-negative/manifest.json.enc'))!,
+    );
     corruptedManifest.writeUInt8(corruptedManifest.readUInt8(5) ^ 0xff, 5);
     const corruptBackend = new InMemoryArchiveBackend();
     await corruptBackend.asWriter().putObject('run-negative/manifest.json.enc', corruptedManifest);
@@ -238,10 +249,12 @@ describe('A4 backup/restore rehearsal (synthetic data, local isolated harness)',
 
     // Case 2: missing object (artifact key never uploaded).
     const missingBackend = new InMemoryArchiveBackend();
-    await missingBackend.asWriter().putObject(
-      'run-negative/manifest.json.enc',
-      await encryptor.encrypt(new TextEncoder().encode(JSON.stringify(manifest))),
-    );
+    await missingBackend
+      .asWriter()
+      .putObject(
+        'run-negative/manifest.json.enc',
+        await encryptor.encrypt(new TextEncoder().encode(JSON.stringify(manifest))),
+      );
     const missingReport = await runRestore({ ...goodDeps, reader: missingBackend.asReader() });
     expect(missingReport.reopened).toBe(false);
     expect(missingReport.failedStage).toBe('artifact_fetch_and_decrypt');

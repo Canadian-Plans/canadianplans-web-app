@@ -50,7 +50,9 @@ describe('runMonitor', () => {
 
   it('alerts on a malformed heartbeat rather than treating it as success', async () => {
     const backend = new InMemoryArchiveBackend();
-    await backend.asWriter().putObject('heartbeat/latest.json', new TextEncoder().encode('not json'));
+    await backend
+      .asWriter()
+      .putObject('heartbeat/latest.json', new TextEncoder().encode('not json'));
     const status = await runMonitor({ reader: backend.asReader() });
     expect(status).toEqual({ status: 'malformed' });
     expect(requiresAlert(status)).toBe(true);

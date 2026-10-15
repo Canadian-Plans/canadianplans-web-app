@@ -733,7 +733,9 @@
   --cp-color-control-border: var(--cp-color-muted);
   --cp-focus-color: var(--cp-color-blue);
   --cp-color-sun: #ffb547;
-  --cp-color-blush: var(--cp-color-amber); /* Electric Blue: pink retired; badges and dark-band eyebrows use amber. */
+  --cp-color-blush: var(
+    --cp-color-amber
+  ); /* Electric Blue: pink retired; badges and dark-band eyebrows use amber. */
   --cp-color-sky: #eef2ff;
   --cp-color-mint: #ddf7eb;
   --cp-color-lemon: #fff1d6;
@@ -829,7 +831,8 @@
   --cp-rd-catsec-gap: 10rem;
   --cp-rd-catsec-gap-stacked: 6rem;
   --cp-rd-scroll-margin-stacked: 5.25rem;
-  --cp-rd-chipbar-shadow: 0 0.0625rem 0 var(--cp-color-line), 0 0.5rem 1rem -0.75rem rgb(17 24 39 / 0.25);
+  --cp-rd-chipbar-shadow:
+    0 0.0625rem 0 var(--cp-color-line), 0 0.5rem 1rem -0.75rem rgb(17 24 39 / 0.25);
   --cp-rd-photo-label-opacity: 0.75;
   --cp-rd-how-basis: 26.25rem;
   --cp-rd-how-photo-height: 28.75rem;

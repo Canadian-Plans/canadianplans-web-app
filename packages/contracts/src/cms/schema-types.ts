@@ -374,9 +374,7 @@ const linkObject = defineType({
       hidden: ({ parent }) => readStringField(parent, 'kind') !== 'internal',
       validation: (Rule) =>
         Rule.custom((value, context) =>
-          readStringField(context.parent, 'kind') === 'internal' && !value
-            ? 'Select a page'
-            : true,
+          readStringField(context.parent, 'kind') === 'internal' && !value ? 'Select a page' : true,
         ),
     }),
     defineField({

@@ -53,7 +53,7 @@ Three outcomes matter:
      (`canadianplans.com`) is verified with sending enabled, and the message
      log is live and searchable (real delivered messages returned for this
      account). The diagnostic path itself is real, not aspirational.
-   - **Note (needs owner verification):** exact Resend *dashboard* navigation
+   - **Note (needs owner verification):** exact Resend _dashboard_ navigation
      (menu labels, URL paths in the web UI) is not captured in this
      repository and may change between Resend UI releases — confirm the
      current path in the Resend dashboard rather than relying on this

@@ -13,16 +13,16 @@ Contract first, code second. An API is a promise; design it as one.
 2. **Write the contract before code**: for each endpoint — method, path, auth requirement, request schema, response schema, every status code it can return, error shapes. This table IS the deliverable to review.
 3. **Apply the rules table:**
 
-| Concern | Rule |
-|---|---|
-| Status codes | 200 read/update, 201 create (+Location), 204 delete, 400 malformed, 401 unauthenticated, 403 unauthorized, 404 missing OR hidden-by-authz, 409 conflict, 422 valid syntax/invalid semantics, 429 rate limited |
-| Errors | One machine-readable shape everywhere: `{ "error": { "code": "invoice_not_found", "message": "...", "details": [...] } }`. Codes stable and documented; messages human, never leaking internals |
-| Pagination | Mandatory on every collection. Cursor-based default (`?cursor=&limit=`, response carries `next_cursor`); hard max limit |
-| Filtering/sort | Explicit allowlist of fields; never pass client input into query construction |
-| Idempotency | GET/PUT/DELETE idempotent by design; POST that creates accepts `Idempotency-Key` header when clients may retry (payments: mandatory) |
-| Versioning | Additive changes (new optional fields) need no version. Breaking changes → new major (`/v2/`) + deprecation window on old. Never silently change semantics |
-| Auth | Every endpoint authenticated by default; public endpoints are the explicit exception, documented |
-| Timeouts/limits | Server-side timeout, request size limit, rate limit per principal — decided at design time, not incident time |
+| Concern         | Rule                                                                                                                                                                                                          |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Status codes    | 200 read/update, 201 create (+Location), 204 delete, 400 malformed, 401 unauthenticated, 403 unauthorized, 404 missing OR hidden-by-authz, 409 conflict, 422 valid syntax/invalid semantics, 429 rate limited |
+| Errors          | One machine-readable shape everywhere: `{ "error": { "code": "invoice_not_found", "message": "...", "details": [...] } }`. Codes stable and documented; messages human, never leaking internals               |
+| Pagination      | Mandatory on every collection. Cursor-based default (`?cursor=&limit=`, response carries `next_cursor`); hard max limit                                                                                       |
+| Filtering/sort  | Explicit allowlist of fields; never pass client input into query construction                                                                                                                                 |
+| Idempotency     | GET/PUT/DELETE idempotent by design; POST that creates accepts `Idempotency-Key` header when clients may retry (payments: mandatory)                                                                          |
+| Versioning      | Additive changes (new optional fields) need no version. Breaking changes → new major (`/v2/`) + deprecation window on old. Never silently change semantics                                                    |
+| Auth            | Every endpoint authenticated by default; public endpoints are the explicit exception, documented                                                                                                              |
+| Timeouts/limits | Server-side timeout, request size limit, rate limit per principal — decided at design time, not incident time                                                                                                 |
 
 4. **Design for the consumer**: write the client code snippet for the top use case first. If it's awkward, the API is wrong.
 5. **Walk the edge cases**: empty collection (200 + `[]`, not 404), partial batch failure (207 or per-item status — pick one convention), concurrent update (ETag/version field → 409), large payloads.

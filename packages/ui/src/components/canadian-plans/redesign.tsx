@@ -246,13 +246,7 @@ export function CpFeatureCard({
   );
 }
 
-export function CpFeatureGrid({
-  columns = 3,
-  children,
-}: {
-  columns?: 2 | 3;
-  children: ReactNode;
-}) {
+export function CpFeatureGrid({ columns = 3, children }: { columns?: 2 | 3; children: ReactNode }) {
   return (
     <div className="cp-feature-grid" data-columns={columns}>
       {children}

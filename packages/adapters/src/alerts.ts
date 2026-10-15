@@ -93,19 +93,22 @@ export class EmailOwnerAlertChannel implements OwnerAlertChannel {
   }
 
   async send(alert: OwnerAlert): Promise<void> {
-    const response = await this.fetchImpl(`${this.config.apiUrl ?? 'https://api.resend.com'}/emails`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${this.config.apiKey}`,
-        'Content-Type': 'application/json',
+    const response = await this.fetchImpl(
+      `${this.config.apiUrl ?? 'https://api.resend.com'}/emails`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: `${this.config.fromName} <${this.config.fromAddress}>`,
+          to: [this.config.ownerEmail],
+          subject: alertSubject(alert.kind),
+          text: `${alertSubject(alert.kind)}\n\nDetail: ${alert.detail}\nOccurred at: ${alert.occurredAt}`,
+        }),
       },
-      body: JSON.stringify({
-        from: `${this.config.fromName} <${this.config.fromAddress}>`,
-        to: [this.config.ownerEmail],
-        subject: alertSubject(alert.kind),
-        text: `${alertSubject(alert.kind)}\n\nDetail: ${alert.detail}\nOccurred at: ${alert.occurredAt}`,
-      }),
-    });
+    );
     if (!response.ok) throw new Error(`owner_alert_email_http_${response.status}`);
     const parsed = resendResponseSchema.safeParse(await response.json());
     if (!parsed.success || !parsed.data.id) throw new Error('owner_alert_email_missing_id');

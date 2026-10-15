@@ -72,7 +72,11 @@ export function BusinessQuoteForm() {
   }
 
   return (
-    <section id="quote" className="cp-container cp-business-quote" aria-labelledby="business-quote-title">
+    <section
+      id="quote"
+      className="cp-container cp-business-quote"
+      aria-labelledby="business-quote-title"
+    >
       <div className="cp-business-quote-intro">
         <p className="cp-rd-eyebrow cp-rd-eyebrow-mint">{copy.eyebrow}</p>
         <h2 id="business-quote-title" className="cp-rd-heading">
@@ -91,7 +95,11 @@ export function BusinessQuoteForm() {
         aria-busy={pending}
       >
         <fieldset className="cp-business-quote-fields" disabled={pending}>
-          <FormField id="business-businessName" label={copy.businessName.label} error={errors.businessName}>
+          <FormField
+            id="business-businessName"
+            label={copy.businessName.label}
+            error={errors.businessName}
+          >
             <Input
               className="cp-business-input"
               name="businessName"
@@ -128,7 +136,12 @@ export function BusinessQuoteForm() {
               autoComplete="email"
             />
           </FormField>
-          <FormField id="business-phone" label={copy.phone.label} hint={copy.phone.hint} error={errors.phone}>
+          <FormField
+            id="business-phone"
+            label={copy.phone.label}
+            hint={copy.phone.hint}
+            error={errors.phone}
+          >
             <Input
               className="cp-business-input"
               name="phone"
@@ -140,7 +153,11 @@ export function BusinessQuoteForm() {
               autoComplete="tel"
             />
           </FormField>
-          <FormField id="business-postalCode" label={copy.postalCode.label} error={errors.postalCode}>
+          <FormField
+            id="business-postalCode"
+            label={copy.postalCode.label}
+            error={errors.postalCode}
+          >
             <Input
               className="cp-business-input"
               name="postalCode"

@@ -672,9 +672,42 @@
 }
 
 /* Electric Blue category template (14 October 2026): address check beside its intro. */
-.cp-cat-address { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cp-space-40) var(--cp-space-72); padding-bottom: var(--cp-space-48); scroll-margin-top: var(--cp-space-24); }
-.cp-cat-address-copy { flex: 1 1 var(--cp-rd-faq-intro-basis); min-width: 0; display: flex; flex-direction: column; gap: var(--cp-space-16); }
-.cp-cat-address-price { margin: 0; font-size: var(--cp-text-15); color: var(--cp-color-muted); }
-.cp-cat-address-price strong { font-size: var(--cp-text-24); font-weight: var(--cp-weight-extra-bold); color: var(--cp-color-ink); }
-.cp-cat-address-trust { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--cp-space-8); font-size: var(--cp-text-15); font-weight: var(--cp-weight-bold); }
-.cp-cat-address > .cp-internet-address-card { flex: 1 1 var(--cp-rd-faq-list-basis); min-width: 0; }
+.cp-cat-address {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cp-space-40) var(--cp-space-72);
+  padding-bottom: var(--cp-space-48);
+  scroll-margin-top: var(--cp-space-24);
+}
+.cp-cat-address-copy {
+  flex: 1 1 var(--cp-rd-faq-intro-basis);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-space-16);
+}
+.cp-cat-address-price {
+  margin: 0;
+  font-size: var(--cp-text-15);
+  color: var(--cp-color-muted);
+}
+.cp-cat-address-price strong {
+  font-size: var(--cp-text-24);
+  font-weight: var(--cp-weight-extra-bold);
+  color: var(--cp-color-ink);
+}
+.cp-cat-address-trust {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-space-8);
+  font-size: var(--cp-text-15);
+  font-weight: var(--cp-weight-bold);
+}
+.cp-cat-address > .cp-internet-address-card {
+  flex: 1 1 var(--cp-rd-faq-list-basis);
+  min-width: 0;
+}

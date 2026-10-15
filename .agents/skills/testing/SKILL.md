@@ -9,12 +9,12 @@ Tests exist to let you change code without fear. Optimize for that, not for cove
 
 ## Strategy — what goes where
 
-| Level | Use for | Budget |
-|---|---|---|
-| Unit | Business logic, branching, calculations, parsing — pure logic isolated from I/O | Most tests; milliseconds each |
+| Level       | Use for                                                                                             | Budget                                                |
+| ----------- | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Unit        | Business logic, branching, calculations, parsing — pure logic isolated from I/O                     | Most tests; milliseconds each                         |
 | Integration | Each real boundary: queries against a real DB, API handlers through the real stack, queue consumers | One per boundary behavior; the backbone of confidence |
-| End-to-end | Changed user flows and critical journeys, including relevant negative cases | Playwright; keep focused and deterministic |
-| Contract | Where two deployables meet — pin the schema both sides agree on | Per external contract |
+| End-to-end  | Changed user flows and critical journeys, including relevant negative cases                         | Playwright; keep focused and deterministic            |
+| Contract    | Where two deployables meet — pin the schema both sides agree on                                     | Per external contract                                 |
 
 Push each test to the lowest level that can catch its failure. A bug catchable by a unit test caught
 only in E2E costs 100x to localize.

@@ -1,5 +1,8 @@
 #!/usr/bin/env node
-import { createErrorTrackerFromEnv, createOwnerAlertChannelFromEnv } from '@canadian-plans/adapters';
+import {
+  createErrorTrackerFromEnv,
+  createOwnerAlertChannelFromEnv,
+} from '@canadian-plans/adapters';
 
 import { S3ArchiveReader } from '../backup/archive-store.js';
 import { requiresAlert, runMonitor, type MonitorStatus } from './run.js';
@@ -70,7 +73,10 @@ async function main(): Promise<void> {
 
 main().catch((error: unknown) => {
   console.error(
-    JSON.stringify({ event: 'monitor_failed', message: error instanceof Error ? error.message : String(error) }),
+    JSON.stringify({
+      event: 'monitor_failed',
+      message: error instanceof Error ? error.message : String(error),
+    }),
   );
   createErrorTrackerFromEnv().captureException(error, {
     requestId: 'monitor',

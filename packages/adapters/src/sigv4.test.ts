@@ -13,8 +13,18 @@ const now = new Date('2026-09-14T00:00:00.000Z');
 
 describe('presignS3Url', () => {
   it('is deterministic for a fixed clock and signs the exact key/bucket', () => {
-    const a = presignS3Url(config, { method: 'GET', key: 'run-1/manifest.json.age', expiresInSeconds: 60, now });
-    const b = presignS3Url(config, { method: 'GET', key: 'run-1/manifest.json.age', expiresInSeconds: 60, now });
+    const a = presignS3Url(config, {
+      method: 'GET',
+      key: 'run-1/manifest.json.age',
+      expiresInSeconds: 60,
+      now,
+    });
+    const b = presignS3Url(config, {
+      method: 'GET',
+      key: 'run-1/manifest.json.age',
+      expiresInSeconds: 60,
+      now,
+    });
     expect(a).toBe(b);
     expect(a).toContain('/canadian-plans-backup-archive/run-1/manifest.json.age');
     expect(a).toContain('X-Amz-Signature=');

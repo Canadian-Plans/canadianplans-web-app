@@ -12,7 +12,7 @@ Phase A behaviour, not a stopgap you need to route around.
 
 - Staff session with `financial.read` (Finance or Owner role) to view
   commission amounts — the Partners role can see partner/commission
-  *records* but never amounts (`docs/API.md`: "a Viewer sees states but no
+  _records_ but never amounts (`docs/API.md`: "a Viewer sees states but no
   money").
 - Every Finance/Owner privileged action needs a session that completed MFA
   this login (`aal2`).
@@ -100,7 +100,7 @@ review to happen in the same session.
 
 Escalate to the owner (Takib) for: any commission line whose effective rule
 looks wrong (check `selectEffectiveRule`'s window logic before assuming a bug
-— a rule change only affects lines activated *after* its `effectiveFrom`), a
+— a rule change only affects lines activated _after_ its `effectiveFrom`), a
 `percentage`-type rule (basis and rounding are OPEN_INPUTS #17, unresolved —
 these should not produce a computed amount at all;
 `CommissionConfigIncompleteReason` should already have blocked activation in

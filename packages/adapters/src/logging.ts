@@ -10,4 +10,9 @@ export function logEvent(fields: LogFields): void {
   console.info(JSON.stringify(buildLogRecord(fields)));
 }
 
-export { buildLogRecord, scrubValue, type LogFields, type LogRecord } from '@canadian-plans/observability';
+export {
+  buildLogRecord,
+  scrubValue,
+  type LogFields,
+  type LogRecord,
+} from '@canadian-plans/observability';

@@ -23,7 +23,11 @@ describe('InMemoryBackupLease', () => {
 
 describe('PgBackupLease', () => {
   it('upserts a lease row scoped to the run id via psql', async () => {
-    const run = vi.fn<RunCommand>(async () => ({ stdout: new Uint8Array(), stderr: '', exitCode: 0 }));
+    const run = vi.fn<RunCommand>(async () => ({
+      stdout: new Uint8Array(),
+      stderr: '',
+      exitCode: 0,
+    }));
     const lease = new PgBackupLease('postgres://runner@host/db', run);
     await lease.acquire('run-2026-09-14', 1800);
     expect(run).toHaveBeenCalledTimes(1);
@@ -35,14 +39,22 @@ describe('PgBackupLease', () => {
   });
 
   it('rejects a run id that is not a safe identifier before shelling out', async () => {
-    const run = vi.fn<RunCommand>(async () => ({ stdout: new Uint8Array(), stderr: '', exitCode: 0 }));
+    const run = vi.fn<RunCommand>(async () => ({
+      stdout: new Uint8Array(),
+      stderr: '',
+      exitCode: 0,
+    }));
     const lease = new PgBackupLease('postgres://runner@host/db', run);
     await expect(lease.acquire("run'; drop table x; --", 60)).rejects.toThrow('invalid_run_id');
     expect(run).not.toHaveBeenCalled();
   });
 
   it('release deletes the lease row', async () => {
-    const run = vi.fn<RunCommand>(async () => ({ stdout: new Uint8Array(), stderr: '', exitCode: 0 }));
+    const run = vi.fn<RunCommand>(async () => ({
+      stdout: new Uint8Array(),
+      stderr: '',
+      exitCode: 0,
+    }));
     const lease = new PgBackupLease('postgres://runner@host/db', run);
     await lease.release('run-2026-09-14');
     const [, args] = run.mock.calls[0]!;

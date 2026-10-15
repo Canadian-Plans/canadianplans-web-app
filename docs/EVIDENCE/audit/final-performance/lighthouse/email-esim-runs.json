@@ -164,9 +164,7 @@
           ],
           "overallSavingsMs": 1040,
           "overallSavingsBytes": 154017,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -752,9 +750,7 @@
           ],
           "overallSavingsMs": 1070,
           "overallSavingsBytes": 154017,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -1340,9 +1336,7 @@
           ],
           "overallSavingsMs": 1060,
           "overallSavingsBytes": 154017,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -1928,9 +1922,7 @@
           ],
           "overallSavingsMs": 1040,
           "overallSavingsBytes": 154017,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -2516,9 +2508,7 @@
           ],
           "overallSavingsMs": 1070,
           "overallSavingsBytes": 154017,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -3104,9 +3094,7 @@
           ],
           "overallSavingsMs": 1060,
           "overallSavingsBytes": 154017,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {

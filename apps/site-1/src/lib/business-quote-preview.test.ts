@@ -28,9 +28,12 @@ describe('business quote preview validation', () => {
     ).toEqual(['businessName', 'name', 'email', 'postalCode', 'need']);
   });
 
-  it.each(['call me', '+123', '+1234567890123456'])('rejects a malformed optional phone: %s', (phone) => {
-    expect(validateBusinessQuote(valid({ phone })).phone).toBeDefined();
-  });
+  it.each(['call me', '+123', '+1234567890123456'])(
+    'rejects a malformed optional phone: %s',
+    (phone) => {
+      expect(validateBusinessQuote(valid({ phone })).phone).toBeDefined();
+    },
+  );
 
   it('rejects unknown needs and overlong notes', () => {
     const errors = validateBusinessQuote(valid({ need: 'fibre-to-mars', notes: 'x'.repeat(2001) }));

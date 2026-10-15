@@ -37,7 +37,10 @@ describe('TestEnvelopeEncryptor / TestEnvelopeDecryptor', () => {
     const encryptor = new TestEnvelopeEncryptor(publicKeyBase64);
     const decryptor = new TestEnvelopeDecryptor(privateKeyBase64);
     const ciphertext = Buffer.from(await encryptor.encrypt(new TextEncoder().encode('secret')));
-    ciphertext.writeUInt8(ciphertext.readUInt8(ciphertext.length - 1) ^ 0xff, ciphertext.length - 1);
+    ciphertext.writeUInt8(
+      ciphertext.readUInt8(ciphertext.length - 1) ^ 0xff,
+      ciphertext.length - 1,
+    );
     await expect(decryptor.decrypt(ciphertext)).rejects.toBeInstanceOf(DecryptionFailedError);
   });
 

@@ -11,12 +11,7 @@
   },
   "errors": [],
   "interactions": {
-    "sort": [
-      "Rogers Ultimate",
-      "Rogers Plus",
-      "Rogers Popular",
-      "Rogers Essentials"
-    ],
+    "sort": ["Rogers Ultimate", "Rogers Plus", "Rogers Popular", "Rogers Essentials"],
     "choose": "Selected preview: Rogers Ultimate\n\nThis plan is a design fixture. It will not begin checkout or place an order.\n\nClose preview",
     "selectionFocusRestored": true,
     "accordionExpanded": true,

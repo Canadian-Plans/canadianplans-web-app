@@ -10,14 +10,14 @@ the previous one failed.
 
 ## Input → output rules (where most vulns live)
 
-| Sink | Rule |
-|---|---|
-| SQL | Parameterized queries only, always. String-built SQL is banned even for "safe" values. Identifiers (table/column) from user input → explicit allowlist map |
-| HTML | Context-aware escaping via the framework; never concatenate input into markup. `innerHTML`-style sinks with user data require sanitization via a maintained library + a review flag |
-| Shell | Don't shell out with user input. Unavoidable → argument arrays (no shell interpretation), never string interpolation |
-| Paths | User input never forms paths directly: allowlist names or map ids→paths; resolve and verify the result stays under the intended root |
-| URLs (SSRF) | Server-side fetches of user-supplied URLs: allowlist schemes+hosts, resolve DNS and block private/link-local ranges, no redirect-following past validation, timeout + size cap |
-| Deserialization | Never deserialize untrusted data with formats that construct arbitrary objects (pickle & friends). JSON + schema validation |
+| Sink            | Rule                                                                                                                                                                                |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SQL             | Parameterized queries only, always. String-built SQL is banned even for "safe" values. Identifiers (table/column) from user input → explicit allowlist map                          |
+| HTML            | Context-aware escaping via the framework; never concatenate input into markup. `innerHTML`-style sinks with user data require sanitization via a maintained library + a review flag |
+| Shell           | Don't shell out with user input. Unavoidable → argument arrays (no shell interpretation), never string interpolation                                                                |
+| Paths           | User input never forms paths directly: allowlist names or map ids→paths; resolve and verify the result stays under the intended root                                                |
+| URLs (SSRF)     | Server-side fetches of user-supplied URLs: allowlist schemes+hosts, resolve DNS and block private/link-local ranges, no redirect-following past validation, timeout + size cap      |
+| Deserialization | Never deserialize untrusted data with formats that construct arbitrary objects (pickle & friends). JSON + schema validation                                                         |
 
 Validate at the boundary: type, length, range, format, allowlist over denylist. Reject, don't sanitize,
 malformed structural input.

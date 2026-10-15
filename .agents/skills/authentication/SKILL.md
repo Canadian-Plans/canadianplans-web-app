@@ -16,16 +16,16 @@ about wiring them correctly.
 
 ## Rules table
 
-| Topic | Rule |
-|---|---|
-| Passwords | Hash with argon2id or bcrypt (cost tuned ~100ms). Never encrypt, never log, never in URLs. Max-length generous (≥64), no composition rules beyond min length 8+, check against breached-password list |
-| Login responses | Uniform error ("invalid credentials") and uniform timing for unknown-user vs wrong-password — no account enumeration. Same for password reset ("if that account exists, we sent an email") |
-| Brute force | Rate limit per account AND per IP; lockout/backoff with monitoring; CAPTCHA as last resort |
-| Reset flows | Single-use, expiring (≤1h), random token (256-bit), stored hashed; sessions invalidated on password change; notify the account email on change |
-| MFA | TOTP baseline; recovery codes generated once, stored hashed; rate-limit code attempts; re-prompt (step-up) for dangerous actions |
-| OAuth/OIDC (as client) | Authorization Code + PKCE only. Validate `state` (CSRF) and `nonce`; verify token signature, issuer, audience, expiry; never accept tokens from the URL fragment |
-| Service-to-service | Short-lived credentials from the platform (workload identity) over long-lived shared secrets; rotate anything static |
-| Logout | Destroy server session / revoke refresh token — not just delete the cookie |
+| Topic                  | Rule                                                                                                                                                                                                  |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Passwords              | Hash with argon2id or bcrypt (cost tuned ~100ms). Never encrypt, never log, never in URLs. Max-length generous (≥64), no composition rules beyond min length 8+, check against breached-password list |
+| Login responses        | Uniform error ("invalid credentials") and uniform timing for unknown-user vs wrong-password — no account enumeration. Same for password reset ("if that account exists, we sent an email")            |
+| Brute force            | Rate limit per account AND per IP; lockout/backoff with monitoring; CAPTCHA as last resort                                                                                                            |
+| Reset flows            | Single-use, expiring (≤1h), random token (256-bit), stored hashed; sessions invalidated on password change; notify the account email on change                                                        |
+| MFA                    | TOTP baseline; recovery codes generated once, stored hashed; rate-limit code attempts; re-prompt (step-up) for dangerous actions                                                                      |
+| OAuth/OIDC (as client) | Authorization Code + PKCE only. Validate `state` (CSRF) and `nonce`; verify token signature, issuer, audience, expiry; never accept tokens from the URL fragment                                      |
+| Service-to-service     | Short-lived credentials from the platform (workload identity) over long-lived shared secrets; rotate anything static                                                                                  |
+| Logout                 | Destroy server session / revoke refresh token — not just delete the cookie                                                                                                                            |
 
 ## Verification checklist
 

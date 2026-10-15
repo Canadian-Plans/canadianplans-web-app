@@ -58,8 +58,7 @@ export function buildManifest(input: {
 }
 
 export type ManifestVerification =
-  | { ok: true }
-  | { ok: false; missing: string[]; mismatched: string[] };
+  { ok: true } | { ok: false; missing: string[]; mismatched: string[] };
 
 /**
  * A snapshot is usable only when every referenced artifact is present and its

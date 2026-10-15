@@ -9,7 +9,11 @@ import {
   WebhookOwnerAlertChannel,
 } from './alerts.js';
 
-const alert = { kind: 'synthetic_check_failed' as const, detail: 'order_step_failed', occurredAt: '2026-09-21T00:00:00.000Z' };
+const alert = {
+  kind: 'synthetic_check_failed' as const,
+  detail: 'order_step_failed',
+  occurredAt: '2026-09-21T00:00:00.000Z',
+};
 
 function requestBody(init: RequestInit | undefined): unknown {
   const body = init?.body;

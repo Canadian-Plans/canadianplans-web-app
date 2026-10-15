@@ -91,9 +91,7 @@
               "duration": 40.164
             }
           ],
-          "sortedBy": [
-            "duration"
-          ]
+          "sortedBy": ["duration"]
         }
       },
       {
@@ -157,9 +155,7 @@
           ],
           "overallSavingsMs": 700,
           "overallSavingsBytes": 152378,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -592,9 +588,7 @@
           ],
           "overallSavingsMs": 450,
           "overallSavingsBytes": 152446,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -1027,9 +1021,7 @@
           ],
           "overallSavingsMs": 640,
           "overallSavingsBytes": 152378,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -1462,9 +1454,7 @@
           ],
           "overallSavingsMs": 450,
           "overallSavingsBytes": 152446,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -1897,9 +1887,7 @@
           ],
           "overallSavingsMs": 740,
           "overallSavingsBytes": 152378,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {
@@ -2332,9 +2320,7 @@
           ],
           "overallSavingsMs": 300,
           "overallSavingsBytes": 152446,
-          "sortedBy": [
-            "wastedBytes"
-          ],
+          "sortedBy": ["wastedBytes"],
           "debugData": {
             "type": "debugdata",
             "metricSavings": {

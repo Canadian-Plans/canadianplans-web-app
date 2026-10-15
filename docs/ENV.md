@@ -93,8 +93,7 @@ future public actions must bind their own expected action explicitly.
 The public write surface carries a tighter per-endpoint budget on top of the
 coarse per-IP/per-credential ceiling in `requireWebsiteCredential`. Each budget
 is keyed by `(endpoint, workspace, IP)` and durable (the `rateLimitHit` SQL
-function). Defaults (per 60s): `leads` 30, `quotes` 30, `orders` 10, `tracking`
-20. Override per deployment; invalid/absent values fall back to the default:
+function). Defaults (per 60s): `leads` 30, `quotes` 30, `orders` 10, `tracking` 20. Override per deployment; invalid/absent values fall back to the default:
 
 - `RATE_LIMIT_LEADS_MAX` / `RATE_LIMIT_LEADS_WINDOW`
 - `RATE_LIMIT_QUOTES_MAX` / `RATE_LIMIT_QUOTES_WINDOW`

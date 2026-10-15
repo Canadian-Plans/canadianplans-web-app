@@ -123,7 +123,10 @@ describe('runRetention', () => {
       await seedRun(writer, encryptor, `run-${i}`, daysAgo(i));
     }
     // Corrupt the oldest run's manifest so it cannot be decrypted/parsed.
-    await writer.putObject('run-34/manifest.json.enc', new TextEncoder().encode('not encrypted at all'));
+    await writer.putObject(
+      'run-34/manifest.json.enc',
+      new TextEncoder().encode('not encrypted at all'),
+    );
 
     const report = await runRetention({
       admin: backend.asRetentionAdmin(),

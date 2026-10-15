@@ -14,12 +14,7 @@ import {
   SheetTrigger,
   SheetClose,
 } from '@canadian-plans/ui';
-import {
-  CpAsset,
-  CpButton,
-  CpChip,
-  CpPlanCard,
-} from '@canadian-plans/ui/canadian-plans';
+import { CpAsset, CpButton, CpChip, CpPlanCard } from '@canadian-plans/ui/canadian-plans';
 import {
   mobileCopy,
   mobilePlans,

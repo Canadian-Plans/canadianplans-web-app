@@ -10,11 +10,11 @@ ties failures from all three (plus the backup monitor) back to the owner.
 one, browser-safe scrubber and log-record builder every app shares — backend,
 admin, and jobs never invent their own PII allowlist. `scrubValue` redacts:
 
-- any field whose *name* marks it as PII regardless of casing/separators
+- any field whose _name_ marks it as PII regardless of casing/separators
   (`fullName`, `full_name`, `EMAIL`, `phone`, `documentUrl`, `token`,
   `apiKey`, `password`, `passportNumber`, …) — see the fragment list at the
   top of that file;
-- an email- or phone-shaped *substring* inside any surviving string field,
+- an email- or phone-shaped _substring_ inside any surviving string field,
   so a careless free-text note doesn't leak one either;
 - depth beyond 6 and strings over 2000 characters, so a malformed or
   adversarial payload can't inflate log volume.
@@ -142,12 +142,12 @@ and then `cancelled` — never any other terminal state.
 `createOwnerAlertChannelFromEnv()` (`@canadian-plans/adapters`) is the one
 channel every alert source sends through:
 
-| Trigger | Where |
-|---|---|
-| Synthetic check step failed | `apps/backend/src/routes/synthetic-check.ts` |
-| Backup snapshot older than 26h, missing, or malformed | `jobs/src/monitor/cli.ts` (`.github/workflows/backup-monitor.yml`) |
+| Trigger                                                 | Where                                                                           |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Synthetic check step failed                             | `apps/backend/src/routes/synthetic-check.ts`                                    |
+| Backup snapshot older than 26h, missing, or malformed   | `jobs/src/monitor/cli.ts` (`.github/workflows/backup-monitor.yml`)              |
 | Failed/uncertain outbox jobs persisting for 10+ minutes | `apps/backend/src/jobs/queueMonitor.ts`, wired into the scheduler's `runOutbox` |
-| Error-rate spike | *(not yet wired — see below)* |
+| Error-rate spike                                        | _(not yet wired — see below)_                                                   |
 
 It is deliberately **not** the customer `EmailAdapter`
 (`packages/adapters/src/messaging.ts`): the owner is not a suppressible
@@ -168,7 +168,7 @@ Environment (`.github/workflows/backup-monitor.yml` already forwards these):
 Neither configured means every alert call becomes a no-op that only logs
 `owner_alert_channel_unconfigured` — an unconfigured channel degrades to
 "check the logs," it never crashes the caller. Both channels configured
-fans out to both and only raises if *every* channel failed to deliver, so
+fans out to both and only raises if _every_ channel failed to deliver, so
 one bad webhook URL can't silently swallow the email the owner actually
 needs.
 

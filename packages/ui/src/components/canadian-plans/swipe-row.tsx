@@ -26,7 +26,8 @@ export function CpSwipeRow({
     const onScroll = () => {
       const first = el.firstElementChild;
       if (!(first instanceof HTMLElement)) return;
-      const step = first.getBoundingClientRect().width + parseFloat(getComputedStyle(el).columnGap || '0');
+      const step =
+        first.getBoundingClientRect().width + parseFloat(getComputedStyle(el).columnGap || '0');
       setActive(Math.max(0, Math.min(count - 1, Math.round(el.scrollLeft / step))));
     };
     el.addEventListener('scroll', onScroll, { passive: true });

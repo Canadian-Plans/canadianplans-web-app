@@ -10,13 +10,13 @@ answer "what happened to request/job X?"
 
 ## What to log (and not)
 
-| Always | Never |
-|---|---|
-| State transitions of business objects (order paid, job failed) with ids | Secrets, tokens, passwords, full PII (see redaction) |
-| Each handled error once, with a sanitized code, safe stack and operation context | Raw exception messages, request bodies or provider responses that may contain secrets/PII; repeated logs at every layer |
-| External call failures + latency when above threshold | Success spam in hot loops (that's a metric, not a log) |
-| Auth events: login success/failure, permission denial, privilege change (actor, never credential) | User content bodies (log ids + sizes) |
-| Job/queue lifecycle: started, finished (+duration), retried (+attempt), dead-lettered | "Got here" debug prints left behind |
+| Always                                                                                            | Never                                                                                                                   |
+| ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| State transitions of business objects (order paid, job failed) with ids                           | Secrets, tokens, passwords, full PII (see redaction)                                                                    |
+| Each handled error once, with a sanitized code, safe stack and operation context                  | Raw exception messages, request bodies or provider responses that may contain secrets/PII; repeated logs at every layer |
+| External call failures + latency when above threshold                                             | Success spam in hot loops (that's a metric, not a log)                                                                  |
+| Auth events: login success/failure, permission denial, privilege change (actor, never credential) | User content bodies (log ids + sizes)                                                                                   |
+| Job/queue lifecycle: started, finished (+duration), retried (+attempt), dead-lettered             | "Got here" debug prints left behind                                                                                     |
 
 ## Level discipline
 

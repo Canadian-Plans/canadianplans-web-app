@@ -1,7 +1,4 @@
-import type {
-  PlanCardContent,
-  FigmaAsset,
-} from '@canadian-plans/ui/canadian-plans';
+import type { PlanCardContent, FigmaAsset } from '@canadian-plans/ui/canadian-plans';
 import {
   chromeContent,
   footerContent,

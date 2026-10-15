@@ -7,12 +7,12 @@ description: Frontend architecture and construction - component design, state ma
 
 ## State — decide placement first
 
-| State kind | Lives in |
-|---|---|
-| Server data (lists, entities) | Server-cache layer (query library): cached, deduped, invalidated by mutation — never copied into local state |
-| Non-sensitive view state shareable by URL (filters, page) | The URL; keep personal data, secrets and sensitive search text out |
-| Local widget state (open/closed, draft input) | Component state |
-| Cross-cutting client state (theme, session) | One small global store — the exception, not the default |
+| State kind                                                | Lives in                                                                                                     |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Server data (lists, entities)                             | Server-cache layer (query library): cached, deduped, invalidated by mutation — never copied into local state |
+| Non-sensitive view state shareable by URL (filters, page) | The URL; keep personal data, secrets and sensitive search text out                                           |
+| Local widget state (open/closed, draft input)             | Component state                                                                                              |
+| Cross-cutting client state (theme, session)               | One small global store — the exception, not the default                                                      |
 
 Rule: state lives as close to usage as possible; lift only when actually shared. Duplicated server
 state is the root of most UI bugs.

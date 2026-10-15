@@ -1,11 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import {
-  buildErrorEvent,
-  buildLogRecord,
-  FakeErrorTracker,
-  scrubValue,
-} from './index.js';
+import { buildErrorEvent, buildLogRecord, FakeErrorTracker, scrubValue } from './index.js';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;

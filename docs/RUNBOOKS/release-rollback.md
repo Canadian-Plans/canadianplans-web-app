@@ -40,7 +40,7 @@ deployment on either platform.
    variables (for example, a `MACHINE_REGISTRY_JSON` shape change —
    [secret-rotation.md](secret-rotation.md) notes exactly this kind of
    coupled change), the rolled-back code must still be compatible with the
-   *current* environment variables, or you must also revert the environment
+   _current_ environment variables, or you must also revert the environment
    variable in the same action. Check the commit being rolled back past for
    any noted "this release changes X" warning (ENV.md flags these
    explicitly) before redeploying.
@@ -66,7 +66,7 @@ deployment on either platform.
    (e.g. a `NEXT_PUBLIC_*` value), update it in Project Settings →
    Environment Variables before or immediately after promoting, since the
    promoted deployment's server-rendered output can still read the
-   *current* environment variables for anything not baked in at build time.
+   _current_ environment variables for anything not baked in at build time.
 
 ## Coordinating a rollback across backend and frontend together
 

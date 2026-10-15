@@ -59,7 +59,8 @@ export class AgeCliEncryptor implements Encryptor {
 
   async encrypt(plaintext: Uint8Array): Promise<Uint8Array> {
     const result = await this.run(this.binary, ['-r', this.recipient], { input: plaintext });
-    if (result.exitCode !== 0) throw new CommandFailedError(this.binary, result.exitCode, result.stderr);
+    if (result.exitCode !== 0)
+      throw new CommandFailedError(this.binary, result.exitCode, result.stderr);
     return result.stdout;
   }
 }
@@ -132,7 +133,10 @@ export class TestEnvelopeEncryptor implements Encryptor {
       privateKey: ephemeral.privateKey,
       publicKey: this.recipientPublicKey,
     });
-    const key = deriveAesKey(shared, Buffer.concat([ephemeralPublicDer, this.recipientPublicKeyDer]));
+    const key = deriveAesKey(
+      shared,
+      Buffer.concat([ephemeralPublicDer, this.recipientPublicKeyDer]),
+    );
     const iv = randomBytes(12);
     const cipher = createCipheriv('aes-256-gcm', key, iv);
     const ciphertext = Buffer.concat([cipher.update(plaintext), cipher.final()]);

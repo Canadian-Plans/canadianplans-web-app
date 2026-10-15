@@ -26,7 +26,7 @@ standard production backup baseline**. Prefer plan/configuration upgrades to
 provider migrations. Monitor: email attempts (including tracking and staff
 mail), retained document bytes, database/backup egress, function
 CPU/invocations, queue age, archive/ledger and runner usage, CMS requests,
-analytics and error volume. Alert *before* limits threaten service.
+analytics and error volume. Alert _before_ limits threaten service.
 
 1. **Supabase**: organization plan, database size/egress, and whether usage
    is trending toward the free-tier project-pause threshold (a paused free
@@ -47,14 +47,14 @@ analytics and error volume. Alert *before* limits threaten service.
 ## Thresholds to watch (from IMPLEMENTATION_PLAN §17 and REQUIREMENTS §15)
 
 - Any provider's free-tier ceiling being approached (not just crossed) —
-  the plan is explicit that alerting must happen *before* a limit threatens
+  the plan is explicit that alerting must happen _before_ a limit threatens
   service, not after.
 - **Supabase must be on a paid (Pro) plan before production carries the
   standard backup baseline** — a free-tier Supabase project does not meet
   this bar regardless of whether backups are technically running.
 - **Vercel must be on Pro before commercial hosting or minute-level cron is
   used** — note the backend's own scheduler is in-process on Railway
-  specifically *because* Railway cron has a five-minute floor and a
+  specifically _because_ Railway cron has a five-minute floor and a
   sub-daily Vercel cron expression previously failed the whole backend
   deployment on the Hobby plan ([outbox-jobs.md](outbox-jobs.md)) — this is
   a real, previously-hit failure mode, not a hypothetical.
@@ -110,7 +110,7 @@ runbook creation:**
 - Supabase: organization `Canadian Plan` (`toiotlsyzgtfjjhnucpq`) is on the
   **`free`** plan. The one project (`canadianplans`,
   `ixbhodlvfyxjctpsjibj`) is `ACTIVE_HEALTHY`, region `us-west-2` — matching
-  `docs/ENV.md`'s existing note that this is *not* `ca-central-1` and must
+  `docs/ENV.md`'s existing note that this is _not_ `ca-central-1` and must
   not be used as evidence of Canadian staging compliance. **This is a real,
   current gap against IMPLEMENTATION_PLAN §17**: the plan requires Supabase
   Pro before production carries the standard backup baseline, and this
