@@ -62,7 +62,7 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
 | 5   | `/compare/rogers-vs-fido`                                                                    | done   | old airport/compare route group removed                                      |
 | 6   | `/home-internet/ontario`                                                                     | done   | reuses `/home-internet` address check and speed cards                        |
 | 7   | `/home-internet/vancouver`                                                                   | done   | old category-internet route group removed                                    |
-| 8   | `/about`                                                                                     | todo   |                                                                              |
+| 8   | `/about`                                                                                     | done   | on the landing kit, with FAQ + JSON-LD                                       |
 | 9   | `/contact`                                                                                   | todo   |                                                                              |
 | 10  | `/faq`                                                                                       | todo   |                                                                              |
 | 11  | `/guides`                                                                                    | todo   |                                                                              |
@@ -76,6 +76,8 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
 | 19  | Category polish: `/pre-arrival-sim`, `/home-internet`, `/mobile-plans`, `/business-internet` | todo   |                                                                              |
 
 ## Open placeholders and questions for the owner
+
+- About: shop location, hours and the “no markup” claim are owner-supplied preview copy.
 
 - Students: FAQ answers on student discount, flight date changes and parents paying are
   still “awaiting approved content” (shown, excluded from FAQ JSON-LD).
