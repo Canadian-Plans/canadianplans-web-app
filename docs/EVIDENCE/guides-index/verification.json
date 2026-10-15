@@ -4,49 +4,37 @@
     "geometry": [
       {
         "class": "cp-guides-hero",
-        "y": 164,
+        "y": 261,
         "width": 390,
-        "height": 584
+        "height": 593.78125
       },
       {
         "class": "cp-guides-results",
-        "y": 748,
+        "y": 854.78125,
         "width": 390,
-        "height": 1687
+        "height": 1623
       },
       {
         "class": "cp-guides-featured",
-        "y": 788,
+        "y": 894.78125,
         "width": 350,
-        "height": 524
+        "height": 458
       },
       {
         "class": "cp-guides-grid",
-        "y": 1336,
+        "y": 1376.78125,
         "width": 350,
-        "height": 979
+        "height": 981
       },
       {
         "class": "cp-guides-questions",
-        "y": 2435,
+        "y": 2477.78125,
         "width": 390,
         "height": 736
       },
       {
-        "class": "cp-guides-final",
-        "y": 3171,
-        "width": 390,
-        "height": 570
-      },
-      {
-        "class": "cp-container cp-guides-final-card",
-        "y": 3219,
-        "width": 350,
-        "height": 474
-      },
-      {
         "class": "cp-footer",
-        "y": 3741,
+        "y": 3584.15625,
         "width": 390,
         "height": 946.96875
       }
@@ -61,13 +49,13 @@
       {
         "class": "",
         "text": "Plain answers for your move to",
-        "height": 138,
+        "height": 118.78125,
         "width": 340
       },
       {
         "class": "cp-guides-intro",
-        "text": "Phones, internet and your firs",
-        "height": 87,
+        "text": "Guides to Canadian SIM cards, ",
+        "height": 116,
         "width": 340
       },
       {
@@ -84,50 +72,50 @@
       },
       {
         "class": "cp-image-slot cp-guides-featured-image",
-        "text": "ImageNewcomer unpacking a suit",
+        "text": "ImageStudent checking her phon",
         "height": 200,
         "width": 350
       },
       {
         "class": "cp-guides-card-copy",
-        "text": "Featured · Moving to CanadaYou",
-        "height": 308,
+        "text": "Featured · Phones & SIMsBest S",
+        "height": 242,
         "width": 350
       },
       {
         "class": "cp-guides-card",
-        "text": "ImageStudent checking her phon",
+        "text": "ImageStudent checking a new Ca",
+        "height": 131,
+        "width": 350
+      },
+      {
+        "class": "cp-guides-card",
+        "text": "ImageNewcomer from India at To",
         "height": 149,
         "width": 350
       },
       {
         "class": "cp-guides-card",
-        "text": "ImagePhysical SIM card next to",
+        "text": "ImageTraveller at Pearson arri",
         "height": 149,
         "width": 350
       },
       {
         "class": "cp-guides-card",
-        "text": "ImageWi-Fi router on a shelf i",
-        "height": 149,
+        "text": "ImagePhone showing Rogers and ",
+        "height": 169,
         "width": 350
       },
       {
         "class": "cp-guides-card",
-        "text": "ImageNewcomer choosing a plan ",
-        "height": 149,
-        "width": 350
-      },
-      {
-        "class": "cp-guides-card",
-        "text": "ImageRogers, Fido and Chatr SI",
-        "height": 149,
-        "width": 350
-      },
-      {
-        "class": "cp-guides-card",
-        "text": "ImageVideo call with family ba",
+        "text": "ImageNewcomer setting up a new",
         "height": 174,
+        "width": 350
+      },
+      {
+        "class": "cp-guides-card",
+        "text": "ImageTechnician connecting a W",
+        "height": 149,
         "width": 350
       },
       {
@@ -150,7 +138,7 @@
       },
       {
         "class": "",
-        "text": "How do I build credit as a new",
+        "text": "Can I get a phone plan without",
         "height": 90,
         "width": 350
       },
@@ -170,7 +158,7 @@
     "violations": [],
     "assets": [
       {
-        "src": "/design/guides-index/1-imgPhoneIcon.svg",
+        "src": "/design/components/364-2153-imgPhoneIcon.svg",
         "loaded": true,
         "width": 16,
         "height": 16,
@@ -208,6 +196,14 @@
         "height": 32,
         "declaredWidth": 32,
         "declaredHeight": 32
+      },
+      {
+        "src": "/design/redesign/cta-pre-arrival.svg",
+        "loaded": true,
+        "width": 24,
+        "height": 24,
+        "declaredWidth": 24,
+        "declaredHeight": 24
       },
       {
         "src": "/design/components/68-50-imgFrame.svg",
@@ -289,56 +285,44 @@
         "document": 1440
       }
     ],
-    "interactions": "show more and focus, combined topics/search, empty/clear, keyboard filters/skip, article navigation, global finder and advisor CTA passed"
+    "interactions": "show more and focus, every card resolves, combined topics/search, empty/clear, keyboard filters/skip, article navigation and advisor CTA passed"
   },
   {
     "width": 1440,
     "geometry": [
       {
         "class": "cp-guides-hero",
-        "y": 160,
+        "y": 257,
         "width": 1440,
-        "height": 543
+        "height": 543.1875
       },
       {
         "class": "cp-guides-results",
-        "y": 703,
+        "y": 800.1875,
         "width": 1440,
-        "height": 1410
+        "height": 1354
       },
       {
         "class": "cp-guides-featured",
-        "y": 759,
+        "y": 856.1875,
         "width": 1200,
-        "height": 454
+        "height": 398
       },
       {
         "class": "cp-guides-grid",
-        "y": 1237,
+        "y": 1278.1875,
         "width": 1200,
         "height": 724
       },
       {
         "class": "cp-guides-questions",
-        "y": 2113,
+        "y": 2154.1875,
         "width": 1440,
         "height": 456
       },
       {
-        "class": "cp-guides-final",
-        "y": 2569,
-        "width": 1440,
-        "height": 550
-      },
-      {
-        "class": "cp-container cp-guides-final-card",
-        "y": 2569,
-        "width": 1200,
-        "height": 454
-      },
-      {
         "class": "cp-footer",
-        "y": 3119,
+        "y": 2842.1875,
         "width": 1440,
         "height": 439.1875
       }
@@ -353,13 +337,13 @@
       {
         "class": "",
         "text": "Plain answers for your move to",
-        "height": 152,
+        "height": 123.1875,
         "width": 920
       },
       {
         "class": "cp-guides-intro",
-        "text": "Phones, internet and your firs",
-        "height": 58,
+        "text": "Guides to Canadian SIM cards, ",
+        "height": 87,
         "width": 640
       },
       {
@@ -372,53 +356,53 @@
         "class": "cp-guides-topics",
         "text": "All guidesMoving to CanadaPhon",
         "height": 54,
-        "width": 784.515625
+        "width": 784.5
       },
       {
         "class": "cp-image-slot cp-guides-featured-image",
-        "text": "ImageNewcomer unpacking a suit",
-        "height": 454,
+        "text": "ImageStudent checking her phon",
+        "height": 398,
         "width": 560
       },
       {
         "class": "cp-guides-card-copy",
-        "text": "Featured · Moving to CanadaYou",
-        "height": 454,
+        "text": "Featured · Phones & SIMsBest S",
+        "height": 398,
         "width": 640
       },
       {
         "class": "cp-guides-card",
-        "text": "ImageStudent checking her phon",
+        "text": "ImageStudent checking a new Ca",
         "height": 338,
         "width": 386
       },
       {
         "class": "cp-guides-card",
-        "text": "ImagePhysical SIM card next to",
+        "text": "ImageNewcomer from India at To",
         "height": 338,
         "width": 386
       },
       {
         "class": "cp-guides-card",
-        "text": "ImageWi-Fi router on a shelf i",
+        "text": "ImageTraveller at Pearson arri",
         "height": 338,
         "width": 386
       },
       {
         "class": "cp-guides-card",
-        "text": "ImageNewcomer choosing a plan ",
+        "text": "ImagePhone showing Rogers and ",
         "height": 366,
         "width": 386
       },
       {
         "class": "cp-guides-card",
-        "text": "ImageRogers, Fido and Chatr SI",
+        "text": "ImageNewcomer setting up a new",
         "height": 366,
         "width": 386
       },
       {
         "class": "cp-guides-card",
-        "text": "ImageVideo call with family ba",
+        "text": "ImageTechnician connecting a W",
         "height": 366,
         "width": 386
       },
@@ -442,7 +426,7 @@
       },
       {
         "class": "",
-        "text": "How do I build credit as a new",
+        "text": "Can I get a phone plan without",
         "height": 68,
         "width": 592
       },
@@ -534,6 +518,14 @@
         "declaredHeight": 32
       },
       {
+        "src": "/design/redesign/cta-pre-arrival.svg",
+        "loaded": true,
+        "width": 24,
+        "height": 24,
+        "declaredWidth": 24,
+        "declaredHeight": 24
+      },
+      {
         "src": "/design/components/68-50-imgFrame.svg",
         "loaded": true,
         "width": 36,
@@ -546,7 +538,7 @@
     "imageSlots": [
       {
         "width": 560,
-        "height": 454,
+        "height": 398,
         "captionSize": "13px",
         "labelSize": "12px"
       },
@@ -613,6 +605,6 @@
         "document": 1440
       }
     ],
-    "interactions": "show more and focus, combined topics/search, empty/clear, keyboard filters/skip, article navigation, global finder and advisor CTA passed"
+    "interactions": "show more and focus, every card resolves, combined topics/search, empty/clear, keyboard filters/skip, article navigation and advisor CTA passed"
   }
 ]

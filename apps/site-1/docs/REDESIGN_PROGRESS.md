@@ -70,8 +70,8 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
 | 8   | `/about`                                                                                     | done   | on the landing kit, with FAQ + JSON-LD                                                      |
 | 9   | `/contact`                                                                                   | done   | layout and forms kept; site header/footer, breadcrumb, home-style hero, navy tracking panel |
 | 10  | `/faq`                                                                                       | done   | 10 answers filled from existing site copy (13/19 in JSON-LD)                                |
-| 11  | `/guides`                                                                                    | todo   |                                                                                             |
-| 12  | `/guides/[slug]`                                                                             | todo   |                                                                                             |
+| 11  | `/guides`                                                                                    | done   | every card now opens real content (article + 7 landing pages)                               |
+| 12  | `/guides/[slug]`                                                                             | done   | 5 FAQ answers filled from site facts; related cards from the index                          |
 | 13  | `/order/pre-arrival`                                                                         | todo   | preview form, stub action                                                                   |
 | 14  | `/order/home-internet`                                                                       | todo   | preview form, stub action                                                                   |
 | 15  | `/track-order`                                                                               | todo   |                                                                                             |
@@ -88,6 +88,9 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
   pending: English support, activation time, data limit, changing an order, missing
   documents, cancel/refund (PLATFORM_CONTEXT: no refund policy — owner wording needed).
 
+- Guides: the index no longer lists unwritten guides (first-week checklist, Brampton
+  internet, calling home, eSIM vs physical SIM, no-credit plans); write them, then add them
+  back to `guideList`.
 - About: shop location, hours and the “no markup” claim are owner-supplied preview copy.
 
 - Students: FAQ answers on student discount, flight date changes and parents paying are

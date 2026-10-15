@@ -1,20 +1,12 @@
 import { pageMetadata } from '@/lib/page-metadata';
 import type { Metadata } from 'next';
 import { SkipLink } from '@canadian-plans/ui';
-import { CpButton } from '@canadian-plans/ui/canadian-plans';
-import {
-  guideCopy,
-  guideList,
-  guidesIndexAssets,
-  guidesIndexChrome,
-  guidesIndexCopy,
-  guidesIndexFooter,
-} from '@content/guides';
-import { Footer, PromoStrip, UtilityBar } from '@/components/shared/chrome';
-import {
-  GuidesIndexNavigation,
-  GuidesIndexFinderButton,
-} from '@/components/guides-index/navigation';
+import { CpBreadcrumb, CpCtaBand } from '@canadian-plans/ui/canadian-plans';
+import { guideList, guidesIndexAssets, guidesIndexCopy } from '@content/guides';
+import { siteChrome, siteFooter } from '@content/site-chrome';
+import { Footer } from '@/components/shared/chrome';
+import { SiteHeader } from '@/components/shared/site-header';
+import { categoryAsset } from '@/components/category-redesign/support';
 import { GuidesIndexList } from '@/components/guides-index/guide-list';
 import { GuideIndexCard } from '@/components/guides-index/guide-card';
 export const metadata: Metadata = pageMetadata('/guides', {
@@ -29,14 +21,21 @@ export default function GuidesPage() {
       <SkipLink href="#guides-main" className="cp-guides-skip">
         {guidesIndexCopy.skip}
       </SkipLink>
-      <UtilityBar
-        content={guidesIndexChrome}
-        assets={guidesIndexAssets}
-        planHref={guideCopy.destinations.plans}
+      <SiteHeader
+        planHref="/pre-arrival-sim#plans"
+        content={{
+          ...siteChrome,
+          promoLink: { ...siteChrome.promoLink, href: '/pre-arrival-sim#plans' },
+        }}
       />
-      <GuidesIndexNavigation />
-      <PromoStrip content={guidesIndexChrome} />
       <main id="guides-main" tabIndex={-1}>
+        <div className="cp-container cp-cat-page-breadcrumb">
+          <CpBreadcrumb
+            items={guidesIndexCopy.breadcrumb.items}
+            label={guidesIndexCopy.breadcrumb.label}
+            separator={guidesIndexCopy.breadcrumb.separator}
+          />
+        </div>
         <GuidesIndexList
           featured={featured ? <GuideIndexCard guide={featured} featured /> : null}
         />
@@ -55,23 +54,17 @@ export default function GuidesPage() {
             </ul>
           </div>
         </section>
-        <section className="cp-guides-final" aria-labelledby="guides-final-title">
-          <div className="cp-container cp-guides-final-card">
-            <h2 id="guides-final-title">{guidesIndexCopy.final.heading}</h2>
-            <p>{guidesIndexCopy.final.description}</p>
-            <div className="cp-guides-final-actions">
-              <GuidesIndexFinderButton />
-              <CpButton asChild tone="outline-inverse" scale="large">
-                <a href={guideCopy.destinations.advisor}>{guidesIndexCopy.final.secondary}</a>
-              </CpButton>
-            </div>
-            <p className="cp-guides-final-note">{guidesIndexCopy.final.note}</p>
-          </div>
-        </section>
+        <div className="cp-container cp-guides-cta">
+          <CpCtaBand
+            tone="amber"
+            content={guidesIndexCopy.final}
+            icon={categoryAsset('cta-pre-arrival')}
+          />
+        </div>
       </main>
       <Footer
-        brand={guidesIndexChrome.brand}
-        content={guidesIndexFooter}
+        brand="Canadian Plans"
+        content={siteFooter}
         assets={guidesIndexAssets}
         brandHref="/"
       />

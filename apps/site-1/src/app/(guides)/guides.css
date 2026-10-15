@@ -72,9 +72,9 @@
 }
 .cp-guide-header h1 {
   font-size: var(--cp-text-36);
-  line-height: var(--cp-space-36);
-  letter-spacing: var(--cp-tracking-2);
-  font-weight: var(--cp-weight-bold);
+  line-height: var(--cp-leading-heading);
+  letter-spacing: var(--cp-tracking-tight);
+  font-weight: var(--cp-weight-extra-bold);
 }
 .cp-guide-description {
   font-size: var(--cp-text-20);
@@ -597,54 +597,6 @@
   line-height: var(--cp-space-20);
   color: var(--cp-color-muted);
 }
-.cp-guide-final {
-  padding-block: var(--cp-space-48);
-}
-.cp-guide-final-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--cp-space-24);
-  padding: var(--cp-space-40) var(--cp-space-28);
-  border-radius: var(--cp-radius-40);
-  background: var(--cp-color-blue);
-  color: var(--cp-color-white);
-  text-align: center;
-}
-.cp-guide-final h2 {
-  font-size: var(--cp-text-36);
-  line-height: var(--cp-space-40);
-  letter-spacing: var(--cp-tracking-2);
-  font-weight: var(--cp-weight-bold);
-}
-.cp-guide-final-card > p {
-  font-size: var(--cp-text-20);
-  line-height: var(--cp-leading-small);
-}
-.cp-guide-final-actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--cp-space-12);
-  padding-top: var(--cp-space-8);
-  width: 100%;
-}
-.cp-guide-final-actions .cp-button {
-  width: 100%;
-  line-height: var(--cp-space-22);
-  padding: var(--cp-space-18) var(--cp-space-32);
-}
-.cp-guide-final-actions .cp-button[data-tone='outline-inverse'] {
-  padding-block: var(--cp-space-16);
-}
-.cp-guide-final-actions .cp-button:focus-visible {
-  outline-color: var(--cp-color-white);
-}
-.cp-guide-final-card > .cp-guide-final-note {
-  font-size: var(--cp-text-15);
-  line-height: var(--cp-space-19);
-  color: var(--cp-color-white);
-  font-weight: var(--cp-weight-medium);
-}
 
 @variant cp-guide-columns {
   .cp-guide .cp-utility-secondary .cp-utility-contact {
@@ -675,9 +627,7 @@
   }
   .cp-guide-header h1 {
     max-width: var(--cp-guide-title-width);
-    font-size: var(--cp-text-80);
-    line-height: var(--cp-guide-title-line);
-    letter-spacing: var(--cp-tracking-3);
+    font-size: var(--cp-text-56);
   }
   .cp-guide-description {
     max-width: var(--cp-guide-intro-width);
@@ -910,33 +860,19 @@
     line-height: var(--cp-space-28);
     letter-spacing: var(--cp-tracking-2);
   }
-  .cp-guide-final {
-    padding-block: 0 var(--cp-space-96);
-  }
-  .cp-guide-final-card {
-    padding: var(--cp-space-88) var(--cp-space-80);
-  }
-  .cp-guide-final h2 {
-    font-size: var(--cp-text-96);
-    line-height: var(--cp-contact-desktop-display-line);
-    letter-spacing: var(--cp-tracking-3);
-  }
-  .cp-guide-final-actions {
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: center;
-    width: auto;
-  }
-  .cp-guide-final-actions .cp-button {
-    width: auto;
-  }
-  .cp-guide-final-card > .cp-guide-final-note {
-    font-size: var(--cp-text-16);
-    line-height: var(--cp-space-20);
-  }
   .cp-guide .cp-footer-bottom p,
   .cp-guide .cp-footer-bottom nav a,
   .cp-guide .cp-footer-bottom nav span {
     line-height: var(--cp-contact-label-line);
+  }
+}
+
+/* Electric Blue alignment (15 October 2026) */
+.cp-guide-cta {
+  padding-block: var(--cp-space-24) var(--cp-cat-page-gap-stacked);
+}
+@variant cp-chrome {
+  .cp-guide-cta {
+    padding-bottom: var(--cp-cat-page-gap);
   }
 }

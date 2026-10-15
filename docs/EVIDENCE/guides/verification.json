@@ -6,35 +6,29 @@
         "class": "cp-guide-header",
         "y": 164,
         "width": 390,
-        "height": 551
+        "height": 539.78125
       },
       {
         "class": "cp-guide-body",
-        "y": 715,
+        "y": 703.78125,
         "width": 390,
         "height": 4762
       },
       {
         "class": "cp-guide-related",
-        "y": 5477,
+        "y": 5465.78125,
         "width": 390,
-        "height": 627
+        "height": 584
       },
       {
-        "class": "cp-guide-final",
-        "y": 6104,
-        "width": 390,
-        "height": 610
-      },
-      {
-        "class": "cp-container cp-guide-final-card",
-        "y": 6152,
+        "class": "cp-container cp-guide-cta",
+        "y": 6049.78125,
         "width": 350,
-        "height": 514
+        "height": 370.375
       },
       {
         "class": "cp-footer",
-        "y": 6714,
+        "y": 6420.15625,
         "width": 390,
         "height": 946.96875
       }
@@ -43,116 +37,116 @@
       {
         "class": "cp-guide-quick",
         "text": "Quick answerMost students from Indi",
-        "y": 739,
+        "y": 727.78125,
         "height": 308
       },
       {
         "class": "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm cp-guide-promotion cp-guide-mobile-promotion",
         "text": "Get your number before you flyfrom$",
-        "y": 1071,
+        "y": 1059.78125,
         "height": 213
       },
       {
         "class": "cp-image-slot cp-guide-mobile-image",
         "text": "ImageStudent from India at airport ",
-        "y": 1308,
+        "y": 1296.78125,
         "height": 196
       },
       {
         "class": "cp-guide-mobile-contents",
         "text": "On this page6 sections · jump to an",
-        "y": 1528,
+        "y": 1516.78125,
         "height": 72
       },
       {
         "class": "cp-guide-section",
         "text": "What students really needIn your fi",
-        "y": 1624,
+        "y": 1612.78125,
         "height": 194
       },
       {
         "class": "cp-guide-checklist",
         "text": "✓A Canadian number before you fly✓7",
-        "y": 1842,
+        "y": 1830.78125,
         "height": 270
       },
       {
         "class": "cp-guide-section",
         "text": "Compare student plansEvery plan inc",
-        "y": 2136,
+        "y": 2124.78125,
         "height": 116
       },
       {
         "class": "cp-guide-mobile-plans",
         "text": "Fido Essential75 GB · Best for ever",
-        "y": 2276,
+        "y": 2264.78125,
         "height": 358
       },
       {
         "class": "cp-guide-small",
         "text": "Prices in CAD, before tax, as of Oc",
-        "y": 2658,
+        "y": 2646.78125,
         "height": 54
       },
       {
         "class": "cp-guide-inline-cta",
         "text": "Most students pickRogers Plus · 100",
-        "y": 2736,
+        "y": 2724.78125,
         "height": 184
       },
       {
         "class": "cp-guide-section",
         "text": "Is your phone eSIM-ready?Pre-arriva",
-        "y": 2944,
+        "y": 2932.78125,
         "height": 220
       },
       {
         "class": "cp-guide-devices",
         "text": "iPhoneSettings → General → About → ",
-        "y": 3188,
+        "y": 3176.78125,
         "height": 638
       },
       {
         "class": "cp-guide-section cp-guide-order",
         "text": "How to order from India1Pick your p",
-        "y": 3850,
+        "y": 3838.78125,
         "height": 318
       },
       {
         "class": "cp-guide-tip",
         "text": "TipKeep your Indian SIM active on a",
-        "y": 4192,
+        "y": 4180.78125,
         "height": 117
       },
       {
         "class": "cp-guide-section cp-guide-faq",
         "text": "FAQCan I open a Canadian bank accou",
-        "y": 4333,
+        "y": 4321.78125,
         "height": 722
       },
       {
         "class": "cp-guide-helpful",
         "text": "Was this guide helpful?YesNo",
-        "y": 5079,
+        "y": 5067.78125,
         "height": 116
       },
       {
         "class": "cp-guide-small",
         "text": "Sources: Rogers, Fido and Chatr pla",
-        "y": 5219,
+        "y": 5207.78125,
         "height": 36
       },
       {
         "class": "cp-guide-mobile-share",
         "text": "Share this guideWhatsAppCopy link",
-        "y": 5279,
+        "y": 5267.78125,
         "height": 174
       }
     ],
     "violations": [],
     "assets": [
       {
-        "src": "/design/guides/1-imgPhoneIcon.svg",
+        "src": "/design/components/364-2153-imgPhoneIcon.svg",
         "loaded": true,
         "width": 16,
         "height": 16,
@@ -240,6 +234,14 @@
         "declaredHeight": 32
       },
       {
+        "src": "/design/redesign/cta-pre-arrival.svg",
+        "loaded": true,
+        "width": 24,
+        "height": 24,
+        "declaredWidth": 24,
+        "declaredHeight": 24
+      },
+      {
         "src": "/design/components/68-50-imgFrame.svg",
         "loaded": true,
         "width": 36,
@@ -252,9 +254,9 @@
     "details": [
       {
         "class": "cp-breadcrumb",
-        "text": "Home/Guides/Phones &",
+        "text": "Home/Guides/Best SIM",
         "width": 350,
-        "height": 42,
+        "height": 20,
         "font": "14px",
         "line": "20px"
       },
@@ -270,9 +272,9 @@
         "class": "",
         "text": "Best SIM for student",
         "width": 350,
-        "height": 108,
+        "height": 118.78125,
         "font": "36px",
-        "line": "36px"
+        "line": "39.6px"
       },
       {
         "class": "cp-guide-description",
@@ -301,7 +303,7 @@
       {
         "class": "",
         "text": "Most students from I",
-        "width": 261.46875,
+        "width": 261.484375,
         "height": 234,
         "font": "17px",
         "line": "26px"
@@ -348,9 +350,9 @@
       },
       {
         "class": "cp-faq-answer",
-        "text": "This answer is await",
+        "text": "No. To order you nee",
         "width": 350,
-        "height": 72,
+        "height": 98,
         "font": "17px",
         "line": "26px"
       },
@@ -372,9 +374,9 @@
       },
       {
         "class": "cp-faq-answer",
-        "text": "This answer is await",
+        "text": "Yes. You can change ",
         "width": 350,
-        "height": 72,
+        "height": 98,
         "font": "17px",
         "line": "26px"
       },
@@ -396,9 +398,9 @@
       },
       {
         "class": "cp-faq-answer",
-        "text": "This answer is await",
+        "text": "It will if your phon",
         "width": 350,
-        "height": 72,
+        "height": 98,
         "font": "17px",
         "line": "26px"
       },
@@ -420,15 +422,15 @@
       },
       {
         "class": "cp-faq-answer",
-        "text": "This answer is await",
+        "text": "Your Indian passport",
         "width": 350,
-        "height": 72,
+        "height": 98,
         "font": "17px",
         "line": "26px"
       },
       {
         "class": "cp-faq-item",
-        "text": "When do I pay?+−This",
+        "text": "When do I pay?+−Noth",
         "width": 350,
         "height": 77,
         "font": "16px",
@@ -444,15 +446,23 @@
       },
       {
         "class": "cp-faq-answer",
-        "text": "This answer is await",
+        "text": "Nothing is paid onli",
         "width": 350,
-        "height": 72,
+        "height": 124,
         "font": "17px",
         "line": "26px"
       },
       {
         "class": "cp-guide-related-card",
-        "text": "ImagePhone settings ",
+        "text": "ImageStudent checkin",
+        "width": 350,
+        "height": 128,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-guide-related-card",
+        "text": "ImageNewcomer from I",
         "width": 350,
         "height": 146,
         "font": "16px",
@@ -460,17 +470,9 @@
       },
       {
         "class": "cp-guide-related-card",
-        "text": "ImageNewcomer choosi",
+        "text": "ImageTraveller at Pe",
         "width": 350,
         "height": 146,
-        "font": "16px",
-        "line": "24px"
-      },
-      {
-        "class": "cp-guide-related-card",
-        "text": "ImageNewcomer unpack",
-        "width": 350,
-        "height": 171,
         "font": "16px",
         "line": "24px"
       }
@@ -568,35 +570,29 @@
         "class": "cp-guide-header",
         "y": 160,
         "width": 1440,
-        "height": 941
+        "height": 912.1875
       },
       {
         "class": "cp-guide-body",
-        "y": 1101,
+        "y": 1072.1875,
         "width": 1440,
         "height": 3053
       },
       {
         "class": "cp-guide-related",
-        "y": 4154,
+        "y": 4125.1875,
         "width": 1440,
         "height": 547
       },
       {
-        "class": "cp-guide-final",
-        "y": 4701,
-        "width": 1440,
-        "height": 641
-      },
-      {
-        "class": "cp-container cp-guide-final-card",
-        "y": 4701,
+        "class": "cp-container cp-guide-cta",
+        "y": 4672.1875,
         "width": 1200,
-        "height": 545
+        "height": 232
       },
       {
         "class": "cp-footer",
-        "y": 5342,
+        "y": 4904.1875,
         "width": 1440,
         "height": 439.1875
       }
@@ -605,55 +601,55 @@
       {
         "class": "cp-guide-quick",
         "text": "Quick answerMost students from Indi",
-        "y": 1165,
+        "y": 1136.1875,
         "height": 178
       },
       {
         "class": "cp-guide-checklist",
         "text": "✓A Canadian number before you fly✓7",
-        "y": 1533,
+        "y": 1504.1875,
         "height": 218
       },
       {
         "class": "cp-guide-comparison",
         "text": "PlanDataPriceBest forFido Essential",
-        "y": 1889,
+        "y": 1860.1875,
         "height": 301
       },
       {
         "class": "cp-guide-small",
         "text": "Prices in CAD, before tax, as of Oc",
-        "y": 2214,
+        "y": 2185.1875,
         "height": 36
       },
       {
         "class": "cp-guide-inline-cta",
         "text": "Most students pickRogers Plus · 100",
-        "y": 2274,
+        "y": 2245.1875,
         "height": 96
       },
       {
         "class": "cp-guide-devices",
         "text": "iPhoneSettings → General → About → ",
-        "y": 2560,
+        "y": 2531.1875,
         "height": 302
       },
       {
         "class": "cp-guide-tip",
         "text": "TipKeep your Indian SIM active on a",
-        "y": 3206,
+        "y": 3177.1875,
         "height": 91
       },
       {
         "class": "cp-guide-helpful",
         "text": "Was this guide helpful?YesNo",
-        "y": 3948,
+        "y": 3919.1875,
         "height": 84
       },
       {
         "class": "cp-guide-small",
         "text": "Sources: Rogers, Fido and Chatr pla",
-        "y": 4056,
+        "y": 4027.1875,
         "height": 18
       }
     ],
@@ -740,6 +736,14 @@
         "declaredHeight": 32
       },
       {
+        "src": "/design/redesign/cta-pre-arrival.svg",
+        "loaded": true,
+        "width": 24,
+        "height": 24,
+        "declaredWidth": 24,
+        "declaredHeight": 24
+      },
+      {
         "src": "/design/components/68-50-imgFrame.svg",
         "loaded": true,
         "width": 36,
@@ -752,7 +756,7 @@
     "details": [
       {
         "class": "cp-breadcrumb",
-        "text": "Home/Guides/Phones &",
+        "text": "Home/Guides/Best SIM",
         "width": 1200,
         "height": 20,
         "font": "14px",
@@ -770,9 +774,9 @@
         "class": "",
         "text": "Best SIM for student",
         "width": 960,
-        "height": 152,
-        "font": "80px",
-        "line": "76px"
+        "height": 123.1875,
+        "font": "56px",
+        "line": "61.6px"
       },
       {
         "class": "cp-guide-description",
@@ -848,9 +852,9 @@
       },
       {
         "class": "cp-faq-answer",
-        "text": "This answer is await",
+        "text": "No. To order you nee",
         "width": 640,
-        "height": 46,
+        "height": 72,
         "font": "17px",
         "line": "26px"
       },
@@ -872,9 +876,9 @@
       },
       {
         "class": "cp-faq-answer",
-        "text": "This answer is await",
+        "text": "Yes. You can change ",
         "width": 640,
-        "height": 46,
+        "height": 72,
         "font": "17px",
         "line": "26px"
       },
@@ -896,9 +900,9 @@
       },
       {
         "class": "cp-faq-answer",
-        "text": "This answer is await",
+        "text": "It will if your phon",
         "width": 640,
-        "height": 46,
+        "height": 72,
         "font": "17px",
         "line": "26px"
       },
@@ -920,15 +924,15 @@
       },
       {
         "class": "cp-faq-answer",
-        "text": "This answer is await",
+        "text": "Your Indian passport",
         "width": 640,
-        "height": 46,
+        "height": 72,
         "font": "17px",
         "line": "26px"
       },
       {
         "class": "cp-faq-item",
-        "text": "When do I pay?+−This",
+        "text": "When do I pay?+−Noth",
         "width": 640,
         "height": 77,
         "font": "16px",
@@ -944,15 +948,15 @@
       },
       {
         "class": "cp-faq-answer",
-        "text": "This answer is await",
+        "text": "Nothing is paid onli",
         "width": 640,
-        "height": 46,
+        "height": 72,
         "font": "17px",
         "line": "26px"
       },
       {
         "class": "cp-guide-related-card",
-        "text": "ImagePhone settings ",
+        "text": "ImageStudent checkin",
         "width": 386.65625,
         "height": 315,
         "font": "16px",
@@ -960,7 +964,7 @@
       },
       {
         "class": "cp-guide-related-card",
-        "text": "ImageNewcomer choosi",
+        "text": "ImageNewcomer from I",
         "width": 386.671875,
         "height": 315,
         "font": "16px",
@@ -968,7 +972,7 @@
       },
       {
         "class": "cp-guide-related-card",
-        "text": "ImageNewcomer unpack",
+        "text": "ImageTraveller at Pe",
         "width": 386.65625,
         "height": 315,
         "font": "16px",
