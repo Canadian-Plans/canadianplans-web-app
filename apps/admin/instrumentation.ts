@@ -10,7 +10,7 @@ export async function onRequestError(
   error: unknown,
   request: { path?: string },
 ): Promise<void> {
-  const { captureException } = await import('./src/lib/error-tracking.js');
+  const { captureException } = await import('./src/lib/error-tracking');
   captureException(error, {
     requestId: randomUUID(),
     route: request.path,
