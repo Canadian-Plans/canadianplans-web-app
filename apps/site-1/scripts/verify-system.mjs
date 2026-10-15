@@ -10,7 +10,11 @@ const evidence = resolve('../../docs/EVIDENCE/system');
 const key = 'canadian-plans.cookie-choices.v1';
 const off = { version: 1, analytics: false, marketing: false };
 await mkdir(evidence, { recursive: true });
-const browser = await chromium.launch();
+const browser = await chromium.launch(
+  process.env.PLAYWRIGHT_CHROMIUM_PATH
+    ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH }
+    : {},
+);
 const records = [];
 try {
   const assets = JSON.parse(await readFile(resolve(evidence, 'assets.json'), 'utf8'));

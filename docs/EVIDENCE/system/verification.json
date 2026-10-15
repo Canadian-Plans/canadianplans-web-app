@@ -6,39 +6,39 @@
       {
         "class": "cp-system-missing",
         "x": 0,
-        "y": 108,
+        "y": 164.75,
         "width": 390,
-        "height": 1033
+        "height": 1022.1875
       },
       {
         "class": "cp-footer",
         "x": 0,
-        "y": 1141,
+        "y": 1186.9375,
         "width": 390,
         "height": 946.96875
       }
     ],
     "assets": [
       {
-        "src": "/design/system/1-imgPhoneIcon.svg",
+        "src": "/design/components/364-2153-imgPhoneIcon.svg",
         "width": 16,
         "height": 16,
         "naturalWidth": 16,
         "naturalHeight": 16
       },
       {
-        "src": "/design/components/364-2163-imgMark.svg",
+        "src": "/design/components/60-13-imgMark.svg",
         "width": 36,
         "height": 36,
         "naturalWidth": 36,
         "naturalHeight": 36
       },
       {
-        "src": "/design/system/0-imgIcon.svg",
-        "width": 20,
-        "height": 20,
-        "naturalWidth": 20,
-        "naturalHeight": 20
+        "src": "/design/components/364-2163-imgIcon.svg",
+        "width": 22,
+        "height": 22,
+        "naturalWidth": 22,
+        "naturalHeight": 22
       },
       {
         "src": "/design/components/364-2163-imgIcon1.svg",
@@ -114,81 +114,81 @@
       {
         "class": "cp-system-search-page",
         "x": 0,
-        "y": 108,
+        "y": 164.75,
         "width": 390,
         "height": 1685
       },
       {
         "class": "cp-system-featured",
         "x": 20,
-        "y": 371,
+        "y": 427.75,
         "width": 350,
         "height": 268
       },
       {
         "class": "cp-system-result",
         "x": 20,
-        "y": 655,
+        "y": 711.75,
         "width": 350,
         "height": 165
       },
       {
         "class": "cp-system-result",
         "x": 20,
-        "y": 836,
+        "y": 892.75,
         "width": 350,
         "height": 154
       },
       {
         "class": "cp-system-result",
         "x": 20,
-        "y": 1006,
+        "y": 1062.75,
         "width": 350,
         "height": 177
       },
       {
         "class": "cp-system-result",
         "x": 20,
-        "y": 1199,
+        "y": 1255.75,
         "width": 350,
         "height": 177
       },
       {
         "class": "cp-system-result",
         "x": 20,
-        "y": 1392,
+        "y": 1448.75,
         "width": 350,
         "height": 135
       },
       {
         "class": "cp-footer",
         "x": 0,
-        "y": 1793,
+        "y": 1849.75,
         "width": 390,
         "height": 946.96875
       }
     ],
     "assets": [
       {
-        "src": "/design/system/1-imgPhoneIcon.svg",
+        "src": "/design/components/364-2153-imgPhoneIcon.svg",
         "width": 16,
         "height": 16,
         "naturalWidth": 16,
         "naturalHeight": 16
       },
       {
-        "src": "/design/components/364-2163-imgMark.svg",
+        "src": "/design/components/60-13-imgMark.svg",
         "width": 36,
         "height": 36,
         "naturalWidth": 36,
         "naturalHeight": 36
       },
       {
-        "src": "/design/system/0-imgIcon.svg",
-        "width": 20,
-        "height": 20,
-        "naturalWidth": 20,
-        "naturalHeight": 20
+        "src": "/design/components/364-2163-imgIcon.svg",
+        "width": 22,
+        "height": 22,
+        "naturalWidth": 22,
+        "naturalHeight": 22
       },
       {
         "src": "/design/components/364-2163-imgIcon1.svg",
@@ -229,60 +229,60 @@
       {
         "class": "cp-system-accessibility",
         "x": 0,
-        "y": 108,
+        "y": 164.75,
         "width": 390,
-        "height": 2188
+        "height": 2181.1875
       },
       {
         "class": "cp-system-accessibility-hero",
         "x": 0,
-        "y": 108,
+        "y": 164.75,
         "width": 390,
-        "height": 306
+        "height": 299.1875
       },
       {
         "class": "cp-system-accessibility-body cp-system-container",
         "x": 20,
-        "y": 414,
+        "y": 463.9375,
         "width": 350,
         "height": 1882
       },
       {
         "class": "cp-system-report",
         "x": 20,
-        "y": 2035,
+        "y": 2084.9375,
         "width": 350,
         "height": 213
       },
       {
         "class": "cp-footer",
         "x": 0,
-        "y": 2296,
+        "y": 2345.9375,
         "width": 390,
         "height": 946.96875
       }
     ],
     "assets": [
       {
-        "src": "/design/system/1-imgPhoneIcon.svg",
+        "src": "/design/components/364-2153-imgPhoneIcon.svg",
         "width": 16,
         "height": 16,
         "naturalWidth": 16,
         "naturalHeight": 16
       },
       {
-        "src": "/design/components/364-2163-imgMark.svg",
+        "src": "/design/components/60-13-imgMark.svg",
         "width": 36,
         "height": 36,
         "naturalWidth": 36,
         "naturalHeight": 36
       },
       {
-        "src": "/design/system/0-imgIcon.svg",
-        "width": 20,
-        "height": 20,
-        "naturalWidth": 20,
-        "naturalHeight": 20
+        "src": "/design/components/364-2163-imgIcon.svg",
+        "width": 22,
+        "height": 22,
+        "naturalWidth": 22,
+        "naturalHeight": 22
       },
       {
         "src": "/design/components/364-2163-imgIcon1.svg",
@@ -394,21 +394,21 @@
       {
         "class": "cp-system-missing",
         "x": 0,
-        "y": 120.296875,
+        "y": 160.59375,
         "width": 1440,
-        "height": 1070
+        "height": 1051.59375
       },
       {
         "class": "cp-footer",
         "x": 0,
-        "y": 1190.296875,
+        "y": 1212.1875,
         "width": 1440,
         "height": 440.5
       }
     ],
     "assets": [
       {
-        "src": "/design/components/364-2163-imgMark.svg",
+        "src": "/design/components/60-13-imgMark.svg",
         "width": 36,
         "height": 36,
         "naturalWidth": 36,
@@ -488,63 +488,63 @@
       {
         "class": "cp-system-search-page",
         "x": 0,
-        "y": 120.296875,
+        "y": 160.59375,
         "width": 1440,
         "height": 1355
       },
       {
         "class": "cp-system-featured",
         "x": 290,
-        "y": 389.296875,
+        "y": 429.59375,
         "width": 860,
         "height": 127
       },
       {
         "class": "cp-system-result",
         "x": 290,
-        "y": 540.296875,
+        "y": 580.59375,
         "width": 860,
         "height": 118
       },
       {
         "class": "cp-system-result",
         "x": 290,
-        "y": 682.296875,
+        "y": 722.59375,
         "width": 860,
         "height": 118
       },
       {
         "class": "cp-system-result",
         "x": 290,
-        "y": 824.296875,
+        "y": 864.59375,
         "width": 860,
         "height": 118
       },
       {
         "class": "cp-system-result",
         "x": 290,
-        "y": 966.296875,
+        "y": 1006.59375,
         "width": 860,
         "height": 118
       },
       {
         "class": "cp-system-result",
         "x": 290,
-        "y": 1108.296875,
+        "y": 1148.59375,
         "width": 860,
         "height": 118
       },
       {
         "class": "cp-footer",
         "x": 0,
-        "y": 1475.296875,
+        "y": 1515.59375,
         "width": 1440,
         "height": 440.5
       }
     ],
     "assets": [
       {
-        "src": "/design/components/364-2163-imgMark.svg",
+        "src": "/design/components/60-13-imgMark.svg",
         "width": 36,
         "height": 36,
         "naturalWidth": 36,
@@ -589,42 +589,42 @@
       {
         "class": "cp-system-accessibility",
         "x": 0,
-        "y": 120.296875,
+        "y": 160.59375,
         "width": 1440,
-        "height": 1668
+        "height": 1659.59375
       },
       {
         "class": "cp-system-accessibility-hero",
         "x": 0,
-        "y": 120.296875,
+        "y": 160.59375,
         "width": 1440,
-        "height": 324
+        "height": 315.59375
       },
       {
         "class": "cp-system-accessibility-body cp-system-container",
         "x": 120,
-        "y": 444.296875,
+        "y": 476.1875,
         "width": 1200,
         "height": 1344
       },
       {
         "class": "cp-system-report",
         "x": 120,
-        "y": 1596.296875,
+        "y": 1628.1875,
         "width": 760,
         "height": 96
       },
       {
         "class": "cp-footer",
         "x": 0,
-        "y": 1788.296875,
+        "y": 1820.1875,
         "width": 1440,
         "height": 440.5
       }
     ],
     "assets": [
       {
-        "src": "/design/components/364-2163-imgMark.svg",
+        "src": "/design/components/60-13-imgMark.svg",
         "width": 36,
         "height": 36,
         "naturalWidth": 36,

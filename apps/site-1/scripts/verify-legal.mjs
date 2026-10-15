@@ -9,7 +9,11 @@ const origin = process.env.LEGAL_TEST_URL ?? process.env.AUDIT_ORIGIN ?? 'http:/
 const evidence = resolve('../../docs/EVIDENCE/legal');
 await mkdir(evidence, { recursive: true });
 const assets = JSON.parse(await readFile(resolve(evidence, 'assets.json'), 'utf8'));
-const browser = await chromium.launch();
+const browser = await chromium.launch(
+  process.env.PLAYWRIGHT_CHROMIUM_PATH
+    ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH }
+    : {},
+);
 const records = [];
 try {
   for (const asset of assets)

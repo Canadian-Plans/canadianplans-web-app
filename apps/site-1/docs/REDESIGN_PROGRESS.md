@@ -76,8 +76,8 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
 | 14  | `/order/home-internet`                                                                       | done   | reviewed: already matches; minimal checkout header kept on purpose                                                |
 | 15  | `/track-order`                                                                               | done   | site header/footer, home-style headings, navy help band                                                           |
 | 16  | `/plans`, `/plans/[slug]`, `/order`, `/track`                                                | done   | layout restyle only (site header/footer, type); pages untouched; `order.spec.ts` still needs the Postgres harness |
-| 17  | `/privacy`, `/terms`                                                                         | todo   |                                                                                                                   |
-| 18  | `/accessibility`, `/search`, 404                                                             | todo   |                                                                                                                   |
+| 17  | `/privacy`, `/terms`                                                                         | done   | chrome + headings only; legal wording untouched (needs legal review)                                              |
+| 18  | `/accessibility`, `/search`, 404                                                             | done   | chrome + headings; navy panels                                                                                    |
 | 19  | Category polish: `/pre-arrival-sim`, `/home-internet`, `/mobile-plans`, `/business-internet` | todo   |                                                                                                                   |
 
 ## Open placeholders and questions for the owner

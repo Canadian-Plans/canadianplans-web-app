@@ -1,18 +1,12 @@
 import { cache } from 'react';
 import { SkipLink } from '@canadian-plans/ui';
 import { CpButton } from '@canadian-plans/ui/canadian-plans';
-import { UtilityBar, Footer } from '@/components/shared/chrome';
+import { Footer } from '@/components/shared/chrome';
+import { SiteHeader } from '@/components/shared/site-header';
+import { siteChrome, siteFooter } from '@content/site-chrome';
 import { LegalBody } from '@/components/legal-body';
 import { getLegalPage, type LegalPage as PublishedLegalPage } from '@/lib/legal';
-import {
-  legalDrafts,
-  legalCopy as copy,
-  legalChrome,
-  legalAssets,
-  legalFooter,
-  type LegalRoute,
-} from '@content/legal';
-import { LegalNavigation } from './navigation';
+import { legalDrafts, legalCopy as copy, legalAssets, type LegalRoute } from '@content/legal';
 import { LegalContents, LegalHeaderControls } from './controls';
 export const getLegalScreen = cache(getLegalPage);
 export function LegalPage({ slug, page }: { slug: LegalRoute; page: PublishedLegalPage }) {
@@ -24,8 +18,7 @@ export function LegalPage({ slug, page }: { slug: LegalRoute; page: PublishedLeg
       <SkipLink href="#legal-main" className="cp-legal-skip">
         {copy.skip}
       </SkipLink>
-      <UtilityBar content={legalChrome} assets={legalAssets} planHref="/pre-arrival-sim#plans" />
-      <LegalNavigation />
+      <SiteHeader planHref="/pre-arrival-sim#plans" content={siteChrome} />
       <main id="legal-main" tabIndex={-1} data-source={page.source}>
         <header className="cp-legal-header">
           <div className="cp-container">
@@ -112,7 +105,7 @@ export function LegalPage({ slug, page }: { slug: LegalRoute; page: PublishedLeg
           </article>
         </div>
       </main>
-      <Footer brand={legalChrome.brand} content={legalFooter} assets={legalAssets} brandHref="/" />
+      <Footer brand={siteChrome.brand} content={siteFooter} assets={legalAssets} brandHref="/" />
     </>
   );
 }

@@ -1,5 +1,4 @@
-import { componentAssets, type ChromeContent, type FooterContent } from './components';
-import { legalChrome, legalFooter } from './legal';
+import { componentAssets } from './components';
 import type { FigmaAsset } from '@canadian-plans/ui/canadian-plans';
 export const systemCopy = {
   skip: 'Skip to main content',
@@ -382,5 +381,3 @@ export const systemAssets = {
     nodeId: '307:212',
   } satisfies FigmaAsset,
 };
-export const systemChrome: ChromeContent = { ...legalChrome };
-export const systemFooter: FooterContent = { ...legalFooter };

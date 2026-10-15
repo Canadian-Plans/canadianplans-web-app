@@ -1,6 +1,7 @@
 import type { FaqItemContent } from '@canadian-plans/ui/canadian-plans';
 import type { ChromeContent, FooterContent } from './components';
-import { legalAssets, legalChrome, legalFooter } from './legal';
+import { legalAssets } from './legal';
+import { siteChrome, siteFooter } from './site-chrome';
 
 /**
  * Business Internet preview page (Electric Blue, 14 October 2026). Noindex design preview.
@@ -82,17 +83,10 @@ export const businessFaq: readonly FaqItemContent[] = [
   },
 ];
 
-/** Business preview uses the shared real-route chrome (same as the legal pages). */
+/** Business preview uses the shared site chrome (15 October 2026). */
 export const businessChrome: ChromeContent = {
-  ...legalChrome,
-  promoLink: { ...legalChrome.promoLink, href: '/pre-arrival-sim#plans' },
+  ...siteChrome,
+  promoLink: { ...siteChrome.promoLink, href: '/pre-arrival-sim#plans' },
 };
 export const businessAssets = legalAssets;
-export const businessFooter: FooterContent = {
-  ...legalFooter,
-  legal: legalFooter.legal.map((link) =>
-    link.href === '#legal-cookie-settings'
-      ? { ...link, href: '/privacy#legal-cookie-settings' }
-      : link,
-  ),
-};
+export const businessFooter: FooterContent = siteFooter;
