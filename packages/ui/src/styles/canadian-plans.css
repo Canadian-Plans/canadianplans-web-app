@@ -861,6 +861,15 @@
   --cp-cat-hero-min-height: 22.5rem;
   --cp-cat-quick-rule: 0.25rem;
   --cp-cat-form-min: 15rem;
+  /* Electric Blue landing pages (apps/site-1 landing.css, 15 October 2026). */
+  --cp-landing-section-gap: 5rem;
+  --cp-landing-section-gap-stacked: 3.5rem;
+  --cp-landing-fact-min: 11rem;
+  --cp-landing-keyfacts-width: 20rem;
+  --cp-landing-check-size: 1.75rem;
+  --cp-landing-article-width: 46rem;
+  --cp-landing-table-min: 40rem;
+  --cp-landing-related-min: 15rem;
   --cp-font-family: var(--font-google-sans-flex, ui-sans-serif), system-ui, sans-serif;
   --cp-font-grad: 0;
   --cp-font-rond: 0;

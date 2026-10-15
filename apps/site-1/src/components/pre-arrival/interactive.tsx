@@ -9,7 +9,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@canadian-plans/ui';
-import { CpButton, CpChip, CpPlanCard, CpSectionHeading } from '@canadian-plans/ui/canadian-plans';
+import {
+  CpButton,
+  CpChip,
+  CpPlanCard,
+  CpSectionHeading,
+  type SectionHeadingContent,
+} from '@canadian-plans/ui/canadian-plans';
 import {
   arrivalCopy,
   arrivalChrome,
@@ -63,10 +69,19 @@ export function ArrivalNavigation() {
   );
 }
 
-/** One owner for the audience and chosen plan; checkout receives only fixture IDs. */
-export function PlanPicker() {
+/**
+ * One owner for the audience and chosen plan; checkout receives only fixture IDs.
+ * Landing pages reuse it with their own heading and starting audience.
+ */
+export function PlanPicker({
+  defaultAudience = 'student',
+  heading,
+}: {
+  defaultAudience?: ArrivalAudience;
+  heading?: SectionHeadingContent;
+} = {}) {
   const copy = arrivalCopy.picker;
-  const [audience, setAudience] = useState<ArrivalAudience>('student');
+  const [audience, setAudience] = useState<ArrivalAudience>(defaultAudience);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [announcement, setAnnouncement] = useState('');
   const plans = arrivalPlans.filter((plan) => plan.audiences.includes(audience));
@@ -85,7 +100,7 @@ export function PlanPicker() {
       <div className="cp-container">
         <div className="cp-arrival-picker-heading">
           <span>{copy.step}</span>
-          <CpSectionHeading content={copy.heading} />
+          <CpSectionHeading content={heading ?? copy.heading} />
         </div>
         <div className="cp-arrival-controls">
           <fieldset>

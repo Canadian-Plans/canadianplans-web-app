@@ -12,11 +12,6 @@ const evidence = path.resolve(appRoot, '../../docs/EVIDENCE/category-sim');
 const origin = process.env.AUDIT_ORIGIN ?? 'http://127.0.0.1:3127';
 const routes = [
   {
-    key: 'students',
-    path: '/pre-arrival-sim/students',
-    heading: 'Your Canadian number before your first class.',
-  },
-  {
     key: 'india',
     path: '/pre-arrival-sim/from-india',
     heading: 'Canadian SIM for Indians moving to Canada (2026)',
