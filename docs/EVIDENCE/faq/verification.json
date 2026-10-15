@@ -6,56 +6,42 @@
       {
         "class": "cp-faq-page-hero cp-container",
         "x": 20,
-        "y": 164,
+        "y": 261,
         "width": 350,
-        "height": 559
+        "height": 476.1875
       },
       {
         "class": "cp-faq-page-group",
         "x": 0,
-        "y": 723,
+        "y": 737.1875,
         "width": 390,
-        "height": 1060
+        "height": 1168.796875
       },
       {
         "class": "cp-faq-page-group",
         "x": 0,
-        "y": 1783,
+        "y": 1905.984375,
         "width": 390,
-        "height": 1107
+        "height": 862.296875
       },
       {
         "class": "cp-faq-page-group",
         "x": 0,
-        "y": 2890,
+        "y": 2768.28125,
         "width": 390,
-        "height": 1053
-      },
-      {
-        "class": "cp-faq-page-final",
-        "x": 0,
-        "y": 3943,
-        "width": 390,
-        "height": 531
-      },
-      {
-        "class": "cp-faq-page-final-card cp-container",
-        "x": 20,
-        "y": 3991,
-        "width": 350,
-        "height": 435
+        "height": 839.09375
       },
       {
         "class": "cp-footer",
         "x": 0,
-        "y": 4474,
+        "y": 3977.75,
         "width": 390,
         "height": 946.96875
       }
     ],
     "assets": [
       {
-        "src": "/design/faq/1-imgPhoneIcon.svg",
+        "src": "/design/components/364-2153-imgPhoneIcon.svg",
         "node": "364:2155",
         "loaded": true,
         "width": 16,
@@ -100,22 +86,13 @@
         "declaredHeight": 20
       },
       {
-        "src": "/design/components/312-2-imgIcon.svg",
-        "node": "312:3",
+        "src": "/design/redesign/cta-mobile.svg",
+        "node": "canvas:cta-mobile",
         "loaded": true,
-        "width": 32,
-        "height": 32,
-        "declaredWidth": 32,
-        "declaredHeight": 32
-      },
-      {
-        "src": "/design/components/312-2-imgIcon.svg",
-        "node": "312:3",
-        "loaded": true,
-        "width": 32,
-        "height": 32,
-        "declaredWidth": 32,
-        "declaredHeight": 32
+        "width": 24,
+        "height": 24,
+        "declaredWidth": 24,
+        "declaredHeight": 24
       },
       {
         "src": "/design/components/68-50-imgFrame.svg",
@@ -128,17 +105,8 @@
       }
     ],
     "errors": [],
-    "imageSlots": [
-      {
-        "width": 350,
-        "height": 200
-      },
-      {
-        "width": 350,
-        "height": 200
-      }
-    ],
-    "schema": "three source Q&A pairs match the visible expandable answers; server-rendered schema remains unchanged during local search",
+    "imageSlots": [],
+    "schema": "13 answered Q&A pairs match the visible expandable answers; server-rendered schema remains unchanged during local search",
     "interactions": "19 disclosures, keyboard toggling, exclusive groups, question/answer/alias search, empty/clear, keyboard topics, global finder and CTA destinations passed",
     "overflow": [
       {
@@ -174,49 +142,35 @@
       {
         "class": "cp-faq-page-hero cp-container",
         "x": 120,
-        "y": 160,
+        "y": 257,
         "width": 1200,
-        "height": 413
+        "height": 335.59375
       },
       {
         "class": "cp-faq-page-group",
         "x": 0,
-        "y": 573,
+        "y": 592.59375,
         "width": 1440,
-        "height": 906
+        "height": 842
       },
       {
         "class": "cp-faq-page-group",
         "x": 0,
-        "y": 1479,
+        "y": 1434.59375,
         "width": 1440,
-        "height": 843
+        "height": 780
       },
       {
         "class": "cp-faq-page-group",
         "x": 0,
-        "y": 2322,
+        "y": 2214.59375,
         "width": 1440,
-        "height": 817
-      },
-      {
-        "class": "cp-faq-page-final",
-        "x": 0,
-        "y": 3139,
-        "width": 1440,
-        "height": 510
-      },
-      {
-        "class": "cp-faq-page-final-card cp-container",
-        "x": 120,
-        "y": 3139,
-        "width": 1200,
-        "height": 414
+        "height": 754
       },
       {
         "class": "cp-footer",
         "x": 0,
-        "y": 3649,
+        "y": 3200.59375,
         "width": 1440,
         "height": 439.1875
       }
@@ -250,22 +204,13 @@
         "declaredHeight": 20
       },
       {
-        "src": "/design/components/312-2-imgIcon.svg",
-        "node": "312:3",
+        "src": "/design/redesign/cta-mobile.svg",
+        "node": "canvas:cta-mobile",
         "loaded": true,
-        "width": 32,
-        "height": 32,
-        "declaredWidth": 32,
-        "declaredHeight": 32
-      },
-      {
-        "src": "/design/components/312-2-imgIcon.svg",
-        "node": "312:3",
-        "loaded": true,
-        "width": 32,
-        "height": 32,
-        "declaredWidth": 32,
-        "declaredHeight": 32
+        "width": 24,
+        "height": 24,
+        "declaredWidth": 24,
+        "declaredHeight": 24
       },
       {
         "src": "/design/components/68-50-imgFrame.svg",
@@ -278,17 +223,8 @@
       }
     ],
     "errors": [],
-    "imageSlots": [
-      {
-        "width": 380,
-        "height": 240
-      },
-      {
-        "width": 380,
-        "height": 240
-      }
-    ],
-    "schema": "three source Q&A pairs match the visible expandable answers; server-rendered schema remains unchanged during local search",
+    "imageSlots": [],
+    "schema": "13 answered Q&A pairs match the visible expandable answers; server-rendered schema remains unchanged during local search",
     "interactions": "19 disclosures, keyboard toggling, exclusive groups, question/answer/alias search, empty/clear, keyboard topics, global finder and CTA destinations passed",
     "overflow": [
       {

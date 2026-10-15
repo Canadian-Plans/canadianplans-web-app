@@ -69,7 +69,7 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
 | 7   | `/home-internet/vancouver`                                                                   | done   | old category-internet route group removed                                                   |
 | 8   | `/about`                                                                                     | done   | on the landing kit, with FAQ + JSON-LD                                                      |
 | 9   | `/contact`                                                                                   | done   | layout and forms kept; site header/footer, breadcrumb, home-style hero, navy tracking panel |
-| 10  | `/faq`                                                                                       | todo   |                                                                                             |
+| 10  | `/faq`                                                                                       | done   | 10 answers filled from existing site copy (13/19 in JSON-LD)                                |
 | 11  | `/guides`                                                                                    | todo   |                                                                                             |
 | 12  | `/guides/[slug]`                                                                             | todo   |                                                                                             |
 | 13  | `/order/pre-arrival`                                                                         | todo   | preview form, stub action                                                                   |
@@ -81,6 +81,12 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
 | 19  | Category polish: `/pre-arrival-sim`, `/home-internet`, `/mobile-plans`, `/business-internet` | todo   |                                                                                             |
 
 ## Open placeholders and questions for the owner
+
+- FAQ: 10 answers were filled from facts already on other pages (marked `answerStatus:
+'site'`): SIN, ordering before arrival, ID, carrier choice, official carrier, eSIM check,
+  keeping a home number, switching plans, when you are charged, who to contact. Still
+  pending: English support, activation time, data limit, changing an order, missing
+  documents, cancel/refund (PLATFORM_CONTEXT: no refund policy — owner wording needed).
 
 - About: shop location, hours and the “no markup” claim are owner-supplied preview copy.
 

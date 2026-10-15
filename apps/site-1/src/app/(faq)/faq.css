@@ -23,7 +23,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: var(--cp-space-16);
-  padding-block: var(--cp-space-32);
+  padding-block: var(--cp-space-8) var(--cp-space-32);
 }
 .cp-faq-page-eyebrow,
 .cp-faq-page .cp-section-eyebrow {
@@ -36,10 +36,10 @@
 }
 .cp-faq-page-hero h1 {
   max-width: var(--cp-faq-page-copy-mobile-width);
-  font-size: var(--cp-text-48);
-  font-weight: var(--cp-weight-bold);
-  line-height: var(--cp-contact-display-line);
-  letter-spacing: var(--cp-tracking-3);
+  font-size: var(--cp-text-36);
+  font-weight: var(--cp-weight-extra-bold);
+  line-height: var(--cp-leading-heading);
+  letter-spacing: var(--cp-tracking-tight);
 }
 .cp-faq-page-intro {
   max-width: var(--cp-faq-page-copy-mobile-width);
@@ -123,26 +123,6 @@
   min-width: 0;
   gap: var(--cp-space-16);
 }
-.cp-faq-page .cp-section-heading {
-  max-width: none;
-  gap: var(--cp-space-16);
-}
-.cp-faq-page .cp-section-heading h2 {
-  font-size: var(--cp-text-32);
-  line-height: var(--cp-leading-title);
-  letter-spacing: var(--cp-tracking-3);
-}
-.cp-faq-page .cp-section-description {
-  max-width: var(--cp-faq-page-copy-mobile-width);
-  font-size: var(--cp-text-17);
-  line-height: var(--cp-contact-body-line);
-}
-.cp-faq-page-advisor {
-  padding: var(--cp-space-14) var(--cp-space-28);
-}
-.cp-faq-page-image {
-  height: var(--cp-faq-page-image-height);
-}
 .cp-faq-page .cp-faq-item {
   padding-block: var(--cp-space-20);
 }
@@ -179,43 +159,6 @@
   font-size: var(--cp-text-17);
   line-height: var(--cp-leading-body);
 }
-.cp-faq-page-final {
-  padding-block: var(--cp-space-48);
-  background: var(--cp-color-white);
-}
-.cp-faq-page-final-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--cp-space-24);
-  padding: var(--cp-space-40) var(--cp-space-28);
-  border-radius: var(--cp-radius-40);
-  background: var(--cp-color-blue);
-  color: var(--cp-color-white);
-  text-align: center;
-}
-.cp-faq-page-final h2 {
-  width: 100%;
-  font-size: var(--cp-text-36);
-  font-weight: var(--cp-weight-bold);
-  line-height: var(--cp-space-40);
-  letter-spacing: var(--cp-tracking-2);
-}
-.cp-faq-page-final p {
-  font-size: var(--cp-text-20);
-  line-height: var(--cp-leading-small);
-}
-.cp-faq-page-final-actions {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: var(--cp-space-12);
-  padding-top: var(--cp-space-8);
-}
-.cp-faq-page-final-actions .cp-button {
-  padding: var(--cp-space-18) var(--cp-space-32);
-  line-height: var(--cp-space-22);
-}
 
 @variant md {
   .cp-faq-page-hero h1,
@@ -224,21 +167,16 @@
   }
 }
 @variant cp-faq-columns {
-  .cp-faq-page-image {
-    height: var(--cp-faq-page-image-desktop-height);
-  }
   .cp-faq-page-group {
-    padding-block: var(--cp-space-96);
+    padding-block: var(--cp-space-64);
+  }
+  .cp-faq-page-sidebar {
+    position: sticky;
+    top: var(--cp-space-24);
   }
   .cp-faq-page-group-inner {
     grid-template-columns: var(--cp-faq-page-sidebar-width) minmax(0, 1fr);
     gap: var(--cp-space-80);
-  }
-  .cp-faq-page .cp-section-heading h2 {
-    font-size: var(--cp-text-56);
-  }
-  .cp-faq-page .cp-section-description {
-    max-width: none;
   }
   .cp-faq-page .cp-faq-item {
     padding-block: var(--cp-space-24);
@@ -256,8 +194,7 @@
     line-height: var(--cp-contact-body-line);
   }
   .cp-faq-page-hero h1 {
-    font-size: var(--cp-faq-page-display-fluid);
-    line-height: var(--cp-leading-display);
+    font-size: var(--cp-text-56);
   }
 }
 @variant cp-chrome {
@@ -281,33 +218,27 @@
     line-height: var(--cp-contact-label-line);
   }
   .cp-faq-page-hero {
-    padding-block: var(--cp-space-72) var(--cp-space-40);
-  }
-  .cp-faq-page-hero h1 {
-    line-height: var(--cp-contact-desktop-display-line);
-    white-space: nowrap;
+    padding-block: var(--cp-space-24) var(--cp-space-40);
   }
   .cp-faq-page-search {
     height: var(--cp-space-56);
-  }
-  .cp-faq-page-final {
-    padding-block: 0 var(--cp-space-96);
-  }
-  .cp-faq-page-final-card {
-    padding: var(--cp-space-88) var(--cp-space-80);
-  }
-  .cp-faq-page-final h2 {
-    font-size: var(--cp-text-96);
-    line-height: var(--cp-contact-desktop-display-line);
-    letter-spacing: var(--cp-tracking-3);
-  }
-  .cp-faq-page-final-actions {
-    width: auto;
-    flex-direction: row;
   }
   .cp-faq-page .cp-footer-bottom > p,
   .cp-faq-page .cp-footer-bottom nav a,
   .cp-faq-page .cp-footer-legal-separator {
     line-height: var(--cp-contact-label-line);
+  }
+}
+
+/* Electric Blue alignment (15 October 2026) */
+.cp-faq-page-group + .cp-faq-page-group {
+  border-top: var(--cp-border-thin) solid var(--cp-color-line);
+}
+.cp-faq-page-cta {
+  padding-block: var(--cp-space-24) var(--cp-cat-page-gap-stacked);
+}
+@variant cp-chrome {
+  .cp-faq-page-cta {
+    padding-bottom: var(--cp-cat-page-gap);
   }
 }
