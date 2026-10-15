@@ -7,10 +7,15 @@
 export {
   DOCUMENT_CHECKLIST_VALUES,
   PRODUCT_TYPE_VALUES,
+  SERVICE_VALUES,
+  AUDIENCE_VALUES,
   SINGLETON_DOCUMENT_TYPES,
   documentTypes,
   pageSectionTypes,
+  objectTypes,
   schemaTypes,
   type DocumentChecklistValue,
   type ProductType,
+  type ServiceValue,
+  type AudienceValue,
 } from './schema-types';

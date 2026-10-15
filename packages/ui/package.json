@@ -7,13 +7,17 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./tokens.css": "./src/styles/tokens.css"
+    "./tokens.css": "./src/styles/tokens.css",
+    "./canadian-plans.css": "./src/styles/canadian-plans.css",
+    "./canadian-plans": "./src/canadian-plans.ts",
+    "./canadian-plans-components.css": "./src/styles/canadian-plans-components.css"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
   "peerDependencies": {
+    "next": "^16.3.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -25,6 +29,7 @@
     "tailwind-merge": "catalog:"
   },
   "devDependencies": {
+    "next": "16.3.5",
     "@canadian-plans/config": "workspace:*",
     "@testing-library/react": "16.3.3",
     "@types/react": "19.3.0",
