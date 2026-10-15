@@ -1,10 +1,4 @@
-import {
-  chromeContent,
-  componentAssets,
-  footerContent,
-  type ChromeContent,
-  type FooterContent,
-} from './components';
+import { componentAssets } from './components';
 import type { FigmaAsset } from '@canadian-plans/ui/canadian-plans';
 export const trackingStates = [
   'lookup',
@@ -473,49 +467,4 @@ export const trackingAssets = {
   notFound: asset('/design/track-order/10-imgFrame.svg', 22, 22, '308:210'),
   throttle: asset('/design/track-order/11-imgFrame.svg', 22, 22, '308:166'),
   expired: asset('/design/track-order/13-imgFrame.svg', 22, 22, '308:186'),
-};
-export const trackingChrome: ChromeContent = {
-  ...chromeContent,
-  phone: { ...chromeContent.phone, href: trackingCopy.destinations.contact },
-  track: { ...chromeContent.track, href: trackingCopy.path },
-  contact: { ...chromeContent.contact, href: '/contact' },
-  help: { ...chromeContent.help, href: '/faq' },
-  navigation: [
-    { label: 'Pre-arrival SIM', href: '/pre-arrival-sim' },
-    { label: 'Home Internet', href: '/home-internet' },
-    { label: 'Mobile Plans', href: '/mobile-plans' },
-    { label: 'Guides', href: '/guides' },
-  ],
-};
-export const trackingFooter: FooterContent = {
-  ...footerContent,
-  groups: footerContent.groups.map((group) => ({
-    ...group,
-    links: group.links.map((link) => ({
-      ...link,
-      href:
-        group.title === 'Pre-arrival SIM'
-          ? trackingCopy.destinations.plans
-          : group.title === 'Home Internet'
-            ? '/home-internet#internet-plans'
-            : group.title === 'Mobile Plans'
-              ? '/mobile-plans'
-              : link.label === 'Track order'
-                ? trackingCopy.path
-                : link.label === 'Contact'
-                  ? '/contact'
-                  : link.label === 'Guides'
-                    ? '/guides'
-                    : '/faq',
-    })),
-  })),
-  legal: footerContent.legal.map((link) => ({
-    ...link,
-    href:
-      link.label === 'Privacy'
-        ? '/privacy'
-        : link.label === 'Terms'
-          ? '/terms'
-          : trackingCopy.destinations.contact,
-  })),
 };

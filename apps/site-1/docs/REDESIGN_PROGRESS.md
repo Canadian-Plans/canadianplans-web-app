@@ -72,9 +72,9 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
 | 10  | `/faq`                                                                                       | done   | 10 answers filled from existing site copy (13/19 in JSON-LD)                                |
 | 11  | `/guides`                                                                                    | done   | every card now opens real content (article + 7 landing pages)                               |
 | 12  | `/guides/[slug]`                                                                             | done   | 5 FAQ answers filled from site facts; related cards from the index                          |
-| 13  | `/order/pre-arrival`                                                                         | todo   | preview form, stub action                                                                   |
-| 14  | `/order/home-internet`                                                                       | todo   | preview form, stub action                                                                   |
-| 15  | `/track-order`                                                                               | todo   |                                                                                             |
+| 13  | `/order/pre-arrival`                                                                         | done   | reviewed: already matches; minimal checkout header kept on purpose                          |
+| 14  | `/order/home-internet`                                                                       | done   | reviewed: already matches; minimal checkout header kept on purpose                          |
+| 15  | `/track-order`                                                                               | done   | site header/footer, home-style headings, navy help band                                     |
 | 16  | `/plans`, `/plans/[slug]`, `/order`, `/track`                                                | todo   | restyle only, behaviour unchanged                                                           |
 | 17  | `/privacy`, `/terms`                                                                         | todo   |                                                                                             |
 | 18  | `/accessibility`, `/search`, 404                                                             | todo   |                                                                                             |

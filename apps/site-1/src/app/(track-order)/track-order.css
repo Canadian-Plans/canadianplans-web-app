@@ -46,9 +46,9 @@
 }
 .cp-tracking-lookup-hero h1 {
   font-size: var(--cp-text-36);
-  line-height: var(--cp-space-36);
-  letter-spacing: var(--cp-tracking-3);
-  font-weight: var(--cp-weight-bold);
+  line-height: var(--cp-leading-heading);
+  letter-spacing: var(--cp-tracking-tight);
+  font-weight: var(--cp-weight-extra-bold);
   text-align: center;
 }
 .cp-tracking-lookup-hero > div > p:last-child {
@@ -204,7 +204,7 @@
 .cp-tracking-help {
   padding: var(--cp-space-24);
   border-radius: var(--cp-radius-32);
-  background: var(--cp-color-ink);
+  background: var(--cp-color-navy);
   color: var(--cp-color-white);
   display: flex;
   flex-direction: column;
@@ -1256,8 +1256,7 @@ body:has(.cp-tracking-change-dialog) [data-slot='dialog-overlay'] {
     align-items: center;
   }
   .cp-tracking-lookup-hero h1 {
-    font-size: var(--cp-text-96);
-    line-height: var(--cp-track-hero-line);
+    font-size: var(--cp-text-56);
   }
   .cp-tracking-lookup-hero > div > p:last-child {
     font-size: var(--cp-text-20);
@@ -1271,7 +1270,7 @@ body:has(.cp-tracking-change-dialog) [data-slot='dialog-overlay'] {
     gap: var(--cp-space-32);
   }
   .cp-tracking-meanings > h2 {
-    font-size: var(--cp-text-56);
+    font-size: var(--cp-text-36);
     line-height: var(--cp-track-meaning-line);
   }
   .cp-tracking-meanings ol {
