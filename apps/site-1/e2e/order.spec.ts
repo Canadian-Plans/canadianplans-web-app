@@ -56,6 +56,8 @@ test.beforeEach(async () => {
 
 async function choosePassportPlan(page: Page): Promise<void> {
   await page.goto('/order');
+  const rejectCookies = page.getByRole('button', { name: 'Reject non-essential', exact: true });
+  if (await rejectCookies.isVisible()) await rejectCookies.click();
   // Fail loudly and specifically when step 1 could not load its offers at all:
   // otherwise this only shows up as an opaque 30s timeout on the plan link.
   await expect(page.getByRole('heading', { name: 'Plans are unavailable right now' })).toHaveCount(

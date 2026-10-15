@@ -1,0 +1,34 @@
+@reference '../(storefront)/globals.css';
+
+/* Business Internet preview (Electric Blue, 14 October 2026). Tokens from canadian-plans.css only. */
+
+.cp-business-skip { position: absolute; left: var(--cp-space-16); top: calc(var(--cp-space-48) * -1); z-index: var(--cp-layer-feedback); padding: var(--cp-space-10) var(--cp-space-16); border-radius: var(--cp-radius-12); background: var(--cp-color-ink); color: var(--cp-color-white); }
+.cp-business-skip:focus { top: var(--cp-space-16); }
+
+.cp-business-quote { display: flex; flex-wrap: wrap; gap: var(--cp-space-40) var(--cp-space-72); align-items: flex-start; padding-block: var(--cp-space-48); scroll-margin-top: var(--cp-space-24); }
+.cp-business-quote-intro { flex: 1 1 var(--cp-rd-faq-intro-basis); min-width: 0; display: flex; flex-direction: column; gap: var(--cp-space-16); }
+.cp-business-quote-note { margin: 0; padding: var(--cp-space-12) var(--cp-space-16); border-radius: var(--cp-radius-14); background: var(--cp-color-amber-soft); color: var(--cp-color-amber-ink); font-size: var(--cp-text-14); line-height: var(--cp-leading-body); }
+.cp-business-quote-form { flex: 999 1 var(--cp-rd-faq-list-basis); min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: var(--cp-space-24); padding: var(--cp-space-32); border-radius: var(--cp-radius-24); background: var(--cp-color-grey); }
+.cp-business-quote-fields { width: 100%; min-width: 0; margin: 0; padding: 0; border: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(var(--cp-cat-form-min), 1fr)); gap: var(--cp-space-20); }
+.cp-business-quote-wide { grid-column: 1 / -1; }
+
+.cp-business .cp-business-input {
+  width: 100%; min-width: 0; height: auto;
+  padding: var(--cp-space-14) var(--cp-space-16);
+  border: 0; border-radius: var(--cp-radius-14);
+  background: var(--cp-color-white); color: var(--cp-color-ink);
+  font: inherit; font-size: var(--cp-text-16); line-height: var(--cp-leading-body);
+  box-shadow: inset 0 0 0 var(--cp-border-outline) var(--cp-business-input-line, var(--cp-color-control-border));
+}
+.cp-business .cp-business-input::placeholder, .cp-business .cp-business-select[data-placeholder] { color: var(--cp-color-muted); opacity: 1; }
+.cp-business .cp-business-input[aria-invalid='true'] { --cp-business-input-line: var(--cp-internet-error-line); }
+.cp-business .cp-business-input:focus-visible { outline: var(--cp-border-strong) solid var(--cp-focus-color); outline-offset: var(--cp-space-2); }
+.cp-business .cp-business-textarea { height: var(--cp-contact-textarea-height); resize: vertical; }
+.cp-business .cp-business-select { justify-content: space-between; gap: var(--cp-space-4); }
+.cp-business-select > [data-slot='select-value'] { display: inline; min-width: 0; white-space: normal; }
+.cp-business-select > svg { display: none; }
+.cp-business-select-menu { font-size: var(--cp-text-16); background: var(--cp-color-white); color: var(--cp-color-ink); }
+.cp-business-select-menu [data-slot='select-item'] { font-size: inherit; padding: var(--cp-space-12) var(--cp-space-16); }
+.cp-business-feedback { margin: 0; padding: var(--cp-space-12) var(--cp-space-16); border-radius: var(--cp-radius-14); background: var(--cp-color-white); font-size: var(--cp-text-15); line-height: var(--cp-leading-body); }
+
+.cp-business-quote-form { @variant cp-redesign-narrow { padding: var(--cp-space-20); } }

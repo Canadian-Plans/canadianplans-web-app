@@ -1,8 +1,10 @@
 /** Public configuration only. Never import backend.config here or in Studio. */
+import { siteContent } from '@content/site';
+
 export const siteConfig = {
   id: 'site-1',
   slug: 'site-1',
-  name: 'SITE_1_NAME_PLACEHOLDER',
+  name: siteContent.name,
   currency: 'CAD',
   locale: 'en-CA',
   analytics: {

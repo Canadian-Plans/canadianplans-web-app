@@ -1,4 +1,10 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import '@canadian-plans/ui/tokens.css';
+@import '@canadian-plans/ui/canadian-plans.css';
+@import '@canadian-plans/ui/canadian-plans-components.css';
 @source '../../../../../packages/ui/src';
+
+.cp-legacy-controls {
+  --input: var(--cp-color-control-border);
+}

@@ -10,8 +10,23 @@ const DEFAULT_BASE_URL = 'http://localhost:3001';
 /** Absolute origin used for canonical URLs, the sitemap and robots. No trailing slash. */
 export function siteBaseUrl(): string {
   const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  const value = raw && raw.length > 0 ? raw : DEFAULT_BASE_URL;
-  return value.replace(/\/+$/, '');
+  if (!raw) return DEFAULT_BASE_URL;
+  try {
+    const url = new URL(raw);
+    const local = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
+    if (
+      (url.protocol !== 'https:' && !(local && url.protocol === 'http:')) ||
+      url.username ||
+      url.password ||
+      url.search ||
+      url.hash ||
+      url.pathname !== '/'
+    )
+      return DEFAULT_BASE_URL;
+    return url.origin;
+  } catch {
+    return DEFAULT_BASE_URL;
+  }
 }
 
 /**
@@ -20,5 +35,10 @@ export function siteBaseUrl(): string {
  * treated as not indexable so drafts and previews never reach an index.
  */
 export function isIndexable(): boolean {
-  return process.env.VERCEL_ENV === 'production';
+  const base = new URL(siteBaseUrl());
+  return (
+    process.env.VERCEL_ENV === 'production' &&
+    base.protocol === 'https:' &&
+    !['localhost', '127.0.0.1', '[::1]'].includes(base.hostname)
+  );
 }

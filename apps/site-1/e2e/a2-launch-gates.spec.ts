@@ -256,6 +256,8 @@ async function note(info: TestInfo, name: string, body: unknown): Promise<void> 
 
 async function choosePassportPlan(page: Page): Promise<void> {
   await page.goto('/order');
+  const rejectCookies = page.getByRole('button', { name: 'Reject non-essential', exact: true });
+  if (await rejectCookies.isVisible()) await rejectCookies.click();
   await expect(page.getByRole('heading', { name: 'Plans are unavailable right now' })).toHaveCount(
     0,
   );

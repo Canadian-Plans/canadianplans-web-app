@@ -90,6 +90,8 @@ export async function getLegalPage(slug: LegalSlug): Promise<LegalPage> {
       dataset: config.dataset,
       apiVersion: process.env['NEXT_PUBLIC_SANITY_API_VERSION']?.trim() || '2024-01-01',
       useCdn: true,
+      // Public pages and their indexing gate must never consume preview drafts.
+      perspective: 'published',
       ...(config.token ? { token: config.token } : {}),
     });
     const doc: unknown = await client.fetch(LEGAL_PAGE_QUERY, { slug });

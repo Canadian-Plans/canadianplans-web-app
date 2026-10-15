@@ -1,4 +1,10 @@
 import { Placeholder } from '@/components/placeholder';
+import { metadataCopy } from '@content/metadata';
+import { pageMetadata } from '@/lib/page-metadata';
+export const metadata = pageMetadata('/plans', {
+  title: metadataCopy.plansTitle,
+  robots: { index: false, follow: false },
+});
 export default function Page() {
   return (
     <Placeholder

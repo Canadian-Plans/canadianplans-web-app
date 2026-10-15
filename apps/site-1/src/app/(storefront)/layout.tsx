@@ -3,11 +3,13 @@ import type { ReactNode } from 'react';
 import { SkipLink } from '@canadian-plans/ui';
 import { siteConfig } from '../../site.config';
 import { Analytics } from '../../components/analytics';
+import { PlanFinderTrigger } from '@/components/shared/plan-finder-provider';
+import { CookieSettingsTrigger } from '@/components/shared/cookie-consent';
 import './globals.css';
 
 export default function StorefrontLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="cp-legacy-controls min-h-screen bg-background text-foreground">
       <SkipLink />
       <header className="border-b px-6 py-5">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-6">
@@ -24,6 +26,7 @@ export default function StorefrontLayout({ children }: { children: ReactNode }) 
             <Link href="/track" className="focus-visible:outline-2">
               Track
             </Link>
+            <PlanFinderTrigger />
           </nav>
         </div>
       </header>
@@ -37,6 +40,7 @@ export default function StorefrontLayout({ children }: { children: ReactNode }) 
         <Link href="/terms" className="focus-visible:outline-2">
           Terms
         </Link>
+        <CookieSettingsTrigger className="focus-visible:outline-2" />
         <span>
           {siteConfig.currency} · {siteConfig.locale}
         </span>
