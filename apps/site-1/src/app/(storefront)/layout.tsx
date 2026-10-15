@@ -1,50 +1,32 @@
-import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { SkipLink } from '@canadian-plans/ui';
-import { siteConfig } from '../../site.config';
+import { componentAssets } from '@content/components';
+import { siteChrome, siteFooter } from '@content/site-chrome';
 import { Analytics } from '../../components/analytics';
-import { PlanFinderTrigger } from '@/components/shared/plan-finder-provider';
-import { CookieSettingsTrigger } from '@/components/shared/cookie-consent';
+import { Footer } from '@/components/shared/chrome';
+import { SiteHeader } from '@/components/shared/site-header';
 import './globals.css';
+import './storefront.css';
 
+/**
+ * Backend-connected order flow (/plans, /order, /track). Electric Blue restyle
+ * (15 October 2026): the site header and footer and home-page type replace the bare
+ * scaffold chrome. Page behaviour, forms and data loading are unchanged.
+ */
 export default function StorefrontLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="cp-legacy-controls min-h-screen bg-background text-foreground">
+    <div className="cp-design cp-storefront cp-legacy-controls min-h-screen bg-background text-foreground">
       <SkipLink />
-      <header className="border-b px-6 py-5">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-6">
-          <Link href="/" className="font-semibold focus-visible:outline-2">
-            {siteConfig.name}
-          </Link>
-          <nav aria-label="Main navigation" className="flex gap-6">
-            <Link href="/plans" className="focus-visible:outline-2">
-              Plans
-            </Link>
-            <Link href="/order" className="focus-visible:outline-2">
-              Order
-            </Link>
-            <Link href="/track" className="focus-visible:outline-2">
-              Track
-            </Link>
-            <PlanFinderTrigger />
-          </nav>
-        </div>
-      </header>
-      <main id="main-content" tabIndex={-1} className="mx-auto max-w-5xl px-6 py-16">
+      <SiteHeader planHref="/pre-arrival-sim#plans" content={siteChrome} />
+      <main id="main-content" tabIndex={-1} className="cp-container cp-storefront-main">
         {children}
       </main>
-      <footer className="mx-auto flex max-w-5xl flex-wrap gap-6 border-t px-6 py-8 text-sm">
-        <Link href="/privacy" className="focus-visible:outline-2">
-          Privacy
-        </Link>
-        <Link href="/terms" className="focus-visible:outline-2">
-          Terms
-        </Link>
-        <CookieSettingsTrigger className="focus-visible:outline-2" />
-        <span>
-          {siteConfig.currency} · {siteConfig.locale}
-        </span>
-      </footer>
+      <Footer
+        brand={siteChrome.brand}
+        content={siteFooter}
+        assets={componentAssets}
+        brandHref="/"
+      />
       <Analytics />
     </div>
   );

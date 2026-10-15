@@ -58,27 +58,27 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
 
 ## Status
 
-| #   | Page                                                                                         | Status | Notes                                                                                       |
-| --- | -------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------- |
-| 1   | `/pre-arrival-sim/students`                                                                  | done   | landing kit built; moved to `(landing-arrival)`                                             |
-| 2   | `/pre-arrival-sim/from-india`                                                                | done   | old `(category-sim)` route group removed                                                    |
-| 3   | `/mobile-plans/rogers`                                                                       | done   | uses `/mobile-plans` browser pre-filtered to Rogers; old route group removed                |
-| 4   | `/pre-arrival-sim/toronto-pearson`                                                           | done   |                                                                                             |
-| 5   | `/compare/rogers-vs-fido`                                                                    | done   | old airport/compare route group removed                                                     |
-| 6   | `/home-internet/ontario`                                                                     | done   | reuses `/home-internet` address check and speed cards                                       |
-| 7   | `/home-internet/vancouver`                                                                   | done   | old category-internet route group removed                                                   |
-| 8   | `/about`                                                                                     | done   | on the landing kit, with FAQ + JSON-LD                                                      |
-| 9   | `/contact`                                                                                   | done   | layout and forms kept; site header/footer, breadcrumb, home-style hero, navy tracking panel |
-| 10  | `/faq`                                                                                       | done   | 10 answers filled from existing site copy (13/19 in JSON-LD)                                |
-| 11  | `/guides`                                                                                    | done   | every card now opens real content (article + 7 landing pages)                               |
-| 12  | `/guides/[slug]`                                                                             | done   | 5 FAQ answers filled from site facts; related cards from the index                          |
-| 13  | `/order/pre-arrival`                                                                         | done   | reviewed: already matches; minimal checkout header kept on purpose                          |
-| 14  | `/order/home-internet`                                                                       | done   | reviewed: already matches; minimal checkout header kept on purpose                          |
-| 15  | `/track-order`                                                                               | done   | site header/footer, home-style headings, navy help band                                     |
-| 16  | `/plans`, `/plans/[slug]`, `/order`, `/track`                                                | todo   | restyle only, behaviour unchanged                                                           |
-| 17  | `/privacy`, `/terms`                                                                         | todo   |                                                                                             |
-| 18  | `/accessibility`, `/search`, 404                                                             | todo   |                                                                                             |
-| 19  | Category polish: `/pre-arrival-sim`, `/home-internet`, `/mobile-plans`, `/business-internet` | todo   |                                                                                             |
+| #   | Page                                                                                         | Status | Notes                                                                                                             |
+| --- | -------------------------------------------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------- |
+| 1   | `/pre-arrival-sim/students`                                                                  | done   | landing kit built; moved to `(landing-arrival)`                                                                   |
+| 2   | `/pre-arrival-sim/from-india`                                                                | done   | old `(category-sim)` route group removed                                                                          |
+| 3   | `/mobile-plans/rogers`                                                                       | done   | uses `/mobile-plans` browser pre-filtered to Rogers; old route group removed                                      |
+| 4   | `/pre-arrival-sim/toronto-pearson`                                                           | done   |                                                                                                                   |
+| 5   | `/compare/rogers-vs-fido`                                                                    | done   | old airport/compare route group removed                                                                           |
+| 6   | `/home-internet/ontario`                                                                     | done   | reuses `/home-internet` address check and speed cards                                                             |
+| 7   | `/home-internet/vancouver`                                                                   | done   | old category-internet route group removed                                                                         |
+| 8   | `/about`                                                                                     | done   | on the landing kit, with FAQ + JSON-LD                                                                            |
+| 9   | `/contact`                                                                                   | done   | layout and forms kept; site header/footer, breadcrumb, home-style hero, navy tracking panel                       |
+| 10  | `/faq`                                                                                       | done   | 10 answers filled from existing site copy (13/19 in JSON-LD)                                                      |
+| 11  | `/guides`                                                                                    | done   | every card now opens real content (article + 7 landing pages)                                                     |
+| 12  | `/guides/[slug]`                                                                             | done   | 5 FAQ answers filled from site facts; related cards from the index                                                |
+| 13  | `/order/pre-arrival`                                                                         | done   | reviewed: already matches; minimal checkout header kept on purpose                                                |
+| 14  | `/order/home-internet`                                                                       | done   | reviewed: already matches; minimal checkout header kept on purpose                                                |
+| 15  | `/track-order`                                                                               | done   | site header/footer, home-style headings, navy help band                                                           |
+| 16  | `/plans`, `/plans/[slug]`, `/order`, `/track`                                                | done   | layout restyle only (site header/footer, type); pages untouched; `order.spec.ts` still needs the Postgres harness |
+| 17  | `/privacy`, `/terms`                                                                         | todo   |                                                                                                                   |
+| 18  | `/accessibility`, `/search`, 404                                                             | todo   |                                                                                                                   |
+| 19  | Category polish: `/pre-arrival-sim`, `/home-internet`, `/mobile-plans`, `/business-internet` | todo   |                                                                                                                   |
 
 ## Open placeholders and questions for the owner
 
