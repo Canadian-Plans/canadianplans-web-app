@@ -19,8 +19,6 @@ import {
   mobileCopy,
   mobilePlans,
   mobileAssets,
-  mobileChrome,
-  mobileChromeAssets,
   type MobilePlan,
   type MobileSort,
 } from '@content/mobile-plans';
@@ -29,7 +27,6 @@ import {
   filterMobilePlans,
   type MobileFilters,
 } from '@/lib/mobile-plan-filters';
-import { Navigation } from '@/components/shared/component-lab-client';
 
 interface PlansContext {
   readonly filters: MobileFilters;
@@ -96,27 +93,6 @@ export function MobilePlansProvider({
   );
 }
 
-export function MobilePlansNavigation() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const { preview } = usePlans();
-  return (
-    <Navigation
-      content={mobileChrome}
-      assets={mobileChromeAssets}
-      brandHref="/"
-      menuOpen={menuOpen}
-      onMenuOpenChange={setMenuOpen}
-      onAction={() => {
-        setMenuOpen(false);
-        document.getElementById('mobile-plans')?.scrollIntoView({ behavior: 'smooth' });
-        document
-          .querySelector<HTMLButtonElement>('.cp-mobile-filter-trigger')
-          ?.focus({ preventScroll: true });
-      }}
-      onContact={() => preview()}
-    />
-  );
-}
 function FilterGroup<T extends string>({
   label,
   options,

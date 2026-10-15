@@ -170,7 +170,7 @@ export function PopularPlans() {
               <div className="cp-home-planned">
                 <p>{homeCopy.plans.internetMessage}</p>
                 <CpButton asChild>
-                  <a href="#internet">{homeCopy.plans.internetButton}</a>
+                  <a href="/home-internet#address-check">{homeCopy.plans.internetButton}</a>
                 </CpButton>
               </div>
             ) : (

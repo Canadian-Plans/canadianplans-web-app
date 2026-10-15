@@ -78,9 +78,25 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
 | 16  | `/plans`, `/plans/[slug]`, `/order`, `/track`                                                | done   | layout restyle only (site header/footer, type); pages untouched; `order.spec.ts` still needs the Postgres harness |
 | 17  | `/privacy`, `/terms`                                                                         | done   | chrome + headings only; legal wording untouched (needs legal review)                                              |
 | 18  | `/accessibility`, `/search`, 404                                                             | done   | chrome + headings; navy panels                                                                                    |
-| 19  | Category polish: `/pre-arrival-sim`, `/home-internet`, `/mobile-plans`, `/business-internet` | todo   |                                                                                                                   |
+| 19  | Category polish: `/pre-arrival-sim`, `/home-internet`, `/mobile-plans`, `/business-internet` | done   | site header/footer; home footer; dead links fixed; full-site audit clean                                          |
+
+## Final audit (15 October 2026)
+
+Production build, 28 routes × 320/390/1440: one h1, no horizontal scroll, no broken
+in-page anchors, no serious/critical axe findings, no page errors; all 23 internal link
+targets return 200. Not run here: `order.spec.ts` and `a2-launch-gates.spec.ts` (Postgres
+e2e harness).
+
+Stale scripts (pre-date the 14 Oct redesign, fail on old h1 text / removed classes before
+and after this work): `verify-home.mjs`, `verify-pre-arrival.mjs`,
+`verify-home-internet.mjs`, `verify-mobile-plans.mjs`. Rewrite or retire them.
 
 ## Open placeholders and questions for the owner
+
+- The home header still links "Pre-arrival SIM" / "Mobile Plans" to `#popular-plans` on the
+  page (`scaffold.spec.ts` expects it); only its footer moved to the site footer.
+- "Track order" now goes to `/track` (real backend tracker) everywhere; `/track-order` is the
+  design-preview tracker. Decide which one customers should use.
 
 - FAQ: 10 answers were filled from facts already on other pages (marked `answerStatus:
 'site'`): SIN, ordering before arrival, ID, carrier choice, official carrier, eSIM check,

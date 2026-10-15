@@ -11,7 +11,11 @@ const evidence = path.resolve(root, '../../docs/EVIDENCE/mobile-plans');
 const origin =
   process.env.MOBILE_PLANS_TEST_URL ?? process.env.AUDIT_ORIGIN ?? 'http://127.0.0.1:3127';
 await mkdir(evidence, { recursive: true });
-const browser = await chromium.launch();
+const browser = await chromium.launch(
+  process.env.PLAYWRIGHT_CHROMIUM_PATH
+    ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH }
+    : {},
+);
 const results = [];
 const shotStyle = 'nextjs-portal{visibility:hidden;}';
 async function audit(page, selector) {

@@ -2,19 +2,12 @@ import { chromeAccessibility } from '@content/metadata';
 import { pageMetadata } from '@/lib/page-metadata';
 import type { Metadata } from 'next';
 import { CpSectionHeading } from '@canadian-plans/ui/canadian-plans';
-import {
-  mobileCopy as copy,
-  mobileChrome,
-  mobileChromeAssets,
-  mobileFooter,
-} from '@content/mobile-plans';
+import { mobileCopy as copy, mobileChrome, mobileChromeAssets } from '@content/mobile-plans';
 import { categoryPages, redesignCategory } from '@content/category-redesign';
-import { UtilityBar, PromoStrip, Footer } from '@/components/shared/chrome';
-import {
-  MobilePlansProvider,
-  MobilePlansNavigation,
-  MobilePlanBrowser,
-} from '@/components/mobile-plans/interactive';
+import { Footer } from '@/components/shared/chrome';
+import { SiteHeader } from '@/components/shared/site-header';
+import { siteChrome, siteFooter } from '@content/site-chrome';
+import { MobilePlansProvider, MobilePlanBrowser } from '@/components/mobile-plans/interactive';
 import { CategoryTemplate } from '@/components/category-redesign/template';
 
 export const metadata: Metadata = pageMetadata('/mobile-plans', {
@@ -30,9 +23,15 @@ export default function MobilePlansPage() {
       <a className="cp-mobile-skip" href={`#${page.mainId}`}>
         {copy.skip}
       </a>
-      <UtilityBar content={mobileChrome} assets={mobileChromeAssets} planHref={page.planHref} />
-      <MobilePlansNavigation />
-      <PromoStrip content={mobileChrome} />
+      <SiteHeader
+        planHref={page.planHref}
+        content={{
+          ...siteChrome,
+          promo: mobileChrome.promo,
+          promoLink: mobileChrome.promoLink,
+          promoMobileLabel: mobileChrome.promoMobileLabel,
+        }}
+      />
       <CategoryTemplate
         category={redesignCategory('mobile')}
         page={page}
@@ -94,7 +93,7 @@ export default function MobilePlansPage() {
       />
       <Footer
         brand={mobileChrome.brand}
-        content={mobileFooter}
+        content={siteFooter}
         assets={mobileChromeAssets}
         brandHref="/"
       />

@@ -423,7 +423,7 @@ export const homeRedesign = {
       lead: 'Not sure which plan fits?',
       links: [
         { label: 'Find my plan ›', href: '#popular-plans' },
-        { label: 'Compare ›', href: '/compare' },
+        { label: 'Compare ›', href: '/compare/rogers-vs-fido' },
         { label: 'Guides ›', href: '/guides' },
       ],
     },

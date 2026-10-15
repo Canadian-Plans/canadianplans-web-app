@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogClose,
@@ -16,58 +16,8 @@ import {
   CpSectionHeading,
   type SectionHeadingContent,
 } from '@canadian-plans/ui/canadian-plans';
-import {
-  arrivalCopy,
-  arrivalChrome,
-  arrivalChromeAssets,
-  arrivalPlans,
-  type ArrivalAudience,
-} from '@content/pre-arrival';
-import { Navigation } from '@/components/shared/component-lab-client';
+import { arrivalCopy, arrivalPlans, type ArrivalAudience } from '@content/pre-arrival';
 import { preArrivalOrderCopy } from '@content/pre-arrival-order';
-
-export function ArrivalNavigation() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [contactOpen, setContactOpen] = useState(false);
-  const trigger = useRef<HTMLElement | null>(null);
-  return (
-    <>
-      <Navigation
-        content={arrivalChrome}
-        assets={arrivalChromeAssets}
-        brandHref="/"
-        menuOpen={menuOpen}
-        onMenuOpenChange={setMenuOpen}
-        onAction={() => {
-          setMenuOpen(false);
-          document.getElementById('plans')?.scrollIntoView({ behavior: 'instant' });
-          document.getElementById('arrival-student')?.focus({ preventScroll: true });
-        }}
-        onContact={() => {
-          trigger.current =
-            document.activeElement instanceof HTMLElement ? document.activeElement : null;
-          setContactOpen(true);
-        }}
-      />
-      <Dialog open={contactOpen} onOpenChange={setContactOpen}>
-        <DialogContent
-          className="cp-design cp-arrival-dialog"
-          showCloseButton={false}
-          onCloseAutoFocus={(event) => {
-            event.preventDefault();
-            trigger.current?.focus();
-          }}
-        >
-          <DialogTitle>{arrivalCopy.controls.contactTitle}</DialogTitle>
-          <DialogDescription>{arrivalCopy.controls.contactDescription}</DialogDescription>
-          <DialogClose asChild>
-            <CpButton>{arrivalCopy.controls.close}</CpButton>
-          </DialogClose>
-        </DialogContent>
-      </Dialog>
-    </>
-  );
-}
 
 /**
  * One owner for the audience and chosen plan; checkout receives only fixture IDs.

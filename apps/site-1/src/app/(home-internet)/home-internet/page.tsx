@@ -1,17 +1,13 @@
 import { pageMetadata } from '@/lib/page-metadata';
 import type { Metadata } from 'next';
 import { CpSectionHeading } from '@canadian-plans/ui/canadian-plans';
-import {
-  internetCopy,
-  internetChrome,
-  internetChromeAssets,
-  internetFooter,
-} from '@content/home-internet';
+import { internetCopy, internetChrome, internetChromeAssets } from '@content/home-internet';
 import { categoryPages, redesignCategory } from '@content/category-redesign';
-import { Footer, PromoStrip, UtilityBar } from '@/components/shared/chrome';
+import { Footer } from '@/components/shared/chrome';
+import { SiteHeader } from '@/components/shared/site-header';
+import { siteChrome, siteFooter } from '@content/site-chrome';
 import {
   InternetPreviewProvider,
-  InternetNavigation,
   AddressCheckForm,
   SpeedFinder,
   InternetSpeedCards,
@@ -35,9 +31,15 @@ export default function HomeInternetPage() {
       <a href={`#${page.mainId}`} className="cp-internet-skip">
         {copy.skip}
       </a>
-      <UtilityBar content={internetChrome} assets={internetChromeAssets} planHref="#speed-finder" />
-      <InternetNavigation />
-      <PromoStrip content={internetChrome} />
+      <SiteHeader
+        planHref="#speed-finder"
+        content={{
+          ...siteChrome,
+          promo: internetChrome.promo,
+          promoLink: internetChrome.promoLink,
+          promoMobileLabel: internetChrome.promoMobileLabel,
+        }}
+      />
       <CategoryTemplate
         category={redesignCategory('home-internet')}
         page={page}
@@ -118,7 +120,7 @@ export default function HomeInternetPage() {
       />
       <Footer
         brand={internetChrome.brand}
-        content={internetFooter}
+        content={siteFooter}
         assets={internetChromeAssets}
         brandHref="/"
       />

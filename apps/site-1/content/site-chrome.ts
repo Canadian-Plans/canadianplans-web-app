@@ -7,9 +7,10 @@ import { chromeContent, footerContent, type ChromeContent, type FooterContent } 
 export const siteChrome: ChromeContent = {
   ...chromeContent,
   phone: { ...chromeContent.phone, href: '/contact' },
-  track: { ...chromeContent.track, href: '/track-order' },
+  track: { ...chromeContent.track, href: '/track' },
   contact: { ...chromeContent.contact, href: '/contact' },
   help: { ...chromeContent.help, href: '/faq' },
+  promoLink: { ...chromeContent.promoLink, href: '/pre-arrival-sim#plans' },
   navigationLabel: 'Main navigation',
   mobileNavigationLabel: 'Canadian Plans menu',
   navigation: [
@@ -69,7 +70,7 @@ export const siteFooter: FooterContent = {
       links: [
         { label: 'Guides', href: '/guides' },
         { label: 'FAQ', href: '/faq' },
-        { label: 'Track order', href: '/track-order' },
+        { label: 'Track order', href: '/track' },
         { label: 'Contact', href: '/contact' },
         { label: 'About us', href: '/about' },
       ],

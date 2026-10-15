@@ -1,7 +1,8 @@
 import { pageMetadata } from '@/lib/page-metadata';
 import type { Metadata } from 'next';
 import { componentAssets } from '@content/components';
-import { homeChrome, homeCopy, homeFooter } from '@content/home';
+import { homeChrome, homeCopy } from '@content/home';
+import { siteFooter } from '@content/site-chrome';
 import { Footer, UtilityBar } from '@/components/shared/chrome';
 import { HomeNavigation, PopularPlans } from '@/components/home/interactive';
 import { RedesignHero } from '@/components/home/redesign/hero';
@@ -42,7 +43,7 @@ export default function HomePage() {
       </main>
       <Footer
         brand={homeChrome.brand}
-        content={homeFooter}
+        content={siteFooter}
         assets={componentAssets}
         brandHref="/"
       />

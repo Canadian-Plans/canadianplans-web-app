@@ -1,15 +1,12 @@
 import { pageMetadata } from '@/lib/page-metadata';
 import type { Metadata } from 'next';
 import { CpSectionHeading } from '@canadian-plans/ui/canadian-plans';
-import {
-  arrivalCopy,
-  arrivalChrome,
-  arrivalChromeAssets,
-  arrivalFooter,
-} from '@content/pre-arrival';
+import { arrivalCopy, arrivalChrome, arrivalChromeAssets } from '@content/pre-arrival';
 import { categoryPages, redesignCategory } from '@content/category-redesign';
-import { UtilityBar, PromoStrip, Footer } from '@/components/shared/chrome';
-import { ArrivalNavigation, PlanPicker } from '@/components/pre-arrival/interactive';
+import { Footer } from '@/components/shared/chrome';
+import { SiteHeader } from '@/components/shared/site-header';
+import { siteChrome, siteFooter } from '@content/site-chrome';
+import { PlanPicker } from '@/components/pre-arrival/interactive';
 import { CategoryTemplate } from '@/components/category-redesign/template';
 
 export const metadata: Metadata = pageMetadata('/pre-arrival-sim', {
@@ -26,9 +23,15 @@ export default function PreArrivalPage() {
       <a className="cp-arrival-skip" href={`#${page.mainId}`}>
         {copy.skip}
       </a>
-      <UtilityBar content={arrivalChrome} assets={arrivalChromeAssets} planHref={page.planHref} />
-      <ArrivalNavigation />
-      <PromoStrip content={arrivalChrome} />
+      <SiteHeader
+        planHref={page.planHref}
+        content={{
+          ...siteChrome,
+          promo: arrivalChrome.promo,
+          promoLink: { ...arrivalChrome.promoLink, href: '/home-internet' },
+          promoMobileLabel: arrivalChrome.promoMobileLabel,
+        }}
+      />
       <CategoryTemplate
         category={redesignCategory('pre-arrival')}
         page={page}
@@ -67,7 +70,7 @@ export default function PreArrivalPage() {
       />
       <Footer
         brand={arrivalChrome.brand}
-        content={arrivalFooter}
+        content={siteFooter}
         assets={arrivalChromeAssets}
         brandHref="/"
       />

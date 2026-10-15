@@ -10,7 +10,11 @@ const appRoot = fileURLToPath(new URL('../', import.meta.url));
 const evidence = path.resolve(appRoot, '../../docs/EVIDENCE/home-internet');
 const origin = process.env.INTERNET_TEST_URL ?? process.env.AUDIT_ORIGIN ?? 'http://127.0.0.1:3127';
 await mkdir(evidence, { recursive: true });
-const browser = await chromium.launch();
+const browser = await chromium.launch(
+  process.env.PLAYWRIGHT_CHROMIUM_PATH
+    ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH }
+    : {},
+);
 const results = [];
 const shotStyle = 'nextjs-portal{visibility:hidden;}';
 async function audit(page, selector) {

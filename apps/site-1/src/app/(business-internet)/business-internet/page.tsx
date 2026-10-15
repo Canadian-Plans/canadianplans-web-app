@@ -5,12 +5,12 @@ import {
   businessChrome,
   businessCopy,
   businessFaq,
-  businessFooter,
 } from '@content/business-internet';
 import { categoryPages, redesignCategory } from '@content/category-redesign';
-import { Footer, PromoStrip, UtilityBar } from '@/components/shared/chrome';
+import { Footer } from '@/components/shared/chrome';
+import { SiteHeader } from '@/components/shared/site-header';
+import { siteFooter } from '@content/site-chrome';
 import { CategoryTemplate } from '@/components/category-redesign/template';
-import { BusinessNavigation } from '@/components/business-internet/navigation';
 import { BusinessQuoteForm } from '@/components/business-internet/quote-form';
 
 export const metadata: Metadata = pageMetadata('/business-internet', {
@@ -29,9 +29,7 @@ export default function BusinessInternetPage() {
       <a className="cp-business-skip" href={`#${page.mainId}`}>
         {businessCopy.skip}
       </a>
-      <UtilityBar content={businessChrome} assets={businessAssets} planHref={page.planHref} />
-      <BusinessNavigation />
-      <PromoStrip content={businessChrome} />
+      <SiteHeader planHref={page.planHref} content={businessChrome} />
       <CategoryTemplate
         category={redesignCategory('business')}
         page={page}
@@ -40,7 +38,7 @@ export default function BusinessInternetPage() {
       />
       <Footer
         brand={businessChrome.brand}
-        content={businessFooter}
+        content={siteFooter}
         assets={businessAssets}
         brandHref="/"
       />

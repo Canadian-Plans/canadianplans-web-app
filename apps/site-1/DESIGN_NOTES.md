@@ -1336,3 +1336,23 @@ layouts and behaviour; only clashes with the new style were changed (page CSS on
 - Owner change (14 October): the storefront font is **Google Sans Flex** again, not Archivo.
   `--cp-font-family` uses `--font-google-sans-flex` (root layout); Archivo is removed. Emails were
   already Google Sans Flex. Audit re-run: 22 routes × 390/1440 clean, no overflow at 320.
+
+## Page-by-page Electric Blue redesign — 15 October 2026
+
+Owner request: bring every page in line with the home page, rewrite copy for clarity and
+SEO without inventing facts. Tracker, decisions and open placeholders:
+[docs/REDESIGN_PROGRESS.md](docs/REDESIGN_PROGRESS.md).
+
+- **Landing kit** (`src/components/landing/*`, `src/app/landing.css`, `content/landing/*`):
+  banner hero, quick answer, facts strip, steps, checklist, cards, pros/cons, data table,
+  guide with key facts, FAQ, related links, CTA band; BreadcrumbList + FAQPage JSON-LD
+  (pending answers excluded). Used by the seven SEO pages and /about. The old
+  category-sim/rogers/airport-compare/internet route groups, assets and `--cp-cat*` tokens
+  are removed.
+- **Site chrome**: `SiteHeader` + `siteChrome` / `siteFooter` (`content/site-chrome.ts`)
+  replace per-page chrome with real links on every page except the home header.
+- **Aligned in place**: contact, FAQ (10 answers filled from existing site copy), guides
+  index/article (index lists only real content), track order, order-flow layout, legal and
+  system pages: home-style headings, navy instead of ink panels, CTA band.
+- New shared React components in `@canadian-plans/ui`: none. New app components:
+  `LandingPage`, `InternetLanding`, `SiteHeader`.
