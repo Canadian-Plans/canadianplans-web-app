@@ -1,0 +1,100 @@
+[
+  {
+    "width": 390,
+    "query": "",
+    "speed": "500 Mbps",
+    "amount": "$75",
+    "status": "passed"
+  },
+  {
+    "width": 390,
+    "query": "?plan=preview-internet-150",
+    "speed": "150 Mbps",
+    "amount": "$55",
+    "status": "passed"
+  },
+  {
+    "width": 390,
+    "query": "?plan=preview-internet-500",
+    "speed": "500 Mbps",
+    "amount": "$75",
+    "status": "passed"
+  },
+  {
+    "width": 390,
+    "query": "?plan=preview-internet-1000",
+    "speed": "1 Gbps",
+    "amount": "$90",
+    "status": "passed"
+  },
+  {
+    "width": 390,
+    "query": "?plan=preview-internet-1500",
+    "speed": "1.5 Gbps",
+    "amount": "$105",
+    "status": "passed"
+  },
+  {
+    "width": 390,
+    "query": "?plan=unknown&price=0",
+    "speed": "500 Mbps",
+    "amount": "$75",
+    "status": "passed"
+  },
+  {
+    "width": 390,
+    "query": "?plan=preview-internet-150&plan=preview-internet-1000",
+    "speed": "500 Mbps",
+    "amount": "$75",
+    "status": "passed"
+  },
+  {
+    "width": 1440,
+    "query": "",
+    "speed": "500 Mbps",
+    "amount": "$75",
+    "status": "passed"
+  },
+  {
+    "width": 1440,
+    "query": "?plan=preview-internet-150",
+    "speed": "150 Mbps",
+    "amount": "$55",
+    "status": "passed"
+  },
+  {
+    "width": 1440,
+    "query": "?plan=preview-internet-500",
+    "speed": "500 Mbps",
+    "amount": "$75",
+    "status": "passed"
+  },
+  {
+    "width": 1440,
+    "query": "?plan=preview-internet-1000",
+    "speed": "1 Gbps",
+    "amount": "$90",
+    "status": "passed"
+  },
+  {
+    "width": 1440,
+    "query": "?plan=preview-internet-1500",
+    "speed": "1.5 Gbps",
+    "amount": "$105",
+    "status": "passed"
+  },
+  {
+    "width": 1440,
+    "query": "?plan=unknown&price=0",
+    "speed": "500 Mbps",
+    "amount": "$75",
+    "status": "passed"
+  },
+  {
+    "width": 1440,
+    "query": "?plan=preview-internet-150&plan=preview-internet-1000",
+    "speed": "500 Mbps",
+    "amount": "$75",
+    "status": "passed"
+  }
+]

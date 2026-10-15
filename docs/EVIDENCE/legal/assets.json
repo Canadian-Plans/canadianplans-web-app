@@ -1,0 +1,142 @@
+[
+  {
+    "height": 36.0,
+    "src": "/design/components/363-1002-imgFrame.svg",
+    "hash": "51c40f39354f2d490a0acfedf723d78b96df243b4a7bb7d2553b01ba7a6dcd45",
+    "name": "0-imgFrame.svg",
+    "width": 36.0
+  },
+  {
+    "height": 36.0,
+    "src": "/design/components/364-2163-imgMark.svg",
+    "hash": "033ec8f6ba8f6b78d035fb7362ef073c973c28ed8004b3d33bd9f34387c0ebf7",
+    "name": "0-imgMark.svg",
+    "width": 36.0
+  },
+  {
+    "height": 18.0,
+    "src": "/design/legal/0-imgSearchIcon.svg",
+    "hash": "e9cd855ea79cb7f899803a5f7d05ce83a302ccf5f2742761c1db6bfeb1784865",
+    "name": "0-imgSearchIcon.svg",
+    "width": 18.0
+  },
+  {
+    "height": 36.0,
+    "src": "/design/components/363-1002-imgFrame.svg",
+    "hash": "51c40f39354f2d490a0acfedf723d78b96df243b4a7bb7d2553b01ba7a6dcd45",
+    "name": "1-imgFrame.svg",
+    "width": 36.0
+  },
+  {
+    "height": 22.0,
+    "src": "/design/components/364-2163-imgIcon.svg",
+    "hash": "460a376b06c815353096dc552c8a9a52f5bf2432c4471c8d903cf56364df2e83",
+    "name": "1-imgIcon.svg",
+    "width": 22.0
+  },
+  {
+    "height": 24.0,
+    "src": "/design/components/364-2163-imgIcon1.svg",
+    "hash": "0f75b1bad987c3a9426c30a373abdf4b9fc5601f34c0fd39bc75cd67c98024cd",
+    "name": "1-imgIcon1.svg",
+    "width": 24.0
+  },
+  {
+    "height": 18.0,
+    "src": "/design/legal/1-imgIcon2.svg",
+    "hash": "2ff11d2ab2f7f3aed493f6c0a24f5b5dae019e6d2e05e38c8b538428a92b7055",
+    "name": "1-imgIcon2.svg",
+    "width": 18.0
+  },
+  {
+    "height": 20.0,
+    "src": "/design/legal/1-imgIcon3.svg",
+    "hash": "8bc1fb92b65c925133c19341b225956ad9f9e1c48f101522c6873c1969beeea9",
+    "name": "1-imgIcon3.svg",
+    "width": 20.0
+  },
+  {
+    "height": 36.0,
+    "src": "/design/components/364-2163-imgMark.svg",
+    "hash": "033ec8f6ba8f6b78d035fb7362ef073c973c28ed8004b3d33bd9f34387c0ebf7",
+    "name": "1-imgMark.svg",
+    "width": 36.0
+  },
+  {
+    "height": 16.0,
+    "src": "/design/legal/1-imgPhoneIcon.svg",
+    "hash": "5e86cc702efe434b257ce11f3ad99b93537e3f45079b4e47768e0a7f4b20d44d",
+    "name": "1-imgPhoneIcon.svg",
+    "width": 16.0
+  },
+  {
+    "height": 36.0,
+    "src": "/design/components/363-1002-imgFrame.svg",
+    "hash": "51c40f39354f2d490a0acfedf723d78b96df243b4a7bb7d2553b01ba7a6dcd45",
+    "name": "2-imgFrame.svg",
+    "width": 36.0
+  },
+  {
+    "height": 36.0,
+    "src": "/design/components/364-2163-imgMark.svg",
+    "hash": "033ec8f6ba8f6b78d035fb7362ef073c973c28ed8004b3d33bd9f34387c0ebf7",
+    "name": "2-imgMark.svg",
+    "width": 36.0
+  },
+  {
+    "height": 18.0,
+    "src": "/design/legal/0-imgSearchIcon.svg",
+    "hash": "e9cd855ea79cb7f899803a5f7d05ce83a302ccf5f2742761c1db6bfeb1784865",
+    "name": "2-imgSearchIcon.svg",
+    "width": 18.0
+  },
+  {
+    "height": 36.0,
+    "src": "/design/components/363-1002-imgFrame.svg",
+    "hash": "51c40f39354f2d490a0acfedf723d78b96df243b4a7bb7d2553b01ba7a6dcd45",
+    "name": "3-imgFrame.svg",
+    "width": 36.0
+  },
+  {
+    "height": 22.0,
+    "src": "/design/components/364-2163-imgIcon.svg",
+    "hash": "460a376b06c815353096dc552c8a9a52f5bf2432c4471c8d903cf56364df2e83",
+    "name": "3-imgIcon.svg",
+    "width": 22.0
+  },
+  {
+    "height": 24.0,
+    "src": "/design/components/364-2163-imgIcon1.svg",
+    "hash": "0f75b1bad987c3a9426c30a373abdf4b9fc5601f34c0fd39bc75cd67c98024cd",
+    "name": "3-imgIcon1.svg",
+    "width": 24.0
+  },
+  {
+    "height": 18.0,
+    "src": "/design/legal/1-imgIcon2.svg",
+    "hash": "2ff11d2ab2f7f3aed493f6c0a24f5b5dae019e6d2e05e38c8b538428a92b7055",
+    "name": "3-imgIcon2.svg",
+    "width": 18.0
+  },
+  {
+    "height": 20.0,
+    "src": "/design/legal/1-imgIcon3.svg",
+    "hash": "8bc1fb92b65c925133c19341b225956ad9f9e1c48f101522c6873c1969beeea9",
+    "name": "3-imgIcon3.svg",
+    "width": 20.0
+  },
+  {
+    "height": 36.0,
+    "src": "/design/components/364-2163-imgMark.svg",
+    "hash": "033ec8f6ba8f6b78d035fb7362ef073c973c28ed8004b3d33bd9f34387c0ebf7",
+    "name": "3-imgMark.svg",
+    "width": 36.0
+  },
+  {
+    "height": 16.0,
+    "src": "/design/legal/1-imgPhoneIcon.svg",
+    "hash": "5e86cc702efe434b257ce11f3ad99b93537e3f45079b4e47768e0a7f4b20d44d",
+    "name": "3-imgPhoneIcon.svg",
+    "width": 16.0
+  }
+]

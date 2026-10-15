@@ -1,0 +1,14 @@
+/* Parent merge proposal. Page code will reference these central token names. */
+:root {
+  --cp-catnet-map-width: 32.5rem; /* 520px */
+  --cp-catnet-map-height: 28.75rem; /* 460px */
+  --cp-catnet-map-road-width: 0.5rem; /* 8px */
+  --cp-catnet-map-road-step-x: 5rem; /* 80px */
+  --cp-catnet-map-road-step-y: 5.625rem; /* 90px */
+  --cp-catnet-map-coverage-width: 21.25rem; /* 340px */
+  --cp-catnet-map-coverage-height: 18.75rem; /* 300px */
+  --cp-catnet-map-coverage-left: 9.25rem; /* 148px */
+  --cp-catnet-map-coverage-top: 5.5rem; /* 88px */
+  --cp-catnet-map-stamp-shadow: 0.25rem 0.25rem 0 var(--cp-color-ink); /* 4px 4px stamp */
+  --cp-catnet-map-outline: 0.125rem solid var(--cp-color-ink); /* 2px */
+}

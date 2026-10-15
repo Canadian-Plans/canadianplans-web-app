@@ -1,0 +1,430 @@
+[
+  {
+    "width": 390,
+    "geometry": [
+      {
+        "class": "cp-io-header",
+        "y": 0,
+        "width": 390,
+        "height": 77
+      },
+      {
+        "class": "cp-container cp-io-body",
+        "y": 77,
+        "width": 350,
+        "height": 2530
+      },
+      {
+        "class": "cp-io-mobile-summary",
+        "y": 93,
+        "width": 350,
+        "height": 70
+      },
+      {
+        "class": "cp-io-form",
+        "y": 179,
+        "width": 350,
+        "height": 2388
+      },
+      {
+        "class": "cp-io-recap",
+        "y": 2045,
+        "width": 310,
+        "height": 342
+      }
+    ],
+    "details": [
+      {
+        "class": "cp-io-plan",
+        "text": "Home Internet500 Mbps$75/mo · ",
+        "height": 141
+      },
+      {
+        "class": "cp-io-feature",
+        "text": "✓ Unlimited data",
+        "height": 20
+      },
+      {
+        "class": "cp-io-feature",
+        "text": "✓ WiFi modem included",
+        "height": 20
+      },
+      {
+        "class": "cp-io-feature",
+        "text": "✓ Free professional install",
+        "height": 20
+      },
+      {
+        "class": "cp-io-footnote",
+        "text": "*Your advisor confirms the pro",
+        "height": 36
+      },
+      {
+        "class": "",
+        "text": "",
+        "height": 1
+      },
+      {
+        "class": "",
+        "text": "Due today$0First billAfter you",
+        "height": 64
+      },
+      {
+        "class": "cp-io-payment-note",
+        "text": "You don't pay anything onlineA",
+        "height": 112
+      },
+      {
+        "class": "cp-io-eyebrow",
+        "text": "Home internet · one short form",
+        "height": 16
+      },
+      {
+        "class": "",
+        "text": "Get connected",
+        "height": 29
+      },
+      {
+        "class": "cp-io-intro",
+        "text": "Send your details and an advis",
+        "height": 78
+      },
+      {
+        "class": "",
+        "text": "Your details",
+        "height": 28
+      },
+      {
+        "class": "cp-io-row cp-io-two",
+        "text": "First nameLast name",
+        "height": 186
+      },
+      {
+        "class": "cp-io-row cp-io-two",
+        "text": "EmailPhoneCanadian or internat",
+        "height": 214
+      },
+      {
+        "class": "cp-io-row cp-io-dob",
+        "text": "Date of birthRogers needs this",
+        "height": 113
+      },
+      {
+        "class": "",
+        "text": "",
+        "height": 1
+      },
+      {
+        "class": "",
+        "text": "Install address",
+        "height": 28
+      },
+      {
+        "class": "cp-io-row",
+        "text": "Street address",
+        "height": 85
+      },
+      {
+        "class": "cp-io-row cp-io-three",
+        "text": "CityProvinceBCONABMBSKQCNBNSPE",
+        "height": 287
+      },
+      {
+        "class": "cp-io-row cp-io-two",
+        "text": "Preferred install dateUsually ",
+        "height": 236
+      },
+      {
+        "class": "",
+        "text": "",
+        "height": 1
+      },
+      {
+        "class": "cp-io-consent",
+        "text": "I agree to be contacted by pho",
+        "height": 72
+      },
+      {
+        "class": "cp-io-consent",
+        "text": "I accept the Terms and Privacy",
+        "height": 48
+      },
+      {
+        "class": "cp-io-mobile-recap",
+        "text": "Order summaryPlanHome Internet",
+        "height": 342
+      },
+      {
+        "class": "cp-io-actions",
+        "text": "← Back to plansSend my details",
+        "height": 128
+      }
+    ],
+    "violations": [],
+    "assets": [
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "loaded": true,
+        "width": 36,
+        "height": 36,
+        "declaredWidth": 36,
+        "declaredHeight": 36
+      },
+      {
+        "src": "/design/internet-order/1-imgPhone.svg",
+        "loaded": true,
+        "width": 18,
+        "height": 18,
+        "declaredWidth": 18,
+        "declaredHeight": 18
+      },
+      {
+        "src": "/design/internet-order/1-imgChevronDown.svg",
+        "loaded": true,
+        "width": 20,
+        "height": 20,
+        "declaredWidth": 20,
+        "declaredHeight": 20
+      },
+      {
+        "src": "/design/internet-order/0-imgLock.svg",
+        "loaded": true,
+        "width": 16,
+        "height": 16,
+        "declaredWidth": 16,
+        "declaredHeight": 16
+      }
+    ],
+    "errors": [],
+    "overflow": [
+      {
+        "viewport": 320,
+        "document": 320
+      },
+      {
+        "viewport": 390,
+        "document": 390
+      },
+      {
+        "viewport": 768,
+        "document": 768
+      },
+      {
+        "viewport": 1024,
+        "document": 1024
+      },
+      {
+        "viewport": 1280,
+        "document": 1280
+      },
+      {
+        "viewport": 1440,
+        "document": 1440
+      }
+    ],
+    "interactions": "native summary, required fields/consents and focus, retained input after action failure, preview confirmation, back/edit, no business API requests and overflow passed"
+  },
+  {
+    "width": 1440,
+    "geometry": [
+      {
+        "class": "cp-io-header",
+        "y": 0,
+        "width": 1440,
+        "height": 77
+      },
+      {
+        "class": "cp-container cp-io-body",
+        "y": 77,
+        "width": 1200,
+        "height": 1552
+      },
+      {
+        "class": "cp-io-form",
+        "y": 125,
+        "width": 768,
+        "height": 1408
+      },
+      {
+        "class": "cp-io-desktop-summary",
+        "y": 125,
+        "width": 400,
+        "height": 629
+      }
+    ],
+    "details": [
+      {
+        "class": "cp-io-eyebrow",
+        "text": "Home internet · one short form",
+        "height": 16
+      },
+      {
+        "class": "",
+        "text": "Get connected",
+        "height": 40
+      },
+      {
+        "class": "cp-io-intro",
+        "text": "Send your details and an advis",
+        "height": 52
+      },
+      {
+        "class": "",
+        "text": "Your details",
+        "height": 28
+      },
+      {
+        "class": "cp-io-row cp-io-two",
+        "text": "First nameLast name",
+        "height": 85
+      },
+      {
+        "class": "cp-io-row cp-io-two",
+        "text": "EmailPhoneCanadian or internat",
+        "height": 113
+      },
+      {
+        "class": "cp-io-row cp-io-dob",
+        "text": "Date of birthRogers needs this",
+        "height": 113
+      },
+      {
+        "class": "",
+        "text": "",
+        "height": 1
+      },
+      {
+        "class": "",
+        "text": "Install address",
+        "height": 28
+      },
+      {
+        "class": "cp-io-row",
+        "text": "Street address",
+        "height": 85
+      },
+      {
+        "class": "cp-io-row cp-io-three",
+        "text": "CityProvinceBCONABMBSKQCNBNSPE",
+        "height": 85
+      },
+      {
+        "class": "cp-io-row cp-io-two",
+        "text": "Preferred install dateUsually ",
+        "height": 113
+      },
+      {
+        "class": "",
+        "text": "",
+        "height": 1
+      },
+      {
+        "class": "cp-io-consent",
+        "text": "I agree to be contacted by pho",
+        "height": 24
+      },
+      {
+        "class": "cp-io-consent",
+        "text": "I accept the Terms and Privacy",
+        "height": 24
+      },
+      {
+        "class": "cp-io-actions",
+        "text": "← Back to plansSend my details",
+        "height": 84
+      },
+      {
+        "class": "cp-io-summary-heading",
+        "text": "Your planChange",
+        "height": 25
+      },
+      {
+        "class": "cp-io-plan",
+        "text": "Home Internet500 Mbps$75/mo · ",
+        "height": 141
+      },
+      {
+        "class": "cp-io-feature",
+        "text": "✓ Unlimited data",
+        "height": 20
+      },
+      {
+        "class": "cp-io-feature",
+        "text": "✓ WiFi modem included",
+        "height": 20
+      },
+      {
+        "class": "cp-io-feature",
+        "text": "✓ Free professional install",
+        "height": 20
+      },
+      {
+        "class": "cp-io-footnote",
+        "text": "*Your advisor confirms the pro",
+        "height": 36
+      },
+      {
+        "class": "",
+        "text": "",
+        "height": 1
+      },
+      {
+        "class": "",
+        "text": "Due today$0First billAfter you",
+        "height": 64
+      },
+      {
+        "class": "cp-io-payment-note",
+        "text": "You don't pay anything onlineA",
+        "height": 110
+      }
+    ],
+    "violations": [],
+    "assets": [
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "loaded": true,
+        "width": 36,
+        "height": 36,
+        "declaredWidth": 36,
+        "declaredHeight": 36
+      },
+      {
+        "src": "/design/internet-order/0-imgLock.svg",
+        "loaded": true,
+        "width": 16,
+        "height": 16,
+        "declaredWidth": 16,
+        "declaredHeight": 16
+      }
+    ],
+    "errors": [],
+    "overflow": [
+      {
+        "viewport": 320,
+        "document": 320
+      },
+      {
+        "viewport": 390,
+        "document": 390
+      },
+      {
+        "viewport": 768,
+        "document": 768
+      },
+      {
+        "viewport": 1024,
+        "document": 1024
+      },
+      {
+        "viewport": 1280,
+        "document": 1280
+      },
+      {
+        "viewport": 1440,
+        "document": 1440
+      }
+    ],
+    "interactions": "native summary, required fields/consents and focus, retained input after action failure, preview confirmation, back/edit, no business API requests and overflow passed"
+  }
+]

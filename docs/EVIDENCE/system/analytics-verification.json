@@ -1,0 +1,10 @@
+{
+  "results": [
+    "marketing-only choice does not load analytics",
+    "analytics opt-in loads the configured script and enables pageview/plan selection",
+    "withdrawal stops pageviews and events even with a loaded tracker global",
+    "re-opt-in resumes once on the current route"
+  ],
+  "externalBoundary": "Next Script / Next pathname lifecycle substituted; real consent provider, Analytics and event helper",
+  "productionBuild": "next build passed with a configured fake analytics URL; no provider contacted"
+}

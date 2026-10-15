@@ -22,7 +22,7 @@ Five deployable apps, one shared database. Each app is a separate deployment —
 |---|---|---|
 | **backend** | Express + strict TypeScript API. The **only** app that connects to the database. | Supabase Postgres (pooled), R2, selected email provider |
 | **admin** | Next.js app for staff — orders, partners, finance, content, settings. | backend API only |
-| **site-1** | Next.js storefront — SIM / mobile plans (Rogers). Launches first. Embeds Sanity Studio. | backend API + its own Sanity |
+| **site-1 (Canadian Plans)** | Next.js storefront — SIM / mobile plans (Rogers). Launches first. Embeds Sanity Studio. | backend API + its own Sanity |
 | **site-2** | Next.js storefront — mobile-internet plans. Phase B. | backend API + its own Sanity |
 | **site-3** | Next.js storefront — home-internet plans. Phase B. | backend API + its own Sanity |
 
@@ -42,7 +42,7 @@ The three storefronts are **separate brands** with their own names, domains, loo
 | CMS | **Sanity** (Free), embedded per site | Official `next-sanity` template; Studio mounted at `/studio` in each storefront. One Sanity project per site. |
 | Email | **EmailAdapter; Amazon SES preferred candidate** | SES production access, verified sender and delivery-event tests must pass before selection is final. Resend is an alternative if SES is unsuitable, not an automatic migration or failover. |
 | Analytics | **Umami** | No PII in events. |
-| UI | **shadcn/ui** via shadcn MCP | No Figma phase. Shared primitives in a workspace package. |
+| UI | **shadcn/ui** via shadcn MCP | Shared primitives in a workspace package. Canadian Plans uses the owner's Figma file as its visual reference (12 October 2026). |
 | ORM / validation / tests | **Drizzle**, **Zod**, **Vitest**, **Playwright** | Vitest for unit/component; Playwright for e2e. In backend and every frontend. |
 | Error tracking | Sentry-class tool | No PII in traces. |
 | Backups | **GitHub Actions → Backblaze B2** | Custom job (T24). Independent of Supabase plan tier. |
@@ -110,7 +110,7 @@ Backend + admin + **site-1 only**. One workspace (site-1). Everything needed to 
 
 ## 7. Decisions already made (don't re-ask)
 
-Owner approves everything, no co-founder · region: the owner has accepted non-Canadian backend compute (decided 18 September 2026, ADR 0004) — backend runs on Railway US West, database is Supabase `us-west-2`; moving the database to `ca-central-1` remains open and separate. Not a blanket promise that every provider stores everything in Canada: record the chosen email provider's actual region, R2 location hints aren't a guarantee; record actual provider regions and reflect them in the privacy policy — this is a hard prerequisite for T21, which must state the actual regions, not an aspirational one · Sanity roles: owner is Administrator (Free has no Editor role); content staff get Administrator · analytics = Umami · delivery = manual courier, recorded in admin · payments = manual, per-plan `paymentRequired` flag, provider TBD in Phase B · no refunds, no such policy · English only · email only (no SMS/WhatsApp) · customers are international, any country/phone accepted · documents = per-offer checklist, PDF/JPG/PNG, ≤10 MB, signature-verified, no malware scanner yet (deliberate) · partners = referral agencies, commission on activation, carrier pays Canadian Plans then Canadian Plans pays partner, monthly owner-approved invoices · design = shadcn only, no Figma · backend = Express on Railway (long-lived container); admin/site-1 Next.js on Vercel · monorepo = one pnpm repo, shared code in workspace packages (not published to a registry) · one shared DB · **Supabase billing is per-organization, so staging can't be Free alongside a Pro prod project in the same org — either put staging in its own Free org or budget it as a second paid project.**
+Owner approves everything, no co-founder · region: the owner has accepted non-Canadian backend compute (decided 18 September 2026, ADR 0004) — backend runs on Railway US West, database is Supabase `us-west-2`; moving the database to `ca-central-1` remains open and separate. Not a blanket promise that every provider stores everything in Canada: record the chosen email provider's actual region, R2 location hints aren't a guarantee; record actual provider regions and reflect them in the privacy policy — this is a hard prerequisite for T21, which must state the actual regions, not an aspirational one · Sanity roles: owner is Administrator (Free has no Editor role); content staff get Administrator · analytics = Umami · delivery = manual courier, recorded in admin · payments = manual, per-plan `paymentRequired` flag, provider TBD in Phase B · no refunds, no such policy · English only · email only (no SMS/WhatsApp) · customers are international, any country/phone accepted · documents = per-offer checklist, PDF/JPG/PNG, ≤10 MB, signature-verified, no malware scanner yet (deliberate) · partners = referral agencies, commission on activation, carrier pays Canadian Plans then Canadian Plans pays partner, monthly owner-approved invoices · design = shadcn primitives; Canadian Plans follows the owner-supplied Figma reference · backend = Express on Railway (long-lived container); admin/site-1 Next.js on Vercel · monorepo = one pnpm repo, shared code in workspace packages (not published to a registry) · one shared DB · **Supabase billing is per-organization, so staging can't be Free alongside a Pro prod project in the same org — either put staging in its own Free org or budget it as a second paid project.**
 
 ### Review decisions — 14 September 2026
 
@@ -121,6 +121,21 @@ Owner approves everything, no co-founder · region: the owner has accepted non-C
 - Use free plans where permitted during development. Vercel Pro is approved in principle when required; production Supabase Pro is the standard baseline. Do not interpret this planning decision as authority to purchase or deploy.
 - Standard recovery baseline: managed daily database backups, a separate encrypted daily archive covering DB/Auth, R2 and Sanity, independent alerts and a rehearsed restore. Exact recovery-time/loss objectives and PITR are deferred, not launch blockers for development. This baseline does not promise zero loss. Pause checkout when integrity cannot be established rather than confirm an unsafe order; measure actual recovery before launch.
 - Amazon SES is a preferred email candidate subject to account approval and integration verification; finalize through OPEN_INPUTS #23 before live sending. No provider migration is required merely because volume grows.
+
+### Storefront design decision — 12 October 2026
+
+- The owner confirmed **Canadian Plans** as website 1's public brand as well as
+  the umbrella brand. Its technical app/package/workspace identifier remains
+  `site-1`; this does not choose a storefront domain or legal billing identity.
+- The owner supplied the [Canadian Plans Figma design](https://www.figma.com/design/6zUS2WZbQn6NUhyjesA584/Canadian-Plans?node-id=60-2)
+  and requested a design-to-code plan before visual implementation. This
+  supersedes the previous no-Figma choice for this storefront; shadcn primitives,
+  the existing stack and the §4 invariants still apply.
+- See [the design-to-code plan](docs/DESIGN_TO_CODE_PLAN.md). Broader service scope
+  and business behavior shown in the design require explicit decisions; supplying
+  a visual reference does not resolve those inputs.
+- The owner reconfirmed **mobility first; internet and TV later** on the same
+  date. The Figma internet/TV screens remain future design references.
 
 ## 8. How to decide when the task is ambiguous
 

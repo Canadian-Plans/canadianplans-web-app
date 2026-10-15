@@ -1,0 +1,352 @@
+[
+  {
+    "width": 390,
+    "violations": [],
+    "geometry": [
+      {
+        "class": "cp-about-hero cp-container",
+        "x": 20,
+        "y": 164,
+        "width": 350,
+        "height": 600
+      },
+      {
+        "class": "cp-about-story",
+        "x": 0,
+        "y": 764,
+        "width": 390,
+        "height": 849
+      },
+      {
+        "class": "cp-about-benefits",
+        "x": 0,
+        "y": 1613,
+        "width": 390,
+        "height": 715
+      },
+      {
+        "class": "cp-about-dealer",
+        "x": 0,
+        "y": 2328,
+        "width": 390,
+        "height": 199
+      },
+      {
+        "class": "cp-about-final",
+        "x": 0,
+        "y": 2527,
+        "width": 390,
+        "height": 502
+      },
+      {
+        "class": "cp-about-final-card cp-container",
+        "x": 20,
+        "y": 2575,
+        "width": 350,
+        "height": 406
+      },
+      {
+        "class": "cp-footer",
+        "x": 0,
+        "y": 3029,
+        "width": 390,
+        "height": 946.96875
+      }
+    ],
+    "assets": [
+      {
+        "src": "/design/about/1-imgPhoneIcon.svg",
+        "node": "364:2155",
+        "loaded": true,
+        "width": 16,
+        "height": 16,
+        "declaredWidth": 16,
+        "declaredHeight": 16
+      },
+      {
+        "src": "/design/components/60-13-imgMark.svg",
+        "node": "60:16",
+        "loaded": true,
+        "width": 36,
+        "height": 36,
+        "declaredWidth": 36,
+        "declaredHeight": 36
+      },
+      {
+        "src": "/design/components/364-2163-imgIcon.svg",
+        "node": "364:2170",
+        "loaded": true,
+        "width": 22,
+        "height": 22,
+        "declaredWidth": 22,
+        "declaredHeight": 22
+      },
+      {
+        "src": "/design/components/364-2163-imgIcon1.svg",
+        "node": "364:2173",
+        "loaded": true,
+        "width": 24,
+        "height": 24,
+        "declaredWidth": 24,
+        "declaredHeight": 24
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "node": "312:3",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "node": "312:3",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/about/0-imgIcon1.svg",
+        "node": "314:439",
+        "loaded": true,
+        "width": 24,
+        "height": 24,
+        "declaredWidth": 24,
+        "declaredHeight": 24
+      },
+      {
+        "src": "/design/about/0-imgIcon2.svg",
+        "node": "314:443",
+        "loaded": true,
+        "width": 24,
+        "height": 24,
+        "declaredWidth": 24,
+        "declaredHeight": 24
+      },
+      {
+        "src": "/design/about/0-imgIcon3.svg",
+        "node": "314:446",
+        "loaded": true,
+        "width": 24,
+        "height": 24,
+        "declaredWidth": 24,
+        "declaredHeight": 24
+      },
+      {
+        "src": "/design/about/0-imgIcon4.svg",
+        "node": "314:449",
+        "loaded": true,
+        "width": 24,
+        "height": 24,
+        "declaredWidth": 24,
+        "declaredHeight": 24
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "node": "68:54",
+        "loaded": true,
+        "width": 36,
+        "height": 36,
+        "declaredWidth": 36,
+        "declaredHeight": 36
+      }
+    ],
+    "errors": [],
+    "interactions": "Keyboard skip link, mobile menu and focus return, global finder, plan and advisor destinations passed",
+    "overflow": [
+      {
+        "viewport": 320,
+        "document": 320
+      },
+      {
+        "viewport": 390,
+        "document": 390
+      },
+      {
+        "viewport": 768,
+        "document": 768
+      },
+      {
+        "viewport": 1024,
+        "document": 1024
+      },
+      {
+        "viewport": 1280,
+        "document": 1280
+      },
+      {
+        "viewport": 1440,
+        "document": 1440
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "violations": [],
+    "geometry": [
+      {
+        "class": "cp-about-hero cp-container",
+        "x": 120,
+        "y": 160,
+        "width": 1200,
+        "height": 971
+      },
+      {
+        "class": "cp-about-story",
+        "x": 0,
+        "y": 1131,
+        "width": 1440,
+        "height": 710
+      },
+      {
+        "class": "cp-about-benefits",
+        "x": 0,
+        "y": 1841,
+        "width": 1440,
+        "height": 525
+      },
+      {
+        "class": "cp-about-dealer",
+        "x": 0,
+        "y": 2366,
+        "width": 1440,
+        "height": 209
+      },
+      {
+        "class": "cp-about-final",
+        "x": 0,
+        "y": 2575,
+        "width": 1440,
+        "height": 601
+      },
+      {
+        "class": "cp-about-final-card cp-container",
+        "x": 120,
+        "y": 2575,
+        "width": 1200,
+        "height": 505
+      },
+      {
+        "class": "cp-footer",
+        "x": 0,
+        "y": 3176,
+        "width": 1440,
+        "height": 439.1875
+      }
+    ],
+    "assets": [
+      {
+        "src": "/design/components/60-13-imgMark.svg",
+        "node": "60:16",
+        "loaded": true,
+        "width": 36,
+        "height": 36,
+        "declaredWidth": 36,
+        "declaredHeight": 36
+      },
+      {
+        "src": "/design/legal/0-imgSearchIcon.svg",
+        "node": "361:1004",
+        "loaded": true,
+        "width": 18,
+        "height": 18,
+        "declaredWidth": 18,
+        "declaredHeight": 18
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "node": "312:3",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "node": "312:3",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/about/0-imgIcon1.svg",
+        "node": "314:439",
+        "loaded": true,
+        "width": 24,
+        "height": 24,
+        "declaredWidth": 24,
+        "declaredHeight": 24
+      },
+      {
+        "src": "/design/about/0-imgIcon2.svg",
+        "node": "314:443",
+        "loaded": true,
+        "width": 24,
+        "height": 24,
+        "declaredWidth": 24,
+        "declaredHeight": 24
+      },
+      {
+        "src": "/design/about/0-imgIcon3.svg",
+        "node": "314:446",
+        "loaded": true,
+        "width": 24,
+        "height": 24,
+        "declaredWidth": 24,
+        "declaredHeight": 24
+      },
+      {
+        "src": "/design/about/0-imgIcon4.svg",
+        "node": "314:449",
+        "loaded": true,
+        "width": 24,
+        "height": 24,
+        "declaredWidth": 24,
+        "declaredHeight": 24
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "node": "68:54",
+        "loaded": true,
+        "width": 36,
+        "height": 36,
+        "declaredWidth": 36,
+        "declaredHeight": 36
+      }
+    ],
+    "errors": [],
+    "interactions": "Keyboard skip link, mobile menu and focus return, global finder, plan and advisor destinations passed",
+    "overflow": [
+      {
+        "viewport": 320,
+        "document": 320
+      },
+      {
+        "viewport": 390,
+        "document": 390
+      },
+      {
+        "viewport": 768,
+        "document": 768
+      },
+      {
+        "viewport": 1024,
+        "document": 1024
+      },
+      {
+        "viewport": 1280,
+        "document": 1280
+      },
+      {
+        "viewport": 1440,
+        "document": 1440
+      }
+    ]
+  }
+]

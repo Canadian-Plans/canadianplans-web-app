@@ -1,0 +1,584 @@
+{
+  "asset": {
+    "src": "/design/components/312-2-imgIcon.svg",
+    "hash": "718635e95fdab861db5514a5d74c633d8b7723e26e8f046f3974fe6ffa51d55b"
+  },
+  "records": [
+    {
+      "id": "order-received",
+      "width": 390,
+      "geometry": [
+        {
+          "tag": "BODY",
+          "section": null,
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 1770.8125
+        },
+        {
+          "tag": "TABLE",
+          "section": "inbox",
+          "x": 40,
+          "y": 32,
+          "width": 310,
+          "height": 92
+        },
+        {
+          "tag": "TABLE",
+          "section": "card",
+          "x": 40,
+          "y": 124,
+          "width": 310,
+          "height": 1614.8125
+        },
+        {
+          "tag": "TD",
+          "section": "content",
+          "x": 40,
+          "y": 192,
+          "width": 310,
+          "height": 1310.8125
+        },
+        {
+          "tag": "TABLE",
+          "section": "image",
+          "x": 72,
+          "y": 228,
+          "width": 246,
+          "height": 185.8125
+        },
+        {
+          "tag": "H1",
+          "section": null,
+          "x": 72,
+          "y": 431.8125,
+          "width": 246,
+          "height": 114
+        },
+        {
+          "tag": "TABLE",
+          "section": "steps",
+          "x": 72,
+          "y": 743.8125,
+          "width": 246,
+          "height": 309
+        },
+        {
+          "tag": "A",
+          "section": null,
+          "x": 72,
+          "y": 1070.8125,
+          "width": 246,
+          "height": 59
+        },
+        {
+          "tag": "TABLE",
+          "section": "summary",
+          "x": 72,
+          "y": 1147.8125,
+          "width": 246,
+          "height": 265
+        },
+        {
+          "tag": "TD",
+          "section": "footer",
+          "x": 40,
+          "y": 1502.8125,
+          "width": 310,
+          "height": 236
+        }
+      ],
+      "image": {
+        "src": "http://localhost:3001/design/components/312-2-imgIcon.svg",
+        "width": 32,
+        "height": 32,
+        "naturalWidth": 32,
+        "naturalHeight": 32
+      },
+      "violations": [],
+      "emailViolations": [],
+      "overflow": false
+    },
+    {
+      "id": "esim-ready",
+      "width": 390,
+      "geometry": [
+        {
+          "tag": "BODY",
+          "section": null,
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 1746
+        },
+        {
+          "tag": "TABLE",
+          "section": "inbox",
+          "x": 40,
+          "y": 32,
+          "width": 310,
+          "height": 92
+        },
+        {
+          "tag": "TABLE",
+          "section": "card",
+          "x": 40,
+          "y": 124,
+          "width": 310,
+          "height": 1590
+        },
+        {
+          "tag": "TD",
+          "section": "content",
+          "x": 40,
+          "y": 192,
+          "width": 310,
+          "height": 1286
+        },
+        {
+          "tag": "TABLE",
+          "section": "image",
+          "x": 72,
+          "y": 228,
+          "width": 246,
+          "height": 170
+        },
+        {
+          "tag": "H1",
+          "section": null,
+          "x": 72,
+          "y": 416,
+          "width": 246,
+          "height": 76
+        },
+        {
+          "tag": "TABLE",
+          "section": "steps",
+          "x": 72,
+          "y": 663,
+          "width": 246,
+          "height": 395
+        },
+        {
+          "tag": "A",
+          "section": null,
+          "x": 72,
+          "y": 1076,
+          "width": 246,
+          "height": 59
+        },
+        {
+          "tag": "TABLE",
+          "section": "summary",
+          "x": 72,
+          "y": 1153,
+          "width": 246,
+          "height": 215
+        },
+        {
+          "tag": "TD",
+          "section": "footer",
+          "x": 40,
+          "y": 1478,
+          "width": 310,
+          "height": 236
+        }
+      ],
+      "image": {
+        "src": "http://localhost:3001/design/components/312-2-imgIcon.svg",
+        "width": 32,
+        "height": 32,
+        "naturalWidth": 32,
+        "naturalHeight": 32
+      },
+      "violations": [],
+      "emailViolations": [],
+      "overflow": false
+    },
+    {
+      "id": "install-booked",
+      "width": 390,
+      "geometry": [
+        {
+          "tag": "BODY",
+          "section": null,
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 1739.59375
+        },
+        {
+          "tag": "TABLE",
+          "section": "inbox",
+          "x": 40,
+          "y": 32,
+          "width": 310,
+          "height": 92
+        },
+        {
+          "tag": "TABLE",
+          "section": "card",
+          "x": 40,
+          "y": 124,
+          "width": 310,
+          "height": 1583.59375
+        },
+        {
+          "tag": "TD",
+          "section": "content",
+          "x": 40,
+          "y": 192,
+          "width": 310,
+          "height": 1279.59375
+        },
+        {
+          "tag": "TABLE",
+          "section": "image",
+          "x": 72,
+          "y": 228,
+          "width": 246,
+          "height": 170
+        },
+        {
+          "tag": "H1",
+          "section": null,
+          "x": 72,
+          "y": 416,
+          "width": 246,
+          "height": 76
+        },
+        {
+          "tag": "TABLE",
+          "section": "steps",
+          "x": 72,
+          "y": 690,
+          "width": 246,
+          "height": 311
+        },
+        {
+          "tag": "A",
+          "section": null,
+          "x": 72,
+          "y": 1019,
+          "width": 246,
+          "height": 79.59375
+        },
+        {
+          "tag": "TABLE",
+          "section": "summary",
+          "x": 72,
+          "y": 1116.59375,
+          "width": 246,
+          "height": 245
+        },
+        {
+          "tag": "TD",
+          "section": "footer",
+          "x": 40,
+          "y": 1471.59375,
+          "width": 310,
+          "height": 236
+        }
+      ],
+      "image": {
+        "src": "http://localhost:3001/design/components/312-2-imgIcon.svg",
+        "width": 32,
+        "height": 32,
+        "naturalWidth": 32,
+        "naturalHeight": 32
+      },
+      "violations": [],
+      "emailViolations": [],
+      "overflow": false
+    },
+    {
+      "id": "order-received",
+      "width": 1440,
+      "geometry": [
+        {
+          "tag": "BODY",
+          "section": null,
+          "x": 0,
+          "y": 0,
+          "width": 680,
+          "height": 1305
+        },
+        {
+          "tag": "TABLE",
+          "section": "inbox",
+          "x": 40,
+          "y": 32,
+          "width": 600,
+          "height": 55
+        },
+        {
+          "tag": "TABLE",
+          "section": "card",
+          "x": 40,
+          "y": 87,
+          "width": 600,
+          "height": 1186
+        },
+        {
+          "tag": "TD",
+          "section": "content",
+          "x": 40,
+          "y": 155,
+          "width": 600,
+          "height": 954
+        },
+        {
+          "tag": "TABLE",
+          "section": "image",
+          "x": 72,
+          "y": 191,
+          "width": 536,
+          "height": 170
+        },
+        {
+          "tag": "H1",
+          "section": null,
+          "x": 72,
+          "y": 379,
+          "width": 536,
+          "height": 38
+        },
+        {
+          "tag": "TABLE",
+          "section": "steps",
+          "x": 72,
+          "y": 534,
+          "width": 536,
+          "height": 225
+        },
+        {
+          "tag": "A",
+          "section": null,
+          "x": 72,
+          "y": 777,
+          "width": 536,
+          "height": 59
+        },
+        {
+          "tag": "TABLE",
+          "section": "summary",
+          "x": 72,
+          "y": 854,
+          "width": 536,
+          "height": 185
+        },
+        {
+          "tag": "TD",
+          "section": "footer",
+          "x": 40,
+          "y": 1109,
+          "width": 600,
+          "height": 164
+        }
+      ],
+      "image": {
+        "src": "http://localhost:3001/design/components/312-2-imgIcon.svg",
+        "width": 32,
+        "height": 32,
+        "naturalWidth": 32,
+        "naturalHeight": 32
+      },
+      "violations": [],
+      "emailViolations": [],
+      "overflow": false
+    },
+    {
+      "id": "esim-ready",
+      "width": 1440,
+      "geometry": [
+        {
+          "tag": "BODY",
+          "section": null,
+          "x": 0,
+          "y": 0,
+          "width": 680,
+          "height": 1261
+        },
+        {
+          "tag": "TABLE",
+          "section": "inbox",
+          "x": 40,
+          "y": 32,
+          "width": 600,
+          "height": 55
+        },
+        {
+          "tag": "TABLE",
+          "section": "card",
+          "x": 40,
+          "y": 87,
+          "width": 600,
+          "height": 1142
+        },
+        {
+          "tag": "TD",
+          "section": "content",
+          "x": 40,
+          "y": 155,
+          "width": 600,
+          "height": 910
+        },
+        {
+          "tag": "TABLE",
+          "section": "image",
+          "x": 72,
+          "y": 191,
+          "width": 536,
+          "height": 170
+        },
+        {
+          "tag": "H1",
+          "section": null,
+          "x": 72,
+          "y": 379,
+          "width": 536,
+          "height": 38
+        },
+        {
+          "tag": "TABLE",
+          "section": "steps",
+          "x": 72,
+          "y": 507,
+          "width": 536,
+          "height": 218
+        },
+        {
+          "tag": "A",
+          "section": null,
+          "x": 72,
+          "y": 743,
+          "width": 536,
+          "height": 59
+        },
+        {
+          "tag": "TABLE",
+          "section": "summary",
+          "x": 72,
+          "y": 820,
+          "width": 536,
+          "height": 155
+        },
+        {
+          "tag": "TD",
+          "section": "footer",
+          "x": 40,
+          "y": 1065,
+          "width": 600,
+          "height": 164
+        }
+      ],
+      "image": {
+        "src": "http://localhost:3001/design/components/312-2-imgIcon.svg",
+        "width": 32,
+        "height": 32,
+        "naturalWidth": 32,
+        "naturalHeight": 32
+      },
+      "violations": [],
+      "emailViolations": [],
+      "overflow": false
+    },
+    {
+      "id": "install-booked",
+      "width": 1440,
+      "geometry": [
+        {
+          "tag": "BODY",
+          "section": null,
+          "x": 0,
+          "y": 0,
+          "width": 680,
+          "height": 1283
+        },
+        {
+          "tag": "TABLE",
+          "section": "inbox",
+          "x": 40,
+          "y": 32,
+          "width": 600,
+          "height": 55
+        },
+        {
+          "tag": "TABLE",
+          "section": "card",
+          "x": 40,
+          "y": 87,
+          "width": 600,
+          "height": 1164
+        },
+        {
+          "tag": "TD",
+          "section": "content",
+          "x": 40,
+          "y": 155,
+          "width": 600,
+          "height": 932
+        },
+        {
+          "tag": "TABLE",
+          "section": "image",
+          "x": 72,
+          "y": 191,
+          "width": 536,
+          "height": 170
+        },
+        {
+          "tag": "H1",
+          "section": null,
+          "x": 72,
+          "y": 379,
+          "width": 536,
+          "height": 38
+        },
+        {
+          "tag": "TABLE",
+          "section": "steps",
+          "x": 72,
+          "y": 534,
+          "width": 536,
+          "height": 183
+        },
+        {
+          "tag": "A",
+          "section": null,
+          "x": 72,
+          "y": 735,
+          "width": 536,
+          "height": 59
+        },
+        {
+          "tag": "TABLE",
+          "section": "summary",
+          "x": 72,
+          "y": 812,
+          "width": 536,
+          "height": 185
+        },
+        {
+          "tag": "TD",
+          "section": "footer",
+          "x": 40,
+          "y": 1087,
+          "width": 600,
+          "height": 164
+        }
+      ],
+      "image": {
+        "src": "http://localhost:3001/design/components/312-2-imgIcon.svg",
+        "width": 32,
+        "height": 32,
+        "naturalWidth": 32,
+        "naturalHeight": 32
+      },
+      "violations": [],
+      "emailViolations": [],
+      "overflow": false
+    }
+  ]
+}

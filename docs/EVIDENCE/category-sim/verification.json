@@ -1,0 +1,783 @@
+{
+  "origin": "http://127.0.0.1:3127",
+  "routes": [
+    "/pre-arrival-sim/students",
+    "/pre-arrival-sim/from-india"
+  ],
+  "results": [
+    {
+      "route": "/pre-arrival-sim/students",
+      "width": 390,
+      "sectionGeometry": [
+        {
+          "id": "cp-catsim-hero",
+          "height": 1267.09375
+        },
+        {
+          "id": "cp-catsim-meta",
+          "height": 235
+        },
+        {
+          "id": "cp-catsim-quick",
+          "height": 436.0625
+        },
+        {
+          "id": "countdown",
+          "height": 955.625
+        },
+        {
+          "id": "plans",
+          "height": 1209.125
+        },
+        {
+          "id": "documents",
+          "height": 1174.96875
+        },
+        {
+          "id": "guide",
+          "height": 1669.28125
+        },
+        {
+          "id": "cp-catsim-reviews cp-catsim-section",
+          "height": 1150.78125
+        },
+        {
+          "id": "faq",
+          "height": 1091.65625
+        },
+        {
+          "id": "cp-catsim-explore cp-catsim-section",
+          "height": 914
+        },
+        {
+          "id": "cp-catsim-final cp-catsim-section",
+          "height": 561.78125
+        }
+      ],
+      "assets": [
+        {
+          "src": "/design/pre-arrival/364-2201-imgPhoneIcon.svg",
+          "nodeId": "364:2201",
+          "width": 16,
+          "height": 16,
+          "expectedWidth": 16,
+          "expectedHeight": 16,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/60-13-imgMark.svg",
+          "nodeId": "60:16",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        },
+        {
+          "src": "/design/pre-arrival/364-2211-imgIcon.svg",
+          "nodeId": "364:2211",
+          "width": 22,
+          "height": 22,
+          "expectedWidth": 22,
+          "expectedHeight": 22,
+          "loaded": true
+        },
+        {
+          "src": "/design/pre-arrival/364-2211-imgIcon1.svg",
+          "nodeId": "364:2211-menu",
+          "width": 24,
+          "height": 24,
+          "expectedWidth": 24,
+          "expectedHeight": 24,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-sim/students-desktop-imgEllipse1.svg",
+          "nodeId": "151:88",
+          "width": 28,
+          "height": 28,
+          "expectedWidth": 28,
+          "expectedHeight": 28,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-sim/students-desktop-imgEllipse1.svg",
+          "nodeId": "151:88",
+          "width": 28,
+          "height": 28,
+          "expectedWidth": 28,
+          "expectedHeight": 28,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-sim/students-desktop-imgEllipse2.svg",
+          "nodeId": "151:128",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-sim/students-desktop-imgEllipse3.svg",
+          "nodeId": "151:133",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-9-imgIcon.svg",
+          "nodeId": "312:10",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-2-imgIcon.svg",
+          "nodeId": "312:3",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-2-imgIcon.svg",
+          "nodeId": "312:3",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/66-43-imgEllipse.svg",
+          "nodeId": "66:47",
+          "width": 40,
+          "height": 40,
+          "expectedWidth": 40,
+          "expectedHeight": 40,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/66-51-imgEllipse.svg",
+          "nodeId": "66:55",
+          "width": 40,
+          "height": 40,
+          "expectedWidth": 40,
+          "expectedHeight": 40,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/66-59-imgEllipse.svg",
+          "nodeId": "66:63",
+          "width": 40,
+          "height": 40,
+          "expectedWidth": 40,
+          "expectedHeight": 40,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/68-50-imgFrame.svg",
+          "nodeId": "68:54",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        }
+      ],
+      "accessibility": [],
+      "selectedAccessibility": [],
+      "handoff": "http://127.0.0.1:3127/order/pre-arrival",
+      "interactions": "keyboard plan selection, plan summary handoff, and FAQ accordion passed",
+      "runtimeErrors": []
+    },
+    {
+      "route": "/pre-arrival-sim/students",
+      "width": 1440,
+      "sectionGeometry": [
+        {
+          "id": "cp-catsim-hero",
+          "height": 647.25
+        },
+        {
+          "id": "cp-catsim-meta",
+          "height": 136
+        },
+        {
+          "id": "cp-catsim-quick",
+          "height": 206.1875
+        },
+        {
+          "id": "countdown",
+          "height": 665.1875
+        },
+        {
+          "id": "plans",
+          "height": 706.578125
+        },
+        {
+          "id": "documents",
+          "height": 732.890625
+        },
+        {
+          "id": "guide",
+          "height": 922.5625
+        },
+        {
+          "id": "cp-catsim-reviews cp-catsim-section",
+          "height": 428.21875
+        },
+        {
+          "id": "faq",
+          "height": 822
+        },
+        {
+          "id": "cp-catsim-explore cp-catsim-section",
+          "height": 484.75
+        },
+        {
+          "id": "cp-catsim-final cp-catsim-section",
+          "height": 505.1875
+        }
+      ],
+      "assets": [
+        {
+          "src": "/design/components/60-13-imgMark.svg",
+          "nodeId": "60:16",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        },
+        {
+          "src": "/design/legal/0-imgSearchIcon.svg",
+          "nodeId": "361:1004",
+          "width": 18,
+          "height": 18,
+          "expectedWidth": 18,
+          "expectedHeight": 18,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-sim/students-desktop-imgEllipse1.svg",
+          "nodeId": "151:88",
+          "width": 28,
+          "height": 28,
+          "expectedWidth": 28,
+          "expectedHeight": 28,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-sim/students-desktop-imgEllipse1.svg",
+          "nodeId": "151:88",
+          "width": 28,
+          "height": 28,
+          "expectedWidth": 28,
+          "expectedHeight": 28,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-sim/students-desktop-imgEllipse2.svg",
+          "nodeId": "151:128",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-sim/students-desktop-imgEllipse3.svg",
+          "nodeId": "151:133",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-9-imgIcon.svg",
+          "nodeId": "312:10",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-2-imgIcon.svg",
+          "nodeId": "312:3",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-2-imgIcon.svg",
+          "nodeId": "312:3",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/66-43-imgEllipse.svg",
+          "nodeId": "66:47",
+          "width": 40,
+          "height": 40,
+          "expectedWidth": 40,
+          "expectedHeight": 40,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/66-51-imgEllipse.svg",
+          "nodeId": "66:55",
+          "width": 40,
+          "height": 40,
+          "expectedWidth": 40,
+          "expectedHeight": 40,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/66-59-imgEllipse.svg",
+          "nodeId": "66:63",
+          "width": 40,
+          "height": 40,
+          "expectedWidth": 40,
+          "expectedHeight": 40,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/68-50-imgFrame.svg",
+          "nodeId": "68:54",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        }
+      ],
+      "accessibility": [],
+      "selectedAccessibility": [],
+      "handoff": "http://127.0.0.1:3127/order/pre-arrival",
+      "interactions": "keyboard plan selection, plan summary handoff, and FAQ accordion passed",
+      "runtimeErrors": []
+    },
+    {
+      "route": "/pre-arrival-sim/from-india",
+      "width": 390,
+      "sectionGeometry": [
+        {
+          "id": "cp-catsim-hero",
+          "height": 1250.84375
+        },
+        {
+          "id": "cp-catsim-meta",
+          "height": 235
+        },
+        {
+          "id": "cp-catsim-quick cp-catsim-quick-india",
+          "height": 376.125
+        },
+        {
+          "id": "cp-catsim-country-facts-section cp-catsim-section",
+          "height": 452.375
+        },
+        {
+          "id": "countdown",
+          "height": 955.625
+        },
+        {
+          "id": "plans",
+          "height": 1247.125
+        },
+        {
+          "id": "documents",
+          "height": 1150.96875
+        },
+        {
+          "id": "calling-india",
+          "height": 1348.9375
+        },
+        {
+          "id": "guide",
+          "height": 1567.28125
+        },
+        {
+          "id": "cp-catsim-reviews cp-catsim-section",
+          "height": 1150.78125
+        },
+        {
+          "id": "faq",
+          "height": 1034.78125
+        },
+        {
+          "id": "cp-catsim-explore cp-catsim-section",
+          "height": 914
+        },
+        {
+          "id": "cp-catsim-final cp-catsim-section",
+          "height": 522.1875
+        }
+      ],
+      "assets": [
+        {
+          "src": "/design/pre-arrival/364-2201-imgPhoneIcon.svg",
+          "nodeId": "364:2201",
+          "width": 16,
+          "height": 16,
+          "expectedWidth": 16,
+          "expectedHeight": 16,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/60-13-imgMark.svg",
+          "nodeId": "60:16",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        },
+        {
+          "src": "/design/pre-arrival/364-2211-imgIcon.svg",
+          "nodeId": "364:2211",
+          "width": 22,
+          "height": 22,
+          "expectedWidth": 22,
+          "expectedHeight": 22,
+          "loaded": true
+        },
+        {
+          "src": "/design/pre-arrival/364-2211-imgIcon1.svg",
+          "nodeId": "364:2211-menu",
+          "width": 24,
+          "height": 24,
+          "expectedWidth": 24,
+          "expectedHeight": 24,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-sim/students-desktop-imgEllipse1.svg",
+          "nodeId": "151:88",
+          "width": 28,
+          "height": 28,
+          "expectedWidth": 28,
+          "expectedHeight": 28,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-sim/students-desktop-imgEllipse1.svg",
+          "nodeId": "151:88",
+          "width": 28,
+          "height": 28,
+          "expectedWidth": 28,
+          "expectedHeight": 28,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-sim/students-desktop-imgEllipse2.svg",
+          "nodeId": "151:128",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-sim/students-desktop-imgEllipse3.svg",
+          "nodeId": "151:133",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-9-imgIcon.svg",
+          "nodeId": "312:10",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-2-imgIcon.svg",
+          "nodeId": "312:3",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-2-imgIcon.svg",
+          "nodeId": "312:3",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-2-imgIcon.svg",
+          "nodeId": "312:3",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/66-43-imgEllipse.svg",
+          "nodeId": "66:47",
+          "width": 40,
+          "height": 40,
+          "expectedWidth": 40,
+          "expectedHeight": 40,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/66-51-imgEllipse.svg",
+          "nodeId": "66:55",
+          "width": 40,
+          "height": 40,
+          "expectedWidth": 40,
+          "expectedHeight": 40,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/66-59-imgEllipse.svg",
+          "nodeId": "66:63",
+          "width": 40,
+          "height": 40,
+          "expectedWidth": 40,
+          "expectedHeight": 40,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/68-50-imgFrame.svg",
+          "nodeId": "68:54",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        }
+      ],
+      "accessibility": [],
+      "selectedAccessibility": [],
+      "handoff": "http://127.0.0.1:3127/order/pre-arrival",
+      "interactions": "keyboard plan selection, plan summary handoff, and FAQ accordion passed",
+      "runtimeErrors": []
+    },
+    {
+      "route": "/pre-arrival-sim/from-india",
+      "width": 1440,
+      "sectionGeometry": [
+        {
+          "id": "cp-catsim-hero",
+          "height": 752.75
+        },
+        {
+          "id": "cp-catsim-meta",
+          "height": 136
+        },
+        {
+          "id": "cp-catsim-quick cp-catsim-quick-india",
+          "height": 206.1875
+        },
+        {
+          "id": "cp-catsim-country-facts-section cp-catsim-section",
+          "height": 290.1875
+        },
+        {
+          "id": "countdown",
+          "height": 665.1875
+        },
+        {
+          "id": "plans",
+          "height": 706.578125
+        },
+        {
+          "id": "documents",
+          "height": 732.890625
+        },
+        {
+          "id": "calling-india",
+          "height": 858
+        },
+        {
+          "id": "guide",
+          "height": 820.5625
+        },
+        {
+          "id": "cp-catsim-reviews cp-catsim-section",
+          "height": 428.21875
+        },
+        {
+          "id": "faq",
+          "height": 784.5
+        },
+        {
+          "id": "cp-catsim-explore cp-catsim-section",
+          "height": 484.75
+        },
+        {
+          "id": "cp-catsim-final cp-catsim-section",
+          "height": 505.1875
+        }
+      ],
+      "assets": [
+        {
+          "src": "/design/components/60-13-imgMark.svg",
+          "nodeId": "60:16",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        },
+        {
+          "src": "/design/legal/0-imgSearchIcon.svg",
+          "nodeId": "361:1004",
+          "width": 18,
+          "height": 18,
+          "expectedWidth": 18,
+          "expectedHeight": 18,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-sim/students-desktop-imgEllipse1.svg",
+          "nodeId": "151:88",
+          "width": 28,
+          "height": 28,
+          "expectedWidth": 28,
+          "expectedHeight": 28,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-sim/students-desktop-imgEllipse1.svg",
+          "nodeId": "151:88",
+          "width": 28,
+          "height": 28,
+          "expectedWidth": 28,
+          "expectedHeight": 28,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-sim/students-desktop-imgEllipse2.svg",
+          "nodeId": "151:128",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        },
+        {
+          "src": "/design/category-sim/students-desktop-imgEllipse3.svg",
+          "nodeId": "151:133",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-9-imgIcon.svg",
+          "nodeId": "312:10",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-2-imgIcon.svg",
+          "nodeId": "312:3",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-2-imgIcon.svg",
+          "nodeId": "312:3",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/312-2-imgIcon.svg",
+          "nodeId": "312:3",
+          "width": 32,
+          "height": 32,
+          "expectedWidth": 32,
+          "expectedHeight": 32,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/66-43-imgEllipse.svg",
+          "nodeId": "66:47",
+          "width": 40,
+          "height": 40,
+          "expectedWidth": 40,
+          "expectedHeight": 40,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/66-51-imgEllipse.svg",
+          "nodeId": "66:55",
+          "width": 40,
+          "height": 40,
+          "expectedWidth": 40,
+          "expectedHeight": 40,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/66-59-imgEllipse.svg",
+          "nodeId": "66:63",
+          "width": 40,
+          "height": 40,
+          "expectedWidth": 40,
+          "expectedHeight": 40,
+          "loaded": true
+        },
+        {
+          "src": "/design/components/68-50-imgFrame.svg",
+          "nodeId": "68:54",
+          "width": 36,
+          "height": 36,
+          "expectedWidth": 36,
+          "expectedHeight": 36,
+          "loaded": true
+        }
+      ],
+      "accessibility": [],
+      "selectedAccessibility": [],
+      "handoff": "http://127.0.0.1:3127/order/pre-arrival",
+      "interactions": "keyboard plan selection, plan summary handoff, and FAQ accordion passed",
+      "runtimeErrors": []
+    }
+  ],
+  "overflowWidths": [
+    320,
+    390,
+    768,
+    1024,
+    1440
+  ],
+  "runtimeErrors": []
+}

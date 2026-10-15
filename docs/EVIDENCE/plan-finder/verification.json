@@ -1,0 +1,930 @@
+{
+  "results": [
+    {
+      "width": 390,
+      "states": [
+        {
+          "name": "location",
+          "violations": [],
+          "dimensions": {
+            "x": 0,
+            "y": 109,
+            "width": 390,
+            "height": 735
+          },
+          "assetRows": [
+            {
+              "src": "/design/plan-finder/291-3-imgIconPlane.svg",
+              "width": 32,
+              "height": 32,
+              "expectedWidth": 32,
+              "expectedHeight": 32,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgIconPhone.svg",
+              "width": 32,
+              "height": 32,
+              "expectedWidth": 32,
+              "expectedHeight": 32,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgIconWifi.svg",
+              "width": 32,
+              "height": 32,
+              "expectedWidth": 32,
+              "expectedHeight": 32,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgIconHome.svg",
+              "width": 32,
+              "height": 32,
+              "expectedWidth": 32,
+              "expectedHeight": 32,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgIconHome1.svg",
+              "width": 26,
+              "height": 26,
+              "expectedWidth": 26,
+              "expectedHeight": 26,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgIconPlane1.svg",
+              "width": 26,
+              "height": 26,
+              "expectedWidth": 26,
+              "expectedHeight": 26,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgRadioOn.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            }
+          ]
+        },
+        {
+          "name": "arrival-kind",
+          "violations": [],
+          "dimensions": {
+            "x": 0,
+            "y": 168,
+            "width": 390,
+            "height": 676
+          },
+          "assetRows": [
+            {
+              "src": "/design/plan-finder/292-145-imgIconPlane.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/305-349-imgIconGrad.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgRadioOn.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/305-349-imgIconBrief.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/305-349-imgIconIdcard.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/305-349-imgIconCamera.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            }
+          ]
+        },
+        {
+          "name": "stay",
+          "violations": [],
+          "dimensions": {
+            "x": 0,
+            "y": 123,
+            "width": 390,
+            "height": 721
+          },
+          "assetRows": [
+            {
+              "src": "/design/plan-finder/293-3-imgIconCal.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-3-imgIconClock.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-3-imgIconCal1.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-3-imgIconCal2.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgRadioOn.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-3-imgIconHome.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            }
+          ]
+        },
+        {
+          "name": "result",
+          "violations": [],
+          "dimensions": {
+            "x": 0,
+            "y": 56,
+            "width": 390,
+            "height": 788
+          },
+          "assetRows": [
+            {
+              "src": "/design/plan-finder/305-492-imgIconSparkle.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconCheck.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconCheck.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconCheck.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconCheck.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconCheck.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconCheck.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconCheck.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconCheck.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconCheck.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconChat.svg",
+              "width": 18,
+              "height": 18,
+              "expectedWidth": 18,
+              "expectedHeight": 18,
+              "loaded": true
+            }
+          ]
+        },
+        {
+          "name": "need",
+          "violations": [],
+          "dimensions": {
+            "x": 0,
+            "y": 367,
+            "width": 390,
+            "height": 477
+          },
+          "assetRows": [
+            {
+              "src": "/design/plan-finder/291-62-imgIconSparkle.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-62-imgIconPhone.svg",
+              "width": 32,
+              "height": 32,
+              "expectedWidth": 32,
+              "expectedHeight": 32,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgRadioOn.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-62-imgIconWifi.svg",
+              "width": 32,
+              "height": 32,
+              "expectedWidth": 32,
+              "expectedHeight": 32,
+              "loaded": true
+            }
+          ]
+        },
+        {
+          "name": "province",
+          "violations": [],
+          "dimensions": {
+            "x": 0,
+            "y": 64,
+            "width": 390,
+            "height": 780
+          },
+          "assetRows": [
+            {
+              "src": "/design/plan-finder/291-109-imgIconPin.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgRadioOn.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            }
+          ]
+        },
+        {
+          "name": "provider",
+          "violations": [],
+          "dimensions": {
+            "x": 0,
+            "y": 56,
+            "width": 390,
+            "height": 788
+          },
+          "assetRows": [
+            {
+              "src": "/design/plan-finder/292-3-imgIconSignal.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgRadioOn.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/292-3-imgIconSwap.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            }
+          ]
+        },
+        {
+          "name": "priority",
+          "violations": [],
+          "dimensions": {
+            "x": 0,
+            "y": 300,
+            "width": 390,
+            "height": 544
+          },
+          "assetRows": [
+            {
+              "src": "/design/plan-finder/292-91-imgIconZap.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/305-292-imgIconZap1.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/305-292-imgIconScale.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgRadioOn.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/305-292-imgIconTag.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            }
+          ]
+        }
+      ],
+      "interactions": "passed",
+      "pageErrors": []
+    },
+    {
+      "width": 1440,
+      "states": [
+        {
+          "name": "location",
+          "violations": [],
+          "dimensions": {
+            "x": 380,
+            "y": 189.5,
+            "width": 680,
+            "height": 661
+          },
+          "assetRows": [
+            {
+              "src": "/design/plan-finder/291-3-imgIconPlane.svg",
+              "width": 32,
+              "height": 32,
+              "expectedWidth": 32,
+              "expectedHeight": 32,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgIconPhone.svg",
+              "width": 32,
+              "height": 32,
+              "expectedWidth": 32,
+              "expectedHeight": 32,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgIconWifi.svg",
+              "width": 32,
+              "height": 32,
+              "expectedWidth": 32,
+              "expectedHeight": 32,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgIconHome.svg",
+              "width": 32,
+              "height": 32,
+              "expectedWidth": 32,
+              "expectedHeight": 32,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgIconHome1.svg",
+              "width": 26,
+              "height": 26,
+              "expectedWidth": 26,
+              "expectedHeight": 26,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgIconPlane1.svg",
+              "width": 26,
+              "height": 26,
+              "expectedWidth": 26,
+              "expectedHeight": 26,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgRadioOn.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            }
+          ]
+        },
+        {
+          "name": "arrival-kind",
+          "violations": [],
+          "dimensions": {
+            "x": 380,
+            "y": 196.5,
+            "width": 680,
+            "height": 647
+          },
+          "assetRows": [
+            {
+              "src": "/design/plan-finder/292-145-imgIconPlane.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/292-145-imgIconGrad.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgRadioOn.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/292-145-imgIconBrief.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/292-145-imgIconIdcard.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/292-145-imgIconCamera.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            }
+          ]
+        },
+        {
+          "name": "stay",
+          "violations": [],
+          "dimensions": {
+            "x": 380,
+            "y": 212,
+            "width": 680,
+            "height": 616
+          },
+          "assetRows": [
+            {
+              "src": "/design/plan-finder/293-3-imgIconCal.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-3-imgIconClock.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-3-imgIconCal1.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-3-imgIconCal2.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgRadioOn.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-3-imgIconHome.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            }
+          ]
+        },
+        {
+          "name": "result",
+          "violations": [],
+          "dimensions": {
+            "x": 340,
+            "y": 45.5,
+            "width": 760,
+            "height": 949
+          },
+          "assetRows": [
+            {
+              "src": "/design/plan-finder/293-73-imgIconSparkle.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconCheck.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconCheck.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconCheck.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconCheck.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconCheck.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconCheck.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconCheck.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconCheck.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconCheck.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/293-73-imgIconChat.svg",
+              "width": 18,
+              "height": 18,
+              "expectedWidth": 18,
+              "expectedHeight": 18,
+              "loaded": true
+            }
+          ]
+        },
+        {
+          "name": "need",
+          "violations": [],
+          "dimensions": {
+            "x": 380,
+            "y": 289.5,
+            "width": 680,
+            "height": 461
+          },
+          "assetRows": [
+            {
+              "src": "/design/plan-finder/291-62-imgIconSparkle.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-62-imgIconPhone.svg",
+              "width": 32,
+              "height": 32,
+              "expectedWidth": 32,
+              "expectedHeight": 32,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgRadioOn.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-62-imgIconWifi.svg",
+              "width": 32,
+              "height": 32,
+              "expectedWidth": 32,
+              "expectedHeight": 32,
+              "loaded": true
+            }
+          ]
+        },
+        {
+          "name": "province",
+          "violations": [],
+          "dimensions": {
+            "x": 380,
+            "y": 220,
+            "width": 680,
+            "height": 600
+          },
+          "assetRows": [
+            {
+              "src": "/design/plan-finder/291-109-imgIconPin.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgRadioOn.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            }
+          ]
+        },
+        {
+          "name": "provider",
+          "violations": [],
+          "dimensions": {
+            "x": 380,
+            "y": 180,
+            "width": 680,
+            "height": 680
+          },
+          "assetRows": [
+            {
+              "src": "/design/plan-finder/292-3-imgIconSignal.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgRadioOn.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/292-3-imgIconSwap.svg",
+              "width": 16,
+              "height": 16,
+              "expectedWidth": 16,
+              "expectedHeight": 16,
+              "loaded": true
+            }
+          ]
+        },
+        {
+          "name": "priority",
+          "violations": [],
+          "dimensions": {
+            "x": 380,
+            "y": 282,
+            "width": 680,
+            "height": 476
+          },
+          "assetRows": [
+            {
+              "src": "/design/plan-finder/292-91-imgIconZap.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/292-91-imgIconZap1.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/292-91-imgIconScale.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/291-3-imgRadioOn.svg",
+              "width": 22,
+              "height": 22,
+              "expectedWidth": 22,
+              "expectedHeight": 22,
+              "loaded": true
+            },
+            {
+              "src": "/design/plan-finder/292-91-imgIconTag.svg",
+              "width": 28,
+              "height": 28,
+              "expectedWidth": 28,
+              "expectedHeight": 28,
+              "loaded": true
+            }
+          ]
+        }
+      ],
+      "interactions": "passed",
+      "pageErrors": []
+    }
+  ],
+  "globalRoutes": [
+    "/",
+    "/pre-arrival-sim",
+    "/home-internet",
+    "/mobile-plans",
+    "/dev/components",
+    "/plans"
+  ],
+  "overflowWidths": [
+    320,
+    390,
+    768,
+    1024,
+    1280,
+    1440
+  ]
+}

@@ -1,0 +1,1064 @@
+[
+  {
+    "width": 390,
+    "geometry": [
+      {
+        "class": "cp-guide-header",
+        "y": 164,
+        "width": 390,
+        "height": 551
+      },
+      {
+        "class": "cp-guide-body",
+        "y": 715,
+        "width": 390,
+        "height": 4762
+      },
+      {
+        "class": "cp-guide-related",
+        "y": 5477,
+        "width": 390,
+        "height": 627
+      },
+      {
+        "class": "cp-guide-final",
+        "y": 6104,
+        "width": 390,
+        "height": 610
+      },
+      {
+        "class": "cp-container cp-guide-final-card",
+        "y": 6152,
+        "width": 350,
+        "height": 514
+      },
+      {
+        "class": "cp-footer",
+        "y": 6714,
+        "width": 390,
+        "height": 946.96875
+      }
+    ],
+    "blocks": [
+      {
+        "class": "cp-guide-quick",
+        "text": "Quick answerMost students from Indi",
+        "y": 739,
+        "height": 308
+      },
+      {
+        "class": "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm cp-guide-promotion cp-guide-mobile-promotion",
+        "text": "Get your number before you flyfrom$",
+        "y": 1071,
+        "height": 213
+      },
+      {
+        "class": "cp-image-slot cp-guide-mobile-image",
+        "text": "ImageStudent from India at airport ",
+        "y": 1308,
+        "height": 196
+      },
+      {
+        "class": "cp-guide-mobile-contents",
+        "text": "On this page6 sections · jump to an",
+        "y": 1528,
+        "height": 72
+      },
+      {
+        "class": "cp-guide-section",
+        "text": "What students really needIn your fi",
+        "y": 1624,
+        "height": 194
+      },
+      {
+        "class": "cp-guide-checklist",
+        "text": "✓A Canadian number before you fly✓7",
+        "y": 1842,
+        "height": 270
+      },
+      {
+        "class": "cp-guide-section",
+        "text": "Compare student plansEvery plan inc",
+        "y": 2136,
+        "height": 116
+      },
+      {
+        "class": "cp-guide-mobile-plans",
+        "text": "Fido Essential75 GB · Best for ever",
+        "y": 2276,
+        "height": 358
+      },
+      {
+        "class": "cp-guide-small",
+        "text": "Prices in CAD, before tax, as of Oc",
+        "y": 2658,
+        "height": 54
+      },
+      {
+        "class": "cp-guide-inline-cta",
+        "text": "Most students pickRogers Plus · 100",
+        "y": 2736,
+        "height": 184
+      },
+      {
+        "class": "cp-guide-section",
+        "text": "Is your phone eSIM-ready?Pre-arriva",
+        "y": 2944,
+        "height": 220
+      },
+      {
+        "class": "cp-guide-devices",
+        "text": "iPhoneSettings → General → About → ",
+        "y": 3188,
+        "height": 638
+      },
+      {
+        "class": "cp-guide-section cp-guide-order",
+        "text": "How to order from India1Pick your p",
+        "y": 3850,
+        "height": 318
+      },
+      {
+        "class": "cp-guide-tip",
+        "text": "TipKeep your Indian SIM active on a",
+        "y": 4192,
+        "height": 117
+      },
+      {
+        "class": "cp-guide-section cp-guide-faq",
+        "text": "FAQCan I open a Canadian bank accou",
+        "y": 4333,
+        "height": 722
+      },
+      {
+        "class": "cp-guide-helpful",
+        "text": "Was this guide helpful?YesNo",
+        "y": 5079,
+        "height": 116
+      },
+      {
+        "class": "cp-guide-small",
+        "text": "Sources: Rogers, Fido and Chatr pla",
+        "y": 5219,
+        "height": 36
+      },
+      {
+        "class": "cp-guide-mobile-share",
+        "text": "Share this guideWhatsAppCopy link",
+        "y": 5279,
+        "height": 174
+      }
+    ],
+    "violations": [],
+    "assets": [
+      {
+        "src": "/design/guides/1-imgPhoneIcon.svg",
+        "loaded": true,
+        "width": 16,
+        "height": 16,
+        "declaredWidth": 16,
+        "declaredHeight": 16
+      },
+      {
+        "src": "/design/components/60-13-imgMark.svg",
+        "loaded": true,
+        "width": 36,
+        "height": 36,
+        "declaredWidth": 36,
+        "declaredHeight": 36
+      },
+      {
+        "src": "/design/components/364-2163-imgIcon.svg",
+        "loaded": true,
+        "width": 22,
+        "height": 22,
+        "declaredWidth": 22,
+        "declaredHeight": 22
+      },
+      {
+        "src": "/design/components/364-2163-imgIcon1.svg",
+        "loaded": true,
+        "width": 24,
+        "height": 24,
+        "declaredWidth": 24,
+        "declaredHeight": 24
+      },
+      {
+        "src": "/design/guides/0-imgEllipse1.svg",
+        "loaded": true,
+        "width": 44,
+        "height": 44,
+        "declaredWidth": 44,
+        "declaredHeight": 44
+      },
+      {
+        "src": "/design/guides/0-imgEllipse2.svg",
+        "loaded": true,
+        "width": 44,
+        "height": 44,
+        "declaredWidth": 44,
+        "declaredHeight": 44
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/guides/1-imgIconList.svg",
+        "loaded": true,
+        "width": 22,
+        "height": 22,
+        "declaredWidth": 22,
+        "declaredHeight": 22
+      },
+      {
+        "src": "/design/guides/1-imgChevronDown.svg",
+        "loaded": true,
+        "width": 22,
+        "height": 22,
+        "declaredWidth": 22,
+        "declaredHeight": 22
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "loaded": true,
+        "width": 36,
+        "height": 36,
+        "declaredWidth": 36,
+        "declaredHeight": 36
+      }
+    ],
+    "errors": [],
+    "details": [
+      {
+        "class": "cp-breadcrumb",
+        "text": "Home/Guides/Phones &",
+        "width": 350,
+        "height": 42,
+        "font": "14px",
+        "line": "20px"
+      },
+      {
+        "class": "cp-guide-category",
+        "text": "Phones & SIMs",
+        "width": 125.90625,
+        "height": 27,
+        "font": "12px",
+        "line": "15px"
+      },
+      {
+        "class": "",
+        "text": "Best SIM for student",
+        "width": 350,
+        "height": 108,
+        "font": "36px",
+        "line": "36px"
+      },
+      {
+        "class": "cp-guide-description",
+        "text": "Which plan to pick, ",
+        "width": 350,
+        "height": 116,
+        "font": "20px",
+        "line": "29px"
+      },
+      {
+        "class": "cp-guide-byline",
+        "text": "Written by Ananya R.",
+        "width": 350,
+        "height": 154,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-image-slot cp-guide-header-image",
+        "text": "ImageStudent from In",
+        "width": 0,
+        "height": 0,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "",
+        "text": "Most students from I",
+        "width": 261.46875,
+        "height": 234,
+        "font": "17px",
+        "line": "26px"
+      },
+      {
+        "class": "cp-faq-item",
+        "text": "Can I open a Canadia",
+        "width": 350,
+        "height": 231,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "",
+        "text": "Can I open a Canadia",
+        "width": 350,
+        "height": 105,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-faq-answer",
+        "text": "Yes — most banks onl",
+        "width": 350,
+        "height": 124,
+        "font": "17px",
+        "line": "26px"
+      },
+      {
+        "class": "cp-faq-item",
+        "text": "Do I need a SIN to g",
+        "width": 350,
+        "height": 91,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "",
+        "text": "Do I need a SIN to g",
+        "width": 350,
+        "height": 90,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-faq-answer",
+        "text": "This answer is await",
+        "width": 350,
+        "height": 72,
+        "font": "17px",
+        "line": "26px"
+      },
+      {
+        "class": "cp-faq-item",
+        "text": "Can I switch plans a",
+        "width": 350,
+        "height": 91,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "",
+        "text": "Can I switch plans a",
+        "width": 350,
+        "height": 90,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-faq-answer",
+        "text": "This answer is await",
+        "width": 350,
+        "height": 72,
+        "font": "17px",
+        "line": "26px"
+      },
+      {
+        "class": "cp-faq-item",
+        "text": "Will my Indian phone",
+        "width": 350,
+        "height": 91,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "",
+        "text": "Will my Indian phone",
+        "width": 350,
+        "height": 90,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-faq-answer",
+        "text": "This answer is await",
+        "width": 350,
+        "height": 72,
+        "font": "17px",
+        "line": "26px"
+      },
+      {
+        "class": "cp-faq-item",
+        "text": "What ID do I need to",
+        "width": 350,
+        "height": 77,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "",
+        "text": "What ID do I need to",
+        "width": 350,
+        "height": 76,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-faq-answer",
+        "text": "This answer is await",
+        "width": 350,
+        "height": 72,
+        "font": "17px",
+        "line": "26px"
+      },
+      {
+        "class": "cp-faq-item",
+        "text": "When do I pay?+−This",
+        "width": 350,
+        "height": 77,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "",
+        "text": "When do I pay?+−",
+        "width": 350,
+        "height": 76,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-faq-answer",
+        "text": "This answer is await",
+        "width": 350,
+        "height": 72,
+        "font": "17px",
+        "line": "26px"
+      },
+      {
+        "class": "cp-guide-related-card",
+        "text": "ImagePhone settings ",
+        "width": 350,
+        "height": 146,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-guide-related-card",
+        "text": "ImageNewcomer choosi",
+        "width": 350,
+        "height": 146,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-guide-related-card",
+        "text": "ImageNewcomer unpack",
+        "width": 350,
+        "height": 171,
+        "font": "16px",
+        "line": "24px"
+      }
+    ],
+    "imageSlots": [
+      {
+        "width": 350,
+        "height": 196
+      },
+      {
+        "width": 310,
+        "height": 180
+      },
+      {
+        "width": 310,
+        "height": 180
+      },
+      {
+        "width": 104,
+        "height": 104
+      },
+      {
+        "width": 104,
+        "height": 104
+      },
+      {
+        "width": 104,
+        "height": 104
+      }
+    ],
+    "imageTypography": [
+      {
+        "class": "cp-image-slot cp-guide-mobile-image",
+        "labelSize": "12px",
+        "captionSize": "13px"
+      },
+      {
+        "class": "cp-image-slot cp-guide-device-image",
+        "labelSize": "12px",
+        "captionSize": "13px"
+      },
+      {
+        "class": "cp-image-slot cp-guide-device-image",
+        "labelSize": "12px",
+        "captionSize": "13px"
+      },
+      {
+        "class": "cp-image-slot cp-guide-related-image",
+        "labelSize": "12px",
+        "captionSize": "12px"
+      },
+      {
+        "class": "cp-image-slot cp-guide-related-image",
+        "labelSize": "12px",
+        "captionSize": "12px"
+      },
+      {
+        "class": "cp-image-slot cp-guide-related-image",
+        "labelSize": "12px",
+        "captionSize": "12px"
+      }
+    ],
+    "overflow": [
+      {
+        "viewport": 320,
+        "document": 320
+      },
+      {
+        "viewport": 390,
+        "document": 390
+      },
+      {
+        "viewport": 768,
+        "document": 768
+      },
+      {
+        "viewport": 1024,
+        "document": 1024
+      },
+      {
+        "viewport": 1280,
+        "document": 1280
+      },
+      {
+        "viewport": 1440,
+        "document": 1440
+      }
+    ],
+    "interactions": "contents keyboard/focus, six FAQs, local helpful state, clipboard, WhatsApp intent, global finder, CTA routes and unknown-slug 404 passed"
+  },
+  {
+    "width": 1440,
+    "geometry": [
+      {
+        "class": "cp-guide-header",
+        "y": 160,
+        "width": 1440,
+        "height": 941
+      },
+      {
+        "class": "cp-guide-body",
+        "y": 1101,
+        "width": 1440,
+        "height": 3053
+      },
+      {
+        "class": "cp-guide-related",
+        "y": 4154,
+        "width": 1440,
+        "height": 547
+      },
+      {
+        "class": "cp-guide-final",
+        "y": 4701,
+        "width": 1440,
+        "height": 641
+      },
+      {
+        "class": "cp-container cp-guide-final-card",
+        "y": 4701,
+        "width": 1200,
+        "height": 545
+      },
+      {
+        "class": "cp-footer",
+        "y": 5342,
+        "width": 1440,
+        "height": 439.1875
+      }
+    ],
+    "blocks": [
+      {
+        "class": "cp-guide-quick",
+        "text": "Quick answerMost students from Indi",
+        "y": 1165,
+        "height": 178
+      },
+      {
+        "class": "cp-guide-checklist",
+        "text": "✓A Canadian number before you fly✓7",
+        "y": 1533,
+        "height": 218
+      },
+      {
+        "class": "cp-guide-comparison",
+        "text": "PlanDataPriceBest forFido Essential",
+        "y": 1889,
+        "height": 301
+      },
+      {
+        "class": "cp-guide-small",
+        "text": "Prices in CAD, before tax, as of Oc",
+        "y": 2214,
+        "height": 36
+      },
+      {
+        "class": "cp-guide-inline-cta",
+        "text": "Most students pickRogers Plus · 100",
+        "y": 2274,
+        "height": 96
+      },
+      {
+        "class": "cp-guide-devices",
+        "text": "iPhoneSettings → General → About → ",
+        "y": 2560,
+        "height": 302
+      },
+      {
+        "class": "cp-guide-tip",
+        "text": "TipKeep your Indian SIM active on a",
+        "y": 3206,
+        "height": 91
+      },
+      {
+        "class": "cp-guide-helpful",
+        "text": "Was this guide helpful?YesNo",
+        "y": 3948,
+        "height": 84
+      },
+      {
+        "class": "cp-guide-small",
+        "text": "Sources: Rogers, Fido and Chatr pla",
+        "y": 4056,
+        "height": 18
+      }
+    ],
+    "violations": [],
+    "assets": [
+      {
+        "src": "/design/components/60-13-imgMark.svg",
+        "loaded": true,
+        "width": 36,
+        "height": 36,
+        "declaredWidth": 36,
+        "declaredHeight": 36
+      },
+      {
+        "src": "/design/legal/0-imgSearchIcon.svg",
+        "loaded": true,
+        "width": 18,
+        "height": 18,
+        "declaredWidth": 18,
+        "declaredHeight": 18
+      },
+      {
+        "src": "/design/guides/0-imgEllipse1.svg",
+        "loaded": true,
+        "width": 44,
+        "height": 44,
+        "declaredWidth": 44,
+        "declaredHeight": 44
+      },
+      {
+        "src": "/design/guides/0-imgEllipse2.svg",
+        "loaded": true,
+        "width": 44,
+        "height": 44,
+        "declaredWidth": 44,
+        "declaredHeight": 44
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "loaded": true,
+        "width": 32,
+        "height": 32,
+        "declaredWidth": 32,
+        "declaredHeight": 32
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "loaded": true,
+        "width": 36,
+        "height": 36,
+        "declaredWidth": 36,
+        "declaredHeight": 36
+      }
+    ],
+    "errors": [],
+    "details": [
+      {
+        "class": "cp-breadcrumb",
+        "text": "Home/Guides/Phones &",
+        "width": 1200,
+        "height": 20,
+        "font": "14px",
+        "line": "20px"
+      },
+      {
+        "class": "cp-guide-category",
+        "text": "Phones & SIMs",
+        "width": 125.90625,
+        "height": 27,
+        "font": "12px",
+        "line": "15px"
+      },
+      {
+        "class": "",
+        "text": "Best SIM for student",
+        "width": 960,
+        "height": 152,
+        "font": "80px",
+        "line": "76px"
+      },
+      {
+        "class": "cp-guide-description",
+        "text": "Which plan to pick, ",
+        "width": 760,
+        "height": 58,
+        "font": "20px",
+        "line": "29px"
+      },
+      {
+        "class": "cp-guide-byline",
+        "text": "Written by Ananya R.",
+        "width": 1200,
+        "height": 44,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-image-slot cp-guide-header-image",
+        "text": "ImageStudent from In",
+        "width": 1200,
+        "height": 440,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "",
+        "text": "Most students from I",
+        "width": 556,
+        "height": 104,
+        "font": "17px",
+        "line": "26px"
+      },
+      {
+        "class": "cp-faq-item",
+        "text": "Can I open a Canadia",
+        "width": 640,
+        "height": 154,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "",
+        "text": "Can I open a Canadia",
+        "width": 640,
+        "height": 80,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-faq-answer",
+        "text": "Yes — most banks onl",
+        "width": 640,
+        "height": 72,
+        "font": "17px",
+        "line": "26px"
+      },
+      {
+        "class": "cp-faq-item",
+        "text": "Do I need a SIN to g",
+        "width": 640,
+        "height": 77,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "",
+        "text": "Do I need a SIN to g",
+        "width": 640,
+        "height": 76,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-faq-answer",
+        "text": "This answer is await",
+        "width": 640,
+        "height": 46,
+        "font": "17px",
+        "line": "26px"
+      },
+      {
+        "class": "cp-faq-item",
+        "text": "Can I switch plans a",
+        "width": 640,
+        "height": 77,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "",
+        "text": "Can I switch plans a",
+        "width": 640,
+        "height": 76,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-faq-answer",
+        "text": "This answer is await",
+        "width": 640,
+        "height": 46,
+        "font": "17px",
+        "line": "26px"
+      },
+      {
+        "class": "cp-faq-item",
+        "text": "Will my Indian phone",
+        "width": 640,
+        "height": 77,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "",
+        "text": "Will my Indian phone",
+        "width": 640,
+        "height": 76,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-faq-answer",
+        "text": "This answer is await",
+        "width": 640,
+        "height": 46,
+        "font": "17px",
+        "line": "26px"
+      },
+      {
+        "class": "cp-faq-item",
+        "text": "What ID do I need to",
+        "width": 640,
+        "height": 77,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "",
+        "text": "What ID do I need to",
+        "width": 640,
+        "height": 76,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-faq-answer",
+        "text": "This answer is await",
+        "width": 640,
+        "height": 46,
+        "font": "17px",
+        "line": "26px"
+      },
+      {
+        "class": "cp-faq-item",
+        "text": "When do I pay?+−This",
+        "width": 640,
+        "height": 77,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "",
+        "text": "When do I pay?+−",
+        "width": 640,
+        "height": 76,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-faq-answer",
+        "text": "This answer is await",
+        "width": 640,
+        "height": 46,
+        "font": "17px",
+        "line": "26px"
+      },
+      {
+        "class": "cp-guide-related-card",
+        "text": "ImagePhone settings ",
+        "width": 386.65625,
+        "height": 315,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-guide-related-card",
+        "text": "ImageNewcomer choosi",
+        "width": 386.671875,
+        "height": 315,
+        "font": "16px",
+        "line": "24px"
+      },
+      {
+        "class": "cp-guide-related-card",
+        "text": "ImageNewcomer unpack",
+        "width": 386.65625,
+        "height": 315,
+        "font": "16px",
+        "line": "24px"
+      }
+    ],
+    "imageSlots": [
+      {
+        "width": 1200,
+        "height": 440
+      },
+      {
+        "width": 272,
+        "height": 170
+      },
+      {
+        "width": 272,
+        "height": 170
+      },
+      {
+        "width": 386.65625,
+        "height": 160
+      },
+      {
+        "width": 386.671875,
+        "height": 160
+      },
+      {
+        "width": 386.65625,
+        "height": 160
+      }
+    ],
+    "imageTypography": [
+      {
+        "class": "cp-image-slot cp-guide-header-image",
+        "labelSize": "12px",
+        "captionSize": "13px"
+      },
+      {
+        "class": "cp-image-slot cp-guide-device-image",
+        "labelSize": "12px",
+        "captionSize": "13px"
+      },
+      {
+        "class": "cp-image-slot cp-guide-device-image",
+        "labelSize": "12px",
+        "captionSize": "13px"
+      },
+      {
+        "class": "cp-image-slot cp-guide-related-image",
+        "labelSize": "12px",
+        "captionSize": "13px"
+      },
+      {
+        "class": "cp-image-slot cp-guide-related-image",
+        "labelSize": "12px",
+        "captionSize": "13px"
+      },
+      {
+        "class": "cp-image-slot cp-guide-related-image",
+        "labelSize": "12px",
+        "captionSize": "13px"
+      }
+    ],
+    "overflow": [
+      {
+        "viewport": 320,
+        "document": 320
+      },
+      {
+        "viewport": 390,
+        "document": 390
+      },
+      {
+        "viewport": 768,
+        "document": 768
+      },
+      {
+        "viewport": 1024,
+        "document": 1024
+      },
+      {
+        "viewport": 1280,
+        "document": 1280
+      },
+      {
+        "viewport": 1440,
+        "document": 1440
+      }
+    ],
+    "interactions": "contents keyboard/focus, six FAQs, local helpful state, clipboard, WhatsApp intent, global finder, CTA routes and unknown-slug 404 passed"
+  }
+]

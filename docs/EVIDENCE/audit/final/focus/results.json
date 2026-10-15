@@ -1,0 +1,92 @@
+[
+  {
+    "name": "home-hero",
+    "width": 390,
+    "outline": "rgb(255, 255, 255)",
+    "outlineWidth": "2px",
+    "outlineStyle": "solid",
+    "background": "rgb(54, 87, 242)",
+    "contrast": 5.522983209753815
+  },
+  {
+    "name": "home-final",
+    "width": 390,
+    "outline": "rgb(255, 255, 255)",
+    "outlineWidth": "2px",
+    "outlineStyle": "solid",
+    "background": "rgb(54, 87, 242)",
+    "contrast": 5.522983209753815
+  },
+  {
+    "name": "arrival-hero",
+    "width": 390,
+    "outline": "rgb(255, 255, 255)",
+    "outlineWidth": "2px",
+    "outlineStyle": "solid",
+    "background": "rgb(54, 87, 242)",
+    "contrast": 5.522983209753815
+  },
+  {
+    "name": "internet-address",
+    "width": 390,
+    "outline": "rgb(54, 87, 242)",
+    "outlineWidth": "2px",
+    "outlineStyle": "solid",
+    "background": "rgb(255, 255, 255)",
+    "contrast": 5.522983209753815
+  },
+  {
+    "name": "footer",
+    "width": 390,
+    "outline": "rgb(255, 255, 255)",
+    "outlineWidth": "2px",
+    "outlineStyle": "solid",
+    "background": "rgb(16, 26, 61)",
+    "contrast": 16.974168791427093
+  },
+  {
+    "name": "home-hero",
+    "width": 1440,
+    "outline": "rgb(255, 255, 255)",
+    "outlineWidth": "2px",
+    "outlineStyle": "solid",
+    "background": "rgb(54, 87, 242)",
+    "contrast": 5.522983209753815
+  },
+  {
+    "name": "home-final",
+    "width": 1440,
+    "outline": "rgb(255, 255, 255)",
+    "outlineWidth": "2px",
+    "outlineStyle": "solid",
+    "background": "rgb(54, 87, 242)",
+    "contrast": 5.522983209753815
+  },
+  {
+    "name": "arrival-hero",
+    "width": 1440,
+    "outline": "rgb(255, 255, 255)",
+    "outlineWidth": "2px",
+    "outlineStyle": "solid",
+    "background": "rgb(54, 87, 242)",
+    "contrast": 5.522983209753815
+  },
+  {
+    "name": "internet-address",
+    "width": 1440,
+    "outline": "rgb(54, 87, 242)",
+    "outlineWidth": "2px",
+    "outlineStyle": "solid",
+    "background": "rgb(255, 255, 255)",
+    "contrast": 5.522983209753815
+  },
+  {
+    "name": "footer",
+    "width": 1440,
+    "outline": "rgb(255, 255, 255)",
+    "outlineWidth": "2px",
+    "outlineStyle": "solid",
+    "background": "rgb(16, 26, 61)",
+    "contrast": 16.974168791427093
+  }
+]

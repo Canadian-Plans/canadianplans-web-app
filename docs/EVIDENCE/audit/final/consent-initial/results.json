@@ -1,0 +1,12 @@
+[
+  {
+    "stored": false,
+    "visible": true,
+    "applicationScriptsBlocked": true
+  },
+  {
+    "stored": true,
+    "visible": false,
+    "applicationScriptsBlocked": true
+  }
+]

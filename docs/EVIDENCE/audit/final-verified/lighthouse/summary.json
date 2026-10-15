@@ -1,0 +1,386 @@
+[
+  {
+    "name": "pre-arrival",
+    "path": "/pre-arrival-sim",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 93,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "home-internet",
+    "path": "/home-internet",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 92,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "mobile-plans",
+    "path": "/mobile-plans",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 93,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "contact",
+    "path": "/contact",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 94,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "faq",
+    "path": "/faq",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 94,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "about",
+    "path": "/about",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 94,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "guides-index",
+    "path": "/guides",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 92,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "guides",
+    "path": "/guides/best-sim-for-students-from-india",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 94,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "internet-order",
+    "path": "/order/home-internet",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 95,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "pre-arrival-order",
+    "path": "/order/pre-arrival",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 92,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "privacy",
+    "path": "/privacy",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 95,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "terms",
+    "path": "/terms",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 95,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "search",
+    "path": "/search",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 96,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "accessibility",
+    "path": "/accessibility",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 95,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "404",
+    "path": "/missing-preview-page",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 96,
+      "accessibility": 100,
+      "best-practices": 92,
+      "seo": 61
+    }
+  },
+  {
+    "name": "components",
+    "path": "/dev/components",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 94,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "email-order",
+    "path": "/dev/emails?template=order-received",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 95,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 66
+    }
+  },
+  {
+    "name": "email-esim",
+    "path": "/dev/emails?template=esim-ready",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 95,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 66
+    }
+  },
+  {
+    "name": "email-install",
+    "path": "/dev/emails?template=install-booked",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 93,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 66
+    }
+  },
+  {
+    "name": "tracking-lookup",
+    "path": "/track-order?state=lookup",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 93,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "tracking-esim-sent",
+    "path": "/track-order?state=esim-sent",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 93,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "tracking-action-needed",
+    "path": "/track-order?state=action-needed",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 93,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "tracking-request-change",
+    "path": "/track-order?state=request-change",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 93,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "tracking-not-found",
+    "path": "/track-order?state=not-found",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 95,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "tracking-too-many-tries",
+    "path": "/track-order?state=too-many-tries",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 94,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "tracking-code-expired",
+    "path": "/track-order?state=code-expired",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 95,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "legacy-plans",
+    "path": "/plans",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 95,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 66
+    }
+  },
+  {
+    "name": "legacy-plan",
+    "path": "/plans/test-plan",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 94,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 66
+    }
+  },
+  {
+    "name": "legacy-order",
+    "path": "/order",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 96,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 66
+    }
+  },
+  {
+    "name": "legacy-track",
+    "path": "/track",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 92,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 66
+    }
+  },
+  {
+    "name": "home",
+    "path": "/",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 93,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "studio",
+    "path": "/studio",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 96,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 66
+    }
+  }
+]

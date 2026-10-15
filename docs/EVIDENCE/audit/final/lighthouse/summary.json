@@ -1,0 +1,62 @@
+[
+  {
+    "name": "home",
+    "path": "/",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 86,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "pre-arrival",
+    "path": "/pre-arrival-sim",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 87,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "home-internet",
+    "path": "/home-internet",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 88,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "mobile-plans",
+    "path": "/mobile-plans",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 93,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  },
+  {
+    "name": "contact",
+    "path": "/contact",
+    "runs": 6,
+    "validRuns": 5,
+    "median": {
+      "performance": 94,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 69
+    }
+  }
+]

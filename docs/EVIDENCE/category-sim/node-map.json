@@ -1,0 +1,42 @@
+{
+  "figmaFile": "6zUS2WZbQn6NUhyjesA584",
+  "routes": {
+    "/pre-arrival-sim/students": {
+      "desktop": "151:2",
+      "mobile": "251:2",
+      "sections": {
+        "hero": "151:41",
+        "boardingPass": "151:55",
+        "bylineAndInPageNavigation": "151:125",
+        "quickAnswer": "152:2",
+        "countdown": "152:4",
+        "plans": "152:45",
+        "requirements": "152:105",
+        "guide": "153:2",
+        "reviews": "153:35",
+        "faq": "154:2",
+        "explore": "155:2"
+      }
+    },
+    "/pre-arrival-sim/from-india": {
+      "desktop": "162:2",
+      "mobile": "255:2",
+      "sections": {
+        "hero": "162:41",
+        "boardingPass": "162:55",
+        "bylineAndInPageNavigation": "162:125",
+        "quickAnswer": "162:2",
+        "countryFacts": "314:1920",
+        "countdown": "162:160",
+        "plans": "162:231",
+        "requirements": "162:260",
+        "callingIndia": "162:503",
+        "guide": "162:299",
+        "reviews": "162:330",
+        "faq": "162:391",
+        "explore": "162:414"
+      }
+    }
+  },
+  "assetNodeMap": "assets.json"
+}

@@ -1,0 +1,334 @@
+[
+  {
+    "width": 390,
+    "geometry": [
+      {
+        "component": "utility-bar",
+        "width": 390,
+        "height": 44
+      },
+      {
+        "component": "navigation",
+        "width": 390,
+        "height": 64
+      },
+      {
+        "component": "promo-strip",
+        "width": 390,
+        "height": 56.75
+      },
+      {
+        "component": "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm cp-plan-card",
+        "width": 350,
+        "height": 446.734375
+      },
+      {
+        "component": "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm cp-plan-card",
+        "width": 350,
+        "height": 454.734375
+      },
+      {
+        "component": "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm cp-plan-card",
+        "width": 350,
+        "height": 446.734375
+      },
+      {
+        "component": "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm cp-review-card",
+        "width": 300,
+        "height": 262.1875
+      },
+      {
+        "component": "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm cp-review-card",
+        "width": 300,
+        "height": 262.1875
+      },
+      {
+        "component": "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm cp-review-card",
+        "width": 300,
+        "height": 262.1875
+      },
+      {
+        "component": "cp-price-circle-stage",
+        "width": 198.78125,
+        "height": 198.78125
+      },
+      {
+        "component": "cp-image-slot",
+        "width": 350,
+        "height": 220
+      },
+      {
+        "component": "cp-image-slot",
+        "width": 350,
+        "height": 220
+      },
+      {
+        "component": "cp-sticky-cta",
+        "width": 390,
+        "height": 99
+      },
+      {
+        "component": "cp-sticky-cta",
+        "width": 390,
+        "height": 99
+      },
+      {
+        "component": "footer",
+        "width": 390,
+        "height": 946.96875
+      }
+    ],
+    "assets": [
+      {
+        "node": "364:2155",
+        "src": "/design/components/364-2153-imgPhoneIcon.svg",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16,
+        "complete": true
+      },
+      {
+        "node": "60:16",
+        "src": "/design/components/60-13-imgMark.svg",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36,
+        "complete": true
+      },
+      {
+        "node": "364:2170",
+        "src": "/design/components/364-2163-imgIcon.svg",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22,
+        "complete": true
+      },
+      {
+        "node": "364:2173",
+        "src": "/design/components/364-2163-imgIcon1.svg",
+        "width": 24,
+        "height": 24,
+        "expectedWidth": 24,
+        "expectedHeight": 24,
+        "complete": true
+      },
+      {
+        "node": "66:47",
+        "src": "/design/components/66-43-imgEllipse.svg",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40,
+        "complete": true
+      },
+      {
+        "node": "66:55",
+        "src": "/design/components/66-51-imgEllipse.svg",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40,
+        "complete": true
+      },
+      {
+        "node": "66:63",
+        "src": "/design/components/66-59-imgEllipse.svg",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40,
+        "complete": true
+      },
+      {
+        "node": "312:3",
+        "src": "/design/components/312-2-imgIcon.svg",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32,
+        "complete": true
+      },
+      {
+        "node": "312:10",
+        "src": "/design/components/312-9-imgIcon.svg",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32,
+        "complete": true
+      },
+      {
+        "node": "68:54",
+        "src": "/design/components/68-50-imgFrame.svg",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36,
+        "complete": true
+      }
+    ],
+    "accessibility": "no WCAG A/AA violations detected",
+    "interactions": "passed",
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "geometry": [
+      {
+        "component": "utility-bar",
+        "width": 1440,
+        "height": 38
+      },
+      {
+        "component": "navigation",
+        "width": 1440,
+        "height": 82.296875
+      },
+      {
+        "component": "promo-strip",
+        "width": 1440,
+        "height": 40.296875
+      },
+      {
+        "component": "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm cp-plan-card",
+        "width": 384,
+        "height": 454.734375
+      },
+      {
+        "component": "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm cp-plan-card",
+        "width": 384,
+        "height": 466.734375
+      },
+      {
+        "component": "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm cp-plan-card",
+        "width": 384,
+        "height": 454.734375
+      },
+      {
+        "component": "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm cp-review-card",
+        "width": 282.65625,
+        "height": 286.1875
+      },
+      {
+        "component": "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm cp-review-card",
+        "width": 282.671875,
+        "height": 286.1875
+      },
+      {
+        "component": "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm cp-review-card",
+        "width": 282.65625,
+        "height": 286.1875
+      },
+      {
+        "component": "cp-price-circle-stage",
+        "width": 198.78125,
+        "height": 198.78125
+      },
+      {
+        "component": "cp-image-slot",
+        "width": 350,
+        "height": 220
+      },
+      {
+        "component": "cp-image-slot",
+        "width": 350,
+        "height": 220
+      },
+      {
+        "component": "cp-sticky-cta",
+        "width": 390,
+        "height": 99
+      },
+      {
+        "component": "cp-sticky-cta",
+        "width": 390,
+        "height": 99
+      },
+      {
+        "component": "footer",
+        "width": 1440,
+        "height": 440.5
+      }
+    ],
+    "assets": [
+      {
+        "node": "60:16",
+        "src": "/design/components/60-13-imgMark.svg",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36,
+        "complete": true
+      },
+      {
+        "node": "60:27",
+        "src": "/design/components/60-13-imgEllipse.svg",
+        "width": 14,
+        "height": 14,
+        "expectedWidth": 14,
+        "expectedHeight": 14,
+        "complete": true
+      },
+      {
+        "node": "66:47",
+        "src": "/design/components/66-43-imgEllipse.svg",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40,
+        "complete": true
+      },
+      {
+        "node": "66:55",
+        "src": "/design/components/66-51-imgEllipse.svg",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40,
+        "complete": true
+      },
+      {
+        "node": "66:63",
+        "src": "/design/components/66-59-imgEllipse.svg",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40,
+        "complete": true
+      },
+      {
+        "node": "312:3",
+        "src": "/design/components/312-2-imgIcon.svg",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32,
+        "complete": true
+      },
+      {
+        "node": "312:10",
+        "src": "/design/components/312-9-imgIcon.svg",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32,
+        "complete": true
+      },
+      {
+        "node": "68:54",
+        "src": "/design/components/68-50-imgFrame.svg",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36,
+        "complete": true
+      }
+    ],
+    "accessibility": "no WCAG A/AA violations detected",
+    "interactions": "passed",
+    "errors": []
+  }
+]

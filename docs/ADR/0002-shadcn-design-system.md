@@ -140,3 +140,20 @@ Mobile navigation closes after selecting a route. Tooltip layers mount only for 
 This review found no callable shadcn MCP in the active tool inventory. The existing ADR records the original MCP/preset sourcing; that historical tool use cannot be independently replayed here. Existing shadcn primitives were retained and reviewed against the official [sidebar documentation](https://ui.shadcn.com/docs/components/sidebar). No new component registry or provider was installed.
 
 See [current review evidence and screenshots](../EVIDENCE/T1-T2-review.md). The static workspace list remains an explicit T2 placeholder, not evidence of authorization.
+
+## Storefront design update — 12 October 2026
+
+The owner selected **Canadian Plans** as site-1's brand and supplied a Figma
+reference. This replaces the earlier no-Figma choice for that storefront.
+Reusable shadcn primitives stay in `@canadian-plans/ui`; the admin's existing
+theme stays intact. Storefront section compositions belong to site-1, following
+the Sanity renderer checkpoint. Brand token values are defined once in the
+shared UI package and scoped to the storefront; validated CMS brand settings
+may override the approved settings through semantic variables. The Figma font
+is Google Sans Flex, so the earlier assumption that every frontend uses Inter
+is superseded for Canadian Plans. The token/font foundation is implemented;
+see [design notes](../../apps/site-1/DESIGN_NOTES.md). Page design previews are
+implemented; CMS and live service integration remain separate work.
+
+See the [design-to-code plan](../DESIGN_TO_CODE_PLAN.md) for the frame map,
+component reuse, content boundaries and visual verification gates.

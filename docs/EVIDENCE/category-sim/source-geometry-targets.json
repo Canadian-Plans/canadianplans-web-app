@@ -1,0 +1,50 @@
+{
+  "sourceFile": "6zUS2WZbQn6NUhyjesA584",
+  "screenshots": {
+    "studentsMobile": "students-mobile-251-2-original.png",
+    "indiaMobile": "india-mobile-255-2-original.png",
+    "studentsDesktop": "students-desktop-151-2-original.png",
+    "indiaDesktop": "india-desktop-162-2-original.png"
+  },
+  "mobile390": {
+    "students": {
+      "breadcrumb": 36,
+      "hero": 1254,
+      "meta": 235,
+      "quick": 439,
+      "countdown": 960,
+      "plans": 1197,
+      "documents": 1218,
+      "guide": 1704,
+      "reviews": 1151,
+      "faq": 1047,
+      "explore": 943,
+      "final": 571,
+      "footer": 947,
+      "headerChrome": 184
+    },
+    "india": {
+      "breadcrumb": 36,
+      "hero": 1238,
+      "meta": 235,
+      "quick": 411,
+      "facts": 432,
+      "countdown": 960,
+      "plans": 1235,
+      "documents": 1218,
+      "callingIndia": 1407,
+      "guide": 1626,
+      "reviews": 1151,
+      "faq": 965,
+      "explore": 943,
+      "final": 531,
+      "footer": 947,
+      "headerChrome": 184
+    }
+  },
+  "desktop1440": {
+    "studentsMainFrame": 7436,
+    "indiaMainFrame": 8327
+  },
+  "cropMethod": "Source mobile screenshots were cropped using the supplied exact child-frame heights and page-level source frame positions. Source image and section crops are saved alongside browser captures."
+}
