@@ -60,8 +60,8 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
 | 3   | `/mobile-plans/rogers`                                                                       | done   | uses `/mobile-plans` browser pre-filtered to Rogers; old route group removed |
 | 4   | `/pre-arrival-sim/toronto-pearson`                                                           | done   |                                                                              |
 | 5   | `/compare/rogers-vs-fido`                                                                    | done   | old airport/compare route group removed                                      |
-| 6   | `/home-internet/ontario`                                                                     | todo   |                                                                              |
-| 7   | `/home-internet/vancouver`                                                                   | todo   |                                                                              |
+| 6   | `/home-internet/ontario`                                                                     | done   | reuses `/home-internet` address check and speed cards                        |
+| 7   | `/home-internet/vancouver`                                                                   | done   | old category-internet route group removed                                    |
 | 8   | `/about`                                                                                     | todo   |                                                                              |
 | 9   | `/contact`                                                                                   | todo   |                                                                              |
 | 10  | `/faq`                                                                                       | todo   |                                                                              |
@@ -96,6 +96,10 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
   airports) still awaiting approved content.
 - Footer: TV bundles, Surrey and Toronto internet links removed (no such pages; TV is a
   later phase). Cookie settings opens the existing consent dialog.
+- Vancouver/Ontario: neighbourhood speeds, city prices ($55–$60) and install times are the
+  old preview examples, shown as "typical"; verify before launch. The TV-bundle FAQ was
+  removed (TV is a later phase); basement-suite and moving FAQs await approved answers.
+  The Vancouver credit-history answer now also appears on Ontario.
 - Cleanup after all landing pages move: unused `public/design/category-sim/` and
   `public/design/category-rogers/` assets (the airport page still uses one Rogers icon).
 - Plan cards still show “$60/$80 in store” comparison prices from the pre-arrival fixtures;

@@ -511,3 +511,14 @@
     padding: var(--cp-space-22);
   }
 }
+
+/* Region pages: address check keeps its own layout, landing spacing only */
+.cp-landing-address {
+  margin-top: var(--cp-landing-section-gap);
+  scroll-margin-top: var(--cp-space-24);
+}
+.cp-landing-address {
+  @variant cp-redesign-stack {
+    margin-top: var(--cp-landing-section-gap-stacked);
+  }
+}
