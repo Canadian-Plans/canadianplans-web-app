@@ -25,13 +25,7 @@ import {
   Textarea,
 } from '@canadian-plans/ui';
 import { CpButton, type CpButtonTone } from '@canadian-plans/ui/canadian-plans';
-import {
-  contactAssets,
-  contactChrome,
-  contactCopy,
-  contactTopics,
-  type ContactPreviewKind,
-} from '@content/contact';
+import { contactCopy, contactTopics, type ContactPreviewKind } from '@content/contact';
 import { contactPreviewAction } from '@/app/(contact)/actions';
 import {
   validateContactMessage,
@@ -40,7 +34,6 @@ import {
   type ContactMessageErrors,
   type ContactTrackingErrors,
 } from '@/lib/contact-preview';
-import { Navigation } from '@/components/shared/component-lab-client';
 
 const PreviewContext = createContext<((kind: ContactPreviewKind) => void) | null>(null);
 function useContactPreview() {
@@ -88,21 +81,6 @@ export function ContactPreviewProvider({ children }: { children: ReactNode }) {
         </DialogContent>
       </Dialog>
     </PreviewContext>
-  );
-}
-export function ContactNavigation() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const preview = useContactPreview();
-  return (
-    <Navigation
-      content={contactChrome}
-      assets={contactAssets}
-      brandHref="/"
-      menuOpen={menuOpen}
-      onMenuOpenChange={setMenuOpen}
-      onAction={focusMessage}
-      onContact={() => preview('whatsapp')}
-    />
   );
 }
 export function ContactOptionAction({

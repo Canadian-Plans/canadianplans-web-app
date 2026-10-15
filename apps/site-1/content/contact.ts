@@ -1,11 +1,5 @@
 import type { CpButtonTone } from '@canadian-plans/ui/canadian-plans';
-import {
-  chromeContent,
-  componentAssets,
-  footerContent,
-  type ChromeContent,
-  type FooterContent,
-} from './components';
+import { componentAssets } from './components';
 
 export type ContactTopic = 'general' | 'sim' | 'mobile' | 'internet' | 'documents' | 'verification';
 export type ContactPreviewKind = 'whatsapp' | 'call' | 'directions';
@@ -22,11 +16,18 @@ interface ContactOption {
 /** Design copy and contact details are preview fixtures, pending business approval. */
 export const contactCopy = {
   previewOnly: true,
-  title: 'Contact & Help | Canadian Plans',
+  title: 'Contact Canadian Plans: WhatsApp, Phone, Email & Surrey Office',
+  description:
+    'Contact Canadian Plans by WhatsApp, phone or email, or visit our Surrey, BC office. Real advisors Monday to Saturday, 9am–9pm Pacific. Track your order without an account.',
   skip: 'Skip to main content',
+  breadcrumb: {
+    label: 'Breadcrumb',
+    separator: '/',
+    items: [{ label: 'Home', href: '/' }, { label: 'Contact' }],
+  },
   hero: {
-    eyebrow: 'Contact & help',
-    title: 'Talk to a real person.',
+    eyebrow: 'Contact Canadian Plans',
+    title: 'Talk to a real person',
     description:
       "No bots, no call-centre maze. You'll reach the same advisors who confirm every order, Mon–Sat, 9am–9pm Pacific.",
     trust: 'Authorized Rogers, Fido and Chatr dealer in Surrey, BC',
@@ -110,7 +111,7 @@ export const contactCopy = {
       { label: 'Change my install date', topic: 'internet' },
       { label: 'Update my documents', topic: 'documents' },
       { label: 'Is this call really from you?', topic: 'verification' },
-      { label: 'All FAQs', href: '/#faq' },
+      { label: 'All FAQs', href: '/faq' },
     ] satisfies readonly (
       { label: string; href: string } | { label: string; topic: ContactTopic }
     )[],
@@ -158,43 +159,4 @@ export const contactAssets = {
     height: 22,
     nodeId: '332:836',
   },
-};
-export const contactChrome: ChromeContent = {
-  ...chromeContent,
-  navigation: [
-    { label: 'Pre-arrival SIM', href: '/pre-arrival-sim' },
-    { label: 'Home Internet', href: '/home-internet' },
-    { label: 'Mobile Plans', href: '/mobile-plans' },
-    { label: 'Guides', href: '/#faq' },
-  ],
-  phone: { ...chromeContent.phone, href: '#contact-options' },
-  track: { ...chromeContent.track, href: '#track-order' },
-  contact: { ...chromeContent.contact, href: '#message-us' },
-  help: { ...chromeContent.help, href: '#quick-help' },
-  promoLink: { ...chromeContent.promoLink, href: '/pre-arrival-sim#plans' },
-};
-export const contactFooter: FooterContent = {
-  ...footerContent,
-  groups: footerContent.groups.map((group) => ({
-    ...group,
-    links: group.links.map((link) => ({
-      ...link,
-      href:
-        group.title === 'Pre-arrival SIM'
-          ? '/pre-arrival-sim#plans'
-          : group.title === 'Home Internet'
-            ? '/home-internet#internet-plans'
-            : group.title === 'Mobile Plans'
-              ? '/mobile-plans#mobile-plans'
-              : link.label === 'Track order'
-                ? '#track-order'
-                : link.label === 'Contact'
-                  ? '#message-us'
-                  : '/#faq',
-    })),
-  })),
-  legal: footerContent.legal.map((link) => ({
-    ...link,
-    href: link.label === 'Privacy' ? '/privacy' : link.label === 'Terms' ? '/terms' : '#message-us',
-  })),
 };

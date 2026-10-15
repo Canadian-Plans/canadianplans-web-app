@@ -10,7 +10,16 @@ import { PromoStrip, UtilityBar } from './chrome';
  * Site-wide header for redesigned pages (15 October 2026): utility bar, navigation and
  * promo strip from one content source. The chat button goes to the contact page.
  */
-export function SiteHeader({ content, planHref }: { content: ChromeContent; planHref: string }) {
+export function SiteHeader({
+  content,
+  planHref,
+  chatHref = content.contact.href,
+}: {
+  content: ChromeContent;
+  planHref: string;
+  /** Where the mobile chat button goes; the contact page points it at its own options. */
+  chatHref?: string;
+}) {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <>
@@ -25,7 +34,7 @@ export function SiteHeader({ content, planHref }: { content: ChromeContent; plan
           setMenuOpen(false);
           window.location.assign(planHref);
         }}
-        onContact={() => window.location.assign(content.contact.href)}
+        onContact={() => window.location.assign(chatHref)}
       />
       <PromoStrip content={content} />
     </>

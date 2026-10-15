@@ -38,6 +38,11 @@ ratings are dropped (unverified; owner removed reviews from category pages on 14
 
 ## Verification
 
+**Use a production build** (`pnpm build && npx next start --port 3127`): in this cloud
+container the dev server's HMR websocket is blocked by the proxy and client components do
+not hydrate, so interaction checks fail on `pnpm dev`. The landing and page verify
+scripts default to `http://127.0.0.1:3127`.
+
 `AUDIT_ORIGIN=http://127.0.0.1:3001 PLAYWRIGHT_CHROMIUM_PATH=/opt/pw-browsers/chromium node scripts/verify-landing.mjs <route>`
 (dev server: `pnpm dev`). Checks one h1, no horizontal scroll at 320/390/1440, in-page
 anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves evidence to
@@ -53,27 +58,27 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
 
 ## Status
 
-| #   | Page                                                                                         | Status | Notes                                                                        |
-| --- | -------------------------------------------------------------------------------------------- | ------ | ---------------------------------------------------------------------------- |
-| 1   | `/pre-arrival-sim/students`                                                                  | done   | landing kit built; moved to `(landing-arrival)`                              |
-| 2   | `/pre-arrival-sim/from-india`                                                                | done   | old `(category-sim)` route group removed                                     |
-| 3   | `/mobile-plans/rogers`                                                                       | done   | uses `/mobile-plans` browser pre-filtered to Rogers; old route group removed |
-| 4   | `/pre-arrival-sim/toronto-pearson`                                                           | done   |                                                                              |
-| 5   | `/compare/rogers-vs-fido`                                                                    | done   | old airport/compare route group removed                                      |
-| 6   | `/home-internet/ontario`                                                                     | done   | reuses `/home-internet` address check and speed cards                        |
-| 7   | `/home-internet/vancouver`                                                                   | done   | old category-internet route group removed                                    |
-| 8   | `/about`                                                                                     | done   | on the landing kit, with FAQ + JSON-LD                                       |
-| 9   | `/contact`                                                                                   | todo   |                                                                              |
-| 10  | `/faq`                                                                                       | todo   |                                                                              |
-| 11  | `/guides`                                                                                    | todo   |                                                                              |
-| 12  | `/guides/[slug]`                                                                             | todo   |                                                                              |
-| 13  | `/order/pre-arrival`                                                                         | todo   | preview form, stub action                                                    |
-| 14  | `/order/home-internet`                                                                       | todo   | preview form, stub action                                                    |
-| 15  | `/track-order`                                                                               | todo   |                                                                              |
-| 16  | `/plans`, `/plans/[slug]`, `/order`, `/track`                                                | todo   | restyle only, behaviour unchanged                                            |
-| 17  | `/privacy`, `/terms`                                                                         | todo   |                                                                              |
-| 18  | `/accessibility`, `/search`, 404                                                             | todo   |                                                                              |
-| 19  | Category polish: `/pre-arrival-sim`, `/home-internet`, `/mobile-plans`, `/business-internet` | todo   |                                                                              |
+| #   | Page                                                                                         | Status | Notes                                                                                       |
+| --- | -------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------- |
+| 1   | `/pre-arrival-sim/students`                                                                  | done   | landing kit built; moved to `(landing-arrival)`                                             |
+| 2   | `/pre-arrival-sim/from-india`                                                                | done   | old `(category-sim)` route group removed                                                    |
+| 3   | `/mobile-plans/rogers`                                                                       | done   | uses `/mobile-plans` browser pre-filtered to Rogers; old route group removed                |
+| 4   | `/pre-arrival-sim/toronto-pearson`                                                           | done   |                                                                                             |
+| 5   | `/compare/rogers-vs-fido`                                                                    | done   | old airport/compare route group removed                                                     |
+| 6   | `/home-internet/ontario`                                                                     | done   | reuses `/home-internet` address check and speed cards                                       |
+| 7   | `/home-internet/vancouver`                                                                   | done   | old category-internet route group removed                                                   |
+| 8   | `/about`                                                                                     | done   | on the landing kit, with FAQ + JSON-LD                                                      |
+| 9   | `/contact`                                                                                   | done   | layout and forms kept; site header/footer, breadcrumb, home-style hero, navy tracking panel |
+| 10  | `/faq`                                                                                       | todo   |                                                                                             |
+| 11  | `/guides`                                                                                    | todo   |                                                                                             |
+| 12  | `/guides/[slug]`                                                                             | todo   |                                                                                             |
+| 13  | `/order/pre-arrival`                                                                         | todo   | preview form, stub action                                                                   |
+| 14  | `/order/home-internet`                                                                       | todo   | preview form, stub action                                                                   |
+| 15  | `/track-order`                                                                               | todo   |                                                                                             |
+| 16  | `/plans`, `/plans/[slug]`, `/order`, `/track`                                                | todo   | restyle only, behaviour unchanged                                                           |
+| 17  | `/privacy`, `/terms`                                                                         | todo   |                                                                                             |
+| 18  | `/accessibility`, `/search`, 404                                                             | todo   |                                                                                             |
+| 19  | Category polish: `/pre-arrival-sim`, `/home-internet`, `/mobile-plans`, `/business-internet` | todo   |                                                                                             |
 
 ## Open placeholders and questions for the owner
 
