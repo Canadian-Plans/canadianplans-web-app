@@ -70,6 +70,13 @@ export default defineConfig({
         E2E_BACKEND_PORT: String(HARNESS_PORT + 1),
         QUOTE_WITHDRAWAL_POLICY: 'honour_until_expiry',
         OUTBOX_ADAPTERS: 'fake',
+        // Harness seam 3 for the per-endpoint budgets (REQ 37): the real limiter
+        // still runs, but every journey shares 127.0.0.1, so the production
+        // defaults (orders 10/60s) would throttle the suite against itself.
+        RATE_LIMIT_LEADS_MAX: '20000',
+        RATE_LIMIT_QUOTES_MAX: '20000',
+        RATE_LIMIT_ORDERS_MAX: '20000',
+        RATE_LIMIT_TRACKING_MAX: '20000',
       },
     },
     {
