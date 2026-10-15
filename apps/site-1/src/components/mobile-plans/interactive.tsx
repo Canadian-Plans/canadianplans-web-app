@@ -43,8 +43,15 @@ function usePlans() {
   return value;
 }
 
-export function MobilePlansProvider({ children }: { children: ReactNode }) {
-  const [filters, setFilters] = useState(defaultMobileFilters);
+/** `initialFilters` lets a brand landing page open the browser pre-filtered (e.g. Rogers). */
+export function MobilePlansProvider({
+  children,
+  initialFilters = defaultMobileFilters,
+}: {
+  children: ReactNode;
+  initialFilters?: typeof defaultMobileFilters;
+}) {
+  const [filters, setFilters] = useState(initialFilters);
   const [open, setOpen] = useState(false);
   const [plan, setPlan] = useState<MobilePlan>();
   const [description, setDescription] = useState<string>();

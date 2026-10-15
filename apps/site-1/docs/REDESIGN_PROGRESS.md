@@ -46,27 +46,27 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
 
 ## Status
 
-| #   | Page                                                                                         | Status | Notes                                           |
-| --- | -------------------------------------------------------------------------------------------- | ------ | ----------------------------------------------- |
-| 1   | `/pre-arrival-sim/students`                                                                  | done   | landing kit built; moved to `(landing-arrival)` |
-| 2   | `/pre-arrival-sim/from-india`                                                                | done   | old `(category-sim)` route group removed        |
-| 3   | `/mobile-plans/rogers`                                                                       | todo   |                                                 |
-| 4   | `/pre-arrival-sim/toronto-pearson`                                                           | todo   |                                                 |
-| 5   | `/compare/rogers-vs-fido`                                                                    | todo   |                                                 |
-| 6   | `/home-internet/ontario`                                                                     | todo   |                                                 |
-| 7   | `/home-internet/vancouver`                                                                   | todo   |                                                 |
-| 8   | `/about`                                                                                     | todo   |                                                 |
-| 9   | `/contact`                                                                                   | todo   |                                                 |
-| 10  | `/faq`                                                                                       | todo   |                                                 |
-| 11  | `/guides`                                                                                    | todo   |                                                 |
-| 12  | `/guides/[slug]`                                                                             | todo   |                                                 |
-| 13  | `/order/pre-arrival`                                                                         | todo   | preview form, stub action                       |
-| 14  | `/order/home-internet`                                                                       | todo   | preview form, stub action                       |
-| 15  | `/track-order`                                                                               | todo   |                                                 |
-| 16  | `/plans`, `/plans/[slug]`, `/order`, `/track`                                                | todo   | restyle only, behaviour unchanged               |
-| 17  | `/privacy`, `/terms`                                                                         | todo   |                                                 |
-| 18  | `/accessibility`, `/search`, 404                                                             | todo   |                                                 |
-| 19  | Category polish: `/pre-arrival-sim`, `/home-internet`, `/mobile-plans`, `/business-internet` | todo   |                                                 |
+| #   | Page                                                                                         | Status | Notes                                                                        |
+| --- | -------------------------------------------------------------------------------------------- | ------ | ---------------------------------------------------------------------------- |
+| 1   | `/pre-arrival-sim/students`                                                                  | done   | landing kit built; moved to `(landing-arrival)`                              |
+| 2   | `/pre-arrival-sim/from-india`                                                                | done   | old `(category-sim)` route group removed                                     |
+| 3   | `/mobile-plans/rogers`                                                                       | done   | uses `/mobile-plans` browser pre-filtered to Rogers; old route group removed |
+| 4   | `/pre-arrival-sim/toronto-pearson`                                                           | todo   |                                                                              |
+| 5   | `/compare/rogers-vs-fido`                                                                    | todo   |                                                                              |
+| 6   | `/home-internet/ontario`                                                                     | todo   |                                                                              |
+| 7   | `/home-internet/vancouver`                                                                   | todo   |                                                                              |
+| 8   | `/about`                                                                                     | todo   |                                                                              |
+| 9   | `/contact`                                                                                   | todo   |                                                                              |
+| 10  | `/faq`                                                                                       | todo   |                                                                              |
+| 11  | `/guides`                                                                                    | todo   |                                                                              |
+| 12  | `/guides/[slug]`                                                                             | todo   |                                                                              |
+| 13  | `/order/pre-arrival`                                                                         | todo   | preview form, stub action                                                    |
+| 14  | `/order/home-internet`                                                                       | todo   | preview form, stub action                                                    |
+| 15  | `/track-order`                                                                               | todo   |                                                                              |
+| 16  | `/plans`, `/plans/[slug]`, `/order`, `/track`                                                | todo   | restyle only, behaviour unchanged                                            |
+| 17  | `/privacy`, `/terms`                                                                         | todo   |                                                                              |
+| 18  | `/accessibility`, `/search`, 404                                                             | todo   |                                                                              |
+| 19  | Category polish: `/pre-arrival-sim`, `/home-internet`, `/mobile-plans`, `/business-internet` | todo   |                                                                              |
 
 ## Open placeholders and questions for the owner
 
@@ -76,7 +76,12 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
   testimonials were dropped as unverified. Re-add only with real, sourced reviews.
 - From India: FAQ answers on parents ordering, number before visa approval and Hindi/Punjabi
   support are still awaiting approved content.
-- `content/category-sim.ts` and `components/category-sim/interactive.tsx` remain only for
-  `/mobile-plans/rogers` chrome; delete them when that page moves to the kit.
+- Rogers: plans and the brand table now come from the `/mobile-plans` preview data (Rogers
+  from $55, 100/150 GB), replacing the old page's placeholder $45–$75 list and 4.2
+  editorial score, so the two pages agree. Real Rogers offers are still needed.
+- Rogers: the old "number transfer usually the same day (VERIFY)" claim was dropped from the
+  switching steps until confirmed.
+- Cleanup after all landing pages move: unused `public/design/category-sim/` and
+  `public/design/category-rogers/` assets (the airport page still uses one Rogers icon).
 - Plan cards still show “$60/$80 in store” comparison prices from the pre-arrival fixtures;
   confirm the source before launch.

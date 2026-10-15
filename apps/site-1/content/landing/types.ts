@@ -102,10 +102,29 @@ export interface LandingTableBlock {
   readonly description?: string;
   readonly caption: string;
   readonly columns: readonly string[];
-  /** Column index (1-based within `columns`) to highlight, e.g. our offer. */
+  /** Index into `columns` to highlight (0 is the row-header column), e.g. our offer. */
   readonly highlight?: number;
   readonly rows: readonly { readonly label: string; readonly values: readonly string[] }[];
   readonly note?: string;
+}
+
+/** Two lists side by side: what we like / watch out for. */
+export interface LandingProsConsBlock {
+  readonly kind: 'proscons';
+  readonly id: string;
+  readonly eyebrow?: string;
+  readonly title: string;
+  readonly description?: string;
+  readonly pros: {
+    readonly title: string;
+    readonly mark: string;
+    readonly items: readonly string[];
+  };
+  readonly cons: {
+    readonly title: string;
+    readonly mark: string;
+    readonly items: readonly string[];
+  };
 }
 
 /** Slot for a page's interactive block (plan picker, address check). */
@@ -120,6 +139,7 @@ export type LandingBlock =
   | LandingChecklistBlock
   | LandingArticleBlock
   | LandingTableBlock
+  | LandingProsConsBlock
   | LandingSlotBlock;
 
 export interface LandingPageContent {

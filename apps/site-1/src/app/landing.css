@@ -462,3 +462,52 @@
   white-space: normal;
   text-align: left;
 }
+
+/* Pros and cons */
+.cp-landing-proscons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--cp-space-20);
+}
+.cp-landing-proscons > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-space-16);
+  padding: var(--cp-space-28);
+  border-radius: var(--cp-radius-24);
+  background: var(--cp-color-grey);
+}
+.cp-landing-proscons h3 {
+  margin: 0;
+  font-size: var(--cp-text-20);
+  font-weight: var(--cp-weight-extra-bold);
+}
+.cp-landing-proscons ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-space-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cp-landing-proscons li {
+  display: flex;
+  gap: var(--cp-space-12);
+  align-items: flex-start;
+  font-size: var(--cp-text-16);
+  line-height: var(--cp-leading-body);
+}
+.cp-landing-proscons [data-kind='cons'] .cp-landing-check {
+  background: var(--cp-color-amber-soft);
+  color: var(--cp-color-amber-ink);
+}
+.cp-landing-proscons {
+  @variant cp-redesign-narrow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.cp-landing-proscons > div {
+  @variant cp-redesign-narrow {
+    padding: var(--cp-space-22);
+  }
+}

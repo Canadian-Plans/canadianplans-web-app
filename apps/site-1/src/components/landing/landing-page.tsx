@@ -14,6 +14,7 @@ import type {
   LandingCardsBlock,
   LandingChecklistBlock,
   LandingPageContent,
+  LandingProsConsBlock,
   LandingStepsBlock,
   LandingTableBlock,
 } from '@content/landing/types';
@@ -169,6 +170,8 @@ function Block({
       return <ArticleBlock block={block} />;
     case 'table':
       return <TableBlock block={block} />;
+    case 'proscons':
+      return <ProsConsBlock block={block} />;
   }
 }
 
@@ -402,6 +405,40 @@ function TableBlock({ block }: { block: LandingTableBlock }) {
         </table>
       </div>
       {block.note ? <p className="cp-landing-note">{block.note}</p> : null}
+    </section>
+  );
+}
+
+function ProsConsBlock({ block }: { block: LandingProsConsBlock }) {
+  return (
+    <section
+      id={block.id}
+      className="cp-container cp-landing-section"
+      aria-labelledby={`${block.id}-title`}
+    >
+      <SectionIntro
+        id={block.id}
+        eyebrow={block.eyebrow}
+        title={block.title}
+        description={block.description}
+      />
+      <div className="cp-landing-proscons">
+        {(['pros', 'cons'] as const).map((key) => (
+          <div key={key} data-kind={key}>
+            <h3>{block[key].title}</h3>
+            <ul>
+              {block[key].items.map((item) => (
+                <li key={item}>
+                  <span className="cp-landing-check" aria-hidden="true">
+                    {block[key].mark}
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
