@@ -452,3 +452,13 @@
     font-size: var(--cp-text-17);
   }
 }
+.cp-landing-related-grid li {
+  max-width: 100%;
+}
+.cp-landing-related-grid .cp-link-pill {
+  max-width: 100%;
+  height: auto;
+  min-height: var(--cp-space-36);
+  white-space: normal;
+  text-align: left;
+}

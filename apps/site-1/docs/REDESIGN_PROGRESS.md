@@ -49,7 +49,7 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
 | #   | Page                                                                                         | Status | Notes                                           |
 | --- | -------------------------------------------------------------------------------------------- | ------ | ----------------------------------------------- |
 | 1   | `/pre-arrival-sim/students`                                                                  | done   | landing kit built; moved to `(landing-arrival)` |
-| 2   | `/pre-arrival-sim/from-india`                                                                | todo   |                                                 |
+| 2   | `/pre-arrival-sim/from-india`                                                                | done   | old `(category-sim)` route group removed        |
 | 3   | `/mobile-plans/rogers`                                                                       | todo   |                                                 |
 | 4   | `/pre-arrival-sim/toronto-pearson`                                                           | todo   |                                                 |
 | 5   | `/compare/rogers-vs-fido`                                                                    | todo   |                                                 |
@@ -74,5 +74,9 @@ anchors, JSON-LD (no pending answers), axe serious/critical, page errors; saves 
   still “awaiting approved content” (shown, excluded from FAQ JSON-LD).
 - Students: the old page's star rating (“4.8, 1,200+ Google reviews”) and named
   testimonials were dropped as unverified. Re-add only with real, sourced reviews.
+- From India: FAQ answers on parents ordering, number before visa approval and Hindi/Punjabi
+  support are still awaiting approved content.
+- `content/category-sim.ts` and `components/category-sim/interactive.tsx` remain only for
+  `/mobile-plans/rogers` chrome; delete them when that page moves to the kit.
 - Plan cards still show “$60/$80 in store” comparison prices from the pre-arrival fixtures;
   confirm the source before launch.
