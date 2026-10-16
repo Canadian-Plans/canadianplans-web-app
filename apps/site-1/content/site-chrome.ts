@@ -80,7 +80,7 @@ export const siteFooter: FooterContent = {
   newsletter: {
     title: 'Get plan deals by email',
     body: 'Occasional offers, no spam. Unsubscribe anytime.',
-    label: 'Email address',
+    label: 'Your email',
     placeholder: 'you@email.com',
     action: 'Sign up',
     invalid: 'Enter a valid email address.',
