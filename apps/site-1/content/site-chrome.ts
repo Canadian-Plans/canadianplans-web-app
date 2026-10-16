@@ -45,7 +45,8 @@ export const siteFooter: FooterContent = {
     'Authorized Rogers, Fido & Chatr dealer. We help you pick the right plan and stay your contact afterwards.',
   groups: [
     {
-      title: 'Plans',
+      // Not "Plans": /plans has that h1, and page headings should stay unique.
+      title: 'Our plans',
       links: [
         { label: 'Pre-arrival Plans', href: '/pre-arrival-sim' },
         { label: 'Home Internet', href: '/home-internet' },
