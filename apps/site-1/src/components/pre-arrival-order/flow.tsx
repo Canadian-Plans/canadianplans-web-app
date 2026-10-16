@@ -25,6 +25,7 @@ import { readPreviewFiles, writePreviewFiles } from '@/lib/pre-arrival-files';
 import { preArrivalPreviewAction } from '@/app/(pre-arrival-order)/order/pre-arrival/actions';
 import { MobilePlanSummary, PaymentNote, PreArrivalSummary, PreArrivalRecap } from './summary';
 import { PreArrivalConfirmation } from './confirmation';
+import { BrandMark } from '@/components/shared/brand-mark';
 type FieldName = keyof typeof copy.fields;
 function OrderField({ name, form }: { name: FieldName; form: UseFormReturn<PreArrivalValues> }) {
   const c = copy.fields[name];
@@ -395,9 +396,8 @@ export function PreArrivalOrderFlow({
       </SkipLink>
       <header className="cp-io-header">
         <div className="cp-container">
-          <a href={copy.destinations.home} className="cp-brand">
-            <CpAsset asset={assets.logo} />
-            <span>{copy.brand}</span>
+          <a href={copy.destinations.home} className="cp-brand" aria-label={`${copy.brand} home`}>
+            <BrandMark />
           </a>
           <div className="cp-io-desktop-help">
             <strong>{copy.header.payment}</strong>

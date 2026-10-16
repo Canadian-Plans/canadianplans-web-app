@@ -1,0 +1,60 @@
+name: Backup retention
+on:
+  schedule:
+    # Weekly is enough: retention only prunes points beyond 30 daily/12
+    # monthly, so nothing depends on same-day pruning.
+    - cron: '43 7 * * 1'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (report planned deletions without deleting)'
+        type: boolean
+        default: true
+permissions:
+  contents: read
+concurrency:
+  group: backup-retention-${{ github.workflow }}
+  cancel-in-progress: false
+jobs:
+  retention:
+    # A separate GitHub Environment from "backup": its secrets must never
+    # overlap with the daily writer's (IMPLEMENTATION_PLAN §13: "A separate
+    # owner-controlled retention job uses a different delete-capable
+    # credential"). The daily backup workflow cannot reach these secrets and
+    # this workflow never receives the writer credential.
+    environment: backup-retention
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
+        with:
+          version: 9.15.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.19.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Write the escrowed recovery private key to a runner-local file
+        # Never a repository file, artifact name, or object metadata — only the
+        # runner's protected secret store and this ephemeral, workspace-scoped
+        # path, which the runner discards at job end.
+        env:
+          RECOVERY_PRIVATE_KEY: ${{ secrets.RECOVERY_PRIVATE_KEY }}
+        run: |
+          umask 077
+          printf '%s' "$RECOVERY_PRIVATE_KEY" > "$RUNNER_TEMP/recovery-private-key.txt"
+      - name: Run retention (defaults to dry-run unless explicitly disabled)
+        env:
+          RETENTION_DRY_RUN: ${{ github.event.inputs.dry_run == 'false' && 'false' || 'true' }}
+          RECOVERY_PRIVATE_KEY_PATH: ${{ runner.temp }}/recovery-private-key.txt
+          B2_ARCHIVE_ENDPOINT: ${{ secrets.B2_ARCHIVE_ENDPOINT }}
+          B2_ARCHIVE_REGION: ${{ secrets.B2_ARCHIVE_REGION }}
+          B2_ARCHIVE_BUCKET: ${{ secrets.B2_ARCHIVE_BUCKET }}
+          # Retention-administrator credential: list + read + delete. Distinct
+          # from the daily writer's key and never shared with it.
+          B2_ARCHIVE_RETENTION_KEY_ID: ${{ secrets.B2_ARCHIVE_RETENTION_KEY_ID }}
+          B2_ARCHIVE_RETENTION_APPLICATION_KEY: ${{ secrets.B2_ARCHIVE_RETENTION_APPLICATION_KEY }}
+        run: pnpm --filter @canadian-plans/jobs run retention

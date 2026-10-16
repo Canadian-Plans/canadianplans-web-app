@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogClose,
@@ -9,89 +9,29 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@canadian-plans/ui';
-import { CpButton, CpChip, CpPlanCard, CpSectionHeading } from '@canadian-plans/ui/canadian-plans';
 import {
-  arrivalCopy,
-  arrivalChrome,
-  arrivalChromeAssets,
-  arrivalPlans,
-  type ArrivalAudience,
-} from '@content/pre-arrival';
-import { Navigation } from '@/components/shared/component-lab-client';
+  CpButton,
+  CpChip,
+  CpPlanCard,
+  CpSectionHeading,
+  type SectionHeadingContent,
+} from '@canadian-plans/ui/canadian-plans';
+import { arrivalCopy, arrivalPlans, type ArrivalAudience } from '@content/pre-arrival';
 import { preArrivalOrderCopy } from '@content/pre-arrival-order';
 
-export function AdvisorPreview({
-  label,
-  tone = 'primary',
+/**
+ * One owner for the audience and chosen plan; checkout receives only fixture IDs.
+ * Landing pages reuse it with their own heading and starting audience.
+ */
+export function PlanPicker({
+  defaultAudience = 'student',
+  heading,
 }: {
-  label: string;
-  tone?: 'primary' | 'outline' | 'outline-inverse';
-}) {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <CpButton tone={tone} scale="large">
-          {label}
-        </CpButton>
-      </DialogTrigger>
-      <DialogContent className="cp-design cp-arrival-dialog" showCloseButton={false}>
-        <DialogTitle>{arrivalCopy.controls.contactTitle}</DialogTitle>
-        <DialogDescription>{arrivalCopy.controls.contactDescription}</DialogDescription>
-        <DialogClose asChild>
-          <CpButton>{arrivalCopy.controls.close}</CpButton>
-        </DialogClose>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-export function ArrivalNavigation() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [contactOpen, setContactOpen] = useState(false);
-  const trigger = useRef<HTMLElement | null>(null);
-  return (
-    <>
-      <Navigation
-        content={arrivalChrome}
-        assets={arrivalChromeAssets}
-        brandHref="/"
-        menuOpen={menuOpen}
-        onMenuOpenChange={setMenuOpen}
-        onAction={() => {
-          setMenuOpen(false);
-          document.getElementById('plans')?.scrollIntoView({ behavior: 'instant' });
-          document.getElementById('arrival-student')?.focus({ preventScroll: true });
-        }}
-        onContact={() => {
-          trigger.current =
-            document.activeElement instanceof HTMLElement ? document.activeElement : null;
-          setContactOpen(true);
-        }}
-      />
-      <Dialog open={contactOpen} onOpenChange={setContactOpen}>
-        <DialogContent
-          className="cp-design cp-arrival-dialog"
-          showCloseButton={false}
-          onCloseAutoFocus={(event) => {
-            event.preventDefault();
-            trigger.current?.focus();
-          }}
-        >
-          <DialogTitle>{arrivalCopy.controls.contactTitle}</DialogTitle>
-          <DialogDescription>{arrivalCopy.controls.contactDescription}</DialogDescription>
-          <DialogClose asChild>
-            <CpButton>{arrivalCopy.controls.close}</CpButton>
-          </DialogClose>
-        </DialogContent>
-      </Dialog>
-    </>
-  );
-}
-
-/** One owner for the audience and chosen plan; checkout receives only fixture IDs. */
-export function PlanPicker() {
+  defaultAudience?: ArrivalAudience;
+  heading?: SectionHeadingContent;
+} = {}) {
   const copy = arrivalCopy.picker;
-  const [audience, setAudience] = useState<ArrivalAudience>('student');
+  const [audience, setAudience] = useState<ArrivalAudience>(defaultAudience);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [announcement, setAnnouncement] = useState('');
   const plans = arrivalPlans.filter((plan) => plan.audiences.includes(audience));
@@ -110,7 +50,7 @@ export function PlanPicker() {
       <div className="cp-container">
         <div className="cp-arrival-picker-heading">
           <span>{copy.step}</span>
-          <CpSectionHeading content={copy.heading} />
+          <CpSectionHeading content={heading ?? copy.heading} />
         </div>
         <div className="cp-arrival-controls">
           <fieldset>
@@ -168,7 +108,7 @@ export function PlanPicker() {
                 onSelect={() => {
                   setSelectedId(plan.id);
                   setAnnouncement(
-                    `${copy.selectedAnnouncement}: ${plan.summaryName}, ${plan.allowance}, ${plan.amount}${copy.period}.`,
+                    `${copy.selectedAnnouncement}: ${plan.summaryName}, ${plan.allowance}, ${plan.amount}${plan.term}.`,
                   );
                 }}
               />
@@ -199,9 +139,9 @@ export function PlanPicker() {
               </strong>
               <p>
                 {selected.amount}
-                {copy.period}
+                {selected.term}
                 <span className="cp-arrival-selection-detail">
-                  {selected.period.replace('/mo', '')} · {copy.due}
+                  {selected.period.replace(selected.term, '')} · {copy.due}
                 </span>
               </p>
             </div>

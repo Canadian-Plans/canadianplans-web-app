@@ -1,0 +1,1457 @@
+const imgMark = "https://www.figma.com/api/mcp/asset/c54f50b9-1321-4ff1-a767-929636cb5a34.svg";
+const imgEllipse = "https://www.figma.com/api/mcp/asset/8d12db2c-2649-4009-82ce-7669a000ee1d.svg";
+const imgEllipse1 = "https://www.figma.com/api/mcp/asset/a03b4263-8e80-4910-a6e7-a0fb2d81b2b3.svg";
+const imgEllipse2 = "https://www.figma.com/api/mcp/asset/c789770a-6508-4ea5-a32c-9402b4d96400.svg";
+const imgIcon = "https://www.figma.com/api/mcp/asset/ffb4a82a-ec31-4302-8d93-d3b53baeeeb3.svg";
+const imgIcon1 = "https://www.figma.com/api/mcp/asset/272495ce-8ced-4d02-a634-ac24e2493b5e.svg";
+const imgEllipse3 = "https://www.figma.com/api/mcp/asset/f6cacaa4-20f9-4998-b638-e8d29843d11f.svg";
+const imgEllipse4 = "https://www.figma.com/api/mcp/asset/59ab2493-fc57-4a84-b543-c140258ada86.svg";
+const imgEllipse5 = "https://www.figma.com/api/mcp/asset/4f50beaa-7442-425f-8fbd-0e12540c8260.svg";
+const imgFrame = "https://www.figma.com/api/mcp/asset/bb23d7f8-39a1-4ae7-9979-d8cdf47f5b33.svg";
+
+export default function TemplateMobilePlansBrandRogersSpecSheetStyleDesktop1440() {
+  return (
+    <div className="bg-[var(--bg\/page,white)] content-stretch flex flex-col items-start relative size-full" data-node-id="158:2" data-name="Template · Mobile Plans › Brand (Rogers) · Spec-sheet style · Desktop 1440">
+      <div className="[word-break:break-word] bg-[var(--bg\/page,white)] content-stretch flex items-center justify-between not-italic overflow-clip px-[120px] py-[10px] relative shrink-0 w-full whitespace-nowrap" data-node-id="158:3" data-name="Utility bar">
+        <div className="content-stretch flex gap-[20px] items-start overflow-clip relative shrink-0 text-[14px]" data-node-id="158:4" data-name="Frame">
+          <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.45] relative shrink-0 text-[color:var(--cp-color-muted,#535b7a)]" data-node-id="158:5" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`I'm moving to Canada`}</p>
+          <p className="[text-underline-position:from-font] decoration-from-font decoration-solid font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[#101a3d] underline" data-node-id="158:6" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            I already live here
+          </p>
+        </div>
+        <div className="content-stretch flex font-['Google_Sans_Flex:Regular'] font-normal gap-[24px] items-start leading-[1.4] overflow-clip relative shrink-0 text-[13px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="158:7" data-name="Frame">
+          <p className="relative shrink-0" data-node-id="158:8" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            1-888-555-0199
+          </p>
+          <p className="relative shrink-0" data-node-id="158:9" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Track order
+          </p>
+          <p className="relative shrink-0" data-node-id="158:10" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Contact
+          </p>
+          <p className="relative shrink-0" data-node-id="158:11" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Help
+          </p>
+        </div>
+      </div>
+      <div className="bg-[var(--bg\/page,white)] border-[var(--cp-color-line,#e6e9f2)] border-b border-solid border-t content-stretch flex items-center justify-between overflow-clip px-[120px] py-[18px] relative shrink-0 w-full" data-node-id="158:12" data-name="Nav">
+        <div className="content-stretch flex gap-[48px] items-center overflow-clip relative shrink-0" data-node-id="158:13" data-name="Frame">
+          <div className="content-stretch flex gap-[10px] items-center overflow-clip relative shrink-0" data-node-id="158:14" data-name="Logo">
+            <div className="relative shrink-0 size-[36px]" data-node-id="158:15" data-name="Mark">
+              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgMark} />
+            </div>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:ExtraBold'] font-extrabold leading-none not-italic relative shrink-0 text-[22px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.44px] whitespace-nowrap" data-node-id="158:17" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Canadian Plans
+            </p>
+          </div>
+          <div className="[word-break:break-word] content-stretch flex font-['Google_Sans_Flex:Bold'] font-bold gap-[32px] items-start leading-[1.25] not-italic overflow-clip relative shrink-0 text-[16px] whitespace-nowrap" data-node-id="158:18" data-name="Frame">
+            <p className="relative shrink-0 text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="158:19" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Pre-arrival SIM
+            </p>
+            <p className="relative shrink-0 text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="158:20" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Home Internet
+            </p>
+            <p className="[text-underline-position:from-font] decoration-from-font decoration-solid relative shrink-0 text-[color:var(--text\/brand,#3657f2)] underline" data-node-id="158:21" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Mobile Plans
+            </p>
+            <p className="relative shrink-0 text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="158:22" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Guides
+            </p>
+          </div>
+        </div>
+        <div className="content-stretch flex gap-[16px] items-center overflow-clip relative shrink-0" data-node-id="158:23" data-name="Frame">
+          <div className="border border-[var(--border\/strong,#a7acbf)] border-solid content-stretch flex gap-[40px] items-center overflow-clip px-[18px] py-[11px] relative rounded-[999px] shrink-0" data-node-id="158:24" data-name="Search">
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.45] not-italic relative shrink-0 text-[14px] text-[color:var(--cp-color-muted,#535b7a)] whitespace-nowrap" data-node-id="158:25" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Search plans or cities
+            </p>
+            <div className="relative shrink-0 size-[14px]" data-node-id="158:26" data-name="Ellipse">
+              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgEllipse} />
+            </div>
+          </div>
+          <div className="bg-[var(--action\/secondary,#101a3d)] content-stretch flex items-center justify-center overflow-clip px-[22px] py-[12px] relative rounded-[999px] shrink-0" data-node-id="158:27" data-name="Button · Find my plan">
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[16px] text-[color:var(--text\/inverse,white)] whitespace-nowrap" data-node-id="158:28" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Find my plan
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="[word-break:break-word] bg-[var(--accent\/sun,#ffe14d)] content-stretch flex gap-[12px] items-center justify-center not-italic overflow-clip px-[120px] py-[10px] relative shrink-0 text-[14px] text-[color:var(--cp-color-ink,#101a3d)] w-full whitespace-nowrap" data-node-id="158:29" data-name="Promo strip">
+        <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.45] relative shrink-0" data-node-id="158:30" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+          Switching to Rogers? Keep your number — we handle the transfer.
+        </p>
+        <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0" data-node-id="158:31" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+          How switching works
+        </p>
+      </div>
+      <div className="bg-[var(--cp-color-lemon,#fff4c2)] content-stretch flex flex-col gap-[32px] items-start overflow-clip pb-[80px] pt-[24px] px-[120px] relative shrink-0 w-full" data-node-id="158:32" data-name="Slot · Hero (spec card)">
+        <div className="[word-break:break-word] content-stretch flex gap-[8px] items-start not-italic overflow-clip relative shrink-0 text-[14px] whitespace-nowrap" data-node-id="158:33" data-name="Breadcrumb">
+          <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.45] relative shrink-0 text-[color:var(--cp-color-muted,#535b7a)]" data-node-id="158:34" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Home
+          </p>
+          <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.45] relative shrink-0 text-[color:var(--cp-color-muted,#535b7a)]" data-node-id="158:35" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            /
+          </p>
+          <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.45] relative shrink-0 text-[color:var(--cp-color-muted,#535b7a)]" data-node-id="158:36" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Mobile Plans
+          </p>
+          <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.45] relative shrink-0 text-[color:var(--cp-color-muted,#535b7a)]" data-node-id="158:37" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            /
+          </p>
+          <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="158:38" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Rogers
+          </p>
+        </div>
+        <div className="content-stretch flex gap-[56px] items-center overflow-clip relative shrink-0 w-full" data-node-id="158:39" data-name="Frame">
+          <div className="content-stretch flex flex-[1_0_0] flex-col gap-[22px] items-start min-w-px overflow-clip relative" data-node-id="158:40" data-name="Frame">
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[13px] text-[color:var(--text\/brand,#3657f2)] tracking-[1.04px] uppercase whitespace-nowrap" data-node-id="158:41" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Mobile plans · Rogers
+            </p>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[0.95] min-w-full not-italic relative shrink-0 text-[80px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-2.4px] w-[min-content]" data-node-id="158:42" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Rogers plans, explained in plain words.
+            </p>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.45] min-w-full not-italic relative shrink-0 text-[20px] text-[color:var(--cp-color-muted,#535b7a)] w-[min-content]" data-node-id="158:43" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Premium 5G+ plans with Canada–US options. Compare every Rogers plan we offer with exact prices — and a real person to set it up.
+            </p>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Medium'] font-medium leading-[0] not-italic relative shrink-0 text-[#666b7a] text-[0px] whitespace-nowrap" data-node-id="314:1103" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              <span className="leading-[normal] text-[#101a3d] text-[18px]">{`From `}</span>
+              <span className="font-['Google_Sans_Flex:ExtraBold'] font-extrabold leading-[normal] text-[#101a3d] text-[24px]" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                $45/mo
+              </span>
+              <span className="leading-[normal] text-[18px]">{` + tax · Pay $0 today`}</span>
+            </p>
+            <div className="content-stretch flex gap-[12px] items-start overflow-clip relative shrink-0" data-node-id="158:44" data-name="Frame">
+              <div className="bg-[var(--cp-color-blue,#3657f2)] content-stretch flex items-center justify-center overflow-clip px-[30px] py-[18px] relative rounded-[999px] shrink-0" data-node-id="158:45" data-name="Button · See Rogers plans  ↓">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.2] not-italic relative shrink-0 text-[18px] text-[color:var(--text\/inverse,white)] whitespace-pre" data-node-id="158:46" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`See Rogers plans  ↓`}</p>
+              </div>
+              <div className="border-2 border-[var(--border\/ink,#101a3d)] border-solid content-stretch flex items-center justify-center overflow-clip px-[30px] py-[18px] relative rounded-[999px] shrink-0" data-node-id="158:47" data-name="Button · Compare with Fido & Chatr">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.2] not-italic relative shrink-0 text-[18px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="158:48" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`Compare with Fido & Chatr`}</p>
+              </div>
+            </div>
+            <div className="[word-break:break-word] content-stretch flex font-['Google_Sans_Flex:Bold'] font-bold gap-[20px] items-start leading-[1.25] not-italic overflow-clip relative shrink-0 text-[14px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-pre" data-node-id="158:49" data-name="Frame">
+              <p className="relative shrink-0" data-node-id="158:50" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`✓  Keep your number`}</p>
+              <p className="relative shrink-0" data-node-id="158:51" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`✓  Canada–US plans`}</p>
+              <p className="relative shrink-0" data-node-id="158:52" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`✓  $0 until we call`}</p>
+            </div>
+          </div>
+          <div className="bg-[var(--bg\/inverse,#101a3d)] border-2 border-[var(--border\/ink,#101a3d)] border-solid content-stretch flex flex-col items-start overflow-clip px-[32px] py-[28px] relative rounded-[28px] shadow-[4px_4px_0px_0px_#101a3d] shrink-0 w-[460px]" data-node-id="158:53" data-name="Spec card">
+            <div className="content-stretch flex items-center justify-between overflow-clip pb-[20px] relative shrink-0 w-full" data-node-id="158:54" data-name="Frame">
+              <div className="bg-[var(--cp-color-white,white)] content-stretch flex items-start overflow-clip px-[16px] py-[10px] relative rounded-[12px] shrink-0" data-node-id="158:55" data-name="Logo slot · Rogers">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="158:56" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                  Rogers logo
+                </p>
+              </div>
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[13px] text-[color:var(--text\/accent-inverse,#ff9db8)] tracking-[1.04px] uppercase whitespace-nowrap" data-node-id="158:57" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Spec sheet
+              </p>
+            </div>
+            <div className="[word-break:break-word] border-[var(--border\/inverse,#2a3459)] border-solid border-t content-stretch flex items-center justify-between not-italic overflow-clip py-[14px] relative shrink-0 text-[16px] w-full whitespace-nowrap" data-node-id="158:58" data-name="Frame">
+              <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="158:59" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Network
+              </p>
+              <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[color:var(--text\/inverse,white)]" data-node-id="158:60" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Rogers · 5G+
+              </p>
+            </div>
+            <div className="[word-break:break-word] border-[var(--border\/inverse,#2a3459)] border-solid border-t content-stretch flex items-center justify-between not-italic overflow-clip py-[14px] relative shrink-0 text-[16px] w-full whitespace-nowrap" data-node-id="158:61" data-name="Frame">
+              <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="158:62" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                How you pay
+              </p>
+              <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[color:var(--text\/inverse,white)]" data-node-id="158:63" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Postpaid
+              </p>
+            </div>
+            <div className="[word-break:break-word] border-[var(--border\/inverse,#2a3459)] border-solid border-t content-stretch flex items-center justify-between not-italic overflow-clip py-[14px] relative shrink-0 text-[16px] w-full whitespace-nowrap" data-node-id="158:64" data-name="Frame">
+              <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="158:65" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Credit check
+              </p>
+              <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[color:var(--text\/inverse,white)]" data-node-id="158:66" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Yes, or a deposit
+              </p>
+            </div>
+            <div className="[word-break:break-word] border-[var(--border\/inverse,#2a3459)] border-solid border-t content-stretch flex items-center justify-between not-italic overflow-clip py-[14px] relative shrink-0 text-[16px] w-full whitespace-nowrap" data-node-id="158:67" data-name="Frame">
+              <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="158:68" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`US & travel`}</p>
+              <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[color:var(--text\/inverse,white)]" data-node-id="158:69" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Canada–US plans available
+              </p>
+            </div>
+            <div className="[word-break:break-word] border-[var(--border\/inverse,#2a3459)] border-solid border-t content-stretch flex items-center justify-between not-italic overflow-clip py-[14px] relative shrink-0 text-[16px] w-full whitespace-nowrap" data-node-id="158:70" data-name="Frame">
+              <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="158:71" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Builds credit
+              </p>
+              <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[color:var(--text\/inverse,white)]" data-node-id="158:72" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Yes
+              </p>
+            </div>
+            <div className="[word-break:break-word] border-[var(--border\/inverse,#2a3459)] border-solid border-t content-stretch flex items-center justify-between not-italic overflow-clip py-[14px] relative shrink-0 text-[16px] w-full whitespace-nowrap" data-node-id="158:73" data-name="Frame">
+              <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="158:74" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Plans with us
+              </p>
+              <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[color:var(--text\/inverse,white)]" data-node-id="158:75" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                From $45/mo · CAD + tax
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="border-[var(--cp-color-line,#e6e9f2)] border-b border-solid content-stretch flex flex-col gap-[14px] items-start overflow-clip px-[120px] py-[20px] relative shrink-0 w-full" data-node-id="158:76" data-name="SEO · Meta bar">
+        <div className="content-stretch flex gap-[24px] items-center overflow-clip relative shrink-0" data-node-id="158:77" data-name="Frame">
+          <div className="content-stretch flex gap-[10px] items-center overflow-clip relative shrink-0" data-node-id="158:78" data-name="Frame">
+            <div className="relative shrink-0 size-[36px]" data-node-id="158:79" data-name="Ellipse">
+              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgEllipse1} />
+            </div>
+            <div className="[word-break:break-word] content-stretch flex flex-col items-start not-italic overflow-clip relative shrink-0 whitespace-nowrap" data-node-id="158:80" data-name="Frame">
+              <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[14px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="158:81" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Marco D.
+              </p>
+              <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.4] relative shrink-0 text-[13px] text-[color:var(--cp-color-muted,#535b7a)]" data-node-id="158:82" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Written by · switched carriers 3 times since 2019
+              </p>
+            </div>
+          </div>
+          <div className="content-stretch flex gap-[10px] items-center overflow-clip relative shrink-0" data-node-id="158:83" data-name="Frame">
+            <div className="relative shrink-0 size-[36px]" data-node-id="158:84" data-name="Ellipse">
+              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgEllipse2} />
+            </div>
+            <div className="[word-break:break-word] content-stretch flex flex-col items-start not-italic overflow-clip relative shrink-0 whitespace-nowrap" data-node-id="158:85" data-name="Frame">
+              <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[14px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="158:86" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Priya
+              </p>
+              <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.4] relative shrink-0 text-[13px] text-[color:var(--cp-color-muted,#535b7a)]" data-node-id="158:87" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Reviewed by · plan advisor
+              </p>
+            </div>
+          </div>
+          <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--cp-color-muted,#535b7a)] whitespace-nowrap" data-node-id="158:88" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Updated 5 Oct 2026 · 8 min read
+          </p>
+        </div>
+        <div className="content-stretch flex gap-[8px] items-center overflow-clip relative shrink-0" data-node-id="158:89" data-name="On this page">
+          <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--cp-color-muted,#535b7a)] whitespace-nowrap" data-node-id="158:90" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            On this page:
+          </p>
+          <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex items-start overflow-clip px-[14px] py-[7px] relative rounded-[999px] shrink-0" data-node-id="158:91" data-name="Frame">
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--text\/brand,#3657f2)] whitespace-nowrap" data-node-id="158:92" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              At a glance
+            </p>
+          </div>
+          <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex items-start overflow-clip px-[14px] py-[7px] relative rounded-[999px] shrink-0" data-node-id="158:93" data-name="Frame">
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--text\/brand,#3657f2)] whitespace-nowrap" data-node-id="158:94" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Plans
+            </p>
+          </div>
+          <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex items-start overflow-clip px-[14px] py-[7px] relative rounded-[999px] shrink-0" data-node-id="158:95" data-name="Frame">
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--text\/brand,#3657f2)] whitespace-nowrap" data-node-id="158:96" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`Pros & cons`}</p>
+          </div>
+          <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex items-start overflow-clip px-[14px] py-[7px] relative rounded-[999px] shrink-0" data-node-id="158:97" data-name="Frame">
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--text\/brand,#3657f2)] whitespace-nowrap" data-node-id="158:98" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Rogers vs Fido vs Chatr
+            </p>
+          </div>
+          <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex items-start overflow-clip px-[14px] py-[7px] relative rounded-[999px] shrink-0" data-node-id="158:99" data-name="Frame">
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--text\/brand,#3657f2)] whitespace-nowrap" data-node-id="158:100" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              FAQ
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="content-stretch flex flex-col items-start overflow-clip pb-[16px] pt-[40px] px-[120px] relative shrink-0 w-full" data-node-id="158:101" data-name="SEO · Quick answer">
+        <div className="bg-[var(--cp-color-snow,#f7f8fc)] border border-[var(--cp-color-line,#e6e9f2)] border-solid content-stretch flex gap-[24px] items-start overflow-clip px-[32px] py-[28px] relative rounded-[24px] shrink-0 w-full" data-node-id="158:102" data-name="Frame">
+          <div className="bg-[var(--cp-color-blue,#3657f2)] relative rounded-[3px] self-stretch shrink-0 w-[6px]" data-node-id="158:103" data-name="Rectangle" />
+          <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[8px] items-start min-w-px not-italic overflow-clip relative" data-node-id="158:104" data-name="Frame">
+            <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[13px] text-[color:var(--text\/brand,#3657f2)] tracking-[1.04px] uppercase whitespace-nowrap" data-node-id="158:105" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Quick answer
+            </p>
+            <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.15] min-w-full relative shrink-0 text-[24px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.48px] w-[min-content]" data-node-id="158:106" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Is Rogers worth it for newcomers?
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-full relative shrink-0 text-[17px] text-[color:var(--cp-color-ink,#101a3d)] w-[min-content]" data-node-id="158:107" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Rogers is the premium choice: 5G+ speeds, Canada–US talk and text, and postpaid plans that help build Canadian credit. If price matters most, Fido or Chatr use the same network for less. Rogers plans with us start at $45/mo (CAD, taxes extra).
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="content-stretch flex gap-[48px] items-center overflow-clip px-[120px] py-[56px] relative shrink-0 w-full" data-node-id="158:108" data-name="Slot · At a glance (scorecard)">
+        <div className="[word-break:break-word] content-stretch flex flex-col gap-[12px] items-start not-italic overflow-clip relative shrink-0 w-[360px]" data-node-id="158:109" data-name="Frame">
+          <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-none min-w-full relative shrink-0 text-[56px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-1.68px] w-[min-content]" data-node-id="158:110" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Rogers at a glance
+          </p>
+          <div className="content-stretch flex font-['Google_Sans_Flex:Bold'] font-bold gap-[8px] items-baseline overflow-clip relative shrink-0 whitespace-nowrap" data-node-id="158:111" data-name="Frame">
+            <p className="leading-none relative shrink-0 text-[72px] text-[color:var(--text\/brand,#3657f2)] tracking-[-2.88px]" data-node-id="158:112" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              4.2
+            </p>
+            <p className="leading-[1.15] relative shrink-0 text-[24px] text-[color:var(--cp-color-muted,#535b7a)] tracking-[-0.48px]" data-node-id="158:113" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              / 5
+            </p>
+          </div>
+          <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.45] min-w-full relative shrink-0 text-[14px] text-[color:var(--cp-color-muted,#535b7a)] w-[min-content]" data-node-id="158:114" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Our editorial rating for newcomers. Not paid by any carrier. How we rate →
+          </p>
+        </div>
+        <div className="content-stretch flex flex-[1_0_0] flex-col gap-[18px] items-start min-w-px overflow-clip relative" data-node-id="158:115" data-name="Frame">
+          <div className="content-stretch flex gap-[20px] items-center overflow-clip relative shrink-0 w-full" data-node-id="158:116" data-name="Frame">
+            <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start not-italic overflow-clip relative shrink-0 w-[220px] whitespace-nowrap" data-node-id="158:117" data-name="Frame">
+              <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="158:118" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Network speed
+              </p>
+              <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.45] relative shrink-0 text-[14px] text-[color:var(--cp-color-muted,#535b7a)]" data-node-id="158:119" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                5G+ priority in most cities
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="158:120" data-name="Frame">
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:121" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:122" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:123" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:124" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:125" data-name="Rectangle" />
+            </div>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="158:126" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              5/5
+            </p>
+          </div>
+          <div className="content-stretch flex gap-[20px] items-center overflow-clip relative shrink-0 w-full" data-node-id="158:127" data-name="Frame">
+            <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start not-italic overflow-clip relative shrink-0 w-[220px] whitespace-nowrap" data-node-id="158:128" data-name="Frame">
+              <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="158:129" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`Travel & US`}</p>
+              <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.45] relative shrink-0 text-[14px] text-[color:var(--cp-color-muted,#535b7a)]" data-node-id="158:130" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Canada–US plans available
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="158:131" data-name="Frame">
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:132" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:133" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:134" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:135" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:136" data-name="Rectangle" />
+            </div>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="158:137" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              5/5
+            </p>
+          </div>
+          <div className="content-stretch flex gap-[20px] items-center overflow-clip relative shrink-0 w-full" data-node-id="158:138" data-name="Frame">
+            <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start not-italic overflow-clip relative shrink-0 w-[220px] whitespace-nowrap" data-node-id="158:139" data-name="Frame">
+              <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="158:140" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Perks
+              </p>
+              <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.45] relative shrink-0 text-[14px] text-[color:var(--cp-color-muted,#535b7a)]" data-node-id="158:141" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Streaming add-ons, family plans
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="158:142" data-name="Frame">
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:143" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:144" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:145" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:146" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-sky,#e3e9ff)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:147" data-name="Rectangle" />
+            </div>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="158:148" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              4/5
+            </p>
+          </div>
+          <div className="content-stretch flex gap-[20px] items-center overflow-clip relative shrink-0 w-full" data-node-id="158:149" data-name="Frame">
+            <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start not-italic overflow-clip relative shrink-0 w-[220px] whitespace-nowrap" data-node-id="158:150" data-name="Frame">
+              <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="158:151" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Value for money
+              </p>
+              <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.45] relative shrink-0 text-[14px] text-[color:var(--cp-color-muted,#535b7a)]" data-node-id="158:152" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Higher price than Fido or Chatr
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="158:153" data-name="Frame">
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:154" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:155" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:156" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-sky,#e3e9ff)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:157" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-sky,#e3e9ff)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:158" data-name="Rectangle" />
+            </div>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="158:159" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              3/5
+            </p>
+          </div>
+          <div className="content-stretch flex gap-[20px] items-center overflow-clip relative shrink-0 w-full" data-node-id="158:160" data-name="Frame">
+            <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start not-italic overflow-clip relative shrink-0 w-[220px] whitespace-nowrap" data-node-id="158:161" data-name="Frame">
+              <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="158:162" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Newcomer-friendly
+              </p>
+              <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.45] relative shrink-0 text-[14px] text-[color:var(--cp-color-muted,#535b7a)]" data-node-id="158:163" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Credit check or deposit needed
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] gap-[6px] items-start min-w-px overflow-clip relative" data-node-id="158:164" data-name="Frame">
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:165" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:166" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-blue,#3657f2)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:167" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-sky,#e3e9ff)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:168" data-name="Rectangle" />
+              <div className="bg-[var(--cp-color-sky,#e3e9ff)] flex-[1_0_0] h-[12px] min-w-px relative rounded-[6px]" data-node-id="158:169" data-name="Rectangle" />
+            </div>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="158:170" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              3/5
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex flex-col gap-[20px] items-start overflow-clip px-[120px] py-[72px] relative shrink-0 w-full" data-node-id="159:2" data-name="Slot · Plans (data table)">
+        <div className="content-stretch flex items-end justify-between overflow-clip relative shrink-0 w-full" data-node-id="159:3" data-name="Frame">
+          <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-none not-italic relative shrink-0 text-[56px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-1.68px] whitespace-nowrap" data-node-id="159:4" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Every Rogers plan we offer
+          </p>
+          <div className="content-stretch flex gap-[8px] items-center overflow-clip relative shrink-0" data-node-id="159:5" data-name="Frame">
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--cp-color-muted,#535b7a)] whitespace-nowrap" data-node-id="159:6" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Sort by
+            </p>
+            <div className="bg-[var(--action\/secondary,#101a3d)] content-stretch flex items-start overflow-clip px-[14px] py-[8px] relative rounded-[999px] shrink-0" data-node-id="159:7" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--text\/inverse,white)] whitespace-nowrap" data-node-id="159:8" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Price
+              </p>
+            </div>
+            <div className="bg-[var(--cp-color-white,white)] border border-[var(--border\/strong,#a7acbf)] border-solid content-stretch flex items-start overflow-clip px-[14px] py-[8px] relative rounded-[999px] shrink-0" data-node-id="159:9" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="159:10" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Data
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-[var(--cp-color-white,white)] border border-[var(--cp-color-line,#e6e9f2)] border-solid content-stretch flex flex-col items-start overflow-clip relative rounded-[24px] shrink-0 w-full" data-node-id="159:11" data-name="Plans table">
+          <div className="bg-[var(--bg\/inverse,#101a3d)] content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="159:12" data-name="Header row">
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:13" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[14px] text-[color:var(--text\/inverse,white)]" data-node-id="159:14" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Plan
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:15" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[14px] text-[color:var(--text\/inverse,white)]" data-node-id="159:16" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Data
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:17" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[14px] text-[color:var(--text\/inverse,white)]" data-node-id="159:18" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`Talk & text`}</p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:19" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[14px] text-[color:var(--text\/inverse,white)]" data-node-id="159:20" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Network
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:21" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[14px] text-[color:var(--text\/inverse,white)]" data-node-id="159:22" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                US use
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:23" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[14px] text-[color:var(--text\/inverse,white)]" data-node-id="159:24" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Price
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:25" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[14px] text-[color:var(--text\/inverse,white)]" data-node-id="159:26" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                ​
+              </p>
+            </div>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-solid border-t content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="159:27" data-name="Row">
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:28" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[20px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.2px]" data-node-id="159:29" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Rogers Essentials
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:30" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:31" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                50 GB
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:32" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:33" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Unlimited Canada
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:34" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:35" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                5G
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:36" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:37" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Add-on
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:38" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[20px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.2px]" data-node-id="159:39" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                $45/mo
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:40" data-name="Frame">
+              <div className="border-2 border-[var(--border\/ink,#101a3d)] border-solid content-stretch flex items-center justify-center overflow-clip px-[14px] py-[12px] relative rounded-[999px] shrink-0" data-node-id="159:41" data-name="Button · Choose">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="159:42" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                  Choose plan
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-[var(--cp-color-lemon,#fff4c2)] border-[var(--cp-color-line,#e6e9f2)] border-solid border-t content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="159:43" data-name="Row">
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:44" data-name="Frame">
+              <div className="content-stretch flex flex-col gap-[4px] items-start overflow-clip relative shrink-0" data-node-id="159:45" data-name="Frame">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[20px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.2px] whitespace-nowrap" data-node-id="159:46" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                  Rogers Popular
+                </p>
+                <div className="bg-[var(--cp-color-blush,#ff9db8)] content-stretch flex items-start overflow-clip px-[10px] py-[4px] relative rounded-[999px] shrink-0" data-node-id="159:47" data-name="Frame">
+                  <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[13px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="159:48" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                    Most popular
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:49" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:50" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                75 GB
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:51" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:52" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Unlimited Canada–US
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:53" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:54" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                5G+
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:55" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:56" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Included
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:57" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[20px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.2px]" data-node-id="159:58" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                $50/mo
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:59" data-name="Frame">
+              <div className="bg-[var(--cp-color-blue,#3657f2)] content-stretch flex items-center justify-center overflow-clip px-[14px] py-[12px] relative rounded-[999px] shrink-0" data-node-id="159:60" data-name="Button · Choose">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[16px] text-[color:var(--text\/inverse,white)] whitespace-nowrap" data-node-id="159:61" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                  Choose plan
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-solid border-t content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="159:62" data-name="Row">
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:63" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[20px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.2px]" data-node-id="159:64" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Rogers Plus
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:65" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:66" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                100 GB
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:67" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:68" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Unlimited Canada–US
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:69" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:70" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                5G+
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:71" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:72" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Included
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:73" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[20px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.2px]" data-node-id="159:74" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                $55/mo
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:75" data-name="Frame">
+              <div className="border-2 border-[var(--border\/ink,#101a3d)] border-solid content-stretch flex items-center justify-center overflow-clip px-[14px] py-[12px] relative rounded-[999px] shrink-0" data-node-id="159:76" data-name="Button · Choose">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="159:77" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                  Choose plan
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-solid border-t content-stretch flex items-center overflow-clip relative shrink-0 w-full" data-node-id="159:78" data-name="Row">
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:79" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[20px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.2px]" data-node-id="159:80" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Rogers Ultimate
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:81" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:82" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                150 GB
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:83" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:84" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Unlimited Canada–US
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:85" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:86" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                5G+
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:87" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:88" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Included
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:89" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[20px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.2px]" data-node-id="159:90" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                $75/mo
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-center min-w-px overflow-clip px-[20px] py-[16px] relative" data-node-id="159:91" data-name="Frame">
+              <div className="border-2 border-[var(--border\/ink,#101a3d)] border-solid content-stretch flex items-center justify-center overflow-clip px-[14px] py-[12px] relative rounded-[999px] shrink-0" data-node-id="159:92" data-name="Button · Choose">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="159:93" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                  Choose plan
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.4] not-italic relative shrink-0 text-[13px] text-[color:var(--cp-color-muted,#535b7a)] w-full" data-node-id="159:94" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+          PLACEHOLDER plan names and prices · CAD, taxes extra · Prices as of Oct 2026. Replace with current Rogers offers before publishing.
+        </p>
+      </div>
+      <div className="content-stretch flex gap-[24px] items-start overflow-clip pb-[40px] pt-[72px] px-[120px] relative shrink-0 w-full" data-node-id="159:95" data-name="Slot · Pros & cons">
+        <div className="bg-[var(--status\/success,#d5f5e6)] border-[1.5px] border-[var(--border\/ink,#101a3d)] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[14px] items-start min-w-px overflow-clip px-[36px] py-[32px] relative rounded-[28px] self-stretch" data-node-id="159:96" data-name="Frame">
+          <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.1] not-italic relative shrink-0 text-[30px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.6px] whitespace-nowrap" data-node-id="159:97" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            What we like
+          </p>
+          <div className="content-stretch flex gap-[12px] items-start overflow-clip relative shrink-0 w-full" data-node-id="159:98" data-name="Frame">
+            <div className="bg-[var(--cp-color-white,white)] border-[1.5px] border-[var(--border\/ink,#101a3d)] border-solid content-stretch flex items-center justify-center overflow-clip relative rounded-[12px] shrink-0 size-[24px]" data-node-id="159:99" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[13px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="159:100" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                ✓
+              </p>
+            </div>
+            <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[17px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:101" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Fastest 5G+ speeds in most cities
+            </p>
+          </div>
+          <div className="content-stretch flex gap-[12px] items-start overflow-clip relative shrink-0 w-full" data-node-id="159:102" data-name="Frame">
+            <div className="bg-[var(--cp-color-white,white)] border-[1.5px] border-[var(--border\/ink,#101a3d)] border-solid content-stretch flex items-center justify-center overflow-clip relative rounded-[12px] shrink-0 size-[24px]" data-node-id="159:103" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[13px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="159:104" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                ✓
+              </p>
+            </div>
+            <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[17px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:105" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Canada–US talk, text and data on many plans
+            </p>
+          </div>
+          <div className="content-stretch flex gap-[12px] items-start overflow-clip relative shrink-0 w-full" data-node-id="159:106" data-name="Frame">
+            <div className="bg-[var(--cp-color-white,white)] border-[1.5px] border-[var(--border\/ink,#101a3d)] border-solid content-stretch flex items-center justify-center overflow-clip relative rounded-[12px] shrink-0 size-[24px]" data-node-id="159:107" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[13px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="159:108" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                ✓
+              </p>
+            </div>
+            <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[17px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:109" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Postpaid helps build Canadian credit
+            </p>
+          </div>
+          <div className="content-stretch flex gap-[12px] items-start overflow-clip relative shrink-0 w-full" data-node-id="159:110" data-name="Frame">
+            <div className="bg-[var(--cp-color-white,white)] border-[1.5px] border-[var(--border\/ink,#101a3d)] border-solid content-stretch flex items-center justify-center overflow-clip relative rounded-[12px] shrink-0 size-[24px]" data-node-id="159:111" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[13px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="159:112" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                ✓
+              </p>
+            </div>
+            <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[17px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:113" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Family and multi-line savings
+            </p>
+          </div>
+        </div>
+        <div className="bg-[var(--status\/attention,#fff4c2)] border-[1.5px] border-[var(--border\/ink,#101a3d)] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[14px] items-start min-w-px overflow-clip px-[36px] py-[32px] relative rounded-[28px] self-stretch" data-node-id="159:114" data-name="Frame">
+          <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.1] not-italic relative shrink-0 text-[30px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.6px] whitespace-nowrap" data-node-id="159:115" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Watch out for
+          </p>
+          <div className="content-stretch flex gap-[12px] items-start overflow-clip relative shrink-0 w-full" data-node-id="159:116" data-name="Frame">
+            <div className="bg-[var(--cp-color-white,white)] border-[1.5px] border-[var(--border\/ink,#101a3d)] border-solid content-stretch flex items-center justify-center overflow-clip relative rounded-[12px] shrink-0 size-[24px]" data-node-id="159:117" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[13px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="159:118" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                !
+              </p>
+            </div>
+            <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[17px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:119" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Higher monthly price than Fido or Chatr
+            </p>
+          </div>
+          <div className="content-stretch flex gap-[12px] items-start overflow-clip relative shrink-0 w-full" data-node-id="159:120" data-name="Frame">
+            <div className="bg-[var(--cp-color-white,white)] border-[1.5px] border-[var(--border\/ink,#101a3d)] border-solid content-stretch flex items-center justify-center overflow-clip relative rounded-[12px] shrink-0 size-[24px]" data-node-id="159:121" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[13px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="159:122" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                !
+              </p>
+            </div>
+            <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[17px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:123" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Credit check or deposit for newcomers
+            </p>
+          </div>
+          <div className="content-stretch flex gap-[12px] items-start overflow-clip relative shrink-0 w-full" data-node-id="159:124" data-name="Frame">
+            <div className="bg-[var(--cp-color-white,white)] border-[1.5px] border-[var(--border\/ink,#101a3d)] border-solid content-stretch flex items-center justify-center overflow-clip relative rounded-[12px] shrink-0 size-[24px]" data-node-id="159:125" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[13px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="159:126" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                !
+              </p>
+            </div>
+            <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[17px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:127" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Phone financing can mean a 24-month commitment
+            </p>
+          </div>
+          <div className="content-stretch flex gap-[12px] items-start overflow-clip relative shrink-0 w-full" data-node-id="159:128" data-name="Frame">
+            <div className="bg-[var(--cp-color-white,white)] border-[1.5px] border-[var(--border\/ink,#101a3d)] border-solid content-stretch flex items-center justify-center overflow-clip relative rounded-[12px] shrink-0 size-[24px]" data-node-id="159:129" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[13px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="159:130" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                !
+              </p>
+            </div>
+            <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[17px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:131" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Some perks only on top plans
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="content-stretch flex flex-col gap-[20px] items-start overflow-clip pb-[72px] pt-[40px] px-[120px] relative shrink-0 w-full" data-node-id="159:132" data-name="Slot · Brand comparison matrix">
+        <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-none not-italic relative shrink-0 text-[56px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-1.68px] whitespace-nowrap" data-node-id="159:133" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+          Rogers vs Fido vs Chatr
+        </p>
+        <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-full not-italic relative shrink-0 text-[17px] text-[color:var(--cp-color-muted,#535b7a)] w-[min-content]" data-node-id="159:134" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+          All three run on the Rogers network. Here is how they differ for newcomers.
+        </p>
+        <div className="border border-[var(--cp-color-line,#e6e9f2)] border-solid content-stretch flex flex-col items-start overflow-clip relative rounded-[24px] shrink-0 w-full" data-node-id="159:135" data-name="Matrix">
+          <div className="content-stretch flex items-start overflow-clip relative shrink-0 w-full" data-node-id="159:136" data-name="Frame">
+            <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:137" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[20px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.2px]" data-node-id="159:138" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                ​
+              </p>
+            </div>
+            <div className="bg-[var(--bg\/brand,#3657f2)] content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:139" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[20px] text-[color:var(--text\/inverse,white)] tracking-[-0.2px]" data-node-id="159:140" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Rogers
+              </p>
+            </div>
+            <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:141" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[20px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.2px]" data-node-id="159:142" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Fido
+              </p>
+            </div>
+            <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:143" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[20px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.2px]" data-node-id="159:144" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Chatr
+              </p>
+            </div>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-solid border-t content-stretch flex items-start overflow-clip relative shrink-0 w-full" data-node-id="159:145" data-name="Frame">
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:146" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:147" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Best for
+              </p>
+            </div>
+            <div className="bg-[var(--cp-color-lemon,#fff4c2)] content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:148" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:149" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`Speed & travel`}</p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:150" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:151" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Best value
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:152" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:153" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Lowest price
+              </p>
+            </div>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-solid border-t content-stretch flex items-start overflow-clip relative shrink-0 w-full" data-node-id="159:154" data-name="Frame">
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:155" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:156" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Pay
+              </p>
+            </div>
+            <div className="bg-[var(--cp-color-lemon,#fff4c2)] content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:157" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:158" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Postpaid
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:159" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:160" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Prepaid or postpaid
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:161" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:162" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Prepaid
+              </p>
+            </div>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-solid border-t content-stretch flex items-start overflow-clip relative shrink-0 w-full" data-node-id="159:163" data-name="Frame">
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:164" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:165" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Credit check
+              </p>
+            </div>
+            <div className="bg-[var(--cp-color-lemon,#fff4c2)] content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:166" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:167" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Yes / deposit
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:168" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:169" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Postpaid only
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:170" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:171" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                No
+              </p>
+            </div>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-solid border-t content-stretch flex items-start overflow-clip relative shrink-0 w-full" data-node-id="159:172" data-name="Frame">
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:173" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:174" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                5G
+              </p>
+            </div>
+            <div className="bg-[var(--cp-color-lemon,#fff4c2)] content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:175" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:176" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                5G+
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:177" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:178" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                5G
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:179" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:180" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                VERIFY
+              </p>
+            </div>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-solid border-t content-stretch flex items-start overflow-clip relative shrink-0 w-full" data-node-id="159:181" data-name="Frame">
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:182" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:183" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                US use
+              </p>
+            </div>
+            <div className="bg-[var(--cp-color-lemon,#fff4c2)] content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:184" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:185" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Canada–US plans
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:186" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:187" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Add-ons
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:188" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:189" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Add-ons
+              </p>
+            </div>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-solid border-t content-stretch flex items-start overflow-clip relative shrink-0 w-full" data-node-id="159:190" data-name="Frame">
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:191" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:192" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Plans from
+              </p>
+            </div>
+            <div className="bg-[var(--cp-color-lemon,#fff4c2)] content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:193" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:194" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                $45/mo
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:195" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:196" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                $45/mo
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:197" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:198" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                $29/mo
+              </p>
+            </div>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-solid border-t content-stretch flex items-start overflow-clip relative shrink-0 w-full" data-node-id="159:199" data-name="Frame">
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:200" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:201" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                ​
+              </p>
+            </div>
+            <div className="bg-[var(--cp-color-lemon,#fff4c2)] content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:202" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-px not-italic relative text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="159:203" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                You’re here
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:204" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[16px] text-[color:var(--text\/brand,#3657f2)]" data-node-id="159:205" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                See Fido plans →
+              </p>
+            </div>
+            <div className="content-stretch flex flex-[1_0_0] items-start min-w-px overflow-clip px-[22px] py-[16px] relative self-stretch" data-node-id="159:206" data-name="Frame">
+              <p className="[word-break:break-word] flex-[1_0_0] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-px not-italic relative text-[16px] text-[color:var(--text\/brand,#3657f2)]" data-node-id="159:207" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                See Chatr plans →
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="bg-[var(--bg\/inverse,#101a3d)] content-stretch flex flex-col gap-[28px] items-start overflow-clip px-[120px] py-[72px] relative shrink-0 w-full" data-node-id="159:208" data-name="Slot · Switch steps">
+        <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.1] not-italic relative shrink-0 text-[36px] text-[color:var(--text\/inverse,white)] tracking-[-0.72px] whitespace-nowrap" data-node-id="159:209" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+          Switch to Rogers in 4 steps — keep your number
+        </p>
+        <div className="content-stretch flex gap-[16px] items-start overflow-clip relative shrink-0 w-full" data-node-id="159:210" data-name="Frame">
+          <div className="bg-[rgba(255,255,255,0.14)] border-[1.5px] border-[rgba(255,255,255,0.45)] border-dashed content-stretch flex flex-[1_0_0] flex-col gap-[8px] items-center justify-center min-w-px overflow-clip p-[24px] relative rounded-[20px] self-stretch" data-node-id="314:1754" data-name="Image slot">
+            <div className="relative shrink-0 size-[32px]" data-node-id="I314:1754;312:10" data-name="Icon">
+              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon} />
+            </div>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[12px] text-white tracking-[0.96px] uppercase whitespace-nowrap" data-node-id="I314:1754;312:14" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              IMAGE
+            </p>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.4] min-w-full not-italic relative shrink-0 text-[13px] text-center text-white w-[min-content]" data-node-id="I314:1754;312:15" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`Advisor at our Surrey counter moving a customer's number onto a new Rogers SIM`}</p>
+          </div>
+          <div className="bg-[var(--surface\/inverse,#2a3459)] content-stretch flex flex-[1_0_0] flex-col gap-[10px] items-start min-w-px overflow-clip p-[22px] relative rounded-[24px] self-stretch" data-node-id="159:211" data-name="Frame">
+            <div className="bg-[var(--cp-color-lemon,#fff4c2)] content-stretch flex items-center justify-center overflow-clip relative rounded-[20px] shrink-0 size-[40px]" data-node-id="159:212" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="159:213" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                1
+              </p>
+            </div>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-full not-italic relative shrink-0 text-[20px] text-[color:var(--text\/inverse,white)] tracking-[-0.2px] w-[min-content]" data-node-id="159:214" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Keep your old plan active
+            </p>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-full not-italic relative shrink-0 text-[16px] text-[color:var(--text\/inverse-muted,#c9cee3)] w-[min-content]" data-node-id="159:215" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Cancelling first can release your number.
+            </p>
+          </div>
+          <div className="bg-[var(--surface\/inverse,#2a3459)] content-stretch flex flex-[1_0_0] flex-col gap-[10px] items-start min-w-px overflow-clip p-[22px] relative rounded-[24px] self-stretch" data-node-id="159:216" data-name="Frame">
+            <div className="bg-[var(--cp-color-lemon,#fff4c2)] content-stretch flex items-center justify-center overflow-clip relative rounded-[20px] shrink-0 size-[40px]" data-node-id="159:217" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="159:218" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                2
+              </p>
+            </div>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-full not-italic relative shrink-0 text-[20px] text-[color:var(--text\/inverse,white)] tracking-[-0.2px] w-[min-content]" data-node-id="159:219" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`Send us your account number & PIN`}</p>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-full not-italic relative shrink-0 text-[16px] text-[color:var(--text\/inverse-muted,#c9cee3)] w-[min-content]" data-node-id="159:220" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              From your current carrier’s bill or app.
+            </p>
+          </div>
+          <div className="bg-[var(--surface\/inverse,#2a3459)] content-stretch flex flex-[1_0_0] flex-col gap-[10px] items-start min-w-px overflow-clip p-[22px] relative rounded-[24px] self-stretch" data-node-id="159:221" data-name="Frame">
+            <div className="bg-[var(--cp-color-lemon,#fff4c2)] content-stretch flex items-center justify-center overflow-clip relative rounded-[20px] shrink-0 size-[40px]" data-node-id="159:222" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="159:223" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                3
+              </p>
+            </div>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-full not-italic relative shrink-0 text-[20px] text-[color:var(--text\/inverse,white)] tracking-[-0.2px] w-[min-content]" data-node-id="159:224" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              We transfer your number
+            </p>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-full not-italic relative shrink-0 text-[16px] text-[color:var(--text\/inverse-muted,#c9cee3)] w-[min-content]" data-node-id="159:225" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Usually the same day.* (VERIFY)
+            </p>
+          </div>
+          <div className="bg-[var(--surface\/inverse,#2a3459)] content-stretch flex flex-[1_0_0] flex-col gap-[10px] items-start min-w-px overflow-clip p-[22px] relative rounded-[24px] self-stretch" data-node-id="159:226" data-name="Frame">
+            <div className="bg-[var(--cp-color-lemon,#fff4c2)] content-stretch flex items-center justify-center overflow-clip relative rounded-[20px] shrink-0 size-[40px]" data-node-id="159:227" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="159:228" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                4
+              </p>
+            </div>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] min-w-full not-italic relative shrink-0 text-[20px] text-[color:var(--text\/inverse,white)] tracking-[-0.2px] w-[min-content]" data-node-id="159:229" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Switch on
+            </p>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-full not-italic relative shrink-0 text-[16px] text-[color:var(--text\/inverse-muted,#c9cee3)] w-[min-content]" data-node-id="159:230" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Unlocked phone? You’re done. Locked? We help you unlock.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex gap-[56px] items-start overflow-clip px-[120px] py-[88px] relative shrink-0 w-full" data-node-id="160:2" data-name="SEO · Long-form guide">
+        <div className="content-stretch flex flex-[1_0_0] flex-col gap-[20px] items-start min-w-px overflow-clip relative" data-node-id="160:3" data-name="Frame">
+          <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[13px] text-[color:var(--text\/brand,#3657f2)] tracking-[1.04px] uppercase whitespace-nowrap" data-node-id="160:4" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Newcomer guide
+          </p>
+          <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-none min-w-full not-italic relative shrink-0 text-[56px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-1.68px] w-[min-content]" data-node-id="160:5" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Rogers for newcomers: what to know before you sign
+          </p>
+          <div className="bg-gradient-to-b border-[1.5px] border-[rgba(54,87,242,0.25)] border-dashed content-stretch flex flex-col from-[#eff3ff] gap-[8px] h-[300px] items-center justify-center overflow-clip p-[24px] relative rounded-[20px] shrink-0 to-[#e0e7ff] w-full" data-node-id="314:977" data-name="Image slot">
+            <div className="relative shrink-0 size-[32px]" data-node-id="I314:977;312:3" data-name="Icon">
+              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon1} />
+            </div>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[#3657f2] text-[12px] tracking-[0.96px] uppercase whitespace-nowrap" data-node-id="I314:977;312:7" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              IMAGE
+            </p>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.4] min-w-full not-italic relative shrink-0 text-[#666b7a] text-[13px] text-center w-[min-content]" data-node-id="I314:977;312:8" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Newcomer at a kitchen table setting up a new phone, Rogers SIM kit and welcome letter beside it
+            </p>
+          </div>
+          <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.1] min-w-full not-italic relative shrink-0 text-[30px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.6px] w-[min-content]" data-node-id="160:6" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Can I get Rogers without a credit history?
+          </p>
+          <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-full not-italic relative shrink-0 text-[17px] text-[color:var(--cp-color-ink,#101a3d)] w-[min-content]" data-node-id="160:7" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Usually yes — with a security deposit, or by starting on a prepaid brand first. We explain the deposit on the call before anything is set up.
+          </p>
+          <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.1] min-w-full not-italic relative shrink-0 text-[30px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.6px] w-[min-content]" data-node-id="160:8" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Is Rogers better than Fido or Chatr?
+          </p>
+          <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-full not-italic relative shrink-0 text-[17px] text-[color:var(--cp-color-ink,#101a3d)] w-[min-content]" data-node-id="160:9" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Not better network-wise — all three use the Rogers network. Rogers adds 5G+ priority, Canada–US plans and bigger perks; Fido and Chatr cost less.
+          </p>
+          <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.1] min-w-full not-italic relative shrink-0 text-[30px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.6px] w-[min-content]" data-node-id="160:10" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            What about phone financing?
+          </p>
+          <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] min-w-full not-italic relative shrink-0 text-[17px] text-[color:var(--cp-color-ink,#101a3d)] w-[min-content]" data-node-id="160:11" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            You can bring your own phone or finance one over 24 months. Financing lowers the upfront cost but ties you to the plan — ask us to compare the total cost.
+          </p>
+        </div>
+        <div className="[word-break:break-word] bg-[var(--cp-color-white,white)] border-2 border-[var(--border\/ink,#101a3d)] border-solid content-stretch flex flex-col gap-[14px] items-start not-italic overflow-clip p-[28px] relative rounded-[24px] shrink-0 w-[380px]" data-node-id="160:12" data-name="Key facts">
+          <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.15] relative shrink-0 text-[24px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.48px] whitespace-nowrap" data-node-id="160:13" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Key facts
+          </p>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-b border-solid content-stretch flex flex-col font-['Google_Sans_Flex:Bold'] font-bold gap-[2px] items-start leading-[1.25] overflow-clip pb-[10px] relative shrink-0 w-full" data-node-id="160:14" data-name="Frame">
+            <p className="relative shrink-0 text-[13px] text-[color:var(--cp-color-muted,#535b7a)] tracking-[1.04px] uppercase whitespace-nowrap" data-node-id="160:15" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Plans from
+            </p>
+            <p className="min-w-full relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] w-[min-content]" data-node-id="160:16" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              $45/mo · CAD + tax
+            </p>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-b border-solid content-stretch flex flex-col font-['Google_Sans_Flex:Bold'] font-bold gap-[2px] items-start leading-[1.25] overflow-clip pb-[10px] relative shrink-0 w-full" data-node-id="160:17" data-name="Frame">
+            <p className="relative shrink-0 text-[13px] text-[color:var(--cp-color-muted,#535b7a)] tracking-[1.04px] uppercase whitespace-nowrap" data-node-id="160:18" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Payment
+            </p>
+            <p className="min-w-full relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] w-[min-content]" data-node-id="160:19" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Postpaid
+            </p>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-b border-solid content-stretch flex flex-col font-['Google_Sans_Flex:Bold'] font-bold gap-[2px] items-start leading-[1.25] overflow-clip pb-[10px] relative shrink-0 w-full" data-node-id="160:20" data-name="Frame">
+            <p className="relative shrink-0 text-[13px] text-[color:var(--cp-color-muted,#535b7a)] tracking-[1.04px] uppercase whitespace-nowrap" data-node-id="160:21" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Credit check
+            </p>
+            <p className="min-w-full relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] w-[min-content]" data-node-id="160:22" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Yes, or a deposit
+            </p>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-b border-solid content-stretch flex flex-col font-['Google_Sans_Flex:Bold'] font-bold gap-[2px] items-start leading-[1.25] overflow-clip pb-[10px] relative shrink-0 w-full" data-node-id="160:23" data-name="Frame">
+            <p className="relative shrink-0 text-[13px] text-[color:var(--cp-color-muted,#535b7a)] tracking-[1.04px] uppercase whitespace-nowrap" data-node-id="160:24" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Network
+            </p>
+            <p className="min-w-full relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] w-[min-content]" data-node-id="160:25" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Rogers · 5G+
+            </p>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-b border-solid content-stretch flex flex-col font-['Google_Sans_Flex:Bold'] font-bold gap-[2px] items-start leading-[1.25] overflow-clip pb-[10px] relative shrink-0 w-full" data-node-id="160:26" data-name="Frame">
+            <p className="relative shrink-0 text-[13px] text-[color:var(--cp-color-muted,#535b7a)] tracking-[1.04px] uppercase whitespace-nowrap" data-node-id="160:27" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              US use
+            </p>
+            <p className="min-w-full relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] w-[min-content]" data-node-id="160:28" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Canada–US plans available
+            </p>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-b border-solid content-stretch flex flex-col font-['Google_Sans_Flex:Bold'] font-bold gap-[2px] items-start leading-[1.25] overflow-clip pb-[10px] relative shrink-0 w-full" data-node-id="160:29" data-name="Frame">
+            <p className="relative shrink-0 text-[13px] text-[color:var(--cp-color-muted,#535b7a)] tracking-[1.04px] uppercase whitespace-nowrap" data-node-id="160:30" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Keep your number
+            </p>
+            <p className="min-w-full relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] w-[min-content]" data-node-id="160:31" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Yes, free transfer
+            </p>
+          </div>
+          <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.4] relative shrink-0 text-[13px] text-[color:var(--cp-color-muted,#535b7a)] whitespace-nowrap" data-node-id="160:32" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Updated 5 Oct 2026
+          </p>
+        </div>
+      </div>
+      <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex gap-[48px] items-center overflow-clip px-[120px] py-[96px] relative shrink-0 w-full" data-node-id="160:33" data-name="Slot · Reviews">
+        <div className="[word-break:break-word] content-stretch flex flex-col gap-[6px] items-start not-italic overflow-clip relative shrink-0 whitespace-nowrap" data-node-id="160:34" data-name="Score">
+          <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[13px] text-[color:var(--text\/brand,#3657f2)] tracking-[1.04px] uppercase" data-node-id="160:35" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            REVIEWS
+          </p>
+          <div className="font-['Google_Sans_Flex:Bold'] font-bold leading-[0] relative shrink-0 text-[36px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.72px]" data-node-id="160:36" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            <p className="leading-[1.1] mb-0">Newcomers</p>
+            <p className="leading-[1.1]">recommend us.</p>
+          </div>
+          <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[0.95] relative shrink-0 text-[96px] text-[color:var(--text\/brand,#3657f2)] tracking-[-2.88px]" data-node-id="160:37" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            4.8
+          </p>
+          <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[normal] relative shrink-0 text-[24px] text-[color:var(--text\/rating,#b88a00)]" data-node-id="160:38" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            ★★★★★
+          </p>
+          <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[16px] text-[color:var(--cp-color-muted,#535b7a)]" data-node-id="160:39" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            1,200+ Google reviews
+          </p>
+        </div>
+        <div className="content-stretch flex flex-[1_0_0] gap-[20px] items-start min-w-px overflow-clip relative" data-node-id="160:40" data-name="Frame">
+          <div className="bg-[var(--cp-color-white,white)] content-stretch flex flex-[1_0_0] flex-col gap-[20px] items-start min-w-px overflow-clip p-[28px] relative rounded-[28px] self-stretch" data-node-id="160:41" data-name="Frame">
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[16px] text-[color:var(--text\/rating,#b88a00)] whitespace-nowrap" data-node-id="160:42" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              ★★★★★
+            </p>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Medium'] font-medium leading-[1.5] min-w-full not-italic relative shrink-0 text-[17px] text-[color:var(--cp-color-ink,#101a3d)] w-[min-content]" data-node-id="160:43" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              “Had my Canadian number two weeks before my flight. Used it to open my bank account online — landed at YVR and it just worked.”
+            </p>
+            <div className="content-stretch flex gap-[12px] items-center overflow-clip relative shrink-0" data-node-id="160:44" data-name="Frame">
+              <div className="relative shrink-0 size-[40px]" data-node-id="160:45" data-name="Ellipse">
+                <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgEllipse3} />
+              </div>
+              <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start not-italic overflow-clip relative shrink-0 whitespace-nowrap" data-node-id="160:46" data-name="Frame">
+                <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="160:47" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                  Aarav S.
+                </p>
+                <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.4] relative shrink-0 text-[13px] text-[color:var(--cp-color-muted,#535b7a)]" data-node-id="160:48" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                  Student · Delhi → Vancouver
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-[var(--cp-color-white,white)] content-stretch flex flex-[1_0_0] flex-col gap-[20px] items-start min-w-px overflow-clip p-[28px] relative rounded-[28px] self-stretch" data-node-id="160:49" data-name="Frame">
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[16px] text-[color:var(--text\/rating,#b88a00)] whitespace-nowrap" data-node-id="160:50" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              ★★★★★
+            </p>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Medium'] font-medium leading-[1.5] min-w-full not-italic relative shrink-0 text-[17px] text-[color:var(--cp-color-ink,#101a3d)] w-[min-content]" data-node-id="160:51" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              “Internet was installed in our Brampton apartment three days after we moved in. Someone actually called back when they said.”
+            </p>
+            <div className="content-stretch flex gap-[12px] items-center overflow-clip relative shrink-0" data-node-id="160:52" data-name="Frame">
+              <div className="relative shrink-0 size-[40px]" data-node-id="160:53" data-name="Ellipse">
+                <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgEllipse4} />
+              </div>
+              <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start not-italic overflow-clip relative shrink-0 whitespace-nowrap" data-node-id="160:54" data-name="Frame">
+                <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="160:55" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                  Maria L.
+                </p>
+                <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.4] relative shrink-0 text-[13px] text-[color:var(--cp-color-muted,#535b7a)]" data-node-id="160:56" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                  Nurse · Manila → Brampton
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-[var(--cp-color-white,white)] content-stretch flex flex-[1_0_0] flex-col gap-[20px] items-start min-w-px overflow-clip p-[28px] relative rounded-[28px] self-stretch" data-node-id="160:57" data-name="Frame">
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[normal] not-italic relative shrink-0 text-[16px] text-[color:var(--text\/rating,#b88a00)] whitespace-nowrap" data-node-id="160:58" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              ★★★★★
+            </p>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Medium'] font-medium leading-[1.5] min-w-full not-italic relative shrink-0 text-[17px] text-[color:var(--cp-color-ink,#101a3d)] w-[min-content]" data-node-id="160:59" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              “Clear prices, no surprises on the first bill. The advisor explained Fido vs Rogers in plain words.”
+            </p>
+            <div className="content-stretch flex gap-[12px] items-center overflow-clip relative shrink-0" data-node-id="160:60" data-name="Frame">
+              <div className="relative shrink-0 size-[40px]" data-node-id="160:61" data-name="Ellipse">
+                <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgEllipse5} />
+              </div>
+              <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start not-italic overflow-clip relative shrink-0 whitespace-nowrap" data-node-id="160:62" data-name="Frame">
+                <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)]" data-node-id="160:63" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                  Tanvir H.
+                </p>
+                <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.4] relative shrink-0 text-[13px] text-[color:var(--cp-color-muted,#535b7a)]" data-node-id="160:64" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                  PR · Dhaka → Calgary
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="bg-[var(--bg\/page,white)] content-stretch flex gap-[80px] items-start overflow-clip px-[120px] py-[96px] relative shrink-0 w-full" data-node-id="160:65" data-name="Slot · FAQ">
+        <div className="content-stretch flex flex-col gap-[16px] items-start overflow-clip relative shrink-0 w-[380px]" data-node-id="160:66" data-name="Frame">
+          <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[13px] text-[color:var(--text\/brand,#3657f2)] tracking-[1.04px] uppercase whitespace-nowrap" data-node-id="160:67" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            FAQ
+          </p>
+          <div className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[0] not-italic relative shrink-0 text-[56px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-1.68px] whitespace-nowrap" data-node-id="160:68" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            <p className="leading-none mb-0">Rogers plan</p>
+            <p className="leading-none">questions</p>
+          </div>
+          <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] not-italic relative shrink-0 text-[17px] text-[color:var(--cp-color-muted,#535b7a)] w-[380px]" data-node-id="160:69" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Talk to an advisor, Monday to Saturday, 9am–9pm Pacific time.
+          </p>
+          <div className="border-2 border-[var(--border\/ink,#101a3d)] border-solid content-stretch flex items-center justify-center overflow-clip px-[28px] py-[14px] relative rounded-[999px] shrink-0" data-node-id="160:70" data-name="Button · WhatsApp us">
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[16px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="160:71" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              WhatsApp us
+            </p>
+          </div>
+          <div className="bg-gradient-to-b border-[1.5px] border-[rgba(54,87,242,0.25)] border-dashed content-stretch flex flex-col from-[#eff3ff] gap-[8px] h-[240px] items-center justify-center overflow-clip p-[24px] relative rounded-[20px] shrink-0 to-[#e0e7ff] w-full" data-node-id="317:879" data-name="Image slot · Advisor">
+            <div className="relative shrink-0 size-[32px]" data-node-id="I317:879;312:3" data-name="Icon">
+              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon1} />
+            </div>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[#3657f2] text-[12px] tracking-[0.96px] uppercase whitespace-nowrap" data-node-id="I317:879;312:7" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              IMAGE
+            </p>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.4] min-w-full not-italic relative shrink-0 text-[#666b7a] text-[13px] text-center w-[min-content]" data-node-id="I317:879;312:8" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Advisor at our Surrey office answering a customer’s WhatsApp message on the work phone
+            </p>
+          </div>
+        </div>
+        <div className="content-stretch flex flex-[1_0_0] flex-col items-start min-w-px overflow-clip relative" data-node-id="160:72" data-name="Accordion">
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-b border-solid border-t content-stretch flex flex-col gap-[12px] items-start overflow-clip py-[24px] relative shrink-0 w-full" data-node-id="160:73" data-name="FAQ item">
+            <div className="content-stretch flex items-center justify-between overflow-clip relative shrink-0 w-full" data-node-id="160:74" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[20px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.2px] whitespace-nowrap" data-node-id="160:75" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Do I need a credit check for Rogers?
+              </p>
+              <div className="bg-[var(--cp-color-blue,#3657f2)] content-stretch flex items-center justify-center overflow-clip relative rounded-[20px] shrink-0 size-[40px]" data-node-id="160:76" data-name="Frame">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[normal] not-italic relative shrink-0 text-[20px] text-[color:var(--text\/inverse,white)] whitespace-nowrap" data-node-id="160:77" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                  −
+                </p>
+              </div>
+            </div>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] not-italic relative shrink-0 text-[17px] text-[color:var(--cp-color-muted,#535b7a)] w-[600px]" data-node-id="160:78" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Rogers postpaid plans usually need a credit check or a deposit. If you’re new to Canada, we explain your options on the call — or suggest a prepaid brand to start.
+            </p>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-b border-solid content-stretch flex flex-col items-start overflow-clip py-[24px] relative shrink-0 w-full" data-node-id="160:79" data-name="FAQ item">
+            <div className="content-stretch flex items-center justify-between overflow-clip relative shrink-0 w-full" data-node-id="160:80" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[20px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.2px] whitespace-nowrap" data-node-id="160:81" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Can I keep my number when I switch to Rogers?
+              </p>
+              <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex items-center justify-center overflow-clip relative rounded-[20px] shrink-0 size-[40px]" data-node-id="160:82" data-name="Frame">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[normal] not-italic relative shrink-0 text-[20px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="160:83" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                  +
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-b border-solid content-stretch flex flex-col items-start overflow-clip py-[24px] relative shrink-0 w-full" data-node-id="160:84" data-name="FAQ item">
+            <div className="content-stretch flex items-center justify-between overflow-clip relative shrink-0 w-full" data-node-id="160:85" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[20px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.2px] whitespace-nowrap" data-node-id="160:86" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Does Rogers include US roaming?
+              </p>
+              <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex items-center justify-center overflow-clip relative rounded-[20px] shrink-0 size-[40px]" data-node-id="160:87" data-name="Frame">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[normal] not-italic relative shrink-0 text-[20px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="160:88" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                  +
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-b border-solid content-stretch flex flex-col items-start overflow-clip py-[24px] relative shrink-0 w-full" data-node-id="160:89" data-name="FAQ item">
+            <div className="content-stretch flex items-center justify-between overflow-clip relative shrink-0 w-full" data-node-id="160:90" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[20px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.2px] whitespace-nowrap" data-node-id="160:91" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Can I bring my own phone?
+              </p>
+              <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex items-center justify-center overflow-clip relative rounded-[20px] shrink-0 size-[40px]" data-node-id="160:92" data-name="Frame">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[normal] not-italic relative shrink-0 text-[20px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="160:93" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                  +
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-b border-solid content-stretch flex flex-col items-start overflow-clip py-[24px] relative shrink-0 w-full" data-node-id="160:94" data-name="FAQ item">
+            <div className="content-stretch flex items-center justify-between overflow-clip relative shrink-0 w-full" data-node-id="160:95" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[20px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.2px] whitespace-nowrap" data-node-id="160:96" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Can I add family lines later?
+              </p>
+              <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex items-center justify-center overflow-clip relative rounded-[20px] shrink-0 size-[40px]" data-node-id="160:97" data-name="Frame">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[normal] not-italic relative shrink-0 text-[20px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="160:98" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                  +
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="border-[var(--cp-color-line,#e6e9f2)] border-b border-solid content-stretch flex flex-col items-start overflow-clip py-[24px] relative shrink-0 w-full" data-node-id="160:99" data-name="FAQ item">
+            <div className="content-stretch flex items-center justify-between overflow-clip relative shrink-0 w-full" data-node-id="160:100" data-name="Frame">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[20px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.2px] whitespace-nowrap" data-node-id="160:101" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                What happens after 24 months?
+              </p>
+              <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex items-center justify-center overflow-clip relative rounded-[20px] shrink-0 size-[40px]" data-node-id="160:102" data-name="Frame">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[normal] not-italic relative shrink-0 text-[20px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-nowrap" data-node-id="160:103" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                  +
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="content-stretch flex flex-col gap-[24px] items-start overflow-clip pb-[80px] pt-[24px] px-[120px] relative shrink-0 w-full" data-node-id="160:104" data-name="SEO · Internal links & sources">
+        <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.1] not-italic relative shrink-0 text-[36px] text-[color:var(--cp-color-ink,#101a3d)] tracking-[-0.72px] whitespace-nowrap" data-node-id="160:105" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+          Explore more
+        </p>
+        <div className="content-stretch flex gap-[24px] items-start overflow-clip relative shrink-0 w-full" data-node-id="160:106" data-name="Frame">
+          <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex flex-[1_0_0] flex-col gap-[12px] items-start min-w-px overflow-clip p-[24px] relative rounded-[24px] self-stretch" data-node-id="160:107" data-name="Frame">
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--cp-color-muted,#535b7a)] whitespace-nowrap" data-node-id="160:108" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Other brands
+            </p>
+            <div className="content-start flex flex-wrap gap-[8px] items-start overflow-clip relative shrink-0 w-full" data-node-id="160:109" data-name="Frame">
+              <div className="bg-[var(--cp-color-white,white)] border-[1.5px] border-[var(--border\/brand,#3657f2)] border-solid content-stretch flex items-start overflow-clip px-[16px] py-[9px] relative rounded-[999px] shrink-0" data-node-id="160:110" data-name="Link pill · Fido plans  →">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--text\/brand,#3657f2)] whitespace-pre" data-node-id="160:111" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`Fido plans  →`}</p>
+              </div>
+              <div className="bg-[var(--cp-color-white,white)] border-[1.5px] border-[var(--border\/brand,#3657f2)] border-solid content-stretch flex items-start overflow-clip px-[16px] py-[9px] relative rounded-[999px] shrink-0" data-node-id="160:112" data-name="Link pill · Chatr plans  →">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--text\/brand,#3657f2)] whitespace-pre" data-node-id="160:113" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`Chatr plans  →`}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex flex-[1_0_0] flex-col gap-[12px] items-start min-w-px overflow-clip p-[24px] relative rounded-[24px] self-stretch" data-node-id="160:114" data-name="Frame">
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--cp-color-muted,#535b7a)] whitespace-nowrap" data-node-id="160:115" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              By need
+            </p>
+            <div className="content-start flex flex-wrap gap-[8px] items-start overflow-clip relative shrink-0 w-full" data-node-id="160:116" data-name="Frame">
+              <div className="bg-[var(--cp-color-white,white)] border-[1.5px] border-[var(--border\/brand,#3657f2)] border-solid content-stretch flex items-start overflow-clip px-[16px] py-[9px] relative rounded-[999px] shrink-0" data-node-id="160:117" data-name="Link pill · Unlimited data  →">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--text\/brand,#3657f2)] whitespace-pre" data-node-id="160:118" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`Unlimited data  →`}</p>
+              </div>
+              <div className="bg-[var(--cp-color-white,white)] border-[1.5px] border-[var(--border\/brand,#3657f2)] border-solid content-stretch flex items-start overflow-clip px-[16px] py-[9px] relative rounded-[999px] shrink-0" data-node-id="160:119" data-name="Link pill · No credit check  →">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--text\/brand,#3657f2)] whitespace-pre" data-node-id="160:120" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`No credit check  →`}</p>
+              </div>
+              <div className="bg-[var(--cp-color-white,white)] border-[1.5px] border-[var(--border\/brand,#3657f2)] border-solid content-stretch flex items-start overflow-clip px-[16px] py-[9px] relative rounded-[999px] shrink-0" data-node-id="160:121" data-name="Link pill · Students  →">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--text\/brand,#3657f2)] whitespace-pre" data-node-id="160:122" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`Students  →`}</p>
+              </div>
+              <div className="bg-[var(--cp-color-white,white)] border-[1.5px] border-[var(--border\/brand,#3657f2)] border-solid content-stretch flex items-start overflow-clip px-[16px] py-[9px] relative rounded-[999px] shrink-0" data-node-id="160:123" data-name="Link pill · Seniors  →">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--text\/brand,#3657f2)] whitespace-pre" data-node-id="160:124" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`Seniors  →`}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-[var(--cp-color-snow,#f7f8fc)] content-stretch flex flex-[1_0_0] flex-col gap-[12px] items-start min-w-px overflow-clip p-[24px] relative rounded-[24px] self-stretch" data-node-id="160:125" data-name="Frame">
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--cp-color-muted,#535b7a)] whitespace-nowrap" data-node-id="160:126" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Compare
+            </p>
+            <div className="content-start flex flex-wrap gap-[8px] items-start overflow-clip relative shrink-0 w-full" data-node-id="160:127" data-name="Frame">
+              <div className="bg-[var(--cp-color-white,white)] border-[1.5px] border-[var(--border\/brand,#3657f2)] border-solid content-stretch flex items-start overflow-clip px-[16px] py-[9px] relative rounded-[999px] shrink-0" data-node-id="160:128" data-name="Link pill · Rogers vs Fido  →">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--text\/brand,#3657f2)] whitespace-pre" data-node-id="160:129" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`Rogers vs Fido  →`}</p>
+              </div>
+              <div className="bg-[var(--cp-color-white,white)] border-[1.5px] border-[var(--border\/brand,#3657f2)] border-solid content-stretch flex items-start overflow-clip px-[16px] py-[9px] relative rounded-[999px] shrink-0" data-node-id="160:130" data-name="Link pill · Fido vs Chatr  →">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--text\/brand,#3657f2)] whitespace-pre" data-node-id="160:131" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`Fido vs Chatr  →`}</p>
+              </div>
+              <div className="bg-[var(--cp-color-white,white)] border-[1.5px] border-[var(--border\/brand,#3657f2)] border-solid content-stretch flex items-start overflow-clip px-[16px] py-[9px] relative rounded-[999px] shrink-0" data-node-id="160:132" data-name="Link pill · Prepaid vs postpaid  →">
+                <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[14px] text-[color:var(--text\/brand,#3657f2)] whitespace-pre" data-node-id="160:133" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`Prepaid vs postpaid  →`}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.4] min-w-full not-italic relative shrink-0 text-[13px] text-[color:var(--cp-color-muted,#535b7a)] w-[min-content]" data-node-id="160:134" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+          Sources: Rogers.com plan pages and Rogers Wireless Service Agreement, checked 5 Oct 2026. Ratings are our own editorial view.
+        </p>
+      </div>
+      <div className="bg-[var(--bg\/page,white)] content-stretch flex flex-col items-start overflow-clip pb-[96px] px-[120px] relative shrink-0 w-full" data-node-id="160:135" data-name="Final CTA">
+        <div className="bg-[var(--bg\/brand,#3657f2)] content-stretch flex flex-col gap-[24px] items-center overflow-clip px-[80px] py-[88px] relative rounded-[40px] shrink-0 w-full" data-node-id="160:136" data-name="CTA card">
+          <div className="bg-[rgba(255,255,255,0.14)] border-[1.5px] border-[rgba(255,255,255,0.45)] border-dashed content-stretch flex flex-col gap-[8px] h-[260px] items-center justify-center overflow-clip p-[24px] relative rounded-[20px] shrink-0 w-[560px]" data-node-id="314:1782" data-name="Image slot">
+            <div className="relative shrink-0 size-[32px]" data-node-id="I314:1782;312:10" data-name="Icon">
+              <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgIcon} />
+            </div>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] not-italic relative shrink-0 text-[12px] text-white tracking-[0.96px] uppercase whitespace-nowrap" data-node-id="I314:1782;312:14" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              IMAGE
+            </p>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.4] min-w-full not-italic relative shrink-0 text-[13px] text-center text-white w-[min-content]" data-node-id="I314:1782;312:15" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Two Canadian Plans advisors at the Surrey store counter, smiling at the camera
+            </p>
+          </div>
+          <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[0.95] min-w-full not-italic relative shrink-0 text-[96px] text-[color:var(--text\/inverse,white)] text-center tracking-[-2.88px] w-[min-content]" data-node-id="160:137" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Switch to Rogers. Keep your number.
+          </p>
+          <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.45] not-italic relative shrink-0 text-[20px] text-[color:var(--text\/inverse,white)] text-center whitespace-nowrap" data-node-id="160:138" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Choose a plan in 2 minutes. An advisor confirms it the same day.
+          </p>
+          <div className="content-stretch flex gap-[12px] items-start overflow-clip pt-[8px] relative shrink-0" data-node-id="160:139" data-name="Frame">
+            <div className="bg-[var(--action\/on-brand,#ffe14d)] content-stretch flex items-center justify-center overflow-clip px-[32px] py-[18px] relative rounded-[999px] shrink-0" data-node-id="160:140" data-name="Button · Find my plan  →">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.2] not-italic relative shrink-0 text-[18px] text-[color:var(--cp-color-ink,#101a3d)] whitespace-pre" data-node-id="160:141" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>{`See Rogers plans  →`}</p>
+            </div>
+            <div className="border-2 border-[var(--border\/on-brand,white)] border-solid content-stretch flex items-center justify-center overflow-clip px-[32px] py-[18px] relative rounded-[999px] shrink-0" data-node-id="160:142" data-name="Button · Talk to an advisor">
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:Bold'] font-bold leading-[1.2] not-italic relative shrink-0 text-[18px] text-[color:var(--text\/inverse,white)] whitespace-nowrap" data-node-id="160:143" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Talk to an advisor
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="bg-[var(--bg\/inverse,#101a3d)] content-stretch flex flex-col gap-[48px] items-start overflow-clip pb-[40px] pt-[72px] px-[120px] relative shrink-0 w-full" data-node-id="160:144" data-name="Footer">
+        <div className="content-stretch flex gap-[64px] items-start overflow-clip relative shrink-0 w-full" data-node-id="160:145" data-name="Frame">
+          <div className="content-stretch flex flex-col gap-[16px] items-start overflow-clip relative shrink-0 w-[340px]" data-node-id="160:146" data-name="Frame">
+            <div className="content-stretch flex gap-[10px] items-center overflow-clip relative shrink-0" data-node-id="160:147" data-name="Frame">
+              <div className="relative shrink-0 size-[36px]" data-node-id="160:148" data-name="Frame">
+                <img alt="" className="absolute block inset-0 max-w-none size-full" src={imgFrame} />
+              </div>
+              <p className="[word-break:break-word] font-['Google_Sans_Flex:ExtraBold'] font-extrabold leading-none not-italic relative shrink-0 text-[22px] text-[color:var(--text\/inverse,white)] tracking-[-0.44px] whitespace-nowrap" data-node-id="160:150" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+                Canadian Plans
+              </p>
+            </div>
+            <p className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] not-italic relative shrink-0 text-[16px] text-[color:var(--text\/inverse-muted,#c9cee3)] w-[340px]" data-node-id="160:151" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Canadian Plans is an authorized Rogers, Fido and Chatr dealer in Surrey, BC. We help newcomers and Canadians set up SIM cards, phone plans and home internet.
+            </p>
+            <div className="[word-break:break-word] font-['Google_Sans_Flex:Regular'] font-normal leading-[0] not-italic relative shrink-0 text-[16px] text-[color:var(--text\/inverse,white)] w-[340px]" data-node-id="160:152" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              <p className="leading-[1.5] mb-0">12-3456 King George Blvd, Surrey, BC</p>
+              <p className="leading-[1.5]">1-888-555-0199 · hello@canadianplans.ca</p>
+            </div>
+          </div>
+          <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[12px] items-start min-w-px not-italic overflow-clip relative text-[16px] whitespace-nowrap" data-node-id="160:153" data-name="Frame">
+            <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[color:var(--text\/inverse,white)]" data-node-id="160:154" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Pre-arrival SIM
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="160:155" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              All SIM plans
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="160:156" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              eSIM
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="160:157" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Students
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="160:158" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Workers
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="160:159" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              From India
+            </p>
+          </div>
+          <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[12px] items-start min-w-px not-italic overflow-clip relative text-[16px] whitespace-nowrap" data-node-id="160:160" data-name="Frame">
+            <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[color:var(--text\/inverse,white)]" data-node-id="160:161" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Home Internet
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="160:162" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              All plans
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="160:163" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              TV bundles
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="160:164" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Vancouver
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="160:165" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Surrey
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="160:166" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Toronto
+            </p>
+          </div>
+          <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[12px] items-start min-w-px not-italic overflow-clip relative text-[16px] whitespace-nowrap" data-node-id="160:167" data-name="Frame">
+            <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[color:var(--text\/inverse,white)]" data-node-id="160:168" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Mobile Plans
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="160:169" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Rogers
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="160:170" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Fido
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="160:171" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Chatr
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="160:172" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              No credit check
+            </p>
+          </div>
+          <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[12px] items-start min-w-px not-italic overflow-clip relative text-[16px] whitespace-nowrap" data-node-id="160:173" data-name="Frame">
+            <p className="font-['Google_Sans_Flex:Bold'] font-bold leading-[1.25] relative shrink-0 text-[color:var(--text\/inverse,white)]" data-node-id="160:174" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Help
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="160:175" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Guides
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="160:176" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Compare
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="160:177" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Track order
+            </p>
+            <p className="font-['Google_Sans_Flex:Regular'] font-normal leading-[1.5] relative shrink-0 text-[color:var(--text\/inverse-muted,#c9cee3)]" data-node-id="160:178" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+              Contact
+            </p>
+          </div>
+        </div>
+        <div className="bg-[var(--border\/inverse,#2a3459)] h-px relative shrink-0 w-full" data-node-id="160:179" data-name="Rectangle" />
+        <div className="[word-break:break-word] content-stretch flex font-['Google_Sans_Flex:Regular'] font-normal items-start justify-between leading-[1.4] not-italic overflow-clip relative shrink-0 text-[13px] text-[color:var(--text\/inverse-muted,#c9cee3)] w-full whitespace-nowrap" data-node-id="160:180" data-name="Frame">
+          <p className="relative shrink-0" data-node-id="160:181" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            © 2026 Canadian Plans · Rogers, Fido and Chatr are trademarks of Rogers Communications.
+          </p>
+          <p className="relative shrink-0" data-node-id="160:182" style={{ fontVariationSettings: '"GRAD" 0, "ROND" 0, "wdth" 100' }}>
+            Privacy · Terms · Accessibility · Cookie settings
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+SUPER CRITICAL: The generated React+Tailwind code MUST be converted to match the target project's technology stack and styling system.
+1. Analyze the target codebase to identify: technology stack, styling approach, component patterns, and design tokens
+2. Convert React syntax to the target framework/library
+3. Transform all Tailwind classes to the target styling system while preserving exact visual design
+4. Follow the project's existing patterns and conventions
+DO NOT install any Tailwind as a dependency unless the user instructs you to do so.
+
+Node ids have been added to the code as data attributes, e.g. `data-node-id="1:2"`.
+These styles are contained in the design: CP/Body/S: Font(family: "Google Sans Flex", style: Regular, size: 14, weight: 400, lineHeight: 1.4500000476837158, letterSpacing: 0), CP/Label/M: Font(family: "Google Sans Flex", style: Bold, size: 14, weight: 700, lineHeight: 1.25, letterSpacing: 0), CP/Caption: Font(family: "Google Sans Flex", style: Regular, size: 13, weight: 400, lineHeight: 1.399999976158142, letterSpacing: 0), CP/Logo wordmark: Font(family: "Google Sans Flex", style: ExtraBold, size: 22, weight: 800, lineHeight: 1, letterSpacing: -2), CP/Label/L: Font(family: "Google Sans Flex", style: Bold, size: 16, weight: 700, lineHeight: 1.25, letterSpacing: 0), CP/Eyebrow: Font(family: "Google Sans Flex", style: Bold, size: 13, weight: 700, lineHeight: 1.25, letterSpacing: 8), CP/Display/L: Font(family: "Google Sans Flex", style: Bold, size: 80, weight: 700, lineHeight: 0.949999988079071, letterSpacing: -3), CP/Body/XL: Font(family: "Google Sans Flex", style: Regular, size: 20, weight: 400, lineHeight: 1.4500000476837158, letterSpacing: 0), CP/Button/L: Font(family: "Google Sans Flex", style: Bold, size: 18, weight: 700, lineHeight: 1.2000000476837158, letterSpacing: 0), CP/Body/M: Font(family: "Google Sans Flex", style: Regular, size: 16, weight: 400, lineHeight: 1.5, letterSpacing: 0), CP/Heading/H4: Font(family: "Google Sans Flex", style: Bold, size: 24, weight: 700, lineHeight: 1.149999976158142, letterSpacing: -2), CP/Body/L: Font(family: "Google Sans Flex", style: Regular, size: 17, weight: 400, lineHeight: 1.5, letterSpacing: 0), CP/Heading/H1: Font(family: "Google Sans Flex", style: Bold, size: 56, weight: 700, lineHeight: 1, letterSpacing: -3), CP/Display/M: Font(family: "Google Sans Flex", style: Bold, size: 72, weight: 700, lineHeight: 1, letterSpacing: -4), CP/Heading/H5: Font(family: "Google Sans Flex", style: Bold, size: 20, weight: 700, lineHeight: 1.25, letterSpacing: -1), CP/Label/S: Font(family: "Google Sans Flex", style: Bold, size: 13, weight: 700, lineHeight: 1.25, letterSpacing: 0), CP/Heading/H3: Font(family: "Google Sans Flex", style: Bold, size: 30, weight: 700, lineHeight: 1.100000023841858, letterSpacing: -2), CP/Heading/H2: Font(family: "Google Sans Flex", style: Bold, size: 36, weight: 700, lineHeight: 1.100000023841858, letterSpacing: -2), CP/Display/XL: Font(family: "Google Sans Flex", style: Bold, size: 96, weight: 700, lineHeight: 0.949999988079071, letterSpacing: -3), CP/Body/L Medium: Font(family: "Google Sans Flex", style: Medium, size: 17, weight: 500, lineHeight: 1.5, letterSpacing: 0).
+Component descriptions: The following components have usage descriptions or documentation links defined in Figma. These descriptions provide important context about the intended usage, best practices, and any constraints for each component. Follow these guidelines when implementing or using these components.
+
+## Image slot
+**Node ID:** 312:16
+
+Placeholder for a future photo. Swap fill to the real image (Fill → Image, Crop). Use Tone=On blue on blue cards. Edit the Caption to describe the shot.
+Images and SVGs will be stored as constants, e.g. const image = 'https://www.figma.com/api/mcp/asset/550e8400-e29b-41d4-a716-446655440000.png'. These constants will be used in the code as the source for the image, ex: <img src={image} />. Image assets are stored on a remote server for 7 days and can be fetched using the provided URLs until they expire.
+

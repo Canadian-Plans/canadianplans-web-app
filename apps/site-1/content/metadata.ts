@@ -4,6 +4,7 @@ export const pageDescriptions: Readonly<Record<string, string>> = {
   '/pre-arrival-sim': 'Explore SIM and eSIM plan options before arriving in Canada.',
   '/home-internet': 'Check home internet options and preview address availability.',
   '/mobile-plans': 'Compare Canadian mobile plans by carrier, data allowance and budget.',
+  '/business-internet': 'Preview business internet options and request a quote from an advisor.',
   '/contact': 'Find contact options and get help from Canadian Plans.',
   '/faq': 'Answers to questions about SIM cards, eSIMs, orders and getting connected in Canada.',
   '/about': 'Learn about Canadian Plans and our approach to helping newcomers get connected.',

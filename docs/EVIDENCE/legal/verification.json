@@ -7,15 +7,15 @@
         "class": "cp-legal-header",
         "id": "",
         "x": 0,
-        "y": 108,
+        "y": 164.75,
         "width": 390,
-        "height": 322
+        "height": 325.59375
       },
       {
         "class": "cp-container cp-legal-body ",
         "id": "",
         "x": 20,
-        "y": 430,
+        "y": 490.34375,
         "width": 350,
         "height": 3348
       },
@@ -23,7 +23,7 @@
         "class": "cp-legal-contents",
         "id": "",
         "x": 20,
-        "y": 438,
+        "y": 498.34375,
         "width": 350,
         "height": 298
       },
@@ -31,7 +31,7 @@
         "class": "cp-legal-short",
         "id": "",
         "x": 20,
-        "y": 764,
+        "y": 824.34375,
         "width": 350,
         "height": 358
       },
@@ -39,7 +39,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 1150,
+        "y": 1210.34375,
         "width": 350,
         "height": 168
       },
@@ -47,7 +47,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 1346,
+        "y": 1406.34375,
         "width": 350,
         "height": 358
       },
@@ -55,7 +55,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 1732,
+        "y": 1792.34375,
         "width": 350,
         "height": 168
       },
@@ -63,7 +63,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 1928,
+        "y": 1988.34375,
         "width": 350,
         "height": 306
       },
@@ -71,7 +71,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 2262,
+        "y": 2322.34375,
         "width": 350,
         "height": 142
       },
@@ -79,7 +79,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 2432,
+        "y": 2492.34375,
         "width": 350,
         "height": 116
       },
@@ -87,7 +87,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 2576,
+        "y": 2636.34375,
         "width": 350,
         "height": 246
       },
@@ -95,7 +95,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 2850,
+        "y": 2910.34375,
         "width": 350,
         "height": 142
       },
@@ -103,7 +103,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 3020,
+        "y": 3080.34375,
         "width": 350,
         "height": 142
       },
@@ -111,7 +111,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 3190,
+        "y": 3250.34375,
         "width": 350,
         "height": 142
       },
@@ -119,7 +119,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 3360,
+        "y": 3420.34375,
         "width": 350,
         "height": 116
       },
@@ -127,7 +127,7 @@
         "class": "cp-legal-contact",
         "id": "",
         "x": 20,
-        "y": 3504,
+        "y": 3564.34375,
         "width": 350,
         "height": 234
       },
@@ -135,21 +135,21 @@
         "class": "cp-footer",
         "id": "",
         "x": 0,
-        "y": 3778,
+        "y": 3838.34375,
         "width": 390,
         "height": 946.96875
       }
     ],
     "assets": [
       {
-        "src": "/design/legal/1-imgPhoneIcon.svg",
+        "src": "/design/components/364-2153-imgPhoneIcon.svg",
         "width": 16,
         "height": 16,
         "naturalWidth": 16,
         "naturalHeight": 16
       },
       {
-        "src": "/design/components/364-2163-imgMark.svg",
+        "src": "/design/components/60-13-imgMark.svg",
         "width": 36,
         "height": 36,
         "naturalWidth": 36,
@@ -223,15 +223,15 @@
         "class": "cp-legal-header",
         "id": "",
         "x": 0,
-        "y": 108,
+        "y": 164.75,
         "width": 390,
-        "height": 322
+        "height": 325.59375
       },
       {
         "class": "cp-container cp-legal-body ",
         "id": "",
         "x": 20,
-        "y": 430,
+        "y": 490.34375,
         "width": 350,
         "height": 3438
       },
@@ -239,7 +239,7 @@
         "class": "cp-legal-contents",
         "id": "",
         "x": 20,
-        "y": 438,
+        "y": 498.34375,
         "width": 350,
         "height": 298
       },
@@ -247,7 +247,7 @@
         "class": "cp-legal-short",
         "id": "",
         "x": 20,
-        "y": 764,
+        "y": 824.34375,
         "width": 350,
         "height": 410
       },
@@ -255,7 +255,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 1202,
+        "y": 1262.34375,
         "width": 350,
         "height": 168
       },
@@ -263,7 +263,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 1398,
+        "y": 1458.34375,
         "width": 350,
         "height": 142
       },
@@ -271,7 +271,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 1568,
+        "y": 1628.34375,
         "width": 350,
         "height": 194
       },
@@ -279,7 +279,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 1790,
+        "y": 1850.34375,
         "width": 350,
         "height": 168
       },
@@ -287,7 +287,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 1986,
+        "y": 2046.34375,
         "width": 350,
         "height": 168
       },
@@ -295,7 +295,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 2182,
+        "y": 2242.34375,
         "width": 350,
         "height": 194
       },
@@ -303,7 +303,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 2404,
+        "y": 2464.34375,
         "width": 350,
         "height": 142
       },
@@ -311,7 +311,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 2574,
+        "y": 2634.34375,
         "width": 350,
         "height": 168
       },
@@ -319,7 +319,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 2770,
+        "y": 2830.34375,
         "width": 350,
         "height": 194
       },
@@ -327,7 +327,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 2992,
+        "y": 3052.34375,
         "width": 350,
         "height": 116
       },
@@ -335,7 +335,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 3136,
+        "y": 3196.34375,
         "width": 350,
         "height": 116
       },
@@ -343,7 +343,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 3280,
+        "y": 3340.34375,
         "width": 350,
         "height": 142
       },
@@ -351,7 +351,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 20,
-        "y": 3450,
+        "y": 3510.34375,
         "width": 350,
         "height": 116
       },
@@ -359,7 +359,7 @@
         "class": "cp-legal-contact",
         "id": "",
         "x": 20,
-        "y": 3594,
+        "y": 3654.34375,
         "width": 350,
         "height": 234
       },
@@ -367,21 +367,21 @@
         "class": "cp-footer",
         "id": "",
         "x": 0,
-        "y": 3868,
+        "y": 3928.34375,
         "width": 390,
         "height": 946.96875
       }
     ],
     "assets": [
       {
-        "src": "/design/legal/1-imgPhoneIcon.svg",
+        "src": "/design/components/364-2153-imgPhoneIcon.svg",
         "width": 16,
         "height": 16,
         "naturalWidth": 16,
         "naturalHeight": 16
       },
       {
-        "src": "/design/components/364-2163-imgMark.svg",
+        "src": "/design/components/60-13-imgMark.svg",
         "width": 36,
         "height": 36,
         "naturalWidth": 36,
@@ -455,15 +455,15 @@
         "class": "cp-legal-header",
         "id": "",
         "x": 0,
-        "y": 120.296875,
+        "y": 160.59375,
         "width": 1440,
-        "height": 352
+        "height": 337.59375
       },
       {
         "class": "cp-container cp-legal-body ",
         "id": "",
         "x": 120,
-        "y": 472.296875,
+        "y": 498.1875,
         "width": 1200,
         "height": 2329
       },
@@ -471,7 +471,7 @@
         "class": "cp-legal-contents",
         "id": "",
         "x": 120,
-        "y": 528.296875,
+        "y": 554.1875,
         "width": 280,
         "height": 442
       },
@@ -479,7 +479,7 @@
         "class": "cp-legal-short",
         "id": "",
         "x": 464,
-        "y": 528.296875,
+        "y": 554.1875,
         "width": 856,
         "height": 236
       },
@@ -487,7 +487,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 804.296875,
+        "y": 830.1875,
         "width": 856,
         "height": 99
       },
@@ -495,7 +495,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 943.296875,
+        "y": 969.1875,
         "width": 856,
         "height": 215
       },
@@ -503,7 +503,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 1198.296875,
+        "y": 1224.1875,
         "width": 856,
         "height": 99
       },
@@ -511,7 +511,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 1337.296875,
+        "y": 1363.1875,
         "width": 856,
         "height": 241
       },
@@ -519,7 +519,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 1618.296875,
+        "y": 1644.1875,
         "width": 856,
         "height": 99
       },
@@ -527,7 +527,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 1757.296875,
+        "y": 1783.1875,
         "width": 856,
         "height": 99
       },
@@ -535,7 +535,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 1896.296875,
+        "y": 1922.1875,
         "width": 856,
         "height": 125
       },
@@ -543,7 +543,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 2061.296875,
+        "y": 2087.1875,
         "width": 856,
         "height": 99
       },
@@ -551,7 +551,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 2200.296875,
+        "y": 2226.1875,
         "width": 856,
         "height": 99
       },
@@ -559,7 +559,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 2339.296875,
+        "y": 2365.1875,
         "width": 856,
         "height": 99
       },
@@ -567,7 +567,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 2478.296875,
+        "y": 2504.1875,
         "width": 856,
         "height": 73
       },
@@ -575,7 +575,7 @@
         "class": "cp-legal-contact",
         "id": "",
         "x": 464,
-        "y": 2591.296875,
+        "y": 2617.1875,
         "width": 856,
         "height": 114
       },
@@ -583,14 +583,14 @@
         "class": "cp-footer",
         "id": "",
         "x": 0,
-        "y": 2801.296875,
+        "y": 2827.1875,
         "width": 1440,
         "height": 440.5
       }
     ],
     "assets": [
       {
-        "src": "/design/components/364-2163-imgMark.svg",
+        "src": "/design/components/60-13-imgMark.svg",
         "width": 36,
         "height": 36,
         "naturalWidth": 36,
@@ -622,15 +622,15 @@
         "class": "cp-legal-header",
         "id": "",
         "x": 0,
-        "y": 120.296875,
+        "y": 160.59375,
         "width": 1440,
-        "height": 352
+        "height": 337.59375
       },
       {
         "class": "cp-container cp-legal-body ",
         "id": "",
         "x": 120,
-        "y": 472.296875,
+        "y": 498.1875,
         "width": 1200,
         "height": 2425
       },
@@ -638,7 +638,7 @@
         "class": "cp-legal-contents",
         "id": "",
         "x": 120,
-        "y": 528.296875,
+        "y": 554.1875,
         "width": 280,
         "height": 518
       },
@@ -646,7 +646,7 @@
         "class": "cp-legal-short",
         "id": "",
         "x": 464,
-        "y": 528.296875,
+        "y": 554.1875,
         "width": 856,
         "height": 262
       },
@@ -654,7 +654,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 830.296875,
+        "y": 856.1875,
         "width": 856,
         "height": 99
       },
@@ -662,7 +662,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 969.296875,
+        "y": 995.1875,
         "width": 856,
         "height": 99
       },
@@ -670,7 +670,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 1108.296875,
+        "y": 1134.1875,
         "width": 856,
         "height": 125
       },
@@ -678,7 +678,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 1273.296875,
+        "y": 1299.1875,
         "width": 856,
         "height": 99
       },
@@ -686,7 +686,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 1412.296875,
+        "y": 1438.1875,
         "width": 856,
         "height": 99
       },
@@ -694,7 +694,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 1551.296875,
+        "y": 1577.1875,
         "width": 856,
         "height": 125
       },
@@ -702,7 +702,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 1716.296875,
+        "y": 1742.1875,
         "width": 856,
         "height": 99
       },
@@ -710,7 +710,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 1855.296875,
+        "y": 1881.1875,
         "width": 856,
         "height": 99
       },
@@ -718,7 +718,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 1994.296875,
+        "y": 2020.1875,
         "width": 856,
         "height": 125
       },
@@ -726,7 +726,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 2159.296875,
+        "y": 2185.1875,
         "width": 856,
         "height": 99
       },
@@ -734,7 +734,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 2298.296875,
+        "y": 2324.1875,
         "width": 856,
         "height": 73
       },
@@ -742,7 +742,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 2411.296875,
+        "y": 2437.1875,
         "width": 856,
         "height": 99
       },
@@ -750,7 +750,7 @@
         "class": "cp-legal-section",
         "id": "",
         "x": 464,
-        "y": 2550.296875,
+        "y": 2576.1875,
         "width": 856,
         "height": 73
       },
@@ -758,7 +758,7 @@
         "class": "cp-legal-contact",
         "id": "",
         "x": 464,
-        "y": 2663.296875,
+        "y": 2689.1875,
         "width": 856,
         "height": 138
       },
@@ -766,14 +766,14 @@
         "class": "cp-footer",
         "id": "",
         "x": 0,
-        "y": 2897.296875,
+        "y": 2923.1875,
         "width": 1440,
         "height": 440.5
       }
     ],
     "assets": [
       {
-        "src": "/design/components/364-2163-imgMark.svg",
+        "src": "/design/components/60-13-imgMark.svg",
         "width": 36,
         "height": 36,
         "naturalWidth": 36,

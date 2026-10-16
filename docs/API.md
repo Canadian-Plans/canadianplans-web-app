@@ -256,11 +256,26 @@ return `409 illegal_transition`, a cancellation without a reason returns
 `400 cancellation_reason_required`, and a dispatch without a courier returns
 `400 dispatch_details_required`.
 
+**Dispatch and activation gates.** Both require
+`ORDER_OPERATIONAL_TRANSITIONS` to be set on the deployment (`docs/ENV.md`);
+while unset they return `409 feature_not_ready` in every environment. On top
+of that, `ready_for_delivery`, `dispatched` and `activated` enforce the
+document prerequisite (OPEN_INPUTS #15): every document type on the order's
+frozen `documentChecklist` must have an attached file whose latest staff
+review is `approved`. Payment state is never a prerequisite. A blocked
+attempt returns `409 documents_incomplete` with the outstanding types in
+`details.missingDocuments`. Any `order.manage` holder may proceed anyway by
+sending `documentOverrideReason` with the transition; the reason is mandatory
+(`400 document_override_reason_required` when blank) and is recorded in the
+audit event with the document types that were outstanding. The override is
+scoped to documents — it does not rescue an illegal edge or a partnered
+activation with no usable commission rule.
+
 | Route                                                 | Purpose                                                                                                                                                                                                                                                                                                                                                                                           |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `GET /orders`                                         | Paginated list. Filters: `status`, `paymentState`, `assigneeId`, `partnerId`, `partnerCode`, `source`, `submittedFrom`/`submittedTo` (ISO, `to` exclusive), `archiveState=active\|archived\|all`. `search` (≤120 chars) matches the reference and, when the actor holds the contact-search capability, the customer name/email/phone with substring matching, parameterized and workspace-scoped. |
 | `GET /orders/{orderId}`                               | Full detail: frozen snapshot, customer, plan payload, consent, status history, audit events, notes, reminders, change requests, amendments, payments, dispatch record, the actor's `capabilities`, and `allowedTransitions` computed from the current status and the live gates.                                                                                                                  |
-| `PATCH /orders/{orderId}`                             | Status transitions: `transition` (`toStatus`, optional `reason`), `dispatch` (`courier` required, optional `trackingReference`/`dispatchDate`), `activate`, `cancel` (`reason` required). Dispatch writes `dispatch_records` in the same transaction as the status change and sets `delivery_state`.                                                                                              |
+| `PATCH /orders/{orderId}`                             | Status transitions: `transition` (`toStatus`, optional `reason`), `dispatch` (`courier` required, optional `trackingReference`/`dispatchDate`), `activate`, `cancel` (`reason` required). All except `cancel` accept an optional `documentOverrideReason` (see the gates above). Dispatch writes `dispatch_records` in the same transaction as the status change and sets `delivery_state`.       |
 | `PATCH /orders/{orderId}/assignee`                    | Assign to an active staff membership of the same workspace, or unassign with `assigneeId: null`.                                                                                                                                                                                                                                                                                                  |
 | `PATCH /orders/{orderId}/archive`                     | Set or clear `archived_at`. Archiving is a visibility action, never deletion.                                                                                                                                                                                                                                                                                                                     |
 | `POST /orders/bulk-assign`                            | Assign up to 100 orders. Each entry carries its own `expectedVersion`; the response reports `assigned`, `version_conflict` or `not_found` per order, so a partial failure is never silent. An unknown assignee returns `404 assignee_not_found` for the whole request.                                                                                                                            |
@@ -285,6 +300,45 @@ for orders that predate the consent column.
 (`canManageOrders`, `canRecordPayment`, `canSearchContact`) computed from the
 same live authorization decision the mutations use, so the admin can render the
 right controls without re-deriving policy from role names.
+
+### Partners and commissions (T19)
+
+`GET /api/v1/staff/workspaces/{workspaceId}/partners` — any staff member
+with `workspace.read` sees the partner directory (records only, no money).
+
+`GET /api/v1/staff/workspaces/{workspaceId}/partners/{partnerId}` — partner
+detail with referred orders and commission lines. Commission `amount` is
+`null` unless the actor also holds `financial.read`; the response includes
+`canViewPayouts`, `canMarkCarrierPaid`, `partnerPaidEnabled: false`, and
+`payoutDisabledReason` — marking a line `partner_paid` is disabled in code
+until OPEN_INPUTS #18/B1 invoice approval exists (see
+`docs/RUNBOOKS/commission-month-end.md`).
+
+`POST /api/v1/staff/workspaces/{workspaceId}/partners/{partnerId}/commissions`
+— requires `financial.read` (Finance's privileged action, `aal2`). Body:
+`{ commissionId, toState }`. `earned → carrier_paid` succeeds;
+`→ partner_paid` returns `409 feature_not_ready`
+(`partner_paid_disabled`). Invalid state machine edges return
+`409 commission_state_invalid`.
+
+A commission line is created automatically, never through this route, when a
+partnered order activates (see "Dispatch and activation gates" below and
+`docs/RUNBOOKS/dispatch-and-activation.md`).
+
+### Documents (T17)
+
+`GET /api/v1/staff/workspaces/{workspaceId}/orders/{orderId}/files` —
+`workspace.read`; lists document metadata for the order.
+
+`POST /api/v1/staff/workspaces/{workspaceId}/files/{fileId}/review` —
+`order.manage`. Body: `{ decision, note? }`. Approves or rejects an uploaded
+document.
+
+`POST /api/v1/staff/workspaces/{workspaceId}/files/{fileId}/download-link` —
+requires the separately-grantable `document.download` permission (REQ 23;
+gate 5), not merely `workspace.read`. Issues a short-lived signed URL
+(`{ url, expiresAt }`); `409 file_not_available` if the file isn't ready,
+`404 file_not_found` otherwise.
 
 ### Customer-data deletion (T21)
 

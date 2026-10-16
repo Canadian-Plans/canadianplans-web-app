@@ -10,6 +10,7 @@ export const routes = [
   ['pre-arrival', '/pre-arrival-sim'],
   ['home-internet', '/home-internet'],
   ['mobile-plans', '/mobile-plans'],
+  ['business-internet', '/business-internet'],
   ['sim-students', '/pre-arrival-sim/students'],
   ['sim-india', '/pre-arrival-sim/from-india'],
   ['sim-airport', '/pre-arrival-sim/toronto-pearson'],

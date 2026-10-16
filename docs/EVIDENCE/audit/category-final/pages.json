@@ -1,0 +1,8133 @@
+[
+  {
+    "name": "sim-students",
+    "path": "/pre-arrival-sim/students",
+    "width": 390,
+    "errors": [],
+    "status": 200,
+    "headings": [
+      {
+        "level": 1,
+        "text": "Your Canadian number before your first class."
+      },
+      {
+        "level": 2,
+        "text": "What is the best SIM for international students in Canada?"
+      },
+      {
+        "level": 2,
+        "text": "From your home to your first class."
+      },
+      {
+        "level": 3,
+        "text": "Order your eSIM"
+      },
+      {
+        "level": 3,
+        "text": "Get your number"
+      },
+      {
+        "level": 3,
+        "text": "Install at home"
+      },
+      {
+        "level": 3,
+        "text": "Land & switch on"
+      },
+      {
+        "level": 2,
+        "text": "Pick your student plan"
+      },
+      {
+        "level": 3,
+        "text": "75 GB"
+      },
+      {
+        "level": 3,
+        "text": "100 GB"
+      },
+      {
+        "level": 3,
+        "text": "120 GB"
+      },
+      {
+        "level": 2,
+        "text": "What you’ll need"
+      },
+      {
+        "level": 2,
+        "text": "Is my phone eSIM-ready?"
+      },
+      {
+        "level": 2,
+        "text": "Student eSIM in Canada: the complete guide"
+      },
+      {
+        "level": 3,
+        "text": "How much data do international students need?"
+      },
+      {
+        "level": 3,
+        "text": "Prepaid or postpaid as a student?"
+      },
+      {
+        "level": 3,
+        "text": "Which carrier works best on campus?"
+      },
+      {
+        "level": 2,
+        "text": "Key facts"
+      },
+      {
+        "level": 2,
+        "text": "Newcomers recommend us."
+      },
+      {
+        "level": 2,
+        "text": "Student SIMquestions"
+      },
+      {
+        "level": 2,
+        "text": "Explore more"
+      },
+      {
+        "level": 3,
+        "text": "Other audiences"
+      },
+      {
+        "level": 3,
+        "text": "Popular countries"
+      },
+      {
+        "level": 3,
+        "text": "Student guides"
+      },
+      {
+        "level": 2,
+        "text": "Your number, ready before your first class."
+      },
+      {
+        "level": 2,
+        "text": "Pre-arrival SIM"
+      },
+      {
+        "level": 2,
+        "text": "Home Internet"
+      },
+      {
+        "level": 2,
+        "text": "Mobile Plans"
+      },
+      {
+        "level": 2,
+        "text": "Help"
+      }
+    ],
+    "headingJumps": [],
+    "h1Count": 1,
+    "overflow": false,
+    "images": [
+      {
+        "src": "/design/pre-arrival/364-2201-imgPhoneIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/60-13-imgMark.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/pre-arrival/364-2211-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/pre-arrival/364-2211-imgIcon1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-sim/students-desktop-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-sim/students-desktop-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-sim/students-desktop-imgEllipse2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-sim/students-desktop-imgEllipse3.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-9-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/66-43-imgEllipse.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/66-51-imgEllipse.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/66-59-imgEllipse.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      }
+    ],
+    "figmaAssets": [
+      {
+        "nodeId": "364:2201",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "60:16",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "364:2211",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "364:2211-menu",
+        "width": 24,
+        "height": 24,
+        "expectedWidth": 24,
+        "expectedHeight": 24
+      },
+      {
+        "nodeId": "151:88",
+        "width": 28,
+        "height": 28,
+        "expectedWidth": 28,
+        "expectedHeight": 28
+      },
+      {
+        "nodeId": "151:88",
+        "width": 28,
+        "height": 28,
+        "expectedWidth": 28,
+        "expectedHeight": 28
+      },
+      {
+        "nodeId": "151:128",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "151:133",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "312:10",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "66:47",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "66:55",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "66:63",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "68:54",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      }
+    ],
+    "title": "Student SIM & eSIM for Canada | Canadian Plans",
+    "description": "Get a Canadian number before your first class. Compare student eSIM plans and learn what to prepare before you arrive.",
+    "og": {
+      "og:title": "Student SIM & eSIM for Canada | Canadian Plans",
+      "og:description": "Get a Canadian number before your first class. Compare student eSIM plans and learn what to prepare before you arrive.",
+      "og:url": "http://localhost:3001/pre-arrival-sim/students",
+      "og:site_name": "Canadian Plans",
+      "og:locale": "en_CA",
+      "og:image": "http://localhost:3001/opengraph-image.png",
+      "og:image:width": "1200",
+      "og:image:height": "630",
+      "og:image:alt": "Canadian Plans",
+      "og:type": "website"
+    },
+    "canonical": "http://localhost:3001/pre-arrival-sim/students",
+    "robots": "noindex, nofollow",
+    "landmarks": [
+      {
+        "class": "cp-nav",
+        "y": 44,
+        "height": 64
+      },
+      {
+        "class": "cp-promo",
+        "y": 108,
+        "height": 56.75
+      },
+      {
+        "class": "cp-catsim-main",
+        "y": 164.75,
+        "height": 10702.375
+      },
+      {
+        "class": "cp-catsim-hero",
+        "y": 201.75,
+        "height": 1267.09375
+      },
+      {
+        "class": "cp-catsim-meta",
+        "y": 1468.84375,
+        "height": 235
+      },
+      {
+        "class": "cp-catsim-quick",
+        "y": 1703.84375,
+        "height": 436.0625
+      },
+      {
+        "class": "cp-catsim-countdown cp-catsim-section",
+        "y": 2139.90625,
+        "height": 955.625
+      },
+      {
+        "class": "cp-catsim-plans cp-catsim-section",
+        "y": 3095.53125,
+        "height": 1209.125
+      },
+      {
+        "class": "cp-catsim-requirements cp-catsim-section",
+        "y": 4304.65625,
+        "height": 1174.96875
+      },
+      {
+        "class": "cp-catsim-guide cp-catsim-section",
+        "y": 5479.625,
+        "height": 1669.28125
+      },
+      {
+        "class": "cp-catsim-reviews cp-catsim-section",
+        "y": 7148.90625,
+        "height": 1150.78125
+      },
+      {
+        "class": "cp-catsim-faq cp-catsim-section",
+        "y": 8299.6875,
+        "height": 1091.65625
+      },
+      {
+        "class": "cp-catsim-explore cp-catsim-section",
+        "y": 9391.34375,
+        "height": 914
+      },
+      {
+        "class": "cp-catsim-final cp-catsim-section",
+        "y": 10305.34375,
+        "height": 561.78125
+      },
+      {
+        "class": "cp-footer",
+        "y": 10867.125,
+        "height": 946.96875
+      }
+    ],
+    "violations": [],
+    "keyboardFocus": [
+      {
+        "tag": "A",
+        "text": "Skip to main content",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "1-888-555-0199",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Track order",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Help",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Canadian Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "WhatsApp us",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Open menu",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "See SIM plansSee SIM plans →",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Home",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Pre-arrival SIM",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "See student plans ↓",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Is my phone eSIM-ready?",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      }
+    ]
+  },
+  {
+    "name": "sim-india",
+    "path": "/pre-arrival-sim/from-india",
+    "width": 390,
+    "errors": [],
+    "status": 200,
+    "headings": [
+      {
+        "level": 1,
+        "text": "Canadian SIM for Indians moving to Canada (2026)"
+      },
+      {
+        "level": 2,
+        "text": "How do I get a Canadian SIM card in India?"
+      },
+      {
+        "level": 2,
+        "text": "From India to your first week in Canada."
+      },
+      {
+        "level": 3,
+        "text": "Order your eSIM"
+      },
+      {
+        "level": 3,
+        "text": "Get your number"
+      },
+      {
+        "level": 3,
+        "text": "Install at home"
+      },
+      {
+        "level": 3,
+        "text": "Land & switch on"
+      },
+      {
+        "level": 2,
+        "text": "Plans newcomers from India choose"
+      },
+      {
+        "level": 3,
+        "text": "75 GB"
+      },
+      {
+        "level": 3,
+        "text": "100 GB"
+      },
+      {
+        "level": 3,
+        "text": "120 GB"
+      },
+      {
+        "level": 2,
+        "text": "What you’ll need"
+      },
+      {
+        "level": 2,
+        "text": "Is my phone eSIM-ready?"
+      },
+      {
+        "level": 2,
+        "text": "Calling India from Canada"
+      },
+      {
+        "level": 3,
+        "text": "WhatsApp & video calls"
+      },
+      {
+        "level": 3,
+        "text": "International calling add-on"
+      },
+      {
+        "level": 3,
+        "text": "Pay per minute"
+      },
+      {
+        "level": 3,
+        "text": "Keep your Indian number"
+      },
+      {
+        "level": 2,
+        "text": "Moving from India: your Canadian phone setup"
+      },
+      {
+        "level": 3,
+        "text": "Will my Indian phone work with a Canadian eSIM?"
+      },
+      {
+        "level": 3,
+        "text": "Should I keep my Indian SIM?"
+      },
+      {
+        "level": 3,
+        "text": "How do I call India cheaply from Canada?"
+      },
+      {
+        "level": 2,
+        "text": "Key facts"
+      },
+      {
+        "level": 2,
+        "text": "Newcomers recommend us."
+      },
+      {
+        "level": 2,
+        "text": "India toCanada SIM questions"
+      },
+      {
+        "level": 2,
+        "text": "Explore more"
+      },
+      {
+        "level": 3,
+        "text": "By residence"
+      },
+      {
+        "level": 3,
+        "text": "Popular countries"
+      },
+      {
+        "level": 3,
+        "text": "India guides"
+      },
+      {
+        "level": 2,
+        "text": "From India to online in Canada."
+      },
+      {
+        "level": 2,
+        "text": "Pre-arrival SIM"
+      },
+      {
+        "level": 2,
+        "text": "Home Internet"
+      },
+      {
+        "level": 2,
+        "text": "Mobile Plans"
+      },
+      {
+        "level": 2,
+        "text": "Help"
+      }
+    ],
+    "headingJumps": [],
+    "h1Count": 1,
+    "overflow": false,
+    "images": [
+      {
+        "src": "/design/pre-arrival/364-2201-imgPhoneIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/60-13-imgMark.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/pre-arrival/364-2211-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/pre-arrival/364-2211-imgIcon1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-sim/students-desktop-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-sim/students-desktop-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-sim/students-desktop-imgEllipse2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-sim/students-desktop-imgEllipse3.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-9-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/66-43-imgEllipse.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/66-51-imgEllipse.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/66-59-imgEllipse.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      }
+    ],
+    "figmaAssets": [
+      {
+        "nodeId": "364:2201",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "60:16",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "364:2211",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "364:2211-menu",
+        "width": 24,
+        "height": 24,
+        "expectedWidth": 24,
+        "expectedHeight": 24
+      },
+      {
+        "nodeId": "151:88",
+        "width": 28,
+        "height": 28,
+        "expectedWidth": 28,
+        "expectedHeight": 28
+      },
+      {
+        "nodeId": "151:88",
+        "width": 28,
+        "height": 28,
+        "expectedWidth": 28,
+        "expectedHeight": 28
+      },
+      {
+        "nodeId": "151:128",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "151:133",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "312:10",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "66:47",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "66:55",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "66:63",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "68:54",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      }
+    ],
+    "title": "Canadian SIM for Indians moving to Canada | Canadian Plans",
+    "description": "Order a Canadian eSIM from India before your flight. Compare plans, keep your Indian number for OTPs and prepare for your first week in Canada.",
+    "og": {
+      "og:title": "Canadian SIM for Indians moving to Canada | Canadian Plans",
+      "og:description": "Order a Canadian eSIM from India before your flight. Compare plans, keep your Indian number for OTPs and prepare for your first week in Canada.",
+      "og:url": "http://localhost:3001/pre-arrival-sim/from-india",
+      "og:site_name": "Canadian Plans",
+      "og:locale": "en_CA",
+      "og:image": "http://localhost:3001/opengraph-image.png",
+      "og:image:width": "1200",
+      "og:image:height": "630",
+      "og:image:alt": "Canadian Plans",
+      "og:type": "website"
+    },
+    "canonical": "http://localhost:3001/pre-arrival-sim/from-india",
+    "robots": "noindex, nofollow",
+    "landmarks": [
+      {
+        "class": "cp-nav",
+        "y": 44,
+        "height": 64
+      },
+      {
+        "class": "cp-promo",
+        "y": 108,
+        "height": 56.75
+      },
+      {
+        "class": "cp-catsim-main",
+        "y": 164.75,
+        "height": 12243.03125
+      },
+      {
+        "class": "cp-catsim-hero",
+        "y": 201.75,
+        "height": 1250.84375
+      },
+      {
+        "class": "cp-catsim-meta",
+        "y": 1452.59375,
+        "height": 235
+      },
+      {
+        "class": "cp-catsim-quick cp-catsim-quick-india",
+        "y": 1687.59375,
+        "height": 376.125
+      },
+      {
+        "class": "cp-catsim-country-facts-section cp-catsim-section",
+        "y": 2063.71875,
+        "height": 452.375
+      },
+      {
+        "class": "cp-catsim-countdown cp-catsim-section",
+        "y": 2516.09375,
+        "height": 955.625
+      },
+      {
+        "class": "cp-catsim-plans cp-catsim-section",
+        "y": 3471.71875,
+        "height": 1247.125
+      },
+      {
+        "class": "cp-catsim-requirements cp-catsim-section",
+        "y": 4718.84375,
+        "height": 1150.96875
+      },
+      {
+        "class": "cp-catsim-calling cp-catsim-section",
+        "y": 5869.8125,
+        "height": 1348.9375
+      },
+      {
+        "class": "cp-catsim-guide cp-catsim-section",
+        "y": 7218.75,
+        "height": 1567.28125
+      },
+      {
+        "class": "cp-catsim-reviews cp-catsim-section",
+        "y": 8786.03125,
+        "height": 1150.78125
+      },
+      {
+        "class": "cp-catsim-faq cp-catsim-section",
+        "y": 9936.8125,
+        "height": 1034.78125
+      },
+      {
+        "class": "cp-catsim-explore cp-catsim-section",
+        "y": 10971.59375,
+        "height": 914
+      },
+      {
+        "class": "cp-catsim-final cp-catsim-section",
+        "y": 11885.59375,
+        "height": 522.1875
+      },
+      {
+        "class": "cp-footer",
+        "y": 12407.78125,
+        "height": 946.96875
+      }
+    ],
+    "violations": [],
+    "keyboardFocus": [
+      {
+        "tag": "A",
+        "text": "Skip to main content",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "1-888-555-0199",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Track order",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Help",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Canadian Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "WhatsApp us",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Open menu",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "See SIM plansSee SIM plans →",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Home",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Pre-arrival SIM",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "See plans for India ↓",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Is my phone eSIM-ready?",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      }
+    ]
+  },
+  {
+    "name": "sim-airport",
+    "path": "/pre-arrival-sim/toronto-pearson",
+    "width": 390,
+    "errors": [],
+    "status": 200,
+    "headings": [
+      {
+        "level": 1,
+        "text": "Landing at Pearson? Get signal before you leave the gate."
+      },
+      {
+        "level": 2,
+        "text": "Can I use my phone as soon as I land at Toronto Pearson?"
+      },
+      {
+        "level": 2,
+        "text": "Pick your plan before you land"
+      },
+      {
+        "level": 2,
+        "text": "From touchdown to texting home."
+      },
+      {
+        "level": 3,
+        "text": "Order your eSIM"
+      },
+      {
+        "level": 3,
+        "text": "Get your number"
+      },
+      {
+        "level": 3,
+        "text": "Install at home"
+      },
+      {
+        "level": 3,
+        "text": "Land & switch on"
+      },
+      {
+        "level": 2,
+        "text": "Before you land, have ready"
+      },
+      {
+        "level": 3,
+        "text": "Passport"
+      },
+      {
+        "level": 3,
+        "text": "Your study or work permit, or PR confirmation"
+      },
+      {
+        "level": 3,
+        "text": "Arrival date & city"
+      },
+      {
+        "level": 3,
+        "text": "Email address"
+      },
+      {
+        "level": 2,
+        "text": "Is my phone eSIM-ready?"
+      },
+      {
+        "level": 2,
+        "text": "Arriving at Toronto Pearson: your phone guide"
+      },
+      {
+        "level": 3,
+        "text": "Is there free Wi-Fi at Pearson Airport?"
+      },
+      {
+        "level": 3,
+        "text": "Should I just buy a SIM at the airport?"
+      },
+      {
+        "level": 3,
+        "text": "Which network works best in Toronto?"
+      },
+      {
+        "level": 2,
+        "text": "Key facts"
+      },
+      {
+        "level": 2,
+        "text": "Newcomersrecommend us."
+      },
+      {
+        "level": 2,
+        "text": "Pearson arrivalquestions"
+      },
+      {
+        "level": 2,
+        "text": "Explore more"
+      },
+      {
+        "level": 3,
+        "text": "Other audiences"
+      },
+      {
+        "level": 3,
+        "text": "Popular countries"
+      },
+      {
+        "level": 3,
+        "text": "Student guides"
+      },
+      {
+        "level": 2,
+        "text": "Signal on, before you clear customs."
+      },
+      {
+        "level": 2,
+        "text": "Pre-arrival SIM"
+      },
+      {
+        "level": 2,
+        "text": "Home Internet"
+      },
+      {
+        "level": 2,
+        "text": "Mobile Plans"
+      },
+      {
+        "level": 2,
+        "text": "Help"
+      }
+    ],
+    "headingJumps": [],
+    "h1Count": 1,
+    "overflow": false,
+    "images": [
+      {
+        "src": "/design/category-airport-compare/airport-mobile-imgPhoneIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/60-13-imgMark.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/364-2163-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/364-2163-imgIcon1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-airport-compare/airport-desktop-imgEllipse1.svg",
+        "next": false,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-airport-compare/airport-desktop-imgEllipse1.svg",
+        "next": false,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-9-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      }
+    ],
+    "figmaAssets": [
+      {
+        "nodeId": "256:1041",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "60:16",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "364:2170",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "364:2173",
+        "width": 24,
+        "height": 24,
+        "expectedWidth": 24,
+        "expectedHeight": 24
+      },
+      {
+        "nodeId": "186:595",
+        "width": 28,
+        "height": 28,
+        "expectedWidth": 28,
+        "expectedHeight": 28
+      },
+      {
+        "nodeId": "186:595",
+        "width": 28,
+        "height": 28,
+        "expectedWidth": 28,
+        "expectedHeight": 28
+      },
+      {
+        "nodeId": "312:10",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "68:54",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      }
+    ],
+    "title": "Toronto Pearson (YYZ) eSIM arrival guide | Canadian Plans",
+    "description": "Canadian Plans helps newcomers explore mobile connectivity in Canada.",
+    "og": {
+      "og:title": "Toronto Pearson (YYZ) eSIM arrival guide | Canadian Plans",
+      "og:description": "Canadian Plans helps newcomers explore mobile connectivity in Canada.",
+      "og:url": "http://localhost:3001/pre-arrival-sim/toronto-pearson",
+      "og:site_name": "Canadian Plans",
+      "og:locale": "en_CA",
+      "og:image": "http://localhost:3001/opengraph-image.png",
+      "og:image:width": "1200",
+      "og:image:height": "630",
+      "og:image:alt": "Canadian Plans",
+      "og:type": "website"
+    },
+    "canonical": "http://localhost:3001/pre-arrival-sim/toronto-pearson",
+    "robots": "noindex, nofollow",
+    "landmarks": [
+      {
+        "class": "cp-nav",
+        "y": 44,
+        "height": 64
+      },
+      {
+        "class": "cp-promo",
+        "y": 108,
+        "height": 56.75
+      },
+      {
+        "class": "cp-catac-airport",
+        "y": 164.75,
+        "height": 9579.0625
+      },
+      {
+        "class": "cp-catac-airport-hero",
+        "y": 204.75,
+        "height": 1191.203125
+      },
+      {
+        "class": "cp-catac-airport-byline cp-container",
+        "y": 1395.953125,
+        "height": 171
+      },
+      {
+        "class": "cp-catac-airport-quick cp-catac-section",
+        "y": 1647.953125,
+        "height": 425.421875
+      },
+      {
+        "class": "cp-catac-airport-plans cp-catac-section",
+        "y": 2073.375,
+        "height": 1099.984375
+      },
+      {
+        "class": "cp-catac-airport-how cp-catac-section",
+        "y": 3173.359375,
+        "height": 874.25
+      },
+      {
+        "class": "cp-catac-airport-documents cp-catac-section",
+        "y": 4047.609375,
+        "height": 1077.046875
+      },
+      {
+        "class": "cp-catac-airport-guide cp-catac-section",
+        "y": 5124.65625,
+        "height": 1335.671875
+      },
+      {
+        "class": "cp-catac-airport-reviews cp-catac-section",
+        "y": 6460.328125,
+        "height": 1071.9375
+      },
+      {
+        "class": "cp-catac-airport-faq cp-catac-section",
+        "y": 7532.265625,
+        "height": 1170.03125
+      },
+      {
+        "class": "cp-catac-airport-explore cp-catac-section",
+        "y": 8702.296875,
+        "height": 585.171875
+      },
+      {
+        "class": "cp-catac-airport-final cp-catac-section",
+        "y": 9287.46875,
+        "height": 456.34375
+      },
+      {
+        "class": "cp-footer",
+        "y": 9743.8125,
+        "height": 946.96875
+      }
+    ],
+    "violations": [],
+    "keyboardFocus": [
+      {
+        "tag": "A",
+        "text": "Skip to Pearson arrival guide",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "1-888-555-0199",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Track order",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Help",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Canadian Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "WhatsApp us",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Open menu",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "See SIM plansSee SIM plans →",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Home",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Pre-arrival SIM",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "See eSIM plans ↓",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Is my phone eSIM-ready?",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      }
+    ]
+  },
+  {
+    "name": "mobile-rogers",
+    "path": "/mobile-plans/rogers",
+    "width": 390,
+    "errors": [],
+    "status": 200,
+    "headings": [
+      {
+        "level": 1,
+        "text": "Rogers plans, explained in plain words."
+      },
+      {
+        "level": 2,
+        "text": "Is Rogers worth it for newcomers?"
+      },
+      {
+        "level": 2,
+        "text": "Rogers at a glance"
+      },
+      {
+        "level": 2,
+        "text": "Every Rogers plan we offer"
+      },
+      {
+        "level": 3,
+        "text": "Rogers Essentials"
+      },
+      {
+        "level": 3,
+        "text": "Rogers Popular"
+      },
+      {
+        "level": 3,
+        "text": "Rogers Plus"
+      },
+      {
+        "level": 3,
+        "text": "Rogers Ultimate"
+      },
+      {
+        "level": 2,
+        "text": "What we like"
+      },
+      {
+        "level": 2,
+        "text": "Watch out for"
+      },
+      {
+        "level": 2,
+        "text": "Rogers vs Fido vs Chatr"
+      },
+      {
+        "level": 3,
+        "text": "Best for"
+      },
+      {
+        "level": 3,
+        "text": "Pay"
+      },
+      {
+        "level": 3,
+        "text": "Credit check"
+      },
+      {
+        "level": 3,
+        "text": "5G"
+      },
+      {
+        "level": 3,
+        "text": "US use"
+      },
+      {
+        "level": 3,
+        "text": "Plans from"
+      },
+      {
+        "level": 2,
+        "text": "Switch to Rogers in 4 steps — keep your number"
+      },
+      {
+        "level": 3,
+        "text": "Keep your old plan active"
+      },
+      {
+        "level": 3,
+        "text": "Send us your account number"
+      },
+      {
+        "level": 3,
+        "text": "We transfer your number"
+      },
+      {
+        "level": 3,
+        "text": "Switch on"
+      },
+      {
+        "level": 2,
+        "text": "Rogers for newcomers: what to know before you sign"
+      },
+      {
+        "level": 3,
+        "text": "Can I get Rogers without a credit history?"
+      },
+      {
+        "level": 3,
+        "text": "Is Rogers better than Fido or Chatr?"
+      },
+      {
+        "level": 3,
+        "text": "What about phone financing?"
+      },
+      {
+        "level": 3,
+        "text": "Key facts"
+      },
+      {
+        "level": 2,
+        "text": "Newcomersrecommend us."
+      },
+      {
+        "level": 2,
+        "text": "Rogers plan questions"
+      },
+      {
+        "level": 2,
+        "text": "Explore more"
+      },
+      {
+        "level": 3,
+        "text": "Other brands"
+      },
+      {
+        "level": 3,
+        "text": "By need"
+      },
+      {
+        "level": 3,
+        "text": "Compare"
+      },
+      {
+        "level": 2,
+        "text": "Switch to Rogers. Keep your number."
+      },
+      {
+        "level": 2,
+        "text": "Pre-arrival SIM"
+      },
+      {
+        "level": 2,
+        "text": "Home Internet"
+      },
+      {
+        "level": 2,
+        "text": "Mobile Plans"
+      },
+      {
+        "level": 2,
+        "text": "Help"
+      }
+    ],
+    "headingJumps": [],
+    "h1Count": 1,
+    "overflow": false,
+    "images": [
+      {
+        "src": "/design/pre-arrival/364-2201-imgPhoneIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/60-13-imgMark.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/pre-arrival/364-2211-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/pre-arrival/364-2211-imgIcon1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/desktop-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/desktop-imgEllipse2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/desktop-imgEllipse3.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/desktop-imgEllipse4.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/desktop-imgEllipse5.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-9-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      }
+    ],
+    "figmaAssets": [
+      {
+        "nodeId": "364:2201",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "60:16",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "364:2211",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "364:2211-menu",
+        "width": 24,
+        "height": 24,
+        "expectedWidth": 24,
+        "expectedHeight": 24
+      },
+      {
+        "nodeId": "158:79",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "158:84",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "314:245",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:245",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:245",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:245",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:245",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:245",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:245",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:245",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:245",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:245",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:245",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:245",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "160:45",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "160:53",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "160:61",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:10",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "68:54",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      }
+    ],
+    "title": "Rogers mobile plans for newcomers | Canadian Plans",
+    "description": "Compare Rogers 5G+ plans, Canada–US options, prices and setup details in plain words.",
+    "og": {
+      "og:title": "Rogers mobile plans for newcomers | Canadian Plans",
+      "og:description": "Compare Rogers 5G+ plans, Canada–US options, prices and setup details in plain words.",
+      "og:url": "http://localhost:3001/mobile-plans/rogers",
+      "og:site_name": "Canadian Plans",
+      "og:locale": "en_CA",
+      "og:image": "http://localhost:3001/opengraph-image.png",
+      "og:image:width": "1200",
+      "og:image:height": "630",
+      "og:image:alt": "Canadian Plans",
+      "og:type": "website"
+    },
+    "canonical": "http://localhost:3001/mobile-plans/rogers",
+    "robots": "noindex, nofollow",
+    "landmarks": [
+      {
+        "class": "cp-nav",
+        "y": 44,
+        "height": 64
+      },
+      {
+        "class": "cp-promo",
+        "y": 108,
+        "height": 56.75
+      },
+      {
+        "class": "cp-catrog-main",
+        "y": 164.75,
+        "height": 12548.640625
+      },
+      {
+        "class": "cp-catrog-hero",
+        "y": 256.75,
+        "height": 1106.03125
+      },
+      {
+        "class": "cp-catrog-byline",
+        "y": 1362.78125,
+        "height": 265
+      },
+      {
+        "class": "cp-catrog-quick",
+        "y": 1635.78125,
+        "height": 362.5
+      },
+      {
+        "class": "cp-catrog-glance",
+        "y": 2014.28125,
+        "height": 480.375
+      },
+      {
+        "class": "cp-catrog-plans",
+        "y": 2494.65625,
+        "height": 1839.6875
+      },
+      {
+        "class": "cp-catrog-pros",
+        "y": 4334.34375,
+        "height": 747
+      },
+      {
+        "class": "cp-catrog-comparison",
+        "y": 5081.34375,
+        "height": 1448.1875
+      },
+      {
+        "class": "cp-catrog-switch",
+        "y": 6529.53125,
+        "height": 944.296875
+      },
+      {
+        "class": "cp-catrog-guide",
+        "y": 7473.828125,
+        "height": 1535.8125
+      },
+      {
+        "class": "cp-catrog-reviews",
+        "y": 9009.640625,
+        "height": 1148.625
+      },
+      {
+        "class": "cp-catrog-faq",
+        "y": 10158.265625,
+        "height": 1169.34375
+      },
+      {
+        "class": "cp-catrog-explore",
+        "y": 11327.609375,
+        "height": 699.59375
+      },
+      {
+        "class": "cp-catrog-final",
+        "y": 12027.203125,
+        "height": 686.1875
+      },
+      {
+        "class": "cp-footer",
+        "y": 12713.390625,
+        "height": 946.96875
+      }
+    ],
+    "violations": [],
+    "keyboardFocus": [
+      {
+        "tag": "A",
+        "text": "1-888-555-0199",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Track order",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Help",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Canadian Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "WhatsApp us",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Open menu",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "How switching worksHow switching works →",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Home",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Mobile Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "See Rogers plans  ↓",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Compare with Fido & Chatr",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "At a glance",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      }
+    ]
+  },
+  {
+    "name": "compare-rogers-fido",
+    "path": "/compare/rogers-vs-fido",
+    "width": 390,
+    "errors": [],
+    "status": 200,
+    "headings": [
+      {
+        "level": 1,
+        "text": "Rogers vs Fido: which prepaid plan is better?"
+      },
+      {
+        "level": 2,
+        "text": "Rogers vs Fido: what should you pick?"
+      },
+      {
+        "level": 2,
+        "text": "Rogers vs Fido at a glance"
+      },
+      {
+        "level": 2,
+        "text": "Rogers and Fido plans compared"
+      },
+      {
+        "level": 3,
+        "text": "Fido prepaid"
+      },
+      {
+        "level": 3,
+        "text": "Rogers prepaid"
+      },
+      {
+        "level": 2,
+        "text": "Which prepaid plan fits you?"
+      },
+      {
+        "level": 3,
+        "text": "Choose Fido if…"
+      },
+      {
+        "level": 3,
+        "text": "Choose Rogers if…"
+      },
+      {
+        "level": 2,
+        "text": "Rogers vs Fido vs Chatr"
+      },
+      {
+        "level": 2,
+        "text": "Switch to Rogers or Fido in 4 steps"
+      },
+      {
+        "level": 3,
+        "text": "Choose your plan"
+      },
+      {
+        "level": 3,
+        "text": "Keep your current SIM active"
+      },
+      {
+        "level": 3,
+        "text": "Request the transfer"
+      },
+      {
+        "level": 3,
+        "text": "Check your new service"
+      },
+      {
+        "level": 2,
+        "text": "How to choose between Rogers and Fido"
+      },
+      {
+        "level": 3,
+        "text": "Do Rogers and Fido use the same network?"
+      },
+      {
+        "level": 3,
+        "text": "Is Rogers worth $5 more?"
+      },
+      {
+        "level": 3,
+        "text": "Can I keep my number?"
+      },
+      {
+        "level": 2,
+        "text": "Key facts"
+      },
+      {
+        "level": 2,
+        "text": "Newcomersrecommend us."
+      },
+      {
+        "level": 2,
+        "text": "Rogers vs Fidoquestions"
+      },
+      {
+        "level": 2,
+        "text": "Explore more"
+      },
+      {
+        "level": 3,
+        "text": "Compare carriers"
+      },
+      {
+        "level": 3,
+        "text": "Popular comparisons"
+      },
+      {
+        "level": 3,
+        "text": "Helpful guides"
+      },
+      {
+        "level": 2,
+        "text": "Pick the right plan. Keep your number."
+      },
+      {
+        "level": 2,
+        "text": "Pre-arrival SIM"
+      },
+      {
+        "level": 2,
+        "text": "Home Internet"
+      },
+      {
+        "level": 2,
+        "text": "Mobile Plans"
+      },
+      {
+        "level": 2,
+        "text": "Help"
+      }
+    ],
+    "headingJumps": [],
+    "h1Count": 1,
+    "overflow": false,
+    "images": [
+      {
+        "src": "/design/category-airport-compare/airport-mobile-imgPhoneIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/60-13-imgMark.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/364-2163-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/364-2163-imgIcon1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      }
+    ],
+    "figmaAssets": [
+      {
+        "nodeId": "256:1041",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "60:16",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "364:2170",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "364:2173",
+        "width": 24,
+        "height": 24,
+        "expectedWidth": 24,
+        "expectedHeight": 24
+      },
+      {
+        "nodeId": "316:686",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "316:686",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "316:686",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "316:686",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "316:686",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "316:686",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "68:54",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      }
+    ],
+    "title": "Rogers vs Fido prepaid plans: compare price, data & features | Canadian Plans",
+    "description": "Canadian Plans helps newcomers explore mobile connectivity in Canada.",
+    "og": {
+      "og:title": "Rogers vs Fido prepaid plans: compare price, data & features | Canadian Plans",
+      "og:description": "Canadian Plans helps newcomers explore mobile connectivity in Canada.",
+      "og:url": "http://localhost:3001/compare/rogers-vs-fido",
+      "og:site_name": "Canadian Plans",
+      "og:locale": "en_CA",
+      "og:image": "http://localhost:3001/opengraph-image.png",
+      "og:image:width": "1200",
+      "og:image:height": "630",
+      "og:image:alt": "Canadian Plans",
+      "og:type": "website"
+    },
+    "canonical": "http://localhost:3001/compare/rogers-vs-fido",
+    "robots": "noindex, nofollow",
+    "landmarks": [
+      {
+        "class": "cp-nav",
+        "y": 44,
+        "height": 64
+      },
+      {
+        "class": "cp-promo",
+        "y": 108,
+        "height": 56.75
+      },
+      {
+        "class": "cp-catac-compare",
+        "y": 164.75,
+        "height": 9607.859375
+      },
+      {
+        "class": "cp-catac-compare-hero",
+        "y": 205.75,
+        "height": 1074.71875
+      },
+      {
+        "class": "cp-catac-compare-byline cp-container",
+        "y": 1280.46875,
+        "height": 111
+      },
+      {
+        "class": "cp-catac-compare-quick cp-catac-section",
+        "y": 1474.46875,
+        "height": 389.25
+      },
+      {
+        "class": "cp-catac-compare-scorecard cp-catac-section",
+        "y": 1863.71875,
+        "height": 714.6875
+      },
+      {
+        "class": "cp-catac-compare-plans cp-catac-section",
+        "y": 2578.40625,
+        "height": 1027.203125
+      },
+      {
+        "class": "cp-catac-compare-recommend cp-catac-section",
+        "y": 3605.609375,
+        "height": 632.03125
+      },
+      {
+        "class": "cp-catac-compare-three cp-catac-section",
+        "y": 4237.640625,
+        "height": 253.8125
+      },
+      {
+        "class": "cp-catac-compare-switch cp-catac-section",
+        "y": 4491.453125,
+        "height": 720.625
+      },
+      {
+        "class": "cp-catac-compare-guide cp-catac-section",
+        "y": 5212.078125,
+        "height": 1234.921875
+      },
+      {
+        "class": "cp-catac-compare-reviews cp-catac-section",
+        "y": 6447,
+        "height": 1008.9375
+      },
+      {
+        "class": "cp-catac-compare-faq cp-catac-section",
+        "y": 7455.9375,
+        "height": 1317.53125
+      },
+      {
+        "class": "cp-catac-compare-explore cp-catac-section",
+        "y": 8773.46875,
+        "height": 553.171875
+      },
+      {
+        "class": "cp-catac-compare-final cp-catac-section",
+        "y": 9326.640625,
+        "height": 445.96875
+      },
+      {
+        "class": "cp-footer",
+        "y": 9772.609375,
+        "height": 946.96875
+      }
+    ],
+    "violations": [],
+    "keyboardFocus": [
+      {
+        "tag": "A",
+        "text": "Skip to Rogers vs Fido comparison",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "1-888-555-0199",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Track order",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Help",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Canadian Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "WhatsApp us",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Open menu",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "How switching worksHow switching works →",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Home",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Compare",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "See the full comparison ↓",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Talk to an advisor",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      }
+    ]
+  },
+  {
+    "name": "internet-vancouver",
+    "path": "/home-internet/vancouver",
+    "width": 390,
+    "errors": [],
+    "status": 200,
+    "headings": [
+      {
+        "level": 1,
+        "text": "Home internet in Vancouver, installed in about 3 days."
+      },
+      {
+        "level": 2,
+        "text": "How much is home internet in Vancouver?"
+      },
+      {
+        "level": 2,
+        "text": "Coverage by neighbourhood"
+      },
+      {
+        "level": 3,
+        "text": "Downtown & West End"
+      },
+      {
+        "level": 3,
+        "text": "Yaletown & False Creek"
+      },
+      {
+        "level": 3,
+        "text": "Kitsilano & Fairview"
+      },
+      {
+        "level": 3,
+        "text": "Mount Pleasant & Main"
+      },
+      {
+        "level": 3,
+        "text": "East Vancouver"
+      },
+      {
+        "level": 3,
+        "text": "Kerrisdale & Marpole"
+      },
+      {
+        "level": 3,
+        "text": "UBC area"
+      },
+      {
+        "level": 3,
+        "text": "South Vancouver"
+      },
+      {
+        "level": 2,
+        "text": "Tips for your type of home"
+      },
+      {
+        "level": 3,
+        "text": "Apartment or condo"
+      },
+      {
+        "level": 3,
+        "text": "Basement suite"
+      },
+      {
+        "level": 3,
+        "text": "House"
+      },
+      {
+        "level": 3,
+        "text": "Student housing"
+      },
+      {
+        "level": 2,
+        "text": "Internet plans in Vancouver"
+      },
+      {
+        "level": 3,
+        "text": "Up to 500 Mbps"
+      },
+      {
+        "level": 3,
+        "text": "Up to 150 Mbps"
+      },
+      {
+        "level": 3,
+        "text": "Up to 1 Gbps"
+      },
+      {
+        "level": 3,
+        "text": "Up to 1.5 Gbps"
+      },
+      {
+        "level": 2,
+        "text": "How to get home internet in 3 steps"
+      },
+      {
+        "level": 3,
+        "text": "Check your address"
+      },
+      {
+        "level": 3,
+        "text": "An advisor calls you"
+      },
+      {
+        "level": 3,
+        "text": "A technician installs it"
+      },
+      {
+        "level": 2,
+        "text": "Internet in Vancouver: a renter’s guide"
+      },
+      {
+        "level": 3,
+        "text": "How fast should my internet be in Vancouver?"
+      },
+      {
+        "level": 3,
+        "text": "Do I need my landlord’s permission?"
+      },
+      {
+        "level": 3,
+        "text": "Fibre or cable — what’s the difference?"
+      },
+      {
+        "level": 3,
+        "text": "Key facts"
+      },
+      {
+        "level": 2,
+        "text": "Newcomers recommend us."
+      },
+      {
+        "level": 2,
+        "text": "Vancouver internet questions"
+      },
+      {
+        "level": 2,
+        "text": "Explore more"
+      },
+      {
+        "level": 3,
+        "text": "Nearby cities"
+      },
+      {
+        "level": 3,
+        "text": "Plans & bundles"
+      },
+      {
+        "level": 3,
+        "text": "Guides"
+      },
+      {
+        "level": 2,
+        "text": "Online on move‑in day in Vancouver."
+      },
+      {
+        "level": 2,
+        "text": "Pre-arrival SIM"
+      },
+      {
+        "level": 2,
+        "text": "Home Internet"
+      },
+      {
+        "level": 2,
+        "text": "Mobile Plans"
+      },
+      {
+        "level": 2,
+        "text": "Help"
+      }
+    ],
+    "headingJumps": [],
+    "h1Count": 1,
+    "overflow": false,
+    "images": [
+      {
+        "src": "/design/home-internet/212-51-imgPhoneIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/home-internet/106-34-imgMark.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/home-internet/212-51-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/home-internet/212-51-imgIcon1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgEllipse.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/_next/image?url=%2Fdesign%2Fcategory-internet%2Fvancouver-mobile-imgCoverageFill.png&w=750&q=75",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/_next/image?url=%2Fdesign%2Fcategory-internet%2Fvancouver-mobile-imgCoverageRing.png&w=750&q=75",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-desktop-imgEllipse3.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-desktop-imgEllipse4.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-desktop-imgEllipse5.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgFrame1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgFrame1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgFrame1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-desktop-imgEllipse6.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-desktop-imgEllipse7.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-desktop-imgEllipse8.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/home-internet/106-34-imgFrame.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      }
+    ],
+    "figmaAssets": [
+      {
+        "nodeId": "212-51-imgPhoneIcon",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "106-34-imgMark",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "212-51-imgIcon",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "212-51-imgIcon1",
+        "width": 24,
+        "height": 24,
+        "expectedWidth": 24,
+        "expectedHeight": 24
+      },
+      {
+        "nodeId": "252:386",
+        "width": 420,
+        "height": 300,
+        "expectedWidth": 420,
+        "expectedHeight": 300
+      },
+      {
+        "nodeId": "252:401",
+        "width": 340,
+        "height": 300,
+        "expectedWidth": 340,
+        "expectedHeight": 300
+      },
+      {
+        "nodeId": "252:402",
+        "width": 340,
+        "height": 300,
+        "expectedWidth": 340,
+        "expectedHeight": 300
+      },
+      {
+        "nodeId": "252:403",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "252:403",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "252:403",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "252:403",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "154:77",
+        "width": 12,
+        "height": 12,
+        "expectedWidth": 12,
+        "expectedHeight": 12
+      },
+      {
+        "nodeId": "154:88",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "154:93",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "314:1406",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "314:1406",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "314:1406",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "314:1428",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1428",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1428",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1428",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1428",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1428",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1428",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1428",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1428",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1428",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1428",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1428",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "157:45",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "157:53",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "157:61",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "106-34-imgFrame",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      }
+    ],
+    "title": "Home Internet in Vancouver | Canadian Plans preview",
+    "description": "Design preview only. All provider, coverage, price, review and installation details on this page are unverified examples. The address checker is a local fixture; no order or provider request is created.",
+    "og": {
+      "og:title": "Home Internet in Vancouver | Canadian Plans preview",
+      "og:description": "Design preview only. All provider, coverage, price, review and installation details on this page are unverified examples. The address checker is a local fixture; no order or provider request is created.",
+      "og:url": "http://localhost:3001/home-internet/vancouver",
+      "og:site_name": "Canadian Plans",
+      "og:locale": "en_CA",
+      "og:image": "http://localhost:3001/opengraph-image.png",
+      "og:image:width": "1200",
+      "og:image:height": "630",
+      "og:image:alt": "Canadian Plans",
+      "og:type": "website"
+    },
+    "canonical": "http://localhost:3001/home-internet/vancouver",
+    "robots": "noindex, nofollow",
+    "landmarks": [
+      {
+        "class": "cp-nav",
+        "y": 44,
+        "height": 64
+      },
+      {
+        "class": "cp-promo",
+        "y": 108,
+        "height": 72.75
+      },
+      {
+        "class": "",
+        "y": 180.75,
+        "height": 10702.21875
+      },
+      {
+        "class": "cp-catnet-hero",
+        "y": 236.75,
+        "height": 806.65625
+      },
+      {
+        "class": "cp-catnet-meta",
+        "y": 1043.40625,
+        "height": 281
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-stats-section",
+        "y": 1324.40625,
+        "height": 655.53125
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-directory",
+        "y": 1979.9375,
+        "height": 1003.4375
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-tips-section",
+        "y": 2983.375,
+        "height": 494.1875
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-plan-section",
+        "y": 3477.5625,
+        "height": 1547.234375
+      },
+      {
+        "class": "cp-catnet-steps-section",
+        "y": 5024.796875,
+        "height": 581.375
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-guide-section",
+        "y": 5606.171875,
+        "height": 1552.203125
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-reviews-section",
+        "y": 7158.375,
+        "height": 1181.1875
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-faq-section",
+        "y": 8339.5625,
+        "height": 891
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-explore-section",
+        "y": 9230.5625,
+        "height": 963.6875
+      },
+      {
+        "class": "cp-catnet-final cp-catnet-container",
+        "y": 10194.25,
+        "height": 565.78125
+      },
+      {
+        "class": "cp-footer",
+        "y": 10882.96875,
+        "height": 946.96875
+      }
+    ],
+    "violations": [],
+    "keyboardFocus": [
+      {
+        "tag": "A",
+        "text": "Skip to main content",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "1-888-555-0199",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Track order",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Help",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Canadian Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "WhatsApp us",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Open menu",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Check my addressCheck my address →",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Home",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Home Internet",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "British Columbia",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "INPUT",
+        "text": "",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      }
+    ]
+  },
+  {
+    "name": "internet-ontario",
+    "path": "/home-internet/ontario",
+    "width": 390,
+    "errors": [],
+    "status": 200,
+    "headings": [
+      {
+        "level": 1,
+        "text": "Home internet across Ontario, city by city."
+      },
+      {
+        "level": 2,
+        "text": "How much is home internet in Ontario?"
+      },
+      {
+        "level": 2,
+        "text": "Pick your city"
+      },
+      {
+        "level": 3,
+        "text": "Toronto"
+      },
+      {
+        "level": 3,
+        "text": "Ottawa"
+      },
+      {
+        "level": 3,
+        "text": "Mississauga"
+      },
+      {
+        "level": 3,
+        "text": "Hamilton"
+      },
+      {
+        "level": 3,
+        "text": "London"
+      },
+      {
+        "level": 3,
+        "text": "Kitchener"
+      },
+      {
+        "level": 3,
+        "text": "Windsor"
+      },
+      {
+        "level": 3,
+        "text": "Vaughan"
+      },
+      {
+        "level": 2,
+        "text": "Tips for your type of home"
+      },
+      {
+        "level": 3,
+        "text": "Apartment or condo"
+      },
+      {
+        "level": 3,
+        "text": "Basement suite"
+      },
+      {
+        "level": 3,
+        "text": "House"
+      },
+      {
+        "level": 3,
+        "text": "Student housing"
+      },
+      {
+        "level": 2,
+        "text": "Internet plans across Ontario"
+      },
+      {
+        "level": 3,
+        "text": "Up to 500 Mbps"
+      },
+      {
+        "level": 3,
+        "text": "Up to 150 Mbps"
+      },
+      {
+        "level": 3,
+        "text": "Up to 1 Gbps"
+      },
+      {
+        "level": 3,
+        "text": "Up to 1.5 Gbps"
+      },
+      {
+        "level": 2,
+        "text": "How to get home internet in 3 steps"
+      },
+      {
+        "level": 3,
+        "text": "Check your address"
+      },
+      {
+        "level": 3,
+        "text": "An advisor calls you"
+      },
+      {
+        "level": 3,
+        "text": "A technician installs it"
+      },
+      {
+        "level": 2,
+        "text": "Internet in Ontario: a renter’s guide"
+      },
+      {
+        "level": 3,
+        "text": "How fast should my internet be?"
+      },
+      {
+        "level": 3,
+        "text": "Do I need my landlord’s permission?"
+      },
+      {
+        "level": 3,
+        "text": "Fibre or cable — what’s the difference?"
+      },
+      {
+        "level": 3,
+        "text": "Key facts"
+      },
+      {
+        "level": 2,
+        "text": "Newcomers recommend us."
+      },
+      {
+        "level": 2,
+        "text": "Ontario internet questions"
+      },
+      {
+        "level": 2,
+        "text": "Explore more"
+      },
+      {
+        "level": 3,
+        "text": "Ontario cities"
+      },
+      {
+        "level": 3,
+        "text": "Plans & bundles"
+      },
+      {
+        "level": 3,
+        "text": "Guides"
+      },
+      {
+        "level": 2,
+        "text": "Online on move‑in day in Ontario."
+      },
+      {
+        "level": 2,
+        "text": "Pre-arrival SIM"
+      },
+      {
+        "level": 2,
+        "text": "Home Internet"
+      },
+      {
+        "level": 2,
+        "text": "Mobile Plans"
+      },
+      {
+        "level": 2,
+        "text": "Help"
+      }
+    ],
+    "headingJumps": [],
+    "h1Count": 1,
+    "overflow": false,
+    "images": [
+      {
+        "src": "/design/home-internet/212-51-imgPhoneIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/home-internet/106-34-imgMark.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/home-internet/212-51-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/home-internet/212-51-imgIcon1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgEllipse.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/_next/image?url=%2Fdesign%2Fcategory-internet%2Fontario-mobile-imgCoverageFill.png&w=750&q=75",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/_next/image?url=%2Fdesign%2Fcategory-internet%2Fontario-mobile-imgCoverageRing.png&w=750&q=75",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-desktop-imgEllipse3.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-desktop-imgEllipse4.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-desktop-imgEllipse5.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgFrame1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgFrame1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgFrame1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgFrame2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-desktop-imgEllipse6.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-desktop-imgEllipse7.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-desktop-imgEllipse8.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/home-internet/106-34-imgFrame.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      }
+    ],
+    "figmaAssets": [
+      {
+        "nodeId": "212-51-imgPhoneIcon",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "106-34-imgMark",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "212-51-imgIcon",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "212-51-imgIcon1",
+        "width": 24,
+        "height": 24,
+        "expectedWidth": 24,
+        "expectedHeight": 24
+      },
+      {
+        "nodeId": "256:534",
+        "width": 420,
+        "height": 300,
+        "expectedWidth": 420,
+        "expectedHeight": 300
+      },
+      {
+        "nodeId": "256:549",
+        "width": 340,
+        "height": 300,
+        "expectedWidth": 340,
+        "expectedHeight": 300
+      },
+      {
+        "nodeId": "256:550",
+        "width": 340,
+        "height": 300,
+        "expectedWidth": 340,
+        "expectedHeight": 300
+      },
+      {
+        "nodeId": "256:551",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "256:551",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "256:551",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "256:551",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "186:78",
+        "width": 12,
+        "height": 12,
+        "expectedWidth": 12,
+        "expectedHeight": 12
+      },
+      {
+        "nodeId": "186:89",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "186:94",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "314:1643",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "314:1643",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "314:1643",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "314:1564",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1564",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1564",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1564",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1564",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1564",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1564",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1564",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1564",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1564",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1564",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "314:1564",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "186:358",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "186:366",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "186:374",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "106-34-imgFrame",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      }
+    ],
+    "title": "Home Internet in Ontario | Canadian Plans preview",
+    "description": "Design preview only. All provider, coverage, price, review and installation details on this page are unverified examples. The address checker is a local fixture; no order or provider request is created.",
+    "og": {
+      "og:title": "Home Internet in Ontario | Canadian Plans preview",
+      "og:description": "Design preview only. All provider, coverage, price, review and installation details on this page are unverified examples. The address checker is a local fixture; no order or provider request is created.",
+      "og:url": "http://localhost:3001/home-internet/ontario",
+      "og:site_name": "Canadian Plans",
+      "og:locale": "en_CA",
+      "og:image": "http://localhost:3001/opengraph-image.png",
+      "og:image:width": "1200",
+      "og:image:height": "630",
+      "og:image:alt": "Canadian Plans",
+      "og:type": "website"
+    },
+    "canonical": "http://localhost:3001/home-internet/ontario",
+    "robots": "noindex, nofollow",
+    "landmarks": [
+      {
+        "class": "cp-nav",
+        "y": 44,
+        "height": 64
+      },
+      {
+        "class": "cp-promo",
+        "y": 108,
+        "height": 72.75
+      },
+      {
+        "class": "",
+        "y": 180.75,
+        "height": 10493.5625
+      },
+      {
+        "class": "cp-catnet-hero",
+        "y": 214.75,
+        "height": 781.15625
+      },
+      {
+        "class": "cp-catnet-meta",
+        "y": 995.90625,
+        "height": 281
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-stats-section",
+        "y": 1276.90625,
+        "height": 655.4375
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-directory",
+        "y": 1932.34375,
+        "height": 923.59375
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-tips-section",
+        "y": 2855.9375,
+        "height": 494.1875
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-plan-section",
+        "y": 3350.125,
+        "height": 1547.234375
+      },
+      {
+        "class": "cp-catnet-steps-section",
+        "y": 4897.359375,
+        "height": 581.375
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-guide-section",
+        "y": 5478.734375,
+        "height": 1552.203125
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-reviews-section",
+        "y": 7030.9375,
+        "height": 1181.1875
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-faq-section",
+        "y": 8212.125,
+        "height": 901.78125
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-explore-section",
+        "y": 9113.90625,
+        "height": 871.6875
+      },
+      {
+        "class": "cp-catnet-final cp-catnet-container",
+        "y": 9985.59375,
+        "height": 565.78125
+      },
+      {
+        "class": "cp-footer",
+        "y": 10674.3125,
+        "height": 946.96875
+      }
+    ],
+    "violations": [],
+    "keyboardFocus": [
+      {
+        "tag": "A",
+        "text": "Skip to main content",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "1-888-555-0199",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Track order",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Help",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Canadian Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "WhatsApp us",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Open menu",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Check my addressCheck my address →",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Home",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Home Internet",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "INPUT",
+        "text": "",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Check availability",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      }
+    ]
+  },
+  {
+    "name": "sim-students",
+    "path": "/pre-arrival-sim/students",
+    "width": 1440,
+    "errors": [],
+    "status": 200,
+    "headings": [
+      {
+        "level": 1,
+        "text": "Your Canadian number before your first class."
+      },
+      {
+        "level": 2,
+        "text": "What is the best SIM for international students in Canada?"
+      },
+      {
+        "level": 2,
+        "text": "From your home to your first class."
+      },
+      {
+        "level": 3,
+        "text": "Order your eSIM"
+      },
+      {
+        "level": 3,
+        "text": "Get your number"
+      },
+      {
+        "level": 3,
+        "text": "Install at home"
+      },
+      {
+        "level": 3,
+        "text": "Land & switch on"
+      },
+      {
+        "level": 2,
+        "text": "Pick your student plan"
+      },
+      {
+        "level": 3,
+        "text": "75 GB"
+      },
+      {
+        "level": 3,
+        "text": "100 GB"
+      },
+      {
+        "level": 3,
+        "text": "120 GB"
+      },
+      {
+        "level": 2,
+        "text": "What you’ll need"
+      },
+      {
+        "level": 2,
+        "text": "Is my phone eSIM-ready?"
+      },
+      {
+        "level": 2,
+        "text": "Student eSIM in Canada: the complete guide"
+      },
+      {
+        "level": 3,
+        "text": "How much data do international students need?"
+      },
+      {
+        "level": 3,
+        "text": "Prepaid or postpaid as a student?"
+      },
+      {
+        "level": 3,
+        "text": "Which carrier works best on campus?"
+      },
+      {
+        "level": 2,
+        "text": "Key facts"
+      },
+      {
+        "level": 2,
+        "text": "Newcomers recommend us."
+      },
+      {
+        "level": 2,
+        "text": "Student SIMquestions"
+      },
+      {
+        "level": 2,
+        "text": "Explore more"
+      },
+      {
+        "level": 3,
+        "text": "Other audiences"
+      },
+      {
+        "level": 3,
+        "text": "Popular countries"
+      },
+      {
+        "level": 3,
+        "text": "Student guides"
+      },
+      {
+        "level": 2,
+        "text": "Your number, ready before your first class."
+      },
+      {
+        "level": 2,
+        "text": "Pre-arrival SIM"
+      },
+      {
+        "level": 2,
+        "text": "Home Internet"
+      },
+      {
+        "level": 2,
+        "text": "Mobile Plans"
+      },
+      {
+        "level": 2,
+        "text": "Help"
+      }
+    ],
+    "headingJumps": [],
+    "h1Count": 1,
+    "overflow": false,
+    "images": [
+      {
+        "src": "/design/components/60-13-imgMark.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/legal/0-imgSearchIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-sim/students-desktop-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-sim/students-desktop-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-sim/students-desktop-imgEllipse2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-sim/students-desktop-imgEllipse3.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-9-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/66-43-imgEllipse.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/66-51-imgEllipse.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/66-59-imgEllipse.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      }
+    ],
+    "figmaAssets": [
+      {
+        "nodeId": "60:16",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "361:1004",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "151:88",
+        "width": 28,
+        "height": 28,
+        "expectedWidth": 28,
+        "expectedHeight": 28
+      },
+      {
+        "nodeId": "151:88",
+        "width": 28,
+        "height": 28,
+        "expectedWidth": 28,
+        "expectedHeight": 28
+      },
+      {
+        "nodeId": "151:128",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "151:133",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "312:10",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "66:47",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "66:55",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "66:63",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "68:54",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      }
+    ],
+    "title": "Student SIM & eSIM for Canada | Canadian Plans",
+    "description": "Get a Canadian number before your first class. Compare student eSIM plans and learn what to prepare before you arrive.",
+    "og": {
+      "og:title": "Student SIM & eSIM for Canada | Canadian Plans",
+      "og:description": "Get a Canadian number before your first class. Compare student eSIM plans and learn what to prepare before you arrive.",
+      "og:url": "http://localhost:3001/pre-arrival-sim/students",
+      "og:site_name": "Canadian Plans",
+      "og:locale": "en_CA",
+      "og:image": "http://localhost:3001/opengraph-image.png",
+      "og:image:width": "1200",
+      "og:image:height": "630",
+      "og:image:alt": "Canadian Plans",
+      "og:type": "website"
+    },
+    "canonical": "http://localhost:3001/pre-arrival-sim/students",
+    "robots": "noindex, nofollow",
+    "landmarks": [
+      {
+        "class": "cp-nav",
+        "y": 38,
+        "height": 82.296875
+      },
+      {
+        "class": "cp-promo",
+        "y": 120.296875,
+        "height": 40.296875
+      },
+      {
+        "class": "cp-catsim-main",
+        "y": 160.59375,
+        "height": 6313.8125
+      },
+      {
+        "class": "cp-catsim-hero",
+        "y": 217.59375,
+        "height": 647.25
+      },
+      {
+        "class": "cp-catsim-meta",
+        "y": 864.84375,
+        "height": 136
+      },
+      {
+        "class": "cp-catsim-quick",
+        "y": 1000.84375,
+        "height": 206.1875
+      },
+      {
+        "class": "cp-catsim-countdown cp-catsim-section",
+        "y": 1207.03125,
+        "height": 665.1875
+      },
+      {
+        "class": "cp-catsim-plans cp-catsim-section",
+        "y": 1872.21875,
+        "height": 706.578125
+      },
+      {
+        "class": "cp-catsim-requirements cp-catsim-section",
+        "y": 2578.796875,
+        "height": 732.890625
+      },
+      {
+        "class": "cp-catsim-guide cp-catsim-section",
+        "y": 3311.6875,
+        "height": 922.5625
+      },
+      {
+        "class": "cp-catsim-reviews cp-catsim-section",
+        "y": 4234.25,
+        "height": 428.21875
+      },
+      {
+        "class": "cp-catsim-faq cp-catsim-section",
+        "y": 4662.46875,
+        "height": 822
+      },
+      {
+        "class": "cp-catsim-explore cp-catsim-section",
+        "y": 5484.46875,
+        "height": 484.75
+      },
+      {
+        "class": "cp-catsim-final cp-catsim-section",
+        "y": 5969.21875,
+        "height": 505.1875
+      },
+      {
+        "class": "cp-footer",
+        "y": 6474.40625,
+        "height": 440.5
+      }
+    ],
+    "violations": [],
+    "keyboardFocus": [
+      {
+        "tag": "A",
+        "text": "Skip to main content",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "I'm moving to Canada",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "I already live here",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "1-888-555-0199",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Track order",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Contact",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Help",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Canadian Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Pre-arrival SIM",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Home Internet",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Mobile Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Guides",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      }
+    ]
+  },
+  {
+    "name": "sim-india",
+    "path": "/pre-arrival-sim/from-india",
+    "width": 1440,
+    "errors": [],
+    "status": 200,
+    "headings": [
+      {
+        "level": 1,
+        "text": "Canadian SIM for Indians moving to Canada (2026)"
+      },
+      {
+        "level": 2,
+        "text": "How do I get a Canadian SIM card in India?"
+      },
+      {
+        "level": 2,
+        "text": "From India to your first week in Canada."
+      },
+      {
+        "level": 3,
+        "text": "Order your eSIM"
+      },
+      {
+        "level": 3,
+        "text": "Get your number"
+      },
+      {
+        "level": 3,
+        "text": "Install at home"
+      },
+      {
+        "level": 3,
+        "text": "Land & switch on"
+      },
+      {
+        "level": 2,
+        "text": "Plans newcomers from India choose"
+      },
+      {
+        "level": 3,
+        "text": "75 GB"
+      },
+      {
+        "level": 3,
+        "text": "100 GB"
+      },
+      {
+        "level": 3,
+        "text": "120 GB"
+      },
+      {
+        "level": 2,
+        "text": "What you’ll need"
+      },
+      {
+        "level": 2,
+        "text": "Is my phone eSIM-ready?"
+      },
+      {
+        "level": 2,
+        "text": "Calling India from Canada"
+      },
+      {
+        "level": 3,
+        "text": "WhatsApp & video calls"
+      },
+      {
+        "level": 3,
+        "text": "International calling add-on"
+      },
+      {
+        "level": 3,
+        "text": "Pay per minute"
+      },
+      {
+        "level": 3,
+        "text": "Keep your Indian number"
+      },
+      {
+        "level": 2,
+        "text": "Moving from India: your Canadian phone setup"
+      },
+      {
+        "level": 3,
+        "text": "Will my Indian phone work with a Canadian eSIM?"
+      },
+      {
+        "level": 3,
+        "text": "Should I keep my Indian SIM?"
+      },
+      {
+        "level": 3,
+        "text": "How do I call India cheaply from Canada?"
+      },
+      {
+        "level": 2,
+        "text": "Key facts"
+      },
+      {
+        "level": 2,
+        "text": "Newcomers recommend us."
+      },
+      {
+        "level": 2,
+        "text": "India toCanada SIM questions"
+      },
+      {
+        "level": 2,
+        "text": "Explore more"
+      },
+      {
+        "level": 3,
+        "text": "By residence"
+      },
+      {
+        "level": 3,
+        "text": "Popular countries"
+      },
+      {
+        "level": 3,
+        "text": "India guides"
+      },
+      {
+        "level": 2,
+        "text": "From India to online in Canada."
+      },
+      {
+        "level": 2,
+        "text": "Pre-arrival SIM"
+      },
+      {
+        "level": 2,
+        "text": "Home Internet"
+      },
+      {
+        "level": 2,
+        "text": "Mobile Plans"
+      },
+      {
+        "level": 2,
+        "text": "Help"
+      }
+    ],
+    "headingJumps": [],
+    "h1Count": 1,
+    "overflow": false,
+    "images": [
+      {
+        "src": "/design/components/60-13-imgMark.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/legal/0-imgSearchIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-sim/students-desktop-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-sim/students-desktop-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-sim/students-desktop-imgEllipse2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-sim/students-desktop-imgEllipse3.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-9-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/66-43-imgEllipse.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/66-51-imgEllipse.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/66-59-imgEllipse.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      }
+    ],
+    "figmaAssets": [
+      {
+        "nodeId": "60:16",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "361:1004",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "151:88",
+        "width": 28,
+        "height": 28,
+        "expectedWidth": 28,
+        "expectedHeight": 28
+      },
+      {
+        "nodeId": "151:88",
+        "width": 28,
+        "height": 28,
+        "expectedWidth": 28,
+        "expectedHeight": 28
+      },
+      {
+        "nodeId": "151:128",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "151:133",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "312:10",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "66:47",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "66:55",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "66:63",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "68:54",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      }
+    ],
+    "title": "Canadian SIM for Indians moving to Canada | Canadian Plans",
+    "description": "Order a Canadian eSIM from India before your flight. Compare plans, keep your Indian number for OTPs and prepare for your first week in Canada.",
+    "og": {
+      "og:title": "Canadian SIM for Indians moving to Canada | Canadian Plans",
+      "og:description": "Order a Canadian eSIM from India before your flight. Compare plans, keep your Indian number for OTPs and prepare for your first week in Canada.",
+      "og:url": "http://localhost:3001/pre-arrival-sim/from-india",
+      "og:site_name": "Canadian Plans",
+      "og:locale": "en_CA",
+      "og:image": "http://localhost:3001/opengraph-image.png",
+      "og:image:width": "1200",
+      "og:image:height": "630",
+      "og:image:alt": "Canadian Plans",
+      "og:type": "website"
+    },
+    "canonical": "http://localhost:3001/pre-arrival-sim/from-india",
+    "robots": "noindex, nofollow",
+    "landmarks": [
+      {
+        "class": "cp-nav",
+        "y": 38,
+        "height": 82.296875
+      },
+      {
+        "class": "cp-promo",
+        "y": 120.296875,
+        "height": 40.296875
+      },
+      {
+        "class": "cp-catsim-main",
+        "y": 160.59375,
+        "height": 7428
+      },
+      {
+        "class": "cp-catsim-hero",
+        "y": 217.59375,
+        "height": 752.75
+      },
+      {
+        "class": "cp-catsim-meta",
+        "y": 970.34375,
+        "height": 136
+      },
+      {
+        "class": "cp-catsim-quick cp-catsim-quick-india",
+        "y": 1106.34375,
+        "height": 206.1875
+      },
+      {
+        "class": "cp-catsim-country-facts-section cp-catsim-section",
+        "y": 1312.53125,
+        "height": 290.1875
+      },
+      {
+        "class": "cp-catsim-countdown cp-catsim-section",
+        "y": 1602.71875,
+        "height": 665.1875
+      },
+      {
+        "class": "cp-catsim-plans cp-catsim-section",
+        "y": 2267.90625,
+        "height": 706.578125
+      },
+      {
+        "class": "cp-catsim-requirements cp-catsim-section",
+        "y": 2974.484375,
+        "height": 732.890625
+      },
+      {
+        "class": "cp-catsim-calling cp-catsim-section",
+        "y": 3707.375,
+        "height": 858
+      },
+      {
+        "class": "cp-catsim-guide cp-catsim-section",
+        "y": 4565.375,
+        "height": 820.5625
+      },
+      {
+        "class": "cp-catsim-reviews cp-catsim-section",
+        "y": 5385.9375,
+        "height": 428.21875
+      },
+      {
+        "class": "cp-catsim-faq cp-catsim-section",
+        "y": 5814.15625,
+        "height": 784.5
+      },
+      {
+        "class": "cp-catsim-explore cp-catsim-section",
+        "y": 6598.65625,
+        "height": 484.75
+      },
+      {
+        "class": "cp-catsim-final cp-catsim-section",
+        "y": 7083.40625,
+        "height": 505.1875
+      },
+      {
+        "class": "cp-footer",
+        "y": 7588.59375,
+        "height": 440.5
+      }
+    ],
+    "violations": [],
+    "keyboardFocus": [
+      {
+        "tag": "A",
+        "text": "Skip to main content",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "I'm moving to Canada",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "I already live here",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "1-888-555-0199",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Track order",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Contact",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Help",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Canadian Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Pre-arrival SIM",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Home Internet",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Mobile Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Guides",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      }
+    ]
+  },
+  {
+    "name": "sim-airport",
+    "path": "/pre-arrival-sim/toronto-pearson",
+    "width": 1440,
+    "errors": [],
+    "status": 200,
+    "headings": [
+      {
+        "level": 1,
+        "text": "Landing at Pearson? Get signal before you leave the gate."
+      },
+      {
+        "level": 2,
+        "text": "Can I use my phone as soon as I land at Toronto Pearson?"
+      },
+      {
+        "level": 2,
+        "text": "Pick your plan before you land"
+      },
+      {
+        "level": 2,
+        "text": "From touchdown to texting home."
+      },
+      {
+        "level": 3,
+        "text": "Order your eSIM"
+      },
+      {
+        "level": 3,
+        "text": "Get your number"
+      },
+      {
+        "level": 3,
+        "text": "Install at home"
+      },
+      {
+        "level": 3,
+        "text": "Land & switch on"
+      },
+      {
+        "level": 2,
+        "text": "Before you land, have ready"
+      },
+      {
+        "level": 3,
+        "text": "Passport"
+      },
+      {
+        "level": 3,
+        "text": "Your study or work permit, or PR confirmation"
+      },
+      {
+        "level": 3,
+        "text": "Arrival date & city"
+      },
+      {
+        "level": 3,
+        "text": "Email address"
+      },
+      {
+        "level": 2,
+        "text": "Is my phone eSIM-ready?"
+      },
+      {
+        "level": 2,
+        "text": "Arriving at Toronto Pearson: your phone guide"
+      },
+      {
+        "level": 3,
+        "text": "Is there free Wi-Fi at Pearson Airport?"
+      },
+      {
+        "level": 3,
+        "text": "Should I just buy a SIM at the airport?"
+      },
+      {
+        "level": 3,
+        "text": "Which network works best in Toronto?"
+      },
+      {
+        "level": 2,
+        "text": "Key facts"
+      },
+      {
+        "level": 2,
+        "text": "Newcomersrecommend us."
+      },
+      {
+        "level": 2,
+        "text": "Pearson arrivalquestions"
+      },
+      {
+        "level": 2,
+        "text": "Explore more"
+      },
+      {
+        "level": 3,
+        "text": "Other audiences"
+      },
+      {
+        "level": 3,
+        "text": "Popular countries"
+      },
+      {
+        "level": 3,
+        "text": "Student guides"
+      },
+      {
+        "level": 2,
+        "text": "Signal on, before you clear customs."
+      },
+      {
+        "level": 2,
+        "text": "Pre-arrival SIM"
+      },
+      {
+        "level": 2,
+        "text": "Home Internet"
+      },
+      {
+        "level": 2,
+        "text": "Mobile Plans"
+      },
+      {
+        "level": 2,
+        "text": "Help"
+      }
+    ],
+    "headingJumps": [],
+    "h1Count": 1,
+    "overflow": false,
+    "images": [
+      {
+        "src": "/design/components/60-13-imgMark.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/legal/0-imgSearchIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-airport-compare/airport-desktop-imgEllipse1.svg",
+        "next": false,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-airport-compare/airport-desktop-imgEllipse1.svg",
+        "next": false,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-9-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      }
+    ],
+    "figmaAssets": [
+      {
+        "nodeId": "60:16",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "361:1004",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "186:595",
+        "width": 28,
+        "height": 28,
+        "expectedWidth": 28,
+        "expectedHeight": 28
+      },
+      {
+        "nodeId": "186:595",
+        "width": 28,
+        "height": 28,
+        "expectedWidth": 28,
+        "expectedHeight": 28
+      },
+      {
+        "nodeId": "312:10",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "68:54",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      }
+    ],
+    "title": "Toronto Pearson (YYZ) eSIM arrival guide | Canadian Plans",
+    "description": "Canadian Plans helps newcomers explore mobile connectivity in Canada.",
+    "og": {
+      "og:title": "Toronto Pearson (YYZ) eSIM arrival guide | Canadian Plans",
+      "og:description": "Canadian Plans helps newcomers explore mobile connectivity in Canada.",
+      "og:url": "http://localhost:3001/pre-arrival-sim/toronto-pearson",
+      "og:site_name": "Canadian Plans",
+      "og:locale": "en_CA",
+      "og:image": "http://localhost:3001/opengraph-image.png",
+      "og:image:width": "1200",
+      "og:image:height": "630",
+      "og:image:alt": "Canadian Plans",
+      "og:type": "website"
+    },
+    "canonical": "http://localhost:3001/pre-arrival-sim/toronto-pearson",
+    "robots": "noindex, nofollow",
+    "landmarks": [
+      {
+        "class": "cp-nav",
+        "y": 38,
+        "height": 82.296875
+      },
+      {
+        "class": "cp-promo",
+        "y": 120.296875,
+        "height": 40.296875
+      },
+      {
+        "class": "cp-catac-airport",
+        "y": 160.59375,
+        "height": 6627.40625
+      },
+      {
+        "class": "cp-catac-airport-hero",
+        "y": 200.59375,
+        "height": 742.234375
+      },
+      {
+        "class": "cp-catac-airport-byline cp-container",
+        "y": 942.828125,
+        "height": 81
+      },
+      {
+        "class": "cp-catac-airport-quick cp-catac-section",
+        "y": 1075.328125,
+        "height": 356.640625
+      },
+      {
+        "class": "cp-catac-airport-plans cp-catac-section",
+        "y": 1431.96875,
+        "height": 946.25
+      },
+      {
+        "class": "cp-catac-airport-how cp-catac-section",
+        "y": 2378.21875,
+        "height": 592.25
+      },
+      {
+        "class": "cp-catac-airport-documents cp-catac-section",
+        "y": 2970.46875,
+        "height": 724.765625
+      },
+      {
+        "class": "cp-catac-airport-guide cp-catac-section",
+        "y": 3695.234375,
+        "height": 888
+      },
+      {
+        "class": "cp-catac-airport-reviews cp-catac-section",
+        "y": 4583.234375,
+        "height": 467
+      },
+      {
+        "class": "cp-catac-airport-faq cp-catac-section",
+        "y": 5050.234375,
+        "height": 814
+      },
+      {
+        "class": "cp-catac-airport-explore cp-catac-section",
+        "y": 5864.234375,
+        "height": 412.390625
+      },
+      {
+        "class": "cp-catac-airport-final cp-catac-section",
+        "y": 6276.625,
+        "height": 511.375
+      },
+      {
+        "class": "cp-footer",
+        "y": 6788,
+        "height": 440.5
+      }
+    ],
+    "violations": [],
+    "keyboardFocus": [
+      {
+        "tag": "A",
+        "text": "Skip to Pearson arrival guide",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "I'm moving to Canada",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "I already live here",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "1-888-555-0199",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Track order",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Contact",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Help",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Canadian Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Pre-arrival SIM",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Home Internet",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Mobile Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Guides",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      }
+    ]
+  },
+  {
+    "name": "mobile-rogers",
+    "path": "/mobile-plans/rogers",
+    "width": 1440,
+    "errors": [],
+    "status": 200,
+    "headings": [
+      {
+        "level": 1,
+        "text": "Rogers plans, explained in plain words."
+      },
+      {
+        "level": 2,
+        "text": "Is Rogers worth it for newcomers?"
+      },
+      {
+        "level": 2,
+        "text": "Rogers at a glance"
+      },
+      {
+        "level": 2,
+        "text": "Every Rogers plan we offer"
+      },
+      {
+        "level": 2,
+        "text": "What we like"
+      },
+      {
+        "level": 2,
+        "text": "Watch out for"
+      },
+      {
+        "level": 2,
+        "text": "Rogers vs Fido vs Chatr"
+      },
+      {
+        "level": 2,
+        "text": "Switch to Rogers in 4 steps — keep your number"
+      },
+      {
+        "level": 3,
+        "text": "Keep your old plan active"
+      },
+      {
+        "level": 3,
+        "text": "Send us your account number"
+      },
+      {
+        "level": 3,
+        "text": "We transfer your number"
+      },
+      {
+        "level": 3,
+        "text": "Switch on"
+      },
+      {
+        "level": 2,
+        "text": "Rogers for newcomers: what to know before you sign"
+      },
+      {
+        "level": 3,
+        "text": "Can I get Rogers without a credit history?"
+      },
+      {
+        "level": 3,
+        "text": "Is Rogers better than Fido or Chatr?"
+      },
+      {
+        "level": 3,
+        "text": "What about phone financing?"
+      },
+      {
+        "level": 3,
+        "text": "Key facts"
+      },
+      {
+        "level": 2,
+        "text": "Newcomersrecommend us."
+      },
+      {
+        "level": 2,
+        "text": "Rogers plan questions"
+      },
+      {
+        "level": 2,
+        "text": "Explore more"
+      },
+      {
+        "level": 3,
+        "text": "Other brands"
+      },
+      {
+        "level": 3,
+        "text": "By need"
+      },
+      {
+        "level": 3,
+        "text": "Compare"
+      },
+      {
+        "level": 2,
+        "text": "Switch to Rogers. Keep your number."
+      },
+      {
+        "level": 2,
+        "text": "Pre-arrival SIM"
+      },
+      {
+        "level": 2,
+        "text": "Home Internet"
+      },
+      {
+        "level": 2,
+        "text": "Mobile Plans"
+      },
+      {
+        "level": 2,
+        "text": "Help"
+      }
+    ],
+    "headingJumps": [],
+    "h1Count": 1,
+    "overflow": false,
+    "images": [
+      {
+        "src": "/design/components/60-13-imgMark.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/legal/0-imgSearchIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/desktop-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/desktop-imgEllipse2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/desktop-imgEllipse3.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/desktop-imgEllipse4.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/desktop-imgEllipse5.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-9-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      }
+    ],
+    "figmaAssets": [
+      {
+        "nodeId": "60:16",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "361:1004",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "158:79",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "158:84",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "160:45",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "160:53",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "160:61",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:10",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "68:54",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      }
+    ],
+    "title": "Rogers mobile plans for newcomers | Canadian Plans",
+    "description": "Compare Rogers 5G+ plans, Canada–US options, prices and setup details in plain words.",
+    "og": {
+      "og:title": "Rogers mobile plans for newcomers | Canadian Plans",
+      "og:description": "Compare Rogers 5G+ plans, Canada–US options, prices and setup details in plain words.",
+      "og:url": "http://localhost:3001/mobile-plans/rogers",
+      "og:site_name": "Canadian Plans",
+      "og:locale": "en_CA",
+      "og:image": "http://localhost:3001/opengraph-image.png",
+      "og:image:width": "1200",
+      "og:image:height": "630",
+      "og:image:alt": "Canadian Plans",
+      "og:type": "website"
+    },
+    "canonical": "http://localhost:3001/mobile-plans/rogers",
+    "robots": "noindex, nofollow",
+    "landmarks": [
+      {
+        "class": "cp-nav",
+        "y": 38,
+        "height": 82.296875
+      },
+      {
+        "class": "cp-promo",
+        "y": 120.296875,
+        "height": 40.296875
+      },
+      {
+        "class": "cp-catrog-main",
+        "y": 160.59375,
+        "height": 6257.140625
+      },
+      {
+        "class": "cp-catrog-hero",
+        "y": 279.59375,
+        "height": 572.25
+      },
+      {
+        "class": "cp-catrog-byline",
+        "y": 851.84375,
+        "height": 73
+      },
+      {
+        "class": "cp-catrog-quick",
+        "y": 964.84375,
+        "height": 234
+      },
+      {
+        "class": "cp-catrog-glance",
+        "y": 1238.84375,
+        "height": 340
+      },
+      {
+        "class": "cp-catrog-plans",
+        "y": 1578.84375,
+        "height": 567.59375
+      },
+      {
+        "class": "cp-catrog-pros",
+        "y": 2146.4375,
+        "height": 357
+      },
+      {
+        "class": "cp-catrog-comparison",
+        "y": 2503.4375,
+        "height": 607.1875
+      },
+      {
+        "class": "cp-catrog-switch",
+        "y": 3110.625,
+        "height": 431.59375
+      },
+      {
+        "class": "cp-catrog-guide",
+        "y": 3542.21875,
+        "height": 597.4375
+      },
+      {
+        "class": "cp-catrog-reviews",
+        "y": 4139.65625,
+        "height": 299.421875
+      },
+      {
+        "class": "cp-catrog-faq",
+        "y": 4439.078125,
+        "height": 719.5
+      },
+      {
+        "class": "cp-catrog-explore",
+        "y": 5158.578125,
+        "height": 268.59375
+      },
+      {
+        "class": "cp-catrog-final",
+        "y": 5427.171875,
+        "height": 990.5625
+      },
+      {
+        "class": "cp-footer",
+        "y": 6417.734375,
+        "height": 440.5
+      }
+    ],
+    "violations": [],
+    "keyboardFocus": [
+      {
+        "tag": "A",
+        "text": "I'm moving to Canada",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "I already live here",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "1-888-555-0199",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Track order",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Contact",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Help",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Canadian Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Pre-arrival SIM",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Home Internet",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Mobile Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Guides",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "INPUT",
+        "text": "Search plans, guides, help or cities",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      }
+    ]
+  },
+  {
+    "name": "compare-rogers-fido",
+    "path": "/compare/rogers-vs-fido",
+    "width": 1440,
+    "errors": [],
+    "status": 200,
+    "headings": [
+      {
+        "level": 1,
+        "text": "Rogers vs Fido: which prepaid plan is better?"
+      },
+      {
+        "level": 2,
+        "text": "At a glance"
+      },
+      {
+        "level": 2,
+        "text": "Rogers vs Fido: what should you pick?"
+      },
+      {
+        "level": 2,
+        "text": "Rogers and Fido plans compared"
+      },
+      {
+        "level": 3,
+        "text": "Fido prepaid"
+      },
+      {
+        "level": 3,
+        "text": "Rogers prepaid"
+      },
+      {
+        "level": 2,
+        "text": "Which prepaid plan fits you?"
+      },
+      {
+        "level": 3,
+        "text": "Choose Fido if…"
+      },
+      {
+        "level": 3,
+        "text": "Choose Rogers if…"
+      },
+      {
+        "level": 2,
+        "text": "Rogers vs Fido vs Chatr"
+      },
+      {
+        "level": 2,
+        "text": "Switch to Rogers or Fido in 4 steps"
+      },
+      {
+        "level": 3,
+        "text": "Choose your plan"
+      },
+      {
+        "level": 3,
+        "text": "Keep your current SIM active"
+      },
+      {
+        "level": 3,
+        "text": "Request the transfer"
+      },
+      {
+        "level": 3,
+        "text": "Check your new service"
+      },
+      {
+        "level": 2,
+        "text": "How to choose between Rogers and Fido"
+      },
+      {
+        "level": 3,
+        "text": "Do Rogers and Fido use the same network?"
+      },
+      {
+        "level": 3,
+        "text": "Is Rogers worth $5 more?"
+      },
+      {
+        "level": 3,
+        "text": "Can I keep my number?"
+      },
+      {
+        "level": 2,
+        "text": "Key facts"
+      },
+      {
+        "level": 2,
+        "text": "Newcomersrecommend us."
+      },
+      {
+        "level": 2,
+        "text": "Rogers vs Fidoquestions"
+      },
+      {
+        "level": 2,
+        "text": "Explore more"
+      },
+      {
+        "level": 3,
+        "text": "Compare carriers"
+      },
+      {
+        "level": 3,
+        "text": "Popular comparisons"
+      },
+      {
+        "level": 3,
+        "text": "Helpful guides"
+      },
+      {
+        "level": 2,
+        "text": "Pick the right plan. Keep your number."
+      },
+      {
+        "level": 2,
+        "text": "Pre-arrival SIM"
+      },
+      {
+        "level": 2,
+        "text": "Home Internet"
+      },
+      {
+        "level": 2,
+        "text": "Mobile Plans"
+      },
+      {
+        "level": 2,
+        "text": "Help"
+      }
+    ],
+    "headingJumps": [],
+    "h1Count": 1,
+    "overflow": false,
+    "images": [
+      {
+        "src": "/design/components/60-13-imgMark.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/legal/0-imgSearchIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-rogers/mobile-imgIconCheck.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/68-50-imgFrame.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      }
+    ],
+    "figmaAssets": [
+      {
+        "nodeId": "60:16",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "361:1004",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "316:686",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "316:686",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "316:686",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "316:686",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "316:686",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "316:686",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "68:54",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      }
+    ],
+    "title": "Rogers vs Fido prepaid plans: compare price, data & features | Canadian Plans",
+    "description": "Canadian Plans helps newcomers explore mobile connectivity in Canada.",
+    "og": {
+      "og:title": "Rogers vs Fido prepaid plans: compare price, data & features | Canadian Plans",
+      "og:description": "Canadian Plans helps newcomers explore mobile connectivity in Canada.",
+      "og:url": "http://localhost:3001/compare/rogers-vs-fido",
+      "og:site_name": "Canadian Plans",
+      "og:locale": "en_CA",
+      "og:image": "http://localhost:3001/opengraph-image.png",
+      "og:image:width": "1200",
+      "og:image:height": "630",
+      "og:image:alt": "Canadian Plans",
+      "og:type": "website"
+    },
+    "canonical": "http://localhost:3001/compare/rogers-vs-fido",
+    "robots": "noindex, nofollow",
+    "landmarks": [
+      {
+        "class": "cp-nav",
+        "y": 38,
+        "height": 82.296875
+      },
+      {
+        "class": "cp-promo",
+        "y": 120.296875,
+        "height": 40.296875
+      },
+      {
+        "class": "cp-catac-compare",
+        "y": 160.59375,
+        "height": 6977.421875
+      },
+      {
+        "class": "cp-catac-compare-hero",
+        "y": 201.59375,
+        "height": 622.34375
+      },
+      {
+        "class": "cp-catac-compare-byline cp-container",
+        "y": 823.9375,
+        "height": 77
+      },
+      {
+        "class": "cp-catac-compare-quick cp-catac-section",
+        "y": 952.4375,
+        "height": 397.75
+      },
+      {
+        "class": "cp-catac-compare-plans cp-catac-section",
+        "y": 1350.1875,
+        "height": 1159.640625
+      },
+      {
+        "class": "cp-catac-compare-recommend cp-catac-section",
+        "y": 2509.828125,
+        "height": 546.25
+      },
+      {
+        "class": "cp-catac-compare-three cp-catac-section",
+        "y": 3056.078125,
+        "height": 549.140625
+      },
+      {
+        "class": "cp-catac-compare-switch cp-catac-section",
+        "y": 3605.21875,
+        "height": 541.84375
+      },
+      {
+        "class": "cp-catac-compare-guide cp-catac-section",
+        "y": 4147.0625,
+        "height": 849.25
+      },
+      {
+        "class": "cp-catac-compare-reviews cp-catac-section",
+        "y": 4996.3125,
+        "height": 436.9375
+      },
+      {
+        "class": "cp-catac-compare-faq cp-catac-section",
+        "y": 5433.25,
+        "height": 790
+      },
+      {
+        "class": "cp-catac-compare-explore cp-catac-section",
+        "y": 6223.25,
+        "height": 412.390625
+      },
+      {
+        "class": "cp-catac-compare-final cp-catac-section",
+        "y": 6635.640625,
+        "height": 502.375
+      },
+      {
+        "class": "cp-footer",
+        "y": 7138.015625,
+        "height": 440.5
+      }
+    ],
+    "violations": [],
+    "keyboardFocus": [
+      {
+        "tag": "A",
+        "text": "Skip to Rogers vs Fido comparison",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "I'm moving to Canada",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "I already live here",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "1-888-555-0199",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Track order",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Contact",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Help",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Canadian Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Pre-arrival SIM",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Home Internet",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Mobile Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Guides",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      }
+    ]
+  },
+  {
+    "name": "internet-vancouver",
+    "path": "/home-internet/vancouver",
+    "width": 1440,
+    "errors": [],
+    "status": 200,
+    "headings": [
+      {
+        "level": 1,
+        "text": "Home internet in Vancouver, installed in about 3 days."
+      },
+      {
+        "level": 2,
+        "text": "How much is home internet in Vancouver?"
+      },
+      {
+        "level": 2,
+        "text": "Coverage by neighbourhood"
+      },
+      {
+        "level": 3,
+        "text": "Downtown & West End"
+      },
+      {
+        "level": 3,
+        "text": "Yaletown & False Creek"
+      },
+      {
+        "level": 3,
+        "text": "Kitsilano & Fairview"
+      },
+      {
+        "level": 3,
+        "text": "Mount Pleasant & Main"
+      },
+      {
+        "level": 3,
+        "text": "East Vancouver"
+      },
+      {
+        "level": 3,
+        "text": "Kerrisdale & Marpole"
+      },
+      {
+        "level": 3,
+        "text": "UBC area"
+      },
+      {
+        "level": 3,
+        "text": "South Vancouver"
+      },
+      {
+        "level": 2,
+        "text": "Tips for your type of home"
+      },
+      {
+        "level": 3,
+        "text": "Apartment or condo"
+      },
+      {
+        "level": 3,
+        "text": "Basement suite"
+      },
+      {
+        "level": 3,
+        "text": "House"
+      },
+      {
+        "level": 3,
+        "text": "Student housing"
+      },
+      {
+        "level": 2,
+        "text": "Internet plans in Vancouver"
+      },
+      {
+        "level": 2,
+        "text": "How to get home internet in 3 steps"
+      },
+      {
+        "level": 3,
+        "text": "Check your address"
+      },
+      {
+        "level": 3,
+        "text": "An advisor calls you"
+      },
+      {
+        "level": 3,
+        "text": "A technician installs it"
+      },
+      {
+        "level": 2,
+        "text": "Internet in Vancouver: a renter’s guide"
+      },
+      {
+        "level": 3,
+        "text": "How fast should my internet be in Vancouver?"
+      },
+      {
+        "level": 3,
+        "text": "Do I need my landlord’s permission?"
+      },
+      {
+        "level": 3,
+        "text": "Fibre or cable — what’s the difference?"
+      },
+      {
+        "level": 3,
+        "text": "Key facts"
+      },
+      {
+        "level": 2,
+        "text": "Newcomers recommend us."
+      },
+      {
+        "level": 2,
+        "text": "Vancouver internet questions"
+      },
+      {
+        "level": 2,
+        "text": "Explore more"
+      },
+      {
+        "level": 3,
+        "text": "Nearby cities"
+      },
+      {
+        "level": 3,
+        "text": "Plans & bundles"
+      },
+      {
+        "level": 3,
+        "text": "Guides"
+      },
+      {
+        "level": 2,
+        "text": "Online on move‑in day in Vancouver."
+      },
+      {
+        "level": 2,
+        "text": "Pre-arrival SIM"
+      },
+      {
+        "level": 2,
+        "text": "Home Internet"
+      },
+      {
+        "level": 2,
+        "text": "Mobile Plans"
+      },
+      {
+        "level": 2,
+        "text": "Help"
+      }
+    ],
+    "headingJumps": [],
+    "h1Count": 1,
+    "overflow": false,
+    "images": [
+      {
+        "src": "/design/home-internet/106-34-imgMark.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/legal/0-imgSearchIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-desktop-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/_next/image?url=%2Fdesign%2Fcategory-internet%2Fvancouver-desktop-imgCoverageFill.png&w=750&q=75",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/_next/image?url=%2Fdesign%2Fcategory-internet%2Fvancouver-desktop-imgCoverageRing.png&w=750&q=75",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-desktop-imgEllipse2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-desktop-imgEllipse2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-desktop-imgEllipse2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-desktop-imgEllipse2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-desktop-imgEllipse3.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-desktop-imgEllipse4.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-desktop-imgEllipse5.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgFrame1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgFrame1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-mobile-imgFrame1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-desktop-imgEllipse6.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-desktop-imgEllipse7.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/vancouver-desktop-imgEllipse8.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/home-internet/106-34-imgFrame.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      }
+    ],
+    "figmaAssets": [
+      {
+        "nodeId": "106-34-imgMark",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "361:1004",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "154:55",
+        "width": 420,
+        "height": 300,
+        "expectedWidth": 420,
+        "expectedHeight": 300
+      },
+      {
+        "nodeId": "154:70",
+        "width": 340,
+        "height": 300,
+        "expectedWidth": 340,
+        "expectedHeight": 300
+      },
+      {
+        "nodeId": "154:135",
+        "width": 340,
+        "height": 300,
+        "expectedWidth": 340,
+        "expectedHeight": 300
+      },
+      {
+        "nodeId": "154:71",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "154:71",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "154:71",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "154:71",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "154:77",
+        "width": 12,
+        "height": 12,
+        "expectedWidth": 12,
+        "expectedHeight": 12
+      },
+      {
+        "nodeId": "154:88",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "154:93",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "314:1406",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "314:1406",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "314:1406",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "157:45",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "157:53",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "157:61",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "106-34-imgFrame",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      }
+    ],
+    "title": "Home Internet in Vancouver | Canadian Plans preview",
+    "description": "Design preview only. All provider, coverage, price, review and installation details on this page are unverified examples. The address checker is a local fixture; no order or provider request is created.",
+    "og": {
+      "og:title": "Home Internet in Vancouver | Canadian Plans preview",
+      "og:description": "Design preview only. All provider, coverage, price, review and installation details on this page are unverified examples. The address checker is a local fixture; no order or provider request is created.",
+      "og:url": "http://localhost:3001/home-internet/vancouver",
+      "og:site_name": "Canadian Plans",
+      "og:locale": "en_CA",
+      "og:image": "http://localhost:3001/opengraph-image.png",
+      "og:image:width": "1200",
+      "og:image:height": "630",
+      "og:image:alt": "Canadian Plans",
+      "og:type": "website"
+    },
+    "canonical": "http://localhost:3001/home-internet/vancouver",
+    "robots": "noindex, nofollow",
+    "landmarks": [
+      {
+        "class": "cp-nav",
+        "y": 38,
+        "height": 82.296875
+      },
+      {
+        "class": "cp-promo",
+        "y": 120.296875,
+        "height": 40.296875
+      },
+      {
+        "class": "",
+        "y": 160.59375,
+        "height": 6996.015625
+      },
+      {
+        "class": "cp-catnet-hero",
+        "y": 205.59375,
+        "height": 731.25
+      },
+      {
+        "class": "cp-catnet-meta",
+        "y": 936.84375,
+        "height": 120.5
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-stats-section",
+        "y": 1057.34375,
+        "height": 416.640625
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-directory",
+        "y": 1473.984375,
+        "height": 631.25
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-tips-section",
+        "y": 2105.234375,
+        "height": 544.5
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-plan-section",
+        "y": 2649.734375,
+        "height": 698.296875
+      },
+      {
+        "class": "cp-catnet-steps-section",
+        "y": 3348.03125,
+        "height": 387.59375
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-guide-section",
+        "y": 3735.625,
+        "height": 1049.25
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-reviews-section",
+        "y": 4784.875,
+        "height": 467.6875
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-faq-section",
+        "y": 5252.5625,
+        "height": 766
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-explore-section",
+        "y": 6018.5625,
+        "height": 472.296875
+      },
+      {
+        "class": "cp-catnet-final cp-catnet-container",
+        "y": 6490.859375,
+        "height": 597.375
+      },
+      {
+        "class": "cp-footer",
+        "y": 7156.609375,
+        "height": 440.5
+      }
+    ],
+    "violations": [],
+    "keyboardFocus": [
+      {
+        "tag": "A",
+        "text": "Skip to main content",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "I'm moving to Canada",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "I already live here",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "1-888-555-0199",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Track order",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Contact",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Help",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Canadian Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Pre-arrival SIM",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Home Internet",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Mobile Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Guides",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      }
+    ]
+  },
+  {
+    "name": "internet-ontario",
+    "path": "/home-internet/ontario",
+    "width": 1440,
+    "errors": [],
+    "status": 200,
+    "headings": [
+      {
+        "level": 1,
+        "text": "Home internet across Ontario, city by city."
+      },
+      {
+        "level": 2,
+        "text": "How much is home internet in Ontario?"
+      },
+      {
+        "level": 2,
+        "text": "Pick your city"
+      },
+      {
+        "level": 3,
+        "text": "Toronto"
+      },
+      {
+        "level": 3,
+        "text": "Ottawa"
+      },
+      {
+        "level": 3,
+        "text": "Mississauga"
+      },
+      {
+        "level": 3,
+        "text": "Hamilton"
+      },
+      {
+        "level": 3,
+        "text": "London"
+      },
+      {
+        "level": 3,
+        "text": "Kitchener"
+      },
+      {
+        "level": 3,
+        "text": "Windsor"
+      },
+      {
+        "level": 3,
+        "text": "Vaughan"
+      },
+      {
+        "level": 2,
+        "text": "Tips for your type of home"
+      },
+      {
+        "level": 3,
+        "text": "Apartment or condo"
+      },
+      {
+        "level": 3,
+        "text": "Basement suite"
+      },
+      {
+        "level": 3,
+        "text": "House"
+      },
+      {
+        "level": 3,
+        "text": "Student housing"
+      },
+      {
+        "level": 2,
+        "text": "Internet plans across Ontario"
+      },
+      {
+        "level": 2,
+        "text": "How to get home internet in 3 steps"
+      },
+      {
+        "level": 3,
+        "text": "Check your address"
+      },
+      {
+        "level": 3,
+        "text": "An advisor calls you"
+      },
+      {
+        "level": 3,
+        "text": "A technician installs it"
+      },
+      {
+        "level": 2,
+        "text": "Internet in Ontario: a renter’s guide"
+      },
+      {
+        "level": 3,
+        "text": "How fast should my internet be?"
+      },
+      {
+        "level": 3,
+        "text": "Do I need my landlord’s permission?"
+      },
+      {
+        "level": 3,
+        "text": "Fibre or cable — what’s the difference?"
+      },
+      {
+        "level": 3,
+        "text": "Key facts"
+      },
+      {
+        "level": 2,
+        "text": "Newcomers recommend us."
+      },
+      {
+        "level": 2,
+        "text": "Ontario internet questions"
+      },
+      {
+        "level": 2,
+        "text": "Explore more"
+      },
+      {
+        "level": 3,
+        "text": "Ontario cities"
+      },
+      {
+        "level": 3,
+        "text": "Plans & bundles"
+      },
+      {
+        "level": 3,
+        "text": "Guides"
+      },
+      {
+        "level": 2,
+        "text": "Online on move‑in day in Ontario."
+      },
+      {
+        "level": 2,
+        "text": "Pre-arrival SIM"
+      },
+      {
+        "level": 2,
+        "text": "Home Internet"
+      },
+      {
+        "level": 2,
+        "text": "Mobile Plans"
+      },
+      {
+        "level": 2,
+        "text": "Help"
+      }
+    ],
+    "headingJumps": [],
+    "h1Count": 1,
+    "overflow": false,
+    "images": [
+      {
+        "src": "/design/home-internet/106-34-imgMark.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/legal/0-imgSearchIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-desktop-imgEllipse1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/_next/image?url=%2Fdesign%2Fcategory-internet%2Fontario-desktop-imgCoverageFill.png&w=750&q=75",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/_next/image?url=%2Fdesign%2Fcategory-internet%2Fontario-desktop-imgCoverageRing.png&w=750&q=75",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-desktop-imgEllipse2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-desktop-imgEllipse2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-desktop-imgEllipse2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-desktop-imgEllipse2.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-desktop-imgEllipse3.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-desktop-imgEllipse4.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-desktop-imgEllipse5.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgFrame1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgFrame1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-mobile-imgFrame1.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/components/312-2-imgIcon.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-desktop-imgEllipse6.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-desktop-imgEllipse7.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/category-internet/ontario-desktop-imgEllipse8.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      },
+      {
+        "src": "/design/home-internet/106-34-imgFrame.svg",
+        "next": true,
+        "loaded": true,
+        "alt": ""
+      }
+    ],
+    "figmaAssets": [
+      {
+        "nodeId": "106-34-imgMark",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "361:1004",
+        "width": 18,
+        "height": 18,
+        "expectedWidth": 18,
+        "expectedHeight": 18
+      },
+      {
+        "nodeId": "186:55",
+        "width": 420,
+        "height": 300,
+        "expectedWidth": 420,
+        "expectedHeight": 300
+      },
+      {
+        "nodeId": "186:70",
+        "width": 340,
+        "height": 300,
+        "expectedWidth": 340,
+        "expectedHeight": 300
+      },
+      {
+        "nodeId": "186:71",
+        "width": 340,
+        "height": 300,
+        "expectedWidth": 340,
+        "expectedHeight": 300
+      },
+      {
+        "nodeId": "186:72",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "186:72",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "186:72",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "186:72",
+        "width": 22,
+        "height": 22,
+        "expectedWidth": 22,
+        "expectedHeight": 22
+      },
+      {
+        "nodeId": "186:78",
+        "width": 12,
+        "height": 12,
+        "expectedWidth": 12,
+        "expectedHeight": 12
+      },
+      {
+        "nodeId": "186:89",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "186:94",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "314:1643",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "314:1643",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "314:1643",
+        "width": 16,
+        "height": 16,
+        "expectedWidth": 16,
+        "expectedHeight": 16
+      },
+      {
+        "nodeId": "312:3",
+        "width": 32,
+        "height": 32,
+        "expectedWidth": 32,
+        "expectedHeight": 32
+      },
+      {
+        "nodeId": "186:358",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "186:366",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "186:374",
+        "width": 40,
+        "height": 40,
+        "expectedWidth": 40,
+        "expectedHeight": 40
+      },
+      {
+        "nodeId": "106-34-imgFrame",
+        "width": 36,
+        "height": 36,
+        "expectedWidth": 36,
+        "expectedHeight": 36
+      }
+    ],
+    "title": "Home Internet in Ontario | Canadian Plans preview",
+    "description": "Design preview only. All provider, coverage, price, review and installation details on this page are unverified examples. The address checker is a local fixture; no order or provider request is created.",
+    "og": {
+      "og:title": "Home Internet in Ontario | Canadian Plans preview",
+      "og:description": "Design preview only. All provider, coverage, price, review and installation details on this page are unverified examples. The address checker is a local fixture; no order or provider request is created.",
+      "og:url": "http://localhost:3001/home-internet/ontario",
+      "og:site_name": "Canadian Plans",
+      "og:locale": "en_CA",
+      "og:image": "http://localhost:3001/opengraph-image.png",
+      "og:image:width": "1200",
+      "og:image:height": "630",
+      "og:image:alt": "Canadian Plans",
+      "og:type": "website"
+    },
+    "canonical": "http://localhost:3001/home-internet/ontario",
+    "robots": "noindex, nofollow",
+    "landmarks": [
+      {
+        "class": "cp-nav",
+        "y": 38,
+        "height": 82.296875
+      },
+      {
+        "class": "cp-promo",
+        "y": 120.296875,
+        "height": 40.296875
+      },
+      {
+        "class": "",
+        "y": 160.59375,
+        "height": 6905.265625
+      },
+      {
+        "class": "cp-catnet-hero",
+        "y": 205.59375,
+        "height": 655.25
+      },
+      {
+        "class": "cp-catnet-meta",
+        "y": 860.84375,
+        "height": 120.5
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-stats-section",
+        "y": 981.34375,
+        "height": 416.640625
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-directory",
+        "y": 1397.984375,
+        "height": 616.5
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-tips-section",
+        "y": 2014.484375,
+        "height": 544.5
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-plan-section",
+        "y": 2558.984375,
+        "height": 698.296875
+      },
+      {
+        "class": "cp-catnet-steps-section",
+        "y": 3257.28125,
+        "height": 387.59375
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-guide-section",
+        "y": 3644.875,
+        "height": 1049.25
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-reviews-section",
+        "y": 4694.125,
+        "height": 467.6875
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-faq-section",
+        "y": 5161.8125,
+        "height": 766
+      },
+      {
+        "class": "cp-catnet-section cp-catnet-explore-section",
+        "y": 5927.8125,
+        "height": 472.296875
+      },
+      {
+        "class": "cp-catnet-final cp-catnet-container",
+        "y": 6400.109375,
+        "height": 597.375
+      },
+      {
+        "class": "cp-footer",
+        "y": 7065.859375,
+        "height": 440.5
+      }
+    ],
+    "violations": [],
+    "keyboardFocus": [
+      {
+        "tag": "A",
+        "text": "Skip to main content",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "I'm moving to Canada",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "I already live here",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "1-888-555-0199",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Track order",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Contact",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Help",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Canadian Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Pre-arrival SIM",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Home Internet",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Mobile Plans",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      },
+      {
+        "tag": "A",
+        "text": "Guides",
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "none"
+      }
+    ]
+  }
+]

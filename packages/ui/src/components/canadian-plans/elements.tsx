@@ -28,7 +28,17 @@ export function CpAsset({ asset, alt = '' }: { asset: FigmaAsset; alt?: string }
 }
 
 export type CpButtonTone =
-  'primary' | 'ink' | 'sun' | 'outline' | 'outline-brand' | 'outline-inverse' | 'ghost';
+  | 'primary'
+  | 'ink'
+  | 'sun'
+  | 'amber'
+  | 'mint'
+  | 'navy'
+  | 'white'
+  | 'outline'
+  | 'outline-brand'
+  | 'outline-inverse'
+  | 'ghost';
 
 export interface CpButtonProps extends Omit<ButtonProps, 'variant' | 'size'> {
   tone?: CpButtonTone;
@@ -75,7 +85,7 @@ export function CpBadge({
   tone = 'blush',
   className,
   ...props
-}: ComponentProps<'span'> & { tone?: 'blush' | 'sun' | 'sky' | 'ink' }) {
+}: ComponentProps<'span'> & { tone?: 'blush' | 'sun' | 'sky' | 'ink' | 'mint' | 'amber' }) {
   return <Badge {...props} data-tone={tone} className={cn('cp-badge', className)} />;
 }
 

@@ -133,7 +133,7 @@
   border-radius: var(--cp-radius-16);
 }
 .cp-pa-summary .cp-io-plan {
-  background: var(--cp-color-mint);
+  background: var(--cp-color-grey);
 }
 .cp-pa-summary > dl {
   gap: var(--cp-space-16);
@@ -378,7 +378,7 @@
 .cp-pa-esim > div:last-child {
   min-width: 0;
   flex: 1;
-  background: var(--cp-color-mint);
+  background: var(--cp-color-grey);
   padding: var(--cp-space-16) var(--cp-space-20);
   border-radius: var(--cp-radius-16);
   font-size: var(--cp-text-16);

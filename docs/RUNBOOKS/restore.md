@@ -1,13 +1,44 @@
 # Full restore and recovery rehearsal
 
-> Status: A0 spike runbook. It records the supported provider procedures and
-> the fail-closed restore contract. It does **not** show that the production
-> recovery gate has passed. T21/T24 must build and exercise the final outbox,
-> backup jobs, provider credentials, retention controls, and app reconciliation.
+> Status: T21 (deletion-ledger publish) and T24 (`jobs/backup`, `jobs/restore`,
+> `jobs/retention`, `jobs/monitor`) application code now exists and is
+> unit/integration-tested against synthetic data in an isolated local harness
+> (docs/EVIDENCE/A4-restore.md). It does **not** show that the production
+> recovery gate has passed: this environment has never had real Backblaze B2,
+> Supabase, Sanity, R2 or `age` credentials, so no real provider call has been
+> made. The commands below are still the exact manual/provider procedures for
+> a real drill; the "Tooling" section immediately following this notice is
+> the automated equivalent this repository now ships.
 
 Owner and escalation contact: Takib. Only disposable synthetic identities,
 documents, and objects may be used until the owner authorizes a production
 rehearsal.
+
+## Tooling (T24)
+
+`jobs/backup`, `jobs/restore`, `jobs/retention` and `jobs/monitor` implement
+this runbook's procedure as code instead of hand-run commands. Each has its
+own npm script and reads every credential from the environment — never from a
+repository file, argument, or log line:
+
+```sh
+pnpm --filter @canadian-plans/jobs run backup      # .github/workflows/backup.yml
+pnpm --filter @canadian-plans/jobs run retention   # .github/workflows/backup-retention.yml (RETENTION_DRY_RUN=false to actually delete)
+pnpm --filter @canadian-plans/jobs run monitor     # .github/workflows/backup-monitor.yml
+pnpm --filter @canadian-plans/jobs run restore     # operator-run drill only; copy jobs/src/restore/cli.ts and replace `notConfigured` with the isolated target's real ledger/Auth integration before a real drill
+```
+
+Required environment variables for each are listed at the top of
+`jobs/src/backup/cli.ts`, `jobs/src/retention/cli.ts`,
+`jobs/src/monitor/cli.ts` and `jobs/src/restore/cli.ts`. The daily backup
+workflow's B2 credential can only `listFiles`/`writeFiles` on the archive
+bucket (`jobs/src/backup/archive-store.ts`'s `S3ArchiveWriter` has no
+get/delete method at all); the retention workflow's credential is separate
+and adds delete; the monitor's credential is separate again and is read-only.
+See docs/EVIDENCE/A4-restore.md for what has and has not been proven with
+this tooling so far, and for the exact remaining steps to close the
+production gate (provisioning real secrets, pinning `supabase/setup-cli` to a
+verified SHA, and running against real B2/Supabase/Sanity/`age`).
 
 ## Required access and material
 

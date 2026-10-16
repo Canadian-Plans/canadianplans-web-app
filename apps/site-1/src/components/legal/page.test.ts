@@ -3,7 +3,7 @@ import * as React from 'react';
 const { createElement } = React;
 import { renderToStaticMarkup } from 'react-dom/server';
 vi.mock('server-only', () => ({}));
-vi.mock('@/components/legal/navigation', () => ({ LegalNavigation: () => null }));
+vi.mock('@/components/shared/site-header', () => ({ SiteHeader: () => null }));
 import { LegalPage } from './page';
 import { testPlaceholder } from '@/lib/legal';
 import { legalDrafts } from '@content/legal';

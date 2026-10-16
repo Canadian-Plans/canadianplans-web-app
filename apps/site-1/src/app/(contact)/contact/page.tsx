@@ -1,13 +1,14 @@
 import { pageMetadata } from '@/lib/page-metadata';
 import type { Metadata } from 'next';
 import { SkipLink } from '@canadian-plans/ui';
-import { CpAsset, CpImageSlot } from '@canadian-plans/ui/canadian-plans';
-import { contactAssets, contactChrome, contactCopy, contactFooter } from '@content/contact';
-import { Footer, PromoStrip, UtilityBar } from '@/components/shared/chrome';
+import { CpAsset, CpBreadcrumb, CpImageSlot } from '@canadian-plans/ui/canadian-plans';
+import { contactAssets, contactCopy } from '@content/contact';
+import { siteChrome, siteFooter } from '@content/site-chrome';
+import { Footer } from '@/components/shared/chrome';
+import { SiteHeader } from '@/components/shared/site-header';
 import {
   ContactDirections,
   ContactMessageAndHelp,
-  ContactNavigation,
   ContactOptionAction,
   ContactPreviewProvider,
   ContactTrackingForm,
@@ -15,23 +16,35 @@ import {
 
 export const metadata: Metadata = pageMetadata('/contact', {
   title: contactCopy.title,
+  description: contactCopy.description,
   robots: { index: false, follow: false },
 });
 
+/** Electric Blue alignment (15 October 2026): site header/footer, breadcrumb; forms unchanged. */
 export default function ContactPage() {
   return (
     <ContactPreviewProvider>
       <SkipLink className="cp-contact-skip" href="#contact-main">
         {contactCopy.skip}
       </SkipLink>
-      <UtilityBar
-        content={contactChrome}
-        assets={contactAssets}
+      <SiteHeader
         planHref="/pre-arrival-sim#plans"
+        chatHref="#contact-options"
+        content={{
+          ...siteChrome,
+          contact: { ...siteChrome.contact, href: '#message-us' },
+          track: { ...siteChrome.track, href: '#track-order' },
+          promoLink: { ...siteChrome.promoLink, href: '/pre-arrival-sim#plans' },
+        }}
       />
-      <ContactNavigation />
-      <PromoStrip content={contactChrome} />
       <main id="contact-main" tabIndex={-1}>
+        <div className="cp-container cp-cat-page-breadcrumb">
+          <CpBreadcrumb
+            items={contactCopy.breadcrumb.items}
+            label={contactCopy.breadcrumb.label}
+            separator={contactCopy.breadcrumb.separator}
+          />
+        </div>
         <section className="cp-contact-hero cp-container" aria-labelledby="contact-title">
           <p className="cp-contact-eyebrow">{contactCopy.hero.eyebrow}</p>
           <h1 id="contact-title">{contactCopy.hero.title}</h1>
@@ -88,12 +101,7 @@ export default function ContactPage() {
           <ContactMessageAndHelp />
         </div>
       </main>
-      <Footer
-        brand={contactChrome.brand}
-        content={contactFooter}
-        assets={contactAssets}
-        brandHref="/"
-      />
+      <Footer brand="Canadian Plans" content={siteFooter} assets={contactAssets} brandHref="/" />
     </ContactPreviewProvider>
   );
 }

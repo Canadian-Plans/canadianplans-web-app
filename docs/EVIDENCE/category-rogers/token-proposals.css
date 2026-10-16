@@ -1,0 +1,55 @@
+/* Add these to packages/ui/src/styles/canadian-plans.css for Rogers 158:2 / 254:451. */
+:root {
+  --cp-catrog-section-space: 3rem;
+  --cp-catrog-page-width: 75rem;
+  --cp-catrog-hero-display: 5rem;
+  --cp-catrog-mobile-display: 3rem;
+  --cp-catrog-spec-width: 28.75rem;
+  --cp-catrog-answer-width: 40rem;
+  --cp-catrog-review-card-width: 14rem;
+  --cp-catrog-image-large-height: 10.5rem;
+  --cp-catrog-image-guide-height: 9rem;
+  --cp-catrog-icon-size: 2rem;
+  --cp-catrog-score-track-width: 3.5rem;
+  --cp-catrog-score-track-height: 0.25rem;
+  --cp-catrog-step-card-width: 9rem;
+  --cp-catrog-mobile-card-height: 14rem;
+  --cp-catrog-card-shadow: 0.25rem 0.25rem 0 var(--cp-color-ink);
+  --cp-catrog-hero-bg: #fff4c2;
+  --cp-catrog-review-bg: #f6f7fb;
+  --cp-catrog-pros-bg: #d7f5e8;
+  --cp-catrog-warning-bg: #fff4c2;
+  --cp-catrog-cta-bg: #3657f2;
+  --cp-catrog-cta-ink: #ffffff;
+  --cp-catrog-dark-bg: #101a3d;
+  --cp-catrog-dark-border: #2a3459;
+  --cp-catrog-dark-muted: #c9cee3;
+  --cp-catrog-title-width: 38rem;
+  --cp-catrog-intro-width: 40rem;
+  --cp-catrog-glance-aside: 15rem;
+  --cp-catrog-score-size: 3.75rem;
+  --cp-catrog-plan-name-width: 8rem;
+  --cp-catrog-facts-width: 17rem;
+  --cp-catrog-review-height: 10.25rem;
+  --cp-catrog-review-intro-width: 10.5rem;
+  --cp-catrog-faq-aside: 19rem;
+  --cp-catrog-final-image-bg: rgba(255, 255, 255, 0.14);
+  --cp-catrog-final-image-width: 23rem;
+  --cp-catrog-final-title-size: 6rem;
+  --cp-catrog-final-mobile-title: 2.25rem;
+  --cp-catrog-step-mobile-height: 9rem;
+  --cp-catrog-tablet-display: 3.875rem;
+  --cp-catrog-dialog-width: 24rem;
+  --cp-catrog-final-image-height: 16.25rem;
+  --cp-catrog-final-mobile-image-height: 11.25rem;
+}
+:root {
+  --cp-catrog-mobile-quick-copy-width: 17.875rem;
+  --cp-catrog-mobile-toc-label-width: 5.9375rem;
+  --cp-catrog-mobile-comparison-row-height: 10.5625rem;
+  --cp-catrog-mobile-guide-copy-width: 19.375rem;
+  --cp-catrog-mobile-review-card-height: 16.25rem;
+  --cp-catrog-mobile-final-copy-width: 18.375rem;
+  --cp-space-46: 2.875rem;
+  --cp-space-168: 10.5rem;
+}

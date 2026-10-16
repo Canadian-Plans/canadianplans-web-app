@@ -18,7 +18,11 @@ const states = [
   'code-expired',
 ];
 await mkdir(evidence, { recursive: true });
-const browser = await chromium.launch();
+const browser = await chromium.launch(
+  process.env.PLAYWRIGHT_CHROMIUM_PATH
+    ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH }
+    : {},
+);
 const records = [];
 const assets = JSON.parse(await readFile(resolve(evidence, 'assets.json'), 'utf8'));
 try {

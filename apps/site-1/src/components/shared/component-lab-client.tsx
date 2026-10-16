@@ -30,6 +30,7 @@ import { isValidPreviewSearch, type PreviewSearchState } from '@/lib/preview-sea
 import { previewSearchAction } from '@/app/(component-lab)/dev/components/actions';
 import { usePlanFinder } from './plan-finder-provider';
 import { SiteSearchForm } from './site-search-form';
+import { BrandMark } from './brand-mark';
 
 interface LabContextValue {
   selectedId?: string;
@@ -156,9 +157,7 @@ export function Navigation({
   assets,
   menuOpen,
   onMenuOpenChange,
-  onAction,
   brandHref = '#components',
-  onContact = onAction,
   searchEnabled = true,
 }: {
   content: ChromeContent;
@@ -186,9 +185,8 @@ export function Navigation({
     <header className="cp-nav" data-component="navigation">
       <div className="cp-nav-inner">
         <div className="cp-nav-left">
-          <a href={brandHref} className="cp-brand">
-            <CpAsset asset={assets.logo} />
-            <span>{content.brand}</span>
+          <a href={brandHref} className="cp-brand" aria-label={`${content.brand} home`}>
+            <BrandMark />
           </a>
           <nav className="cp-nav-links" aria-label={content.navigationLabel}>
             {content.navigation.map((link) => (
@@ -200,17 +198,22 @@ export function Navigation({
         </div>
         <div className="cp-nav-desktop-actions">
           {searchEnabled ? (
-            <SiteSearchForm compact />
+            <a href="/search" className="cp-nav-search" aria-label={content.searchLabel}>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20l-4-4" />
+              </svg>
+            </a>
           ) : (
             <SearchPreview content={content} assets={assets} />
           )}
-          <CpButton tone="ink" onClick={findMyPlan}>
+          <CpButton className="cp-nav-finder" onClick={findMyPlan}>
             {content.finderLabel}
           </CpButton>
         </div>
         <div className="cp-nav-mobile-actions">
-          <CpButton tone="ghost" scale="icon" aria-label={content.contactLabel} onClick={onContact}>
-            <CpAsset asset={assets.chat} />
+          <CpButton className="cp-nav-finder" onClick={findMyPlan}>
+            {content.finderLabel}
           </CpButton>
           <Sheet open={menuOpen} onOpenChange={onMenuOpenChange}>
             <SheetTrigger asChild>

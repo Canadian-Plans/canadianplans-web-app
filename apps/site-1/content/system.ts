@@ -1,5 +1,4 @@
-import { componentAssets, type ChromeContent, type FooterContent } from './components';
-import { legalChrome, legalFooter } from './legal';
+import { componentAssets } from './components';
 import type { FigmaAsset } from '@canadian-plans/ui/canadian-plans';
 export const systemCopy = {
   skip: 'Skip to main content',
@@ -59,7 +58,7 @@ export const searchCopy = {
   helpButton: 'Chat on WhatsApp',
   featured: {
     label: 'PLAN · MOST POPULAR WITH STUDENTS',
-    title: 'Rogers Plus · 100 GB eSIM',
+    title: 'Rogers · 100 GB eSIM',
     description:
       'Unlimited Canada calls & texts · 1,000 international minutes · ready the moment you land',
     price: '$40',
@@ -108,7 +107,7 @@ export const searchItems: readonly SearchItem[] = [
     category: 'plans',
     featured: true,
     previewOnly: true,
-    title: 'Rogers Plus · 100 GB eSIM',
+    title: 'Rogers · 100 GB eSIM',
     description:
       'Unlimited Canada calls & texts · 1,000 international minutes · ready the moment you land',
     label: 'PLAN · MOST POPULAR WITH STUDENTS',
@@ -382,5 +381,3 @@ export const systemAssets = {
     nodeId: '307:212',
   } satisfies FigmaAsset,
 };
-export const systemChrome: ChromeContent = { ...legalChrome };
-export const systemFooter: FooterContent = { ...legalFooter };

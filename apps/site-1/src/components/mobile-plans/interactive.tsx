@@ -14,20 +14,11 @@ import {
   SheetTrigger,
   SheetClose,
 } from '@canadian-plans/ui';
-import {
-  CpAsset,
-  CpButton,
-  CpChip,
-  CpPlanCard,
-  CpLinkPill,
-  type CpButtonTone,
-} from '@canadian-plans/ui/canadian-plans';
+import { CpAsset, CpButton, CpChip, CpPlanCard } from '@canadian-plans/ui/canadian-plans';
 import {
   mobileCopy,
   mobilePlans,
   mobileAssets,
-  mobileChrome,
-  mobileChromeAssets,
   type MobilePlan,
   type MobileSort,
 } from '@content/mobile-plans';
@@ -36,7 +27,6 @@ import {
   filterMobilePlans,
   type MobileFilters,
 } from '@/lib/mobile-plan-filters';
-import { Navigation } from '@/components/shared/component-lab-client';
 
 interface PlansContext {
   readonly filters: MobileFilters;
@@ -50,8 +40,15 @@ function usePlans() {
   return value;
 }
 
-export function MobilePlansProvider({ children }: { children: ReactNode }) {
-  const [filters, setFilters] = useState(defaultMobileFilters);
+/** `initialFilters` lets a brand landing page open the browser pre-filtered (e.g. Rogers). */
+export function MobilePlansProvider({
+  children,
+  initialFilters = defaultMobileFilters,
+}: {
+  children: ReactNode;
+  initialFilters?: typeof defaultMobileFilters;
+}) {
+  const [filters, setFilters] = useState(initialFilters);
   const [open, setOpen] = useState(false);
   const [plan, setPlan] = useState<MobilePlan>();
   const [description, setDescription] = useState<string>();
@@ -96,41 +93,6 @@ export function MobilePlansProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function MobilePlansNavigation() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const { preview } = usePlans();
-  return (
-    <Navigation
-      content={mobileChrome}
-      assets={mobileChromeAssets}
-      brandHref="/"
-      menuOpen={menuOpen}
-      onMenuOpenChange={setMenuOpen}
-      onAction={() => {
-        setMenuOpen(false);
-        document.getElementById('mobile-plans')?.scrollIntoView({ behavior: 'smooth' });
-        document
-          .querySelector<HTMLButtonElement>('.cp-mobile-filter-trigger')
-          ?.focus({ preventScroll: true });
-      }}
-      onContact={() => preview()}
-    />
-  );
-}
-export function MobilePreviewAction({
-  label,
-  tone = 'outline-inverse',
-}: {
-  label: string;
-  tone?: CpButtonTone;
-}) {
-  const { preview } = usePlans();
-  return (
-    <CpButton tone={tone} onClick={() => preview()}>
-      {label}
-    </CpButton>
-  );
-}
 function FilterGroup<T extends string>({
   label,
   options,
@@ -361,33 +323,5 @@ export function MobilePlanBrowser() {
       )}
       <p className="cp-mobile-note">{mobileCopy.plans.note}</p>
     </>
-  );
-}
-
-export function ExploreNeeds() {
-  const { setFilters, preview } = usePlans();
-  return (
-    <div className="cp-mobile-explore-links">
-      {mobileCopy.explore.links.map((label, index) => (
-        <CpLinkPill
-          href={index === 7 || index === 8 ? '#brand-comparison' : '#mobile-plans'}
-          key={label}
-          onClick={(event) => {
-            if (index < 3) {
-              setFilters({
-                ...defaultMobileFilters,
-                brand: index === 0 ? 'rogers' : index === 1 ? 'fido' : 'chatr',
-              });
-            } else if (index === 4) setFilters({ ...defaultMobileFilters, pay: 'prepaid' });
-            else if (index !== 7 && index !== 8) {
-              event.preventDefault();
-              preview(undefined, mobileCopy.preview.unavailableNeed);
-            }
-          }}
-        >
-          {label}
-        </CpLinkPill>
-      ))}
-    </div>
   );
 }

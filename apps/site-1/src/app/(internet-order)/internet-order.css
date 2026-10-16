@@ -21,7 +21,7 @@
   justify-content: space-between;
   gap: var(--cp-space-8);
 }
-.cp-io-header .cp-brand span {
+.cp-io-header .cp-brand-word {
   font-size: var(--cp-text-18);
 }
 .cp-io-desktop-help {
@@ -155,8 +155,8 @@
   display: none;
 }
 @variant cp-narrow {
-  .cp-io-header .cp-brand span {
-    font-size: var(--cp-text-22);
+  .cp-io-header .cp-brand-word {
+    font-size: var(--cp-brand-word-size);
   }
   .cp-io-call {
     padding-inline: var(--cp-space-16);
@@ -376,7 +376,7 @@
 .cp-io-plan {
   padding: var(--cp-space-20);
   border-radius: var(--cp-radius-20);
-  background: var(--cp-color-sky);
+  background: var(--cp-color-grey);
   display: flex;
   flex-direction: column;
   gap: var(--cp-space-6);

@@ -6,57 +6,57 @@
       {
         "class": "cp-contact-hero cp-container",
         "x": 20,
-        "y": 164,
+        "y": 261,
         "width": 350,
-        "height": 335
+        "height": 258.59375
       },
       {
         "class": "cp-contact-options cp-container",
         "x": 20,
-        "y": 499,
+        "y": 519.59375,
         "width": 350,
         "height": 752
       },
       {
         "class": "cp-contact-track-office cp-contact-columns cp-container",
         "x": 20,
-        "y": 1251,
+        "y": 1271.59375,
         "width": 350,
-        "height": 1212
+        "height": 1220
       },
       {
         "class": "cp-contact-office cp-contact-panel",
         "x": 20,
-        "y": 1875,
+        "y": 1903.59375,
         "width": 350,
         "height": 548
       },
       {
         "class": "cp-contact-message-area cp-contact-columns cp-container",
         "x": 20,
-        "y": 2463,
+        "y": 2491.59375,
         "width": 350,
         "height": 1365
       },
       {
         "class": "cp-contact-message cp-contact-panel",
         "x": 20,
-        "y": 2503,
+        "y": 2531.59375,
         "width": 350,
         "height": 804
       },
       {
         "class": "cp-footer",
         "x": 0,
-        "y": 3828,
+        "y": 3856.59375,
         "width": 390,
         "height": 946.96875
       }
     ],
     "assets": [
       {
-        "src": "/design/contact/1-imgPhoneIcon.svg",
-        "node": "220:70",
+        "src": "/design/components/364-2153-imgPhoneIcon.svg",
+        "node": "364:2155",
         "loaded": true,
         "width": 16,
         "height": 16,
@@ -155,49 +155,49 @@
       {
         "class": "cp-contact-hero cp-container",
         "x": 120,
-        "y": 160,
+        "y": 257,
         "width": 1200,
-        "height": 318
+        "height": 240.59375
       },
       {
         "class": "cp-contact-options cp-container",
         "x": 120,
-        "y": 478,
+        "y": 497.59375,
         "width": 1200,
         "height": 339
       },
       {
         "class": "cp-contact-track-office cp-contact-columns cp-container",
         "x": 120,
-        "y": 817,
+        "y": 836.59375,
         "width": 1200,
         "height": 628
       },
       {
         "class": "cp-contact-office cp-contact-panel",
         "x": 880,
-        "y": 817,
+        "y": 836.59375,
         "width": 440,
         "height": 572
       },
       {
         "class": "cp-contact-message-area cp-contact-columns cp-container",
         "x": 120,
-        "y": 1445,
+        "y": 1464.59375,
         "width": 1200,
         "height": 745
       },
       {
         "class": "cp-contact-message cp-contact-panel",
         "x": 120,
-        "y": 1469,
+        "y": 1488.59375,
         "width": 740,
         "height": 625
       },
       {
         "class": "cp-footer",
         "x": 0,
-        "y": 2190,
+        "y": 2209.59375,
         "width": 1440,
         "height": 439.1875
       }

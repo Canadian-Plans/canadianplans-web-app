@@ -13,7 +13,7 @@ export function filterFaqGroup(group: HelpFaqGroup, query: string): HelpFaqGroup
       const searchable = normalizeFaqSearch(
         [
           item.question,
-          item.answerStatus === 'figma' ? item.answer : '',
+          item.answerStatus !== 'pending' ? item.answer : '',
           ...(item.keywords ?? []),
         ].join(' '),
       );
@@ -39,7 +39,7 @@ export function buildFaqPageSchema(groups: readonly HelpFaqGroup[]): FaqPageSche
     mainEntity: groups.flatMap((group) =>
       group.items
         .filter(
-          (item) => item.answerStatus === 'figma' && item.question.trim() && item.answer.trim(),
+          (item) => item.answerStatus !== 'pending' && item.question.trim() && item.answer.trim(),
         )
         .map((item): FaqSchemaQuestion => ({
           '@type': 'Question',

@@ -1,0 +1,851 @@
+Currently selected nodes:
+- 158:108: Slot · At a glance (scorecard)
+
+
+<frame id="158:2" name="Template · Mobile Plans › Brand (Rogers) · Spec-sheet style · Desktop 1440" x="4260" y="374" width="1440" height="7788">
+  <frame id="158:3" name="Utility bar" x="0" y="0" width="1440" height="40">
+    <frame id="158:4" name="Frame" x="120" y="10" width="292" height="20">
+      <text id="158:5" name="I&#39;m moving to Canada" x="0" y="0" width="146" height="20" />
+      <text id="158:6" name="I already live here" x="166" y="0" width="126" height="18" />
+    </frame>
+    <frame id="158:7" name="Frame" x="1002" y="11" width="318" height="18">
+      <text id="158:8" name="1-888-555-0199" x="0" y="0" width="94" height="18" />
+      <text id="158:9" name="Track order" x="118" y="0" width="72" height="18" />
+      <text id="158:10" name="Contact" x="214" y="0" width="51" height="18" />
+      <text id="158:11" name="Help" x="289" y="0" width="29" height="18" />
+    </frame>
+  </frame>
+  <frame id="158:12" name="Nav" x="0" y="40" width="1440" height="82">
+    <frame id="158:13" name="Frame" x="120" y="23" width="749" height="36">
+      <frame id="158:14" name="Logo" x="0" y="0" width="210" height="36">
+        <frame id="158:15" name="Mark" x="0" y="0" width="36" height="36">
+          <star id="158:16" name="Star" x="8" y="8" width="20" height="20" />
+        </frame>
+        <text id="158:17" name="Canadian Plans" x="46" y="7" width="164" height="22" />
+      </frame>
+      <frame id="158:18" name="Frame" x="258" y="8" width="491" height="20">
+        <text id="158:19" name="Pre-arrival SIM" x="0" y="0" width="119" height="20" />
+        <text id="158:20" name="Home Internet" x="151" y="0" width="117" height="20" />
+        <text id="158:21" name="Mobile Plans" x="300" y="0" width="102" height="20" />
+        <text id="158:22" name="Guides" x="434" y="0" width="57" height="20" />
+      </frame>
+    </frame>
+    <frame id="158:23" name="Frame" x="925" y="19" width="395" height="44">
+      <frame id="158:24" name="Search" x="0" y="0" width="233" height="44">
+        <text id="158:25" name="Search plans or cities" x="19" y="12" width="141" height="20" />
+        <ellipse id="158:26" name="Ellipse" x="200" y="15" width="14" height="14" />
+      </frame>
+      <frame id="158:27" name="Button · Find my plan" x="249" y="0" width="146" height="44">
+        <text id="158:28" name="Find my plan" x="22" y="12" width="102" height="20" />
+      </frame>
+    </frame>
+  </frame>
+  <frame id="158:29" name="Promo strip" x="0" y="122" width="1440" height="40">
+    <text id="158:30" name="Switching to Rogers? Keep your number — we handle the transfer." x="419.5" y="10" width="438" height="20" />
+    <text id="158:31" name="How switching works" x="869.5" y="11" width="151" height="18" />
+  </frame>
+  <frame id="158:32" name="Slot · Hero (spec card)" x="0" y="162" width="1440" height="678">
+    <frame id="158:33" name="Breadcrumb" x="120" y="24" width="217" height="20">
+      <text id="158:34" name="Home" x="0" y="0" width="41" height="20" />
+      <text id="158:35" name="/" x="49" y="0" width="5" height="20" />
+      <text id="158:36" name="Mobile Plans" x="62" y="0" width="84" height="20" />
+      <text id="158:37" name="/" x="154" y="0" width="5" height="20" />
+      <text id="158:38" name="Rogers" x="167" y="0" width="50" height="18" />
+    </frame>
+    <frame id="158:39" name="Frame" x="120" y="76" width="1200" height="522">
+      <frame id="158:40" name="Frame" x="0" y="0" width="684" height="522">
+        <text id="158:41" name="Mobile plans · Rogers" x="0" y="0" width="188" height="16" />
+        <text id="158:42" name="Rogers plans, explained in plain words." x="0" y="38" width="684" height="228" />
+        <text id="158:43" name="Premium 5G+ plans with Canada–US options. Compare every Rogers plan we offer with exact prices — and a real person to set it up." x="0" y="288" width="684" height="58" />
+        <text id="314:1103" name="Price anchor" x="0" y="368" width="304" height="30" />
+        <frame id="158:44" name="Frame" x="0" y="420" width="538" height="62">
+          <frame id="158:45" name="Button · See Rogers plans  ↓" x="0" y="0" width="226" height="58">
+            <text id="158:46" name="See Rogers plans ↓" x="30" y="18" width="166" height="22" />
+          </frame>
+          <frame id="158:47" name="Button · Compare with Fido &amp; Chatr" x="238" y="0" width="300" height="62">
+            <text id="158:48" name="Compare with Fido &amp; Chatr" x="32" y="20" width="236" height="22" />
+          </frame>
+        </frame>
+        <frame id="158:49" name="Frame" x="0" y="504" width="459" height="18">
+          <text id="158:50" name="✓ Keep your number" x="0" y="0" width="151" height="18" />
+          <text id="158:51" name="✓ Canada–US plans" x="171" y="0" width="143" height="18" />
+          <text id="158:52" name="✓ $0 until we call" x="334" y="0" width="125" height="18" />
+        </frame>
+      </frame>
+      <frame id="158:53" name="Spec card" x="740" y="43" width="460" height="436">
+        <frame id="158:54" name="Frame" x="34" y="30" width="392" height="58">
+          <frame id="158:55" name="Logo slot · Rogers" x="0" y="0" width="118" height="38">
+            <text id="158:56" name="Rogers logo" x="16" y="10" width="86" height="18" />
+          </frame>
+          <text id="158:57" name="Spec sheet" x="301" y="11" width="91" height="16" />
+        </frame>
+        <frame id="158:58" name="Frame" x="34" y="88" width="392" height="53">
+          <text id="158:59" name="Network" x="0" y="15" width="64" height="24" />
+          <text id="158:60" name="Rogers · 5G+" x="292" y="17" width="100" height="20" />
+        </frame>
+        <frame id="158:61" name="Frame" x="34" y="141" width="392" height="53">
+          <text id="158:62" name="How you pay" x="0" y="15" width="95" height="24" />
+          <text id="158:63" name="Postpaid" x="321" y="17" width="71" height="20" />
+        </frame>
+        <frame id="158:64" name="Frame" x="34" y="194" width="392" height="53">
+          <text id="158:65" name="Credit check" x="0" y="15" width="95" height="24" />
+          <text id="158:66" name="Yes, or a deposit" x="261" y="17" width="131" height="20" />
+        </frame>
+        <frame id="158:67" name="Frame" x="34" y="247" width="392" height="53">
+          <text id="158:68" name="US &amp; travel" x="0" y="15" width="79" height="24" />
+          <text id="158:69" name="Canada–US plans available" x="178" y="17" width="214" height="20" />
+        </frame>
+        <frame id="158:70" name="Frame" x="34" y="300" width="392" height="53">
+          <text id="158:71" name="Builds credit" x="0" y="15" width="92" height="24" />
+          <text id="158:72" name="Yes" x="364" y="17" width="28" height="20" />
+        </frame>
+        <frame id="158:73" name="Frame" x="34" y="353" width="392" height="53">
+          <text id="158:74" name="Plans with us" x="0" y="15" width="95" height="24" />
+          <text id="158:75" name="From $45/mo · CAD + tax" x="196" y="17" width="196" height="20" />
+        </frame>
+      </frame>
+    </frame>
+  </frame>
+  <frame id="158:76" name="SEO · Meta bar" x="0" y="840" width="1440" height="123">
+    <frame id="158:77" name="Frame" x="120" y="20" width="831" height="36">
+      <frame id="158:78" name="Frame" x="0" y="0" width="345" height="36">
+        <ellipse id="158:79" name="Ellipse" x="0" y="0" width="36" height="36" />
+        <frame id="158:80" name="Frame" x="46" y="0" width="299" height="36">
+          <text id="158:81" name="Marco D." x="0" y="0" width="64" height="18" />
+          <text id="158:82" name="Written by · switched carriers 3 times since 2019" x="0" y="18" width="299" height="18" />
+        </frame>
+      </frame>
+      <frame id="158:83" name="Frame" x="369" y="0" width="211" height="36">
+        <ellipse id="158:84" name="Ellipse" x="0" y="0" width="36" height="36" />
+        <frame id="158:85" name="Frame" x="46" y="0" width="165" height="36">
+          <text id="158:86" name="Priya" x="0" y="0" width="37" height="18" />
+          <text id="158:87" name="Reviewed by · plan advisor" x="0" y="18" width="165" height="18" />
+        </frame>
+      </frame>
+      <text id="158:88" name="Updated 5 Oct 2026 · 8 min read" x="604" y="9" width="227" height="18" />
+    </frame>
+    <frame id="158:89" name="On this page" x="120" y="70" width="671" height="32">
+      <text id="158:90" name="On this page:" x="0" y="7" width="95" height="18" />
+      <frame id="158:91" name="Frame" x="103" y="0" width="107" height="32">
+        <text id="158:92" name="At a glance" x="14" y="7" width="79" height="18" />
+      </frame>
+      <frame id="158:93" name="Frame" x="218" y="0" width="67" height="32">
+        <text id="158:94" name="Plans" x="14" y="7" width="39" height="18" />
+      </frame>
+      <frame id="158:95" name="Frame" x="293" y="0" width="111" height="32">
+        <text id="158:96" name="Pros &amp; cons" x="14" y="7" width="83" height="18" />
+      </frame>
+      <frame id="158:97" name="Frame" x="412" y="0" width="194" height="32">
+        <text id="158:98" name="Rogers vs Fido vs Chatr" x="14" y="7" width="166" height="18" />
+      </frame>
+      <frame id="158:99" name="Frame" x="614" y="0" width="57" height="32">
+        <text id="158:100" name="FAQ" x="14" y="7" width="29" height="18" />
+      </frame>
+    </frame>
+  </frame>
+  <frame id="158:101" name="SEO · Quick answer" x="0" y="963" width="1440" height="226">
+    <frame id="158:102" name="Frame" x="120" y="40" width="1200" height="170">
+      <rounded-rectangle id="158:103" name="Rectangle" x="33" y="29" width="6" height="112" />
+      <frame id="158:104" name="Frame" x="63" y="29" width="1104" height="112">
+        <text id="158:105" name="Quick answer" x="0" y="0" width="117" height="16" />
+        <text id="158:106" name="Is Rogers worth it for newcomers?" x="0" y="24" width="1104" height="28" />
+        <text id="158:107" name="Rogers is the premium choice: 5G+ speeds, Canada–US talk and text, and postpaid plans that help build Canadian credit. If price matters most, Fido or Chatr use the same network for less. Rogers plans with us start at $45/mo (CAD, taxes extra)." x="0" y="60" width="1104" height="52" />
+      </frame>
+    </frame>
+  </frame>
+  <frame id="158:108" name="Slot · At a glance (scorecard)" x="0" y="1189" width="1440" height="394">
+    <frame id="158:109" name="Frame" x="120" y="73" width="360" height="248">
+      <text id="158:110" name="Rogers at a glance" x="0" y="0" width="360" height="112" />
+      <frame id="158:111" name="Frame" x="0" y="124" width="134" height="72">
+        <text id="158:112" name="4.2" x="0" y="0" width="98" height="72" />
+        <text id="158:113" name="/ 5" x="106" y="38" width="28" height="28" />
+      </frame>
+      <text id="158:114" name="Our editorial rating for newcomers. Not paid by any carrier. How we rate →" x="0" y="208" width="360" height="40" />
+    </frame>
+    <frame id="158:115" name="Frame" x="528" y="56" width="792" height="282">
+      <frame id="158:116" name="Frame" x="0" y="0" width="792" height="42">
+        <frame id="158:117" name="Frame" x="0" y="0" width="220" height="42">
+          <text id="158:118" name="Network speed" x="0" y="0" width="121" height="20" />
+          <text id="158:119" name="5G+ priority in most cities" x="0" y="22" width="171" height="20" />
+        </frame>
+        <frame id="158:120" name="Frame" x="240" y="15" width="506" height="12">
+          <rounded-rectangle id="158:121" name="Rectangle" x="0" y="0" width="96.4000015258789" height="12" />
+          <rounded-rectangle id="158:122" name="Rectangle" x="102.4000015258789" y="0" width="96.4000015258789" height="12" />
+          <rounded-rectangle id="158:123" name="Rectangle" x="204.8000030517578" y="0" width="96.4000015258789" height="12" />
+          <rounded-rectangle id="158:124" name="Rectangle" x="307.20001220703125" y="0" width="96.40000915527344" height="12" />
+          <rounded-rectangle id="158:125" name="Rectangle" x="409.60003662109375" y="0" width="96.40000915527344" height="12" />
+        </frame>
+        <text id="158:126" name="5/5" x="766" y="11" width="26" height="20" />
+      </frame>
+      <frame id="158:127" name="Frame" x="0" y="60" width="792" height="42">
+        <frame id="158:128" name="Frame" x="0" y="0" width="220" height="42">
+          <text id="158:129" name="Travel &amp; US" x="0" y="0" width="88" height="20" />
+          <text id="158:130" name="Canada–US plans available" x="0" y="22" width="178" height="20" />
+        </frame>
+        <frame id="158:131" name="Frame" x="240" y="15" width="506" height="12">
+          <rounded-rectangle id="158:132" name="Rectangle" x="0" y="0" width="96.4000015258789" height="12" />
+          <rounded-rectangle id="158:133" name="Rectangle" x="102.4000015258789" y="0" width="96.4000015258789" height="12" />
+          <rounded-rectangle id="158:134" name="Rectangle" x="204.8000030517578" y="0" width="96.4000015258789" height="12" />
+          <rounded-rectangle id="158:135" name="Rectangle" x="307.20001220703125" y="0" width="96.40000915527344" height="12" />
+          <rounded-rectangle id="158:136" name="Rectangle" x="409.60003662109375" y="0" width="96.40000915527344" height="12" />
+        </frame>
+        <text id="158:137" name="5/5" x="766" y="11" width="26" height="20" />
+      </frame>
+      <frame id="158:138" name="Frame" x="0" y="120" width="792" height="42">
+        <frame id="158:139" name="Frame" x="0" y="0" width="220" height="42">
+          <text id="158:140" name="Perks" x="0" y="0" width="45" height="20" />
+          <text id="158:141" name="Streaming add-ons, family plans" x="0" y="22" width="213" height="20" />
+        </frame>
+        <frame id="158:142" name="Frame" x="240" y="15" width="506" height="12">
+          <rounded-rectangle id="158:143" name="Rectangle" x="0" y="0" width="96.4000015258789" height="12" />
+          <rounded-rectangle id="158:144" name="Rectangle" x="102.4000015258789" y="0" width="96.4000015258789" height="12" />
+          <rounded-rectangle id="158:145" name="Rectangle" x="204.8000030517578" y="0" width="96.4000015258789" height="12" />
+          <rounded-rectangle id="158:146" name="Rectangle" x="307.20001220703125" y="0" width="96.40000915527344" height="12" />
+          <rounded-rectangle id="158:147" name="Rectangle" x="409.60003662109375" y="0" width="96.40000915527344" height="12" />
+        </frame>
+        <text id="158:148" name="4/5" x="766" y="11" width="26" height="20" />
+      </frame>
+      <frame id="158:149" name="Frame" x="0" y="180" width="792" height="42">
+        <frame id="158:150" name="Frame" x="0" y="0" width="220" height="42">
+          <text id="158:151" name="Value for money" x="0" y="0" width="130" height="20" />
+          <text id="158:152" name="Higher price than Fido or Chatr" x="0" y="22" width="207" height="20" />
+        </frame>
+        <frame id="158:153" name="Frame" x="240" y="15" width="506" height="12">
+          <rounded-rectangle id="158:154" name="Rectangle" x="0" y="0" width="96.4000015258789" height="12" />
+          <rounded-rectangle id="158:155" name="Rectangle" x="102.4000015258789" y="0" width="96.4000015258789" height="12" />
+          <rounded-rectangle id="158:156" name="Rectangle" x="204.8000030517578" y="0" width="96.4000015258789" height="12" />
+          <rounded-rectangle id="158:157" name="Rectangle" x="307.20001220703125" y="0" width="96.40000915527344" height="12" />
+          <rounded-rectangle id="158:158" name="Rectangle" x="409.60003662109375" y="0" width="96.40000915527344" height="12" />
+        </frame>
+        <text id="158:159" name="3/5" x="766" y="11" width="26" height="20" />
+      </frame>
+      <frame id="158:160" name="Frame" x="0" y="240" width="792" height="42">
+        <frame id="158:161" name="Frame" x="0" y="0" width="220" height="42">
+          <text id="158:162" name="Newcomer-friendly" x="0" y="0" width="155" height="20" />
+          <text id="158:163" name="Credit check or deposit needed" x="0" y="22" width="212" height="20" />
+        </frame>
+        <frame id="158:164" name="Frame" x="240" y="15" width="506" height="12">
+          <rounded-rectangle id="158:165" name="Rectangle" x="0" y="0" width="96.4000015258789" height="12" />
+          <rounded-rectangle id="158:166" name="Rectangle" x="102.4000015258789" y="0" width="96.4000015258789" height="12" />
+          <rounded-rectangle id="158:167" name="Rectangle" x="204.8000030517578" y="0" width="96.4000015258789" height="12" />
+          <rounded-rectangle id="158:168" name="Rectangle" x="307.20001220703125" y="0" width="96.40000915527344" height="12" />
+          <rounded-rectangle id="158:169" name="Rectangle" x="409.60003662109375" y="0" width="96.40000915527344" height="12" />
+        </frame>
+        <text id="158:170" name="3/5" x="766" y="11" width="26" height="20" />
+      </frame>
+    </frame>
+  </frame>
+  <frame id="159:2" name="Slot · Plans (data table)" x="0" y="1583" width="1440" height="643">
+    <frame id="159:3" name="Frame" x="120" y="72" width="1200" height="56">
+      <text id="159:4" name="Every Rogers plan we offer" x="0" y="0" width="675" height="56" />
+      <frame id="159:5" name="Frame" x="1003" y="20" width="197" height="36">
+        <text id="159:6" name="Sort by" x="0" y="9" width="52" height="18" />
+        <frame id="159:7" name="Frame" x="60" y="1" width="65" height="34">
+          <text id="159:8" name="Price" x="14" y="8" width="37" height="18" />
+        </frame>
+        <frame id="159:9" name="Frame" x="133" y="0" width="64" height="36">
+          <text id="159:10" name="Data" x="15" y="9" width="34" height="18" />
+        </frame>
+      </frame>
+    </frame>
+    <frame id="159:11" name="Plans table" x="120" y="148" width="1200" height="385">
+      <frame id="159:12" name="Header row" x="1" y="1" width="1198" height="50">
+        <frame id="159:13" name="Frame" x="0" y="0" width="171.14285278320312" height="50">
+          <text id="159:14" name="Plan" x="20" y="16" width="131.14285278320312" height="18" />
+        </frame>
+        <frame id="159:15" name="Frame" x="171.14285278320312" y="0" width="171.1428680419922" height="50">
+          <text id="159:16" name="Data" x="20" y="16" width="131.1428680419922" height="18" />
+        </frame>
+        <frame id="159:17" name="Frame" x="342.28570556640625" y="0" width="171.14285278320312" height="50">
+          <text id="159:18" name="Talk &amp; text" x="20" y="16" width="131.14285278320312" height="18" />
+        </frame>
+        <frame id="159:19" name="Frame" x="513.4285888671875" y="0" width="171.14285278320312" height="50">
+          <text id="159:20" name="Network" x="20" y="16" width="131.14285278320312" height="18" />
+        </frame>
+        <frame id="159:21" name="Frame" x="684.5714111328125" y="0" width="171.14285278320312" height="50">
+          <text id="159:22" name="US use" x="20" y="16" width="131.14285278320312" height="18" />
+        </frame>
+        <frame id="159:23" name="Frame" x="855.7142333984375" y="0" width="171.14285278320312" height="50">
+          <text id="159:24" name="Price" x="20" y="16" width="131.14285278320312" height="18" />
+        </frame>
+        <frame id="159:25" name="Frame" x="1026.8570556640625" y="0" width="171.14285278320312" height="50">
+          <text id="159:26" name="Text" x="85.57142639160156" y="16" width="0" height="18" />
+        </frame>
+      </frame>
+      <frame id="159:27" name="Row" x="1" y="51" width="1198" height="83">
+        <frame id="159:28" name="Frame" x="0" y="1" width="171.14285278320312" height="82">
+          <text id="159:29" name="Rogers Essentials" x="20" y="16" width="131.14285278320312" height="50" />
+        </frame>
+        <frame id="159:30" name="Frame" x="171.14285278320312" y="14" width="171.1428680419922" height="56">
+          <text id="159:31" name="50 GB" x="20" y="16" width="131.1428680419922" height="24" />
+        </frame>
+        <frame id="159:32" name="Frame" x="342.28570556640625" y="2" width="171.14285278320312" height="80">
+          <text id="159:33" name="Unlimited Canada" x="20" y="16" width="131.14285278320312" height="48" />
+        </frame>
+        <frame id="159:34" name="Frame" x="513.4285888671875" y="14" width="171.14285278320312" height="56">
+          <text id="159:35" name="5G" x="20" y="16" width="131.14285278320312" height="24" />
+        </frame>
+        <frame id="159:36" name="Frame" x="684.5714111328125" y="14" width="171.14285278320312" height="56">
+          <text id="159:37" name="Add-on" x="20" y="16" width="131.14285278320312" height="24" />
+        </frame>
+        <frame id="159:38" name="Frame" x="855.7142333984375" y="13.5" width="171.14285278320312" height="57">
+          <text id="159:39" name="$45/mo" x="20" y="16" width="131.14285278320312" height="25" />
+        </frame>
+        <frame id="159:40" name="Frame" x="1026.8570556640625" y="2" width="171.14285278320312" height="80">
+          <frame id="159:41" name="Button · Choose" x="20" y="16" width="131" height="48">
+            <text id="159:42" name="Choose plan" x="16" y="14" width="99" height="20" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="159:43" name="Row" x="1" y="134" width="1198" height="86">
+        <frame id="159:44" name="Frame" x="0" y="1" width="171.14285278320312" height="85">
+          <frame id="159:45" name="Frame" x="20" y="16" width="147" height="53">
+            <text id="159:46" name="Rogers Popular" x="0" y="0" width="147" height="25" />
+            <frame id="159:47" name="Frame" x="0" y="29" width="111" height="24">
+              <text id="159:48" name="Most popular" x="10" y="4" width="91" height="16" />
+            </frame>
+          </frame>
+        </frame>
+        <frame id="159:49" name="Frame" x="171.14285278320312" y="15.5" width="171.1428680419922" height="56">
+          <text id="159:50" name="75 GB" x="20" y="16" width="131.1428680419922" height="24" />
+        </frame>
+        <frame id="159:51" name="Frame" x="342.28570556640625" y="3.5" width="171.14285278320312" height="80">
+          <text id="159:52" name="Unlimited Canada–US" x="20" y="16" width="131.14285278320312" height="48" />
+        </frame>
+        <frame id="159:53" name="Frame" x="513.4285888671875" y="15.5" width="171.14285278320312" height="56">
+          <text id="159:54" name="5G+" x="20" y="16" width="131.14285278320312" height="24" />
+        </frame>
+        <frame id="159:55" name="Frame" x="684.5714111328125" y="15.5" width="171.14285278320312" height="56">
+          <text id="159:56" name="Included" x="20" y="16" width="131.14285278320312" height="24" />
+        </frame>
+        <frame id="159:57" name="Frame" x="855.7142333984375" y="15" width="171.14285278320312" height="57">
+          <text id="159:58" name="$50/mo" x="20" y="16" width="131.14285278320312" height="25" />
+        </frame>
+        <frame id="159:59" name="Frame" x="1026.8570556640625" y="5.5" width="171.14285278320312" height="76">
+          <frame id="159:60" name="Button · Choose" x="20" y="16" width="127" height="44">
+            <text id="159:61" name="Choose plan" x="14" y="12" width="99" height="20" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="159:62" name="Row" x="1" y="220" width="1198" height="81">
+        <frame id="159:63" name="Frame" x="0" y="12.5" width="171.14285278320312" height="57">
+          <text id="159:64" name="Rogers Plus" x="20" y="16" width="131.14285278320312" height="25" />
+        </frame>
+        <frame id="159:65" name="Frame" x="171.14285278320312" y="13" width="171.1428680419922" height="56">
+          <text id="159:66" name="100 GB" x="20" y="16" width="131.1428680419922" height="24" />
+        </frame>
+        <frame id="159:67" name="Frame" x="342.28570556640625" y="1" width="171.14285278320312" height="80">
+          <text id="159:68" name="Unlimited Canada–US" x="20" y="16" width="131.14285278320312" height="48" />
+        </frame>
+        <frame id="159:69" name="Frame" x="513.4285888671875" y="13" width="171.14285278320312" height="56">
+          <text id="159:70" name="5G+" x="20" y="16" width="131.14285278320312" height="24" />
+        </frame>
+        <frame id="159:71" name="Frame" x="684.5714111328125" y="13" width="171.14285278320312" height="56">
+          <text id="159:72" name="Included" x="20" y="16" width="131.14285278320312" height="24" />
+        </frame>
+        <frame id="159:73" name="Frame" x="855.7142333984375" y="12.5" width="171.14285278320312" height="57">
+          <text id="159:74" name="$55/mo" x="20" y="16" width="131.14285278320312" height="25" />
+        </frame>
+        <frame id="159:75" name="Frame" x="1026.8570556640625" y="1" width="171.14285278320312" height="80">
+          <frame id="159:76" name="Button · Choose" x="20" y="16" width="131" height="48">
+            <text id="159:77" name="Choose plan" x="16" y="14" width="99" height="20" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="159:78" name="Row" x="1" y="301" width="1198" height="83">
+        <frame id="159:79" name="Frame" x="0" y="1" width="171.14285278320312" height="82">
+          <text id="159:80" name="Rogers Ultimate" x="20" y="16" width="131.14285278320312" height="50" />
+        </frame>
+        <frame id="159:81" name="Frame" x="171.14285278320312" y="14" width="171.1428680419922" height="56">
+          <text id="159:82" name="150 GB" x="20" y="16" width="131.1428680419922" height="24" />
+        </frame>
+        <frame id="159:83" name="Frame" x="342.28570556640625" y="2" width="171.14285278320312" height="80">
+          <text id="159:84" name="Unlimited Canada–US" x="20" y="16" width="131.14285278320312" height="48" />
+        </frame>
+        <frame id="159:85" name="Frame" x="513.4285888671875" y="14" width="171.14285278320312" height="56">
+          <text id="159:86" name="5G+" x="20" y="16" width="131.14285278320312" height="24" />
+        </frame>
+        <frame id="159:87" name="Frame" x="684.5714111328125" y="14" width="171.14285278320312" height="56">
+          <text id="159:88" name="Included" x="20" y="16" width="131.14285278320312" height="24" />
+        </frame>
+        <frame id="159:89" name="Frame" x="855.7142333984375" y="13.5" width="171.14285278320312" height="57">
+          <text id="159:90" name="$75/mo" x="20" y="16" width="131.14285278320312" height="25" />
+        </frame>
+        <frame id="159:91" name="Frame" x="1026.8570556640625" y="2" width="171.14285278320312" height="80">
+          <frame id="159:92" name="Button · Choose" x="20" y="16" width="131" height="48">
+            <text id="159:93" name="Choose plan" x="16" y="14" width="99" height="20" />
+          </frame>
+        </frame>
+      </frame>
+    </frame>
+    <text id="159:94" name="PLACEHOLDER plan names and prices · CAD, taxes extra · Prices as of Oct 2026. Replace with current Rogers offers before publishing." x="120" y="553" width="1200" height="18" />
+  </frame>
+  <frame id="159:95" name="Slot · Pros &amp; cons" x="0" y="2226" width="1440" height="372">
+    <frame id="159:96" name="Frame" x="120" y="72" width="588" height="260">
+      <text id="159:97" name="What we like" x="37.5" y="33.5" width="178" height="33" />
+      <frame id="159:98" name="Frame" x="37.5" y="80.5" width="513" height="26">
+        <frame id="159:99" name="Frame" x="0" y="0" width="24" height="24">
+          <text id="159:100" name="✓" x="6.5" y="4" width="11" height="16" />
+        </frame>
+        <text id="159:101" name="Fastest 5G+ speeds in most cities" x="36" y="0" width="477" height="26" />
+      </frame>
+      <frame id="159:102" name="Frame" x="37.5" y="120.5" width="513" height="26">
+        <frame id="159:103" name="Frame" x="0" y="0" width="24" height="24">
+          <text id="159:104" name="✓" x="6.5" y="4" width="11" height="16" />
+        </frame>
+        <text id="159:105" name="Canada–US talk, text and data on many plans" x="36" y="0" width="477" height="26" />
+      </frame>
+      <frame id="159:106" name="Frame" x="37.5" y="160.5" width="513" height="26">
+        <frame id="159:107" name="Frame" x="0" y="0" width="24" height="24">
+          <text id="159:108" name="✓" x="6.5" y="4" width="11" height="16" />
+        </frame>
+        <text id="159:109" name="Postpaid helps build Canadian credit" x="36" y="0" width="477" height="26" />
+      </frame>
+      <frame id="159:110" name="Frame" x="37.5" y="200.5" width="513" height="26">
+        <frame id="159:111" name="Frame" x="0" y="0" width="24" height="24">
+          <text id="159:112" name="✓" x="6.5" y="4" width="11" height="16" />
+        </frame>
+        <text id="159:113" name="Family and multi-line savings" x="36" y="0" width="477" height="26" />
+      </frame>
+    </frame>
+    <frame id="159:114" name="Frame" x="732" y="72" width="588" height="260">
+      <text id="159:115" name="Watch out for" x="37.5" y="33.5" width="192" height="33" />
+      <frame id="159:116" name="Frame" x="37.5" y="80.5" width="513" height="26">
+        <frame id="159:117" name="Frame" x="0" y="0" width="24" height="24">
+          <text id="159:118" name="!" x="9.5" y="4" width="5" height="16" />
+        </frame>
+        <text id="159:119" name="Higher monthly price than Fido or Chatr" x="36" y="0" width="477" height="26" />
+      </frame>
+      <frame id="159:120" name="Frame" x="37.5" y="120.5" width="513" height="26">
+        <frame id="159:121" name="Frame" x="0" y="0" width="24" height="24">
+          <text id="159:122" name="!" x="9.5" y="4" width="5" height="16" />
+        </frame>
+        <text id="159:123" name="Credit check or deposit for newcomers" x="36" y="0" width="477" height="26" />
+      </frame>
+      <frame id="159:124" name="Frame" x="37.5" y="160.5" width="513" height="26">
+        <frame id="159:125" name="Frame" x="0" y="0" width="24" height="24">
+          <text id="159:126" name="!" x="9.5" y="4" width="5" height="16" />
+        </frame>
+        <text id="159:127" name="Phone financing can mean a 24-month commitment" x="36" y="0" width="477" height="26" />
+      </frame>
+      <frame id="159:128" name="Frame" x="37.5" y="200.5" width="513" height="26">
+        <frame id="159:129" name="Frame" x="0" y="0" width="24" height="24">
+          <text id="159:130" name="!" x="9.5" y="4" width="5" height="16" />
+        </frame>
+        <text id="159:131" name="Some perks only on top plans" x="36" y="0" width="477" height="26" />
+      </frame>
+    </frame>
+  </frame>
+  <frame id="159:132" name="Slot · Brand comparison matrix" x="0" y="2598" width="1440" height="692">
+    <text id="159:133" name="Rogers vs Fido vs Chatr" x="120" y="40" width="588" height="56" />
+    <text id="159:134" name="All three run on the Rogers network. Here is how they differ for newcomers." x="120" y="116" width="1200" height="26" />
+    <frame id="159:135" name="Matrix" x="120" y="162" width="1200" height="458">
+      <frame id="159:136" name="Frame" x="1" y="1" width="1198" height="57">
+        <frame id="159:137" name="Frame" x="0" y="0" width="299.5" height="57">
+          <text id="159:138" name="Text" x="149.75" y="16" width="0" height="25" />
+        </frame>
+        <frame id="159:139" name="Frame" x="299.5" y="0" width="299.5" height="57">
+          <text id="159:140" name="Rogers" x="22" y="16" width="255.5" height="25" />
+        </frame>
+        <frame id="159:141" name="Frame" x="599" y="0" width="299.5" height="57">
+          <text id="159:142" name="Fido" x="22" y="16" width="255.5" height="25" />
+        </frame>
+        <frame id="159:143" name="Frame" x="898.5" y="0" width="299.5" height="57">
+          <text id="159:144" name="Chatr" x="22" y="16" width="255.5" height="25" />
+        </frame>
+      </frame>
+      <frame id="159:145" name="Frame" x="1" y="58" width="1198" height="57">
+        <frame id="159:146" name="Frame" x="0" y="1" width="299.5" height="56">
+          <text id="159:147" name="Best for" x="22" y="16" width="255.5" height="20" />
+        </frame>
+        <frame id="159:148" name="Frame" x="299.5" y="1" width="299.5" height="56">
+          <text id="159:149" name="Speed &amp; travel" x="22" y="16" width="255.5" height="24" />
+        </frame>
+        <frame id="159:150" name="Frame" x="599" y="1" width="299.5" height="56">
+          <text id="159:151" name="Best value" x="22" y="16" width="255.5" height="24" />
+        </frame>
+        <frame id="159:152" name="Frame" x="898.5" y="1" width="299.5" height="56">
+          <text id="159:153" name="Lowest price" x="22" y="16" width="255.5" height="24" />
+        </frame>
+      </frame>
+      <frame id="159:154" name="Frame" x="1" y="115" width="1198" height="57">
+        <frame id="159:155" name="Frame" x="0" y="1" width="299.5" height="56">
+          <text id="159:156" name="Pay" x="22" y="16" width="255.5" height="20" />
+        </frame>
+        <frame id="159:157" name="Frame" x="299.5" y="1" width="299.5" height="56">
+          <text id="159:158" name="Postpaid" x="22" y="16" width="255.5" height="24" />
+        </frame>
+        <frame id="159:159" name="Frame" x="599" y="1" width="299.5" height="56">
+          <text id="159:160" name="Prepaid or postpaid" x="22" y="16" width="255.5" height="24" />
+        </frame>
+        <frame id="159:161" name="Frame" x="898.5" y="1" width="299.5" height="56">
+          <text id="159:162" name="Prepaid" x="22" y="16" width="255.5" height="24" />
+        </frame>
+      </frame>
+      <frame id="159:163" name="Frame" x="1" y="172" width="1198" height="57">
+        <frame id="159:164" name="Frame" x="0" y="1" width="299.5" height="56">
+          <text id="159:165" name="Credit check" x="22" y="16" width="255.5" height="20" />
+        </frame>
+        <frame id="159:166" name="Frame" x="299.5" y="1" width="299.5" height="56">
+          <text id="159:167" name="Yes / deposit" x="22" y="16" width="255.5" height="24" />
+        </frame>
+        <frame id="159:168" name="Frame" x="599" y="1" width="299.5" height="56">
+          <text id="159:169" name="Postpaid only" x="22" y="16" width="255.5" height="24" />
+        </frame>
+        <frame id="159:170" name="Frame" x="898.5" y="1" width="299.5" height="56">
+          <text id="159:171" name="No" x="22" y="16" width="255.5" height="24" />
+        </frame>
+      </frame>
+      <frame id="159:172" name="Frame" x="1" y="229" width="1198" height="57">
+        <frame id="159:173" name="Frame" x="0" y="1" width="299.5" height="56">
+          <text id="159:174" name="5G" x="22" y="16" width="255.5" height="20" />
+        </frame>
+        <frame id="159:175" name="Frame" x="299.5" y="1" width="299.5" height="56">
+          <text id="159:176" name="5G+" x="22" y="16" width="255.5" height="24" />
+        </frame>
+        <frame id="159:177" name="Frame" x="599" y="1" width="299.5" height="56">
+          <text id="159:178" name="5G" x="22" y="16" width="255.5" height="24" />
+        </frame>
+        <frame id="159:179" name="Frame" x="898.5" y="1" width="299.5" height="56">
+          <text id="159:180" name="VERIFY" x="22" y="16" width="255.5" height="24" />
+        </frame>
+      </frame>
+      <frame id="159:181" name="Frame" x="1" y="286" width="1198" height="57">
+        <frame id="159:182" name="Frame" x="0" y="1" width="299.5" height="56">
+          <text id="159:183" name="US use" x="22" y="16" width="255.5" height="20" />
+        </frame>
+        <frame id="159:184" name="Frame" x="299.5" y="1" width="299.5" height="56">
+          <text id="159:185" name="Canada–US plans" x="22" y="16" width="255.5" height="24" />
+        </frame>
+        <frame id="159:186" name="Frame" x="599" y="1" width="299.5" height="56">
+          <text id="159:187" name="Add-ons" x="22" y="16" width="255.5" height="24" />
+        </frame>
+        <frame id="159:188" name="Frame" x="898.5" y="1" width="299.5" height="56">
+          <text id="159:189" name="Add-ons" x="22" y="16" width="255.5" height="24" />
+        </frame>
+      </frame>
+      <frame id="159:190" name="Frame" x="1" y="343" width="1198" height="57">
+        <frame id="159:191" name="Frame" x="0" y="1" width="299.5" height="56">
+          <text id="159:192" name="Plans from" x="22" y="16" width="255.5" height="20" />
+        </frame>
+        <frame id="159:193" name="Frame" x="299.5" y="1" width="299.5" height="56">
+          <text id="159:194" name="$45/mo" x="22" y="16" width="255.5" height="24" />
+        </frame>
+        <frame id="159:195" name="Frame" x="599" y="1" width="299.5" height="56">
+          <text id="159:196" name="$45/mo" x="22" y="16" width="255.5" height="24" />
+        </frame>
+        <frame id="159:197" name="Frame" x="898.5" y="1" width="299.5" height="56">
+          <text id="159:198" name="$29/mo" x="22" y="16" width="255.5" height="24" />
+        </frame>
+      </frame>
+      <frame id="159:199" name="Frame" x="1" y="400" width="1198" height="57">
+        <frame id="159:200" name="Frame" x="0" y="1" width="299.5" height="56">
+          <text id="159:201" name="Text" x="149.75" y="16" width="0" height="20" />
+        </frame>
+        <frame id="159:202" name="Frame" x="299.5" y="1" width="299.5" height="56">
+          <text id="159:203" name="You’re here" x="22" y="16" width="255.5" height="24" />
+        </frame>
+        <frame id="159:204" name="Frame" x="599" y="1" width="299.5" height="56">
+          <text id="159:205" name="See Fido plans →" x="22" y="16" width="255.5" height="20" />
+        </frame>
+        <frame id="159:206" name="Frame" x="898.5" y="1" width="299.5" height="56">
+          <text id="159:207" name="See Chatr plans →" x="22" y="16" width="255.5" height="20" />
+        </frame>
+      </frame>
+    </frame>
+  </frame>
+  <frame id="159:208" name="Slot · Switch steps" x="0" y="3290" width="1440" height="439">
+    <text id="159:209" name="Switch to Rogers in 4 steps — keep your number" x="120" y="72" width="802" height="40" />
+    <frame id="159:210" name="Frame" x="120" y="140" width="1200" height="227">
+      <instance id="314:1754" name="Image slot" x="0" y="0" width="232.8000030517578" height="227" />
+      <frame id="159:211" name="Frame" x="248.8000030517578" y="0" width="225.8000030517578" height="227">
+        <frame id="159:212" name="Frame" x="22" y="22" width="40" height="40">
+          <text id="159:213" name="1" x="16.5" y="10" width="7" height="20" />
+        </frame>
+        <text id="159:214" name="Keep your old plan active" x="22" y="72" width="181.8000030517578" height="50" />
+        <text id="159:215" name="Cancelling first can release your number." x="22" y="132" width="181.8000030517578" height="48" />
+      </frame>
+      <frame id="159:216" name="Frame" x="490.6000061035156" y="0" width="225.8000030517578" height="227">
+        <frame id="159:217" name="Frame" x="22" y="22" width="40" height="40">
+          <text id="159:218" name="2" x="15" y="10" width="10" height="20" />
+        </frame>
+        <text id="159:219" name="Send us your account number &amp; PIN" x="22" y="72" width="181.8000030517578" height="75" />
+        <text id="159:220" name="From your current carrier’s bill or app." x="22" y="157" width="181.8000030517578" height="48" />
+      </frame>
+      <frame id="159:221" name="Frame" x="732.4000244140625" y="0" width="225.80001831054688" height="227">
+        <frame id="159:222" name="Frame" x="22" y="22" width="40" height="40">
+          <text id="159:223" name="3" x="15" y="10" width="10" height="20" />
+        </frame>
+        <text id="159:224" name="We transfer your number" x="22" y="72" width="181.80001831054688" height="50" />
+        <text id="159:225" name="Usually the same day.* (VERIFY)" x="22" y="132" width="181.80001831054688" height="48" />
+      </frame>
+      <frame id="159:226" name="Frame" x="974.2000732421875" y="0" width="225.80001831054688" height="227">
+        <frame id="159:227" name="Frame" x="22" y="22" width="40" height="40">
+          <text id="159:228" name="4" x="15" y="10" width="10" height="20" />
+        </frame>
+        <text id="159:229" name="Switch on" x="22" y="72" width="181.80001831054688" height="25" />
+        <text id="159:230" name="Unlocked phone? You’re done. Locked? We help you unlock." x="22" y="107" width="181.80001831054688" height="72" />
+      </frame>
+    </frame>
+  </frame>
+  <frame id="160:2" name="SEO · Long-form guide" x="0" y="3729" width="1440" height="1019">
+    <frame id="160:3" name="Frame" x="120" y="88" width="764" height="843">
+      <text id="160:4" name="Newcomer guide" x="0" y="0" width="142" height="16" />
+      <text id="160:5" name="Rogers for newcomers: what to know before you sign" x="0" y="36" width="764" height="112" />
+      <instance id="314:977" name="Image slot" x="0" y="168" width="764" height="300" />
+      <text id="160:6" name="Can I get Rogers without a credit history?" x="0" y="488" width="764" height="33" />
+      <text id="160:7" name="Usually yes — with a security deposit, or by starting on a prepaid brand first. We explain the deposit on the call before anything is set up." x="0" y="541" width="764" height="52" />
+      <text id="160:8" name="Is Rogers better than Fido or Chatr?" x="0" y="613" width="764" height="33" />
+      <text id="160:9" name="Not better network-wise — all three use the Rogers network. Rogers adds 5G+ priority, Canada–US plans and bigger perks; Fido and Chatr cost less." x="0" y="666" width="764" height="52" />
+      <text id="160:10" name="What about phone financing?" x="0" y="738" width="764" height="33" />
+      <text id="160:11" name="You can bring your own phone or finance one over 24 months. Financing lowers the upfront cost but ties you to the plan — ask us to compare the total cost." x="0" y="791" width="764" height="52" />
+    </frame>
+    <frame id="160:12" name="Key facts" x="940" y="88" width="380" height="498">
+      <text id="160:13" name="Key facts" x="30" y="30" width="103" height="28" />
+      <frame id="160:14" name="Frame" x="30" y="72" width="320" height="49">
+        <text id="160:15" name="Plans from" x="0" y="0" width="98" height="16" />
+        <text id="160:16" name="$45/mo · CAD + tax" x="0" y="18" width="320" height="20" />
+      </frame>
+      <frame id="160:17" name="Frame" x="30" y="135" width="320" height="49">
+        <text id="160:18" name="Payment" x="0" y="0" width="72" height="16" />
+        <text id="160:19" name="Postpaid" x="0" y="18" width="320" height="20" />
+      </frame>
+      <frame id="160:20" name="Frame" x="30" y="198" width="320" height="49">
+        <text id="160:21" name="Credit check" x="0" y="0" width="111" height="16" />
+        <text id="160:22" name="Yes, or a deposit" x="0" y="18" width="320" height="20" />
+      </frame>
+      <frame id="160:23" name="Frame" x="30" y="261" width="320" height="49">
+        <text id="160:24" name="Network" x="0" y="0" width="76" height="16" />
+        <text id="160:25" name="Rogers · 5G+" x="0" y="18" width="320" height="20" />
+      </frame>
+      <frame id="160:26" name="Frame" x="30" y="324" width="320" height="49">
+        <text id="160:27" name="US use" x="0" y="0" width="53" height="16" />
+        <text id="160:28" name="Canada–US plans available" x="0" y="18" width="320" height="20" />
+      </frame>
+      <frame id="160:29" name="Frame" x="30" y="387" width="320" height="49">
+        <text id="160:30" name="Keep your number" x="0" y="0" width="153" height="16" />
+        <text id="160:31" name="Yes, free transfer" x="0" y="18" width="320" height="20" />
+      </frame>
+      <text id="160:32" name="Updated 5 Oct 2026" x="30" y="450" width="126" height="18" />
+    </frame>
+  </frame>
+  <frame id="160:33" name="Slot · Reviews" x="0" y="4748" width="1440" height="478">
+    <frame id="160:34" name="Score" x="120" y="108.5" width="264" height="261">
+      <text id="160:35" name="REVIEWS" x="0" y="0" width="67" height="16" />
+      <text id="160:36" name="Newcomers recommend us." x="0" y="22" width="264" height="80" />
+      <text id="160:37" name="4.8" x="0" y="108" width="133" height="91" />
+      <text id="160:38" name="★★★★★" x="0" y="205" width="116" height="30" />
+      <text id="160:39" name="1,200+ Google reviews" x="0" y="241" width="178" height="20" />
+    </frame>
+    <frame id="160:40" name="Frame" x="432" y="96" width="888" height="286">
+      <frame id="160:41" name="Frame" x="0" y="0" width="282.66668701171875" height="286">
+        <text id="160:42" name="★★★★★" x="28" y="28" width="77" height="20" />
+        <text id="160:43" name="“Had my Canadian number two weeks before my flight. Used it to open my bank account online — landed at YVR and it just worked.”" x="28" y="68" width="226.66668701171875" height="130" />
+        <frame id="160:44" name="Frame" x="28" y="218" width="230" height="40">
+          <ellipse id="160:45" name="Ellipse" x="0" y="0" width="40" height="40" />
+          <frame id="160:46" name="Frame" x="52" y="0" width="178" height="40">
+            <text id="160:47" name="Aarav S." x="0" y="0" width="65" height="20" />
+            <text id="160:48" name="Student · Delhi → Vancouver" x="0" y="22" width="178" height="18" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="160:49" name="Frame" x="302.66668701171875" y="0" width="282.6666564941406" height="286">
+        <text id="160:50" name="★★★★★" x="28" y="28" width="77" height="20" />
+        <text id="160:51" name="“Internet was installed in our Brampton apartment three days after we moved in. Someone actually called back when they said.”" x="28" y="68" width="226.66665649414062" height="130" />
+        <frame id="160:52" name="Frame" x="28" y="218" width="222" height="40">
+          <ellipse id="160:53" name="Ellipse" x="0" y="0" width="40" height="40" />
+          <frame id="160:54" name="Frame" x="52" y="0" width="170" height="40">
+            <text id="160:55" name="Maria L." x="0" y="0" width="65" height="20" />
+            <text id="160:56" name="Nurse · Manila → Brampton" x="0" y="22" width="170" height="18" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="160:57" name="Frame" x="605.3333740234375" y="0" width="282.6666564941406" height="260">
+        <text id="160:58" name="★★★★★" x="28" y="28" width="77" height="20" />
+        <text id="160:59" name="“Clear prices, no surprises on the first bill. The advisor explained Fido vs Rogers in plain words.”" x="28" y="68" width="226.66665649414062" height="104" />
+        <frame id="160:60" name="Frame" x="28" y="192" width="186" height="40">
+          <ellipse id="160:61" name="Ellipse" x="0" y="0" width="40" height="40" />
+          <frame id="160:62" name="Frame" x="52" y="0" width="134" height="40">
+            <text id="160:63" name="Tanvir H." x="0" y="0" width="70" height="20" />
+            <text id="160:64" name="PR · Dhaka → Calgary" x="0" y="22" width="134" height="18" />
+          </frame>
+        </frame>
+      </frame>
+    </frame>
+  </frame>
+  <frame id="160:65" name="Slot · FAQ" x="0" y="5226" width="1440" height="817">
+    <frame id="160:66" name="Frame" x="120" y="96" width="380" height="536">
+      <text id="160:67" name="FAQ" x="0" y="0" width="30" height="16" />
+      <text id="160:68" name="Rogers plan questions" x="0" y="32" width="304" height="112" />
+      <text id="160:69" name="Talk to an advisor, Monday to Saturday, 9am–9pm Pacific time." x="0" y="160" width="380" height="52" />
+      <frame id="160:70" name="Button · WhatsApp us" x="0" y="228" width="166" height="52">
+        <text id="160:71" name="WhatsApp us" x="30" y="16" width="106" height="20" />
+      </frame>
+      <instance id="317:879" name="Image slot · Advisor" x="0" y="296" width="380" height="240" />
+    </frame>
+    <frame id="160:72" name="Accordion" x="580" y="96" width="740" height="625">
+      <frame id="160:73" name="FAQ item" x="0" y="0" width="740" height="180">
+        <frame id="160:74" name="Frame" x="0" y="25" width="740" height="40">
+          <text id="160:75" name="Do I need a credit check for Rogers?" x="0" y="7.5" width="342" height="25" />
+          <frame id="160:76" name="Frame" x="700" y="0" width="40" height="40">
+            <text id="160:77" name="−" x="14" y="7.5" width="12" height="25" />
+          </frame>
+        </frame>
+        <text id="160:78" name="Rogers postpaid plans usually need a credit check or a deposit. If you’re new to Canada, we explain your options on the call — or suggest a prepaid brand to start." x="0" y="77" width="600" height="78" />
+      </frame>
+      <frame id="160:79" name="FAQ item" x="0" y="180" width="740" height="89">
+        <frame id="160:80" name="Frame" x="0" y="24" width="740" height="40">
+          <text id="160:81" name="Can I keep my number when I switch to Rogers?" x="0" y="7.5" width="454" height="25" />
+          <frame id="160:82" name="Frame" x="700" y="0" width="40" height="40">
+            <text id="160:83" name="+" x="14" y="7.5" width="12" height="25" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="160:84" name="FAQ item" x="0" y="269" width="740" height="89">
+        <frame id="160:85" name="Frame" x="0" y="24" width="740" height="40">
+          <text id="160:86" name="Does Rogers include US roaming?" x="0" y="7.5" width="321" height="25" />
+          <frame id="160:87" name="Frame" x="700" y="0" width="40" height="40">
+            <text id="160:88" name="+" x="14" y="7.5" width="12" height="25" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="160:89" name="FAQ item" x="0" y="358" width="740" height="89">
+        <frame id="160:90" name="Frame" x="0" y="24" width="740" height="40">
+          <text id="160:91" name="Can I bring my own phone?" x="0" y="7.5" width="258" height="25" />
+          <frame id="160:92" name="Frame" x="700" y="0" width="40" height="40">
+            <text id="160:93" name="+" x="14" y="7.5" width="12" height="25" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="160:94" name="FAQ item" x="0" y="447" width="740" height="89">
+        <frame id="160:95" name="Frame" x="0" y="24" width="740" height="40">
+          <text id="160:96" name="Can I add family lines later?" x="0" y="7.5" width="262" height="25" />
+          <frame id="160:97" name="Frame" x="700" y="0" width="40" height="40">
+            <text id="160:98" name="+" x="14" y="7.5" width="12" height="25" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="160:99" name="FAQ item" x="0" y="536" width="740" height="89">
+        <frame id="160:100" name="Frame" x="0" y="24" width="740" height="40">
+          <text id="160:101" name="What happens after 24 months?" x="0" y="7.5" width="306" height="25" />
+          <frame id="160:102" name="Frame" x="700" y="0" width="40" height="40">
+            <text id="160:103" name="+" x="14" y="7.5" width="12" height="25" />
+          </frame>
+        </frame>
+      </frame>
+    </frame>
+  </frame>
+  <frame id="160:104" name="SEO · Internal links &amp; sources" x="0" y="6043" width="1440" height="421">
+    <text id="160:105" name="Explore more" x="120" y="24" width="225" height="40" />
+    <frame id="160:106" name="Frame" x="120" y="88" width="1200" height="211">
+      <frame id="160:107" name="Frame" x="0" y="0" width="384" height="117">
+        <text id="160:108" name="Other brands" x="24" y="24" width="96" height="18" />
+        <frame id="160:109" name="Frame" x="24" y="54" width="336" height="39">
+          <frame id="160:110" name="Link pill · Fido plans  →" x="0" y="0" width="129" height="39">
+            <text id="160:111" name="Fido plans →" x="17.5" y="10.5" width="94" height="18" />
+          </frame>
+          <frame id="160:112" name="Link pill · Chatr plans  →" x="137" y="0" width="138" height="39">
+            <text id="160:113" name="Chatr plans →" x="17.5" y="10.5" width="103" height="18" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="160:114" name="Frame" x="408" y="0" width="384" height="211">
+        <text id="160:115" name="By need" x="24" y="24" width="57" height="18" />
+        <frame id="160:116" name="Frame" x="24" y="54" width="336" height="133">
+          <frame id="160:117" name="Link pill · Unlimited data  →" x="0" y="0" width="162" height="39">
+            <text id="160:118" name="Unlimited data →" x="17.5" y="10.5" width="127" height="18" />
+          </frame>
+          <frame id="160:119" name="Link pill · No credit check  →" x="0" y="47" width="168" height="39">
+            <text id="160:120" name="No credit check →" x="17.5" y="10.5" width="133" height="18" />
+          </frame>
+          <frame id="160:121" name="Link pill · Students  →" x="176" y="47" width="121" height="39">
+            <text id="160:122" name="Students →" x="17.5" y="10.5" width="86" height="18" />
+          </frame>
+          <frame id="160:123" name="Link pill · Seniors  →" x="0" y="94" width="110" height="39">
+            <text id="160:124" name="Seniors →" x="17.5" y="10.5" width="75" height="18" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="160:125" name="Frame" x="816" y="0" width="384" height="164">
+        <text id="160:126" name="Compare" x="24" y="24" width="66" height="18" />
+        <frame id="160:127" name="Frame" x="24" y="54" width="336" height="86">
+          <frame id="160:128" name="Link pill · Rogers vs Fido  →" x="0" y="0" width="159" height="39">
+            <text id="160:129" name="Rogers vs Fido →" x="17.5" y="10.5" width="124" height="18" />
+          </frame>
+          <frame id="160:130" name="Link pill · Fido vs Chatr  →" x="167" y="0" width="150" height="39">
+            <text id="160:131" name="Fido vs Chatr →" x="17.5" y="10.5" width="115" height="18" />
+          </frame>
+          <frame id="160:132" name="Link pill · Prepaid vs postpaid  →" x="0" y="47" width="198" height="39">
+            <text id="160:133" name="Prepaid vs postpaid →" x="17.5" y="10.5" width="163" height="18" />
+          </frame>
+        </frame>
+      </frame>
+    </frame>
+    <text id="160:134" name="Sources: Rogers.com plan pages and Rogers Wireless Service Agreement, checked 5 Oct 2026. Ratings are our own editorial view." x="120" y="323" width="1200" height="18" />
+  </frame>
+  <frame id="160:135" name="Final CTA" x="0" y="6464" width="1440" height="885">
+    <frame id="160:136" name="CTA card" x="120" y="0" width="1200" height="789">
+      <instance id="314:1782" name="Image slot" x="320" y="88" width="560" height="260" />
+      <text id="160:137" name="Switch to Rogers. Keep your number." x="80" y="372" width="1040" height="182" />
+      <text id="160:138" name="Choose a plan in 2 minutes. An advisor confirms it the same day." x="312.5" y="578" width="575" height="29" />
+      <frame id="160:139" name="Frame" x="363.5" y="631" width="473" height="70">
+        <frame id="160:140" name="Button · Find my plan  →" x="0" y="8" width="239" height="58">
+          <text id="160:141" name="See Rogers plans →" x="32" y="18" width="175" height="22" />
+        </frame>
+        <frame id="160:142" name="Button · Talk to an advisor" x="251" y="8" width="222" height="62">
+          <text id="160:143" name="Talk to an advisor" x="34" y="20" width="154" height="22" />
+        </frame>
+      </frame>
+    </frame>
+  </frame>
+  <frame id="160:144" name="Footer" x="0" y="7349" width="1440" height="439">
+    <frame id="160:145" name="Frame" x="120" y="72" width="1200" height="212">
+      <frame id="160:146" name="Frame" x="0" y="0" width="340" height="212">
+        <frame id="160:147" name="Frame" x="0" y="0" width="210" height="36">
+          <frame id="160:148" name="Frame" x="0" y="0" width="36" height="36">
+            <star id="160:149" name="Star" x="8" y="8" width="20" height="20" />
+          </frame>
+          <text id="160:150" name="Canadian Plans" x="46" y="7" width="164" height="22" />
+        </frame>
+        <text id="160:151" name="Canadian Plans is an authorized Rogers, Fido and Chatr dealer in Surrey, BC. We help newcomers and Canadians set up SIM cards, phone plans and home internet." x="0" y="52" width="340" height="96" />
+        <text id="160:152" name="12-3456 King George Blvd, Surrey, BC 1-888-555-0199 · hello@canadianplans.ca" x="0" y="164" width="340" height="48" />
+      </frame>
+      <frame id="160:153" name="Frame" x="404" y="0" width="151" height="200">
+        <text id="160:154" name="Pre-arrival SIM" x="0" y="0" width="119" height="20" />
+        <text id="160:155" name="All SIM plans" x="0" y="32" width="93" height="24" />
+        <text id="160:156" name="eSIM" x="0" y="68" width="37" height="24" />
+        <text id="160:157" name="Students" x="0" y="104" width="67" height="24" />
+        <text id="160:158" name="Workers" x="0" y="140" width="62" height="24" />
+        <text id="160:159" name="From India" x="0" y="176" width="79" height="24" />
+      </frame>
+      <frame id="160:160" name="Frame" x="619" y="0" width="151" height="200">
+        <text id="160:161" name="Home Internet" x="0" y="0" width="117" height="20" />
+        <text id="160:162" name="All plans" x="0" y="32" width="62" height="24" />
+        <text id="160:163" name="TV bundles" x="0" y="68" width="82" height="24" />
+        <text id="160:164" name="Vancouver" x="0" y="104" width="79" height="24" />
+        <text id="160:165" name="Surrey" x="0" y="140" width="48" height="24" />
+        <text id="160:166" name="Toronto" x="0" y="176" width="58" height="24" />
+      </frame>
+      <frame id="160:167" name="Frame" x="834" y="0" width="151" height="164">
+        <text id="160:168" name="Mobile Plans" x="0" y="0" width="102" height="20" />
+        <text id="160:169" name="Rogers" x="0" y="32" width="52" height="24" />
+        <text id="160:170" name="Fido" x="0" y="68" width="33" height="24" />
+        <text id="160:171" name="Chatr" x="0" y="104" width="42" height="24" />
+        <text id="160:172" name="No credit check" x="0" y="140" width="117" height="24" />
+      </frame>
+      <frame id="160:173" name="Frame" x="1049" y="0" width="151" height="164">
+        <text id="160:174" name="Help" x="0" y="0" width="37" height="20" />
+        <text id="160:175" name="Guides" x="0" y="32" width="53" height="24" />
+        <text id="160:176" name="Compare" x="0" y="68" width="70" height="24" />
+        <text id="160:177" name="Track order" x="0" y="104" width="85" height="24" />
+        <text id="160:178" name="Contact" x="0" y="140" width="61" height="24" />
+      </frame>
+    </frame>
+    <rounded-rectangle id="160:179" name="Rectangle" x="120" y="332" width="1200" height="1" />
+    <frame id="160:180" name="Frame" x="120" y="381" width="1200" height="18">
+      <text id="160:181" name="© 2026 Canadian Plans · Rogers, Fido and Chatr are trademarks of Rogers Communications." x="0" y="0" width="569" height="18" />
+      <text id="160:182" name="Privacy · Terms · Accessibility · Cookie settings" x="912" y="0" width="288" height="18" />
+    </frame>
+  </frame>
+</frame>
+IMPORTANT: After you call this tool, you MUST call get_design_context if trying to implement the design, since this tool only returns metadata. If you do not call get_design_context, the agent will not be able to implement the design.

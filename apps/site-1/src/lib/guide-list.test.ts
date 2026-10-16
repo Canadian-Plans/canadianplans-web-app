@@ -7,17 +7,23 @@ describe('guide list filters', () => {
     expect(filterGuides('  INDIA  students ', 'phones').map((guide) => guide.id)).toEqual([
       'best-sim-for-students-from-india',
     ]);
-    expect(filterGuides('brampton', 'internet').map((guide) => guide.id)).toEqual([
-      'brampton-internet',
+    expect(filterGuides('vancouver', 'internet').map((guide) => guide.id)).toEqual([
+      'vancouver-internet',
     ]);
-    expect(filterGuides('brampton', 'phones')).toEqual([]);
+    expect(filterGuides('vancouver', 'phones')).toEqual([]);
   });
   it('finds device terminology in supplied metadata and handles no results', () => {
     expect(filterGuides('compatibility', 'phones').map((guide) => guide.id)).toEqual([
-      'phone-supports-esim',
+      'student-sim',
     ]);
     expect(filterGuides('unmatched-preview-xyz', 'all')).toEqual([]);
     expect(filterGuides('', 'all', [])).toEqual([]);
+  });
+  it('links every card to a real page', () => {
+    for (const guide of guideList)
+      expect(guide.href).toMatch(
+        /^\/(guides|pre-arrival-sim|compare|mobile-plans|home-internet)\//u,
+      );
   });
   it('does not mutate the registry or treat markup as executable input', () => {
     const ids = guideList.map((guide) => guide.id);

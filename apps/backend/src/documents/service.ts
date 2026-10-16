@@ -81,6 +81,17 @@ export type DownloadOutcome =
   | { status: 'not_found' }
   | { status: 'not_available' };
 
+/**
+ * Consulted by `runCleanup` so expired-upload sweeps cannot physically delete
+ * an R2 object while the independent backup runner's referenced-object
+ * manifest or copy step is in flight (IMPLEMENTATION_PLAN §13: "Prevent object
+ * cleanup racing the archive with a snapshot reference set and lease."). The
+ * default no-op keeps every existing caller and test behaviour unchanged.
+ */
+export interface BackupLeaseGate {
+  isActive(): Promise<boolean>;
+}
+
 export interface DocumentServiceOptions {
   maxBytes?: number;
   intentTtlSeconds?: number;
@@ -88,6 +99,7 @@ export interface DocumentServiceOptions {
   cleanupGraceSeconds?: number;
   bucket?: string;
   now?: () => Date;
+  backupLease?: BackupLeaseGate;
 }
 
 /**
@@ -102,6 +114,7 @@ export class DocumentService {
   private readonly cleanupGraceSeconds: number;
   private readonly bucket: string;
   private readonly now: () => Date;
+  private readonly backupLease: BackupLeaseGate;
 
   constructor(
     private readonly store: DocumentRecordStore,
@@ -115,6 +128,7 @@ export class DocumentService {
     this.cleanupGraceSeconds = options.cleanupGraceSeconds ?? CLEANUP_GRACE_SECONDS;
     this.bucket = options.bucket ?? documentBucket();
     this.now = options.now ?? (() => new Date());
+    this.backupLease = options.backupLease ?? { isActive: async () => false };
   }
 
   async createIntent(input: CreateIntentInput): Promise<CreateIntentOutcome> {
@@ -321,12 +335,19 @@ export class DocumentService {
     workspaceId: string;
     actorId: string;
   }): Promise<{ expiredIntents: number; cleanedObjects: string[] }> {
-    return this.store.cleanupExpired({
+    const result = await this.store.cleanupExpired({
       workspaceId: input.workspaceId,
       actorId: input.actorId,
       now: this.now(),
       graceSeconds: this.cleanupGraceSeconds,
     });
+    // The DB rows are already marked rejected/expired regardless, so nothing
+    // user-visible changes; only the physical R2 delete is deferred to a later
+    // cleanup pass once the backup lease clears.
+    if (result.cleanedObjects.length > 0 && (await this.backupLease.isActive())) {
+      return { expiredIntents: result.expiredIntents, cleanedObjects: [] };
+    }
+    return result;
   }
 }
 

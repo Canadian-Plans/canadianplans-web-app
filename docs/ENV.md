@@ -41,7 +41,7 @@ proxy trust policy must be narrowly verified before enabling public traffic.
 - `CATALOGUE_SYNC_SELECTOR` — backend-only selector for the scheduler registry entry used by the 300-second in-process catalogue sync (T10B) and the manual `/api/internal/catalogue/sync` route. The entry must have the existing `reconcile:run` scope (no new scope or migration), an explicit `actorId`, and the complete authorized workspace UUID set; its `secret` must equal `CRON_SECRET` (see the single-entry note above). Unset means the route cannot resolve a scheduler and fails closed.
 - `OUTBOX_ADAPTERS` — backend-only explicit provider opt-in. Only `fake` is accepted, and only when `NODE_ENV` is not `production`, to construct the in-memory email/analytics fakes. Otherwise the analytics handler uses the configured Umami sink (below) and the email handler stays unconfigured until T18 wires its adapter. Unset, unknown or any value on a production deployment with no configured sink selects no provider: handlers fail permanently with `provider_not_configured`, so each claimed job is recorded as failed and appears in admin rather than completing with a fake provider id. There is no implicit default; never set a fake provider on production.
 - `QUOTE_WITHDRAWAL_POLICY` — `immediate` or `honour_until_expiry`. This is a **TEST policy only** while OPEN_INPUTS #14 is unresolved. Unset/unknown becomes `unresolved` and disables priced checkout; do not set it in production until the owner records the decision.
-- `ORDER_OPERATIONAL_TRANSITIONS` — **TEST-only** switch that lets T14/T16 exercise the dispatch and activate transitions synthetically. It must be exactly `1` or `true` to have any effect, is always ignored when `NODE_ENV=production` (production is disabled regardless of the value), and never authorizes real dispatch or activation. Production dispatch/activation stay disabled until OPEN_INPUTS #15 (transition prerequisites) is resolved; do not set this on a production deployment.
+- `ORDER_OPERATIONAL_TRANSITIONS` — operational switch for the dispatch and activate transitions. Must be exactly `1` or `true` to have any effect. It was TEST-only and ignored in production while OPEN_INPUTS #15 (transition prerequisites) was unresolved; #15 is now answered, so it applies in every environment. It is deliberately opt-in — unset means dispatch/activation return `409 feature_not_ready` — so fulfilment goes live only when the owner sets it, and unsetting it stops dispatch/activation without a deploy. It never authorizes skipping the document prerequisite: required documents must still be approved, or an `order.manage` holder must override with a recorded reason (`docs/RUNBOOKS/dispatch-and-activation.md`).
 
 ## Deletion ledger (T21, §13)
 
@@ -88,6 +88,21 @@ It never takes the allowed hostname from the request. Do not place live Turnstil
 credentials in previews. The current credential proof endpoint uses `lead-submit`;
 future public actions must bind their own expected action explicitly.
 
+## Per-endpoint rate limits (REQ 37)
+
+The public write surface carries a tighter per-endpoint budget on top of the
+coarse per-IP/per-credential ceiling in `requireWebsiteCredential`. Each budget
+is keyed by `(endpoint, workspace, IP)` and durable (the `rateLimitHit` SQL
+function). Defaults (per 60s): `leads` 30, `quotes` 30, `orders` 10, `tracking` 20. Override per deployment; invalid/absent values fall back to the default:
+
+- `RATE_LIMIT_LEADS_MAX` / `RATE_LIMIT_LEADS_WINDOW`
+- `RATE_LIMIT_QUOTES_MAX` / `RATE_LIMIT_QUOTES_WINDOW`
+- `RATE_LIMIT_ORDERS_MAX` / `RATE_LIMIT_ORDERS_WINDOW`
+- `RATE_LIMIT_TRACKING_MAX` / `RATE_LIMIT_TRACKING_WINDOW`
+
+`WINDOW` is in seconds; both must be positive integers. `tracking` layers on top
+of the existing per-email/per-IP OTP limits, which are unchanged.
+
 ## Sanity
 
 - `NEXT_PUBLIC_SANITY_PROJECT_ID`
@@ -130,9 +145,10 @@ Not selected for launch (OPEN_INPUTS #23); kept wired for a later migration off 
 
 - `NEXT_PUBLIC_UMAMI_SCRIPT_URL`
 
-- `SENTRY_DSN`
-- `SENTRY_AUTH_TOKEN`
-- `NEXT_PUBLIC_SENTRY_DSN`
+- `SENTRY_DSN` — backend/jobs-only Sentry DSN (`https://<key>@<host>/<projectId>`). Unset yields a no-op tracker (`createErrorTrackerFromEnv`, `@canadian-plans/adapters`) rather than throwing, so it is always safe to call `captureException`. There is no separate SDK dependency: the tracker posts directly to the DSN's classic store endpoint over `fetch`.
+- `SENTRY_AUTH_TOKEN` — reserved for a future CI release/source-map upload step; not read by the runtime tracker.
+- `NEXT_PUBLIC_SENTRY_DSN` — admin-only browser+server DSN (`apps/admin/src/lib/error-tracking.ts`). Deliberately public/`NEXT_PUBLIC_*`: a Sentry ingest DSN only authorizes sending events to one project, the same way the browser Sentry SDK ships it on every page load.
+- `RELEASE_SHA` — the deployed git SHA, tagged on every captured exception (REQ 40: "release tags"). Backend/jobs read it directly; admin also accepts `NEXT_PUBLIC_RELEASE_SHA` for the browser bundle. Unset falls back to `"unknown"` rather than failing.
 - `UMAMI_WEBSITE_ID`
 - `NEXT_PUBLIC_UMAMI_WEBSITE_ID`
 - `UMAMI_EVENTS_URL` — backend-only full URL of the Umami collect endpoint server events POST to (for Umami Cloud, `https://cloud.umami.is/api/send`). Never exposed to a browser bundle.
@@ -140,6 +156,37 @@ Not selected for launch (OPEN_INPUTS #23); kept wired for a later migration off 
 - `UMAMI_HOSTNAME` — optional backend-only hostname recorded on server events; omitted when unset.
 
 Server lead/order conversion events are emitted once from the backend outbox; browser page views and `plan_selected` come from the Umami script. Never enable a server event that the browser also sends, or a submission is counted twice.
+
+## Owner alerts (REQ 40, IMPLEMENTATION_PLAN §10)
+
+`createOwnerAlertChannelFromEnv` (`@canadian-plans/adapters`) builds the channel the backend scheduler, the synthetic check route, and the independent backup monitor (`jobs/src/monitor/cli.ts`) all alert through. None of them throw when it is unconfigured — it becomes a no-op that only logs the omission — so an unset alert channel degrades to "check the logs," never a second failure mode.
+
+- `OWNER_ALERT_EMAIL` — the owner's address. Combined with the Resend variables below to wire the email channel.
+- `OWNER_ALERT_WEBHOOK_URL` — optional chat-channel webhook (IMPLEMENTATION_PLAN §10: "and optionally a chat channel"). Wired independently of the email channel; either or both may be set.
+- `OWNER_ALERT_WEBHOOK_SECRET` — optional; when set, every webhook delivery carries an `X-Alert-Signature: sha256=<hmac>` header over the raw JSON body so the receiving endpoint can verify it came from this deployment.
+
+The email channel reuses the Resend credentials already documented under **Resend (current email provider)** below (`RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_FROM_NAME`) — it is a separate, non-suppressible send path from the customer `EmailAdapter`, not a second provider account.
+
+## Synthetic order check (REQ 40)
+
+Runs lead → quote → order → cancel every 15 minutes on the backend's in-process scheduler (`SYNTHETIC_CHECK_INTERVAL_MS`), and is also reachable at `/api/internal/synthetic-check/run` for a manual staging invocation, mirroring the outbox/catalogue-sync jobs routes.
+
+- `SYNTHETIC_WORKSPACE_ID` — backend-only UUID of a dedicated, owner-provisioned workspace that exists only to be ordered from and cancelled. It is never a customer-facing workspace and never appears in admin's site list.
+- `SYNTHETIC_PRODUCT_ID` — backend-only UUID of one `app.products` row in that workspace (any `product_key` is fine; the check's own in-memory catalogue provider — `apps/backend/src/synthetic/provider.ts` — supplies a fixed, zero-cost, no-document offer for it, so no Sanity project is needed for this workspace).
+- `SYNTHETIC_CHECK_SELECTOR` — points at the **same** scheduler registry entry as `JOB_RUNNER_SELECTOR`/`CATALOGUE_SYNC_SELECTOR` (one `CRON_SECRET`, one entry — see the `MACHINE_REGISTRY_JSON` note above); the entry additionally needs the `synthetic:check` scope and `authorizedWorkspaceIds`/`workspaceIds` including `SYNTHETIC_WORKSPACE_ID`. Unset or missing the scope means the scheduler skips the task entirely (logged once) — it never blocks outbox/catalogue-sync from starting.
+
+Provisioning is a one-time, owner-run step (create the workspace row and one product row, add `synthetic:check` to the registry entry's scopes) — there is no seed script for it because it touches production, matching how the machine registry itself is deployment configuration, not application data (§4b).
+
+## Site 1 SEO (REQ 10)
+
+- `NEXT_PUBLIC_SITE_URL` — canonical public origin (e.g. `https://<domain>`), used
+  for `metadataBase`, `robots.txt` and `sitemap.xml`. Absent → `http://localhost:3001`.
+
+Indexability follows `VERCEL_ENV`: only `production` is indexable. Preview and
+local deployments emit `Disallow: /`, an empty sitemap, and a page-level
+`noindex` (set centrally in the root layout), so drafts/previews never reach a
+search index. `/studio` is `noindex` (via `next-sanity`) and disallowed in
+`robots.txt`.
 
 ## Site 1 backend (server only)
 

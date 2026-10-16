@@ -135,6 +135,96 @@ export function requireWebsiteCredential(deps: WebsiteAuthDependencies): Request
   };
 }
 
+/** A tighter, per-endpoint budget layered on top of the global IP/credential limits. */
+export interface EndpointRateLimit {
+  windowSeconds: number;
+  maxCount: number;
+}
+
+/**
+ * Per-endpoint rate limits for the abuse-sensitive public write surface
+ * (REQ 37: "rate limits ... on public endpoints"). These are intentionally far
+ * tighter than the coarse per-credential ceiling in {@link requireWebsiteCredential}
+ * so a flood of one endpoint (e.g. order submissions) is capped without starving
+ * the others. Values sized for the Phase A 100-orders/day target with generous
+ * headroom for legitimate bursts. Override per deployment via the env reader below.
+ */
+export const DEFAULT_ENDPOINT_RATE_LIMITS = {
+  leads: { windowSeconds: 60, maxCount: 30 },
+  quotes: { windowSeconds: 60, maxCount: 30 },
+  orders: { windowSeconds: 60, maxCount: 10 },
+  tracking: { windowSeconds: 60, maxCount: 20 },
+} as const satisfies Record<string, EndpointRateLimit>;
+
+export type EndpointRateLimitName = keyof typeof DEFAULT_ENDPOINT_RATE_LIMITS;
+
+function positiveIntEnv(value: string | undefined, fallback: number): number {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+/**
+ * Resolves the per-endpoint budgets, letting a deployment tune each one via
+ * `RATE_LIMIT_<ENDPOINT>_MAX` / `RATE_LIMIT_<ENDPOINT>_WINDOW` (e.g.
+ * `RATE_LIMIT_ORDERS_MAX`). Invalid or absent values fall back to the defaults.
+ */
+export function loadEndpointRateLimits(
+  env: NodeJS.ProcessEnv = process.env,
+): Record<EndpointRateLimitName, EndpointRateLimit> {
+  const resolve = (name: EndpointRateLimitName): EndpointRateLimit => {
+    const upper = name.toUpperCase();
+    const fallback = DEFAULT_ENDPOINT_RATE_LIMITS[name];
+    return {
+      maxCount: positiveIntEnv(env[`RATE_LIMIT_${upper}_MAX`], fallback.maxCount),
+      windowSeconds: positiveIntEnv(env[`RATE_LIMIT_${upper}_WINDOW`], fallback.windowSeconds),
+    };
+  };
+  return {
+    leads: resolve('leads'),
+    quotes: resolve('quotes'),
+    orders: resolve('orders'),
+    tracking: resolve('tracking'),
+  };
+}
+
+/**
+ * Gates a single route with a tighter budget keyed by (endpoint, workspace, IP).
+ * The website credential middleware must have run first so the workspace is
+ * trusted (never caller-supplied). A failure of the durable limiter denies the
+ * request rather than silently allowing an unbounded flood.
+ */
+export function requireEndpointRateLimit(
+  deps: Pick<WebsiteAuthDependencies, 'rateLimit'>,
+  endpoint: EndpointRateLimitName,
+  limit: EndpointRateLimit,
+): RequestHandler {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const ctx = req.websiteContext;
+    if (!ctx) {
+      // Defence in depth: the credential guard must precede this middleware.
+      sendWebsiteError(res, req.id, 'missing_credential', 401);
+      return;
+    }
+    try {
+      const outcome = await deps.rateLimit({
+        bucketKey: `endpoint:${endpoint}:ws:${ctx.workspaceId}:ip:${clientIp(req)}`,
+        windowSeconds: limit.windowSeconds,
+        maxCount: limit.maxCount,
+      });
+      if (!outcome.allowed) {
+        sendWebsiteError(res, req.id, 'rate_limited', 429, {
+          'retry-after': String(outcome.retryAfterSeconds),
+        });
+        return;
+      }
+      next();
+    } catch {
+      res.setHeader('retry-after', '2');
+      sendDomainError(res, req.id, 'persistence_unavailable', 503, { retryable: true });
+    }
+  };
+}
+
 /** Per-route scope guard. The website middleware must have run first. */
 export function requireScope(scope: WebsiteScopeName): RequestHandler {
   return (req, res, next) => {

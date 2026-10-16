@@ -7,7 +7,7 @@ afterEach(() => {
 });
 
 describe('loadOperationalTransitionsEnabled', () => {
-  it.each(['1', 'true'])('enables operational transitions outside production for %s', (value) => {
+  it.each(['1', 'true'])('enables operational transitions for %s in any environment', (value) => {
     expect(
       loadOperationalTransitionsEnabled({ NODE_ENV: 'test', ORDER_OPERATIONAL_TRANSITIONS: value }),
     ).toBe(true);
@@ -17,17 +17,23 @@ describe('loadOperationalTransitionsEnabled', () => {
         ORDER_OPERATIONAL_TRANSITIONS: value,
       }),
     ).toBe(true);
-    // An absent NODE_ENV is not production either.
     expect(loadOperationalTransitionsEnabled({ ORDER_OPERATIONAL_TRANSITIONS: value })).toBe(true);
   });
 
-  it.each(['1', 'true'])('ignores %s exactly when NODE_ENV is production', (value) => {
-    expect(
-      loadOperationalTransitionsEnabled({
-        NODE_ENV: 'production',
-        ORDER_OPERATIONAL_TRANSITIONS: value,
-      }),
-    ).toBe(false);
+  it.each(['1', 'true'])(
+    'no longer ignores %s in production now that OPEN_INPUTS #15 is resolved',
+    (value) => {
+      expect(
+        loadOperationalTransitionsEnabled({
+          NODE_ENV: 'production',
+          ORDER_OPERATIONAL_TRANSITIONS: value,
+        }),
+      ).toBe(true);
+    },
+  );
+
+  it('stays off in production until deliberately set (opt-in, not default-on)', () => {
+    expect(loadOperationalTransitionsEnabled({ NODE_ENV: 'production' })).toBe(false);
   });
 
   it.each([undefined, '', '0', 'yes', 'TRUE', 'True', ' true', 'true '])(
@@ -46,6 +52,6 @@ describe('loadOperationalTransitionsEnabled', () => {
     expect(loadOperationalTransitionsEnabled()).toBe(true);
 
     vi.stubEnv('NODE_ENV', 'production');
-    expect(loadOperationalTransitionsEnabled()).toBe(false);
+    expect(loadOperationalTransitionsEnabled()).toBe(true);
   });
 });

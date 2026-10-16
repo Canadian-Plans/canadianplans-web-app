@@ -27,3 +27,20 @@ export {
   type CpStickyCtaProps,
   type StickyCtaContent,
 } from './components/canadian-plans/sticky-cta';
+export {
+  CpCategoryBanner,
+  CpFeatureRow,
+  CpBlockHeading,
+  CpStepTimeline,
+  CpFeatureCard,
+  CpFeatureGrid,
+  CpCtaBand,
+  type CpCategoryTone,
+  type CpLinkContent,
+  type CpCategoryBannerProps,
+  type CpFeatureRowProps,
+  type CpStepContent,
+  type CpFeatureCardContent,
+  type CpCtaBandContent,
+} from './components/canadian-plans/redesign';
+export { CpSwipeRow } from './components/canadian-plans/swipe-row';

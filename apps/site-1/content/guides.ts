@@ -1,5 +1,5 @@
 import type { FigmaAsset, FaqItemContent } from '@canadian-plans/ui/canadian-plans';
-import { chromeContent, componentAssets, footerContent } from './components';
+import { componentAssets } from './components';
 
 export type ArticleBlock =
   | {
@@ -135,7 +135,6 @@ export const guideCopy = {
     contact: '/contact#contact-options',
   },
 } as const;
-const pending = guideCopy.pendingAnswer;
 export const studentIndiaGuide: GuideArticle = {
   previewOnly: true,
   slug: 'best-sim-for-students-from-india',
@@ -201,7 +200,7 @@ export const studentIndiaGuide: GuideArticle = {
       rows: [
         {
           id: 'fido',
-          name: 'Fido Essential',
+          name: 'Fido',
           data: '75 GB',
           price: '$35/mo',
           storePrice: '$60',
@@ -210,7 +209,7 @@ export const studentIndiaGuide: GuideArticle = {
         },
         {
           id: 'rogers-plus',
-          name: 'Rogers Plus',
+          name: 'Rogers',
           data: '100 GB',
           price: '$40/mo',
           storePrice: '$80',
@@ -221,7 +220,7 @@ export const studentIndiaGuide: GuideArticle = {
         },
         {
           id: 'rogers-unlimited',
-          name: 'Rogers Unlimited',
+          name: 'Rogers Canada + USA',
           data: '120 GB',
           price: '$50/mo',
           detail: 'USA roaming incl.',
@@ -235,8 +234,8 @@ export const studentIndiaGuide: GuideArticle = {
     {
       kind: 'plan-cta',
       eyebrow: 'Most students pick',
-      text: 'Rogers Plus · 100 GB · $40/mo + tax',
-      mobileLines: ['Rogers Plus · 100 GB', '$40/mo + tax'],
+      text: 'Rogers · 100 GB · $40/mo + tax',
+      mobileLines: ['Rogers · 100 GB', '$40/mo + tax'],
       label: 'See this plan →',
     },
     {
@@ -297,11 +296,36 @@ export const studentIndiaGuide: GuideArticle = {
           answer:
             'Yes — most banks only need a Canadian number to send you a verification code. Your pre-arrival number works for this before you land.',
         },
-        { id: 'sin', question: 'Do I need a SIN to get a phone plan?', answer: pending },
-        { id: 'switch', question: 'Can I switch plans after I arrive?', answer: pending },
-        { id: 'phone', question: 'Will my Indian phone work in Canada?', answer: pending },
-        { id: 'id', question: 'What ID do I need to order?', answer: pending },
-        { id: 'pay', question: 'When do I pay?', answer: pending },
+        {
+          id: 'sin',
+          question: 'Do I need a SIN to get a phone plan?',
+          answer:
+            'No. To order you need your passport, your study permit or letter of introduction, your arrival date and city, and an email address.',
+        },
+        {
+          id: 'switch',
+          question: 'Can I switch plans after I arrive?',
+          answer:
+            'Yes. You can change your plan after the first month if you use more or less data than expected.',
+        },
+        {
+          id: 'phone',
+          question: 'Will my Indian phone work in Canada?',
+          answer:
+            'It will if your phone is unlocked and supports eSIM. Check the phone settings or send us the model before ordering.',
+        },
+        {
+          id: 'id',
+          question: 'What ID do I need to order?',
+          answer:
+            'Your Indian passport and your study permit, letter of introduction, visa or COPR. A clear photo or PDF of each is enough.',
+        },
+        {
+          id: 'pay',
+          question: 'When do I pay?',
+          answer:
+            'Nothing is paid online. Once your number is active, your first bill comes from Rogers or Fido, and an advisor walks you through the date before anything is billed.',
+        },
       ],
     },
   ],
@@ -320,79 +344,6 @@ export const guideAssets = {
     nodeId: '314:1515',
   },
 };
-export const guideChrome = {
-  ...chromeContent,
-  navigation: [
-    { label: 'Pre-arrival SIM', href: '/pre-arrival-sim' },
-    { label: 'Home Internet', href: '/home-internet' },
-    { label: 'Mobile Plans', href: '/mobile-plans' },
-    { label: 'Guides', href: '#keep-reading' },
-  ],
-  phone: { ...chromeContent.phone, href: guideCopy.destinations.contact },
-  track: { ...chromeContent.track, href: '/track' },
-  contact: { ...chromeContent.contact, href: '/contact' },
-  help: { ...chromeContent.help, href: '/faq' },
-  promoLink: { ...chromeContent.promoLink, href: guideCopy.destinations.plans },
-};
-export const guideFooter = {
-  ...footerContent,
-  groups: footerContent.groups.map((group) => ({
-    ...group,
-    links: group.links.map((link) => ({
-      ...link,
-      href:
-        group.title === 'Pre-arrival SIM'
-          ? guideCopy.destinations.plans
-          : group.title === 'Home Internet'
-            ? '/home-internet#internet-plans'
-            : group.title === 'Mobile Plans'
-              ? '/mobile-plans'
-              : link.label === 'Track order'
-                ? '/track'
-                : link.label === 'Contact'
-                  ? '/contact'
-                  : link.label === 'Guides'
-                    ? '#keep-reading'
-                    : '/faq',
-    })),
-  })),
-  legal: footerContent.legal.map((link) => ({
-    ...link,
-    href:
-      link.label === 'Privacy'
-        ? '/privacy'
-        : link.label === 'Terms'
-          ? '/terms'
-          : guideCopy.destinations.advisor,
-  })),
-};
-export const relatedGuides = [
-  {
-    id: 'esim',
-    category: 'Phones & SIMs',
-    title: 'How do I know if my phone supports eSIM?',
-    detail: '5 min read · Updated Oct 2026',
-    caption: 'Phone settings screen showing the eSIM option',
-    href: '#esim',
-  },
-  {
-    id: 'credit',
-    category: 'Money & credit',
-    title: 'No credit history? Phone plans that don’t need a check',
-    detail: '7 min read · Updated Oct 2026',
-    caption: 'Newcomer choosing a plan with an advisor',
-    href: '/faq#faq-eligibility',
-  },
-  {
-    id: 'arrival',
-    category: 'Moving to Canada',
-    title: 'Your first-week checklist: phone, bank, SIN and internet',
-    detail: '12 min read · Updated Oct 2026',
-    caption: 'Newcomer unpacking a new phone in a first apartment',
-    href: '/pre-arrival-sim',
-  },
-] as const;
-
 export type GuideTopic = 'all' | 'moving' | 'phones' | 'internet' | 'credit';
 export interface GuideListEntry {
   readonly id: string;
@@ -407,106 +358,112 @@ export interface GuideListEntry {
   readonly description?: string;
   readonly keywords?: readonly string[];
 }
-/** Index summaries from the design; only the student article has a supplied body. */
+/**
+ * Index entries (15 October 2026): every card opens real content — the full guide article or
+ * one of the Electric Blue landing pages, which are written as guides. The old cards for
+ * guides that did not exist (first-week checklist, Brampton internet, calling home…) were
+ * pointing at unrelated pages and are gone until those articles are written.
+ */
 export const guideList: readonly GuideListEntry[] = [
-  {
-    id: 'first-week',
-    previewOnly: true,
-    topic: 'moving',
-    category: 'Moving to Canada',
-    title: relatedGuides[2].title,
-    detail: '12 min read · Updated October 2026',
-    caption: 'Newcomer unpacking a suitcase and a new phone in a first apartment',
-    href: '/pre-arrival-sim',
-    featured: true,
-    description:
-      'What to do on day 1, day 3 and day 7 — in the right order, so nothing blocks the next step.',
-  },
   {
     id: studentIndiaGuide.slug,
     previewOnly: true,
     topic: 'phones',
     category: studentIndiaGuide.category,
     title: studentIndiaGuide.title,
-    detail: '8 min read · Updated Oct 2026',
+    detail: '8 min read · Updated October 2026',
     caption: 'Student checking her phone at airport arrivals',
     href: `/guides/${studentIndiaGuide.slug}`,
+    featured: true,
+    description:
+      'Which plan Indian students choose, how to order before you fly, and how to keep your Indian number for OTPs.',
     keywords: ['eSIM', 'student', 'India'],
   },
   {
-    id: 'esim-physical',
+    id: 'student-sim',
     previewOnly: true,
     topic: 'phones',
     category: 'Phones & SIMs',
-    title: 'eSIM vs physical SIM: which should you get?',
-    detail: '5 min read · Updated Oct 2026',
-    caption: 'Physical SIM card next to an eSIM QR code',
-    href: `/guides/${studentIndiaGuide.slug}#esim`,
-    keywords: ['unlocked', 'device'],
+    title: 'Student SIM and eSIM for Canada',
+    detail: 'Guide · Updated Oct 2026',
+    caption: 'Student checking a new Canadian number at arrivals',
+    href: '/pre-arrival-sim/students',
+    keywords: ['student', 'esim', 'study permit', 'device', 'compatibility'],
   },
   {
-    id: 'brampton-internet',
-    previewOnly: true,
-    topic: 'internet',
-    category: 'Home internet',
-    title: 'Internet in Brampton: speeds, prices, install times',
-    detail: '6 min read · Updated Oct 2026',
-    caption: 'Wi-Fi router on a shelf in a basement suite',
-    href: '/home-internet',
-    keywords: ['wifi', 'wi-fi', 'installation'],
-  },
-  {
-    id: 'no-credit-history',
-    previewOnly: true,
-    topic: 'credit',
-    category: relatedGuides[1].category,
-    title: relatedGuides[1].title,
-    detail: relatedGuides[1].detail,
-    caption: relatedGuides[1].caption,
-    href: relatedGuides[1].href,
-    keywords: ['credit check', 'newcomer'],
-  },
-  {
-    id: 'carriers-explained',
-    previewOnly: true,
-    topic: 'phones',
-    category: 'Phones & SIMs',
-    title: 'Rogers vs Fido vs Chatr, explained simply',
-    detail: '9 min read · Updated Oct 2026',
-    caption: 'Rogers, Fido and Chatr SIM packs on a desk',
-    href: '/mobile-plans',
-    keywords: ['carrier', 'compare'],
-  },
-  {
-    id: 'calling-home',
+    id: 'from-india',
     previewOnly: true,
     topic: 'moving',
     category: 'Moving to Canada',
-    title: 'Calling home: cheapest ways to call India, Philippines & Nigeria',
-    detail: '6 min read · Updated Oct 2026',
-    caption: 'Video call with family back home',
-    href: `/guides/${studentIndiaGuide.slug}#compare`,
-    keywords: ['international', 'WhatsApp'],
+    title: 'Canadian SIM card for Indians moving to Canada',
+    detail: 'Guide · Updated Oct 2026',
+    caption: 'Newcomer from India at Toronto Pearson arrivals',
+    href: '/pre-arrival-sim/from-india',
+    keywords: ['india', 'otp', 'calling home', 'whatsapp'],
   },
   {
-    id: 'phone-supports-esim',
+    id: 'toronto-pearson',
+    previewOnly: true,
+    topic: 'moving',
+    category: 'Moving to Canada',
+    title: 'Toronto Pearson (YYZ) eSIM: online when you land',
+    detail: 'Guide · Updated Oct 2026',
+    caption: 'Traveller at Pearson arrivals turning off airplane mode',
+    href: '/pre-arrival-sim/toronto-pearson',
+    keywords: ['airport', 'yyz', 'toronto', 'esim'],
+  },
+  {
+    id: 'rogers-vs-fido',
     previewOnly: true,
     topic: 'phones',
-    category: relatedGuides[0].category,
-    title: relatedGuides[0].title,
-    detail: relatedGuides[0].detail,
-    caption: relatedGuides[0].caption,
-    href: `/guides/${studentIndiaGuide.slug}#esim`,
-    keywords: ['device', 'compatibility'],
+    category: 'Phones & SIMs',
+    title: 'Rogers vs Fido vs Chatr, compared for newcomers',
+    detail: 'Comparison · Updated Oct 2026',
+    caption: 'Phone showing Rogers and Fido plans side by side',
+    href: '/compare/rogers-vs-fido',
+    keywords: ['carrier', 'compare', 'chatr'],
+  },
+  {
+    id: 'rogers-credit',
+    previewOnly: true,
+    topic: 'credit',
+    category: 'Money & credit',
+    title: 'Rogers for newcomers: credit checks, deposits and switching',
+    detail: 'Guide · Updated Oct 2026',
+    caption: 'Newcomer setting up a new phone at a kitchen table',
+    href: '/mobile-plans/rogers',
+    keywords: ['credit check', 'deposit', 'build credit', 'keep your number'],
+  },
+  {
+    id: 'vancouver-internet',
+    previewOnly: true,
+    topic: 'internet',
+    category: 'Home internet',
+    title: 'Home internet in Vancouver: a renter’s guide',
+    detail: 'Guide · Updated Oct 2026',
+    caption: 'Technician connecting a WiFi modem in a Vancouver apartment',
+    href: '/home-internet/vancouver',
+    keywords: ['wifi', 'wi-fi', 'installation', 'bc', 'renter'],
+  },
+  {
+    id: 'ontario-internet',
+    previewOnly: true,
+    topic: 'internet',
+    category: 'Home internet',
+    title: 'Home internet in Ontario, city by city',
+    detail: 'Guide · Updated Oct 2026',
+    caption: 'Technician connecting a WiFi modem in a Toronto condo',
+    href: '/home-internet/ontario',
+    keywords: ['wifi', 'wi-fi', 'installation', 'toronto', 'ottawa', 'renter'],
   },
 ];
 export const guidesIndexCopy = {
-  title: 'Newcomer guides',
+  title: 'Newcomer Guides: Phones, SIM Cards & Internet in Canada | Canadian Plans',
   skip: 'Skip to guides',
   eyebrow: 'Newcomer guides',
-  heading: 'Plain answers for your move to Canada.',
+  heading: 'Plain answers for your move to Canada',
   description:
-    'Phones, internet and your first weeks — written by people who made the same move. Updated monthly.',
+    'Guides to Canadian SIM cards, eSIM, phone plans and home internet for newcomers, written in plain English by people who made the same move.',
   searchLabel: 'Search guides',
   searchPlaceholder: 'Search guides, e.g. eSIM',
   searchButton: 'Search',
@@ -536,22 +493,38 @@ export const guidesIndexCopy = {
       text: 'Can I get a Canadian number before I arrive?',
       href: `/guides/${studentIndiaGuide.slug}#guide-faq`,
     },
-    { id: 'carrier', text: 'Which carrier is cheapest in Canada?', href: '/mobile-plans' },
+    {
+      id: 'carrier',
+      text: 'Which carrier is cheapest in Canada?',
+      href: '/compare/rogers-vs-fido#three-brands',
+    },
     { id: 'sin', text: 'Do I need a SIN to get a phone plan?', href: '/faq#faq-eligibility' },
-    { id: 'credit', text: 'How do I build credit as a newcomer?', href: '/faq#faq-eligibility' },
-    { id: 'install', text: 'How long does internet installation take?', href: '/home-internet' },
+    {
+      id: 'credit',
+      text: 'Can I get a phone plan without a credit check?',
+      href: '/mobile-plans/rogers#guide',
+    },
+    {
+      id: 'install',
+      text: 'How long does internet installation take?',
+      href: '/home-internet/vancouver#how-it-works',
+    },
     {
       id: 'number',
       text: 'Can I keep my number if I change carriers?',
-      href: '/faq#faq-plans-sim',
+      href: '/mobile-plans/rogers#switch',
     },
   ],
   final: {
-    heading: 'Ready when you land.',
-    description: guideCopy.final.description,
-    primary: 'Find my plan →',
-    secondary: guideCopy.final.secondary,
-    note: guideCopy.final.note,
+    title: 'Ready when you land',
+    subtitle: 'Choose a plan in about 2 minutes. An advisor confirms it the same day.',
+    primary: { label: 'See pre-arrival plans →', href: '/pre-arrival-sim#plans' },
+    secondary: { label: 'Talk to an advisor ›', href: '/contact' },
+  },
+  breadcrumb: {
+    label: 'Breadcrumb',
+    separator: '/',
+    items: [{ label: 'Home', href: '/' }, { label: 'Guides' }],
   },
 } as const;
 export const guidesIndexAssets = {
@@ -568,21 +541,4 @@ export const guidesIndexAssets = {
     height: 32,
     nodeId: '312:12',
   },
-};
-export const guidesIndexChrome = {
-  ...guideChrome,
-  navigation: guideChrome.navigation.map((link) => ({
-    ...link,
-    href: link.label === guideCopy.guides ? '/guides' : link.href,
-  })),
-};
-export const guidesIndexFooter = {
-  ...guideFooter,
-  groups: guideFooter.groups.map((group) => ({
-    ...group,
-    links: group.links.map((link) => ({
-      ...link,
-      href: link.label === 'Guides' ? '/guides' : link.href,
-    })),
-  })),
 };

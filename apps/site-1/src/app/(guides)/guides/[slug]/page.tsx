@@ -2,24 +2,15 @@ import type { Metadata } from 'next';
 import { pageMetadata } from '@/lib/page-metadata';
 import { notFound } from 'next/navigation';
 import { SkipLink } from '@canadian-plans/ui';
-import { CpAsset, CpBreadcrumb, CpButton, CpImageSlot } from '@canadian-plans/ui/canadian-plans';
-import {
-  guideArticles,
-  guideAssets,
-  guideChrome,
-  guideCopy,
-  guideFooter,
-  relatedGuides,
-} from '@content/guides';
+import { CpAsset, CpBreadcrumb, CpCtaBand, CpImageSlot } from '@canadian-plans/ui/canadian-plans';
+import { guideArticles, guideAssets, guideCopy, guideList, guidesIndexCopy } from '@content/guides';
+import { siteChrome, siteFooter } from '@content/site-chrome';
+import { SiteHeader } from '@/components/shared/site-header';
+import { categoryAsset } from '@/components/category-redesign/support';
 import { findGuide, guideContents, serializeArticleSchema } from '@/lib/guide-content';
 import { siteBaseUrl } from '@/lib/seo';
-import { UtilityBar, PromoStrip, Footer } from '@/components/shared/chrome';
-import {
-  GuideNavigation,
-  GuideContents,
-  GuideHelpful,
-  GuideShare,
-} from '@/components/guides/interactions';
+import { Footer } from '@/components/shared/chrome';
+import { GuideContents, GuideHelpful, GuideShare } from '@/components/guides/interactions';
 import { ArticleBodyBlock, GuidePromotion, GuideText } from '@/components/guides/article-body';
 
 type Props = { params: Promise<{ slug: string }> };
@@ -41,18 +32,20 @@ export default async function GuidePage({ params }: Props) {
   const article = findGuide((await params).slug);
   if (!article) notFound();
   const contents = guideContents(article);
+  // Keep reading: real pages from the guide index, never this article.
+  const related = guideList.filter((guide) => !guide.href.endsWith(`/${article.slug}`)).slice(0, 3);
   return (
     <>
       <SkipLink href="#guide-main" className="cp-guide-skip">
         {guideCopy.skip}
       </SkipLink>
-      <UtilityBar
-        content={guideChrome}
-        assets={guideAssets}
+      <SiteHeader
         planHref={guideCopy.destinations.plans}
+        content={{
+          ...siteChrome,
+          promoLink: { ...siteChrome.promoLink, href: guideCopy.destinations.plans },
+        }}
       />
-      <GuideNavigation />
-      <PromoStrip content={guideChrome} />
       <main id="guide-main" tabIndex={-1}>
         <article aria-labelledby="guide-title">
           <header className="cp-guide-header">
@@ -62,8 +55,7 @@ export default async function GuidePage({ params }: Props) {
                 separator={guideCopy.separator}
                 items={[
                   { label: guideCopy.home, href: '/' },
-                  { label: guideCopy.guides, href: '#keep-reading' },
-                  { label: article.category, href: '#needs' },
+                  { label: guideCopy.guides, href: '/guides' },
                   { label: article.breadcrumbTitle },
                 ]}
               />
@@ -140,7 +132,7 @@ export default async function GuidePage({ params }: Props) {
               {guideCopy.relatedTitle}
             </h2>
             <ul>
-              {relatedGuides.map((guide) => (
+              {related.map((guide) => (
                 <li key={guide.id}>
                   <a href={guide.href} className="cp-guide-related-card">
                     <CpImageSlot
@@ -160,23 +152,15 @@ export default async function GuidePage({ params }: Props) {
             </ul>
           </div>
         </section>
-        <section className="cp-guide-final" aria-labelledby="guide-final-title">
-          <div className="cp-container cp-guide-final-card">
-            <h2 id="guide-final-title">{guideCopy.final.title}</h2>
-            <p>{guideCopy.final.description}</p>
-            <div className="cp-guide-final-actions">
-              <CpButton asChild tone="sun" scale="large">
-                <a href={guideCopy.destinations.plans}>{guideCopy.final.primary}</a>
-              </CpButton>
-              <CpButton asChild tone="outline-inverse" scale="large">
-                <a href={guideCopy.destinations.advisor}>{guideCopy.final.secondary}</a>
-              </CpButton>
-            </div>
-            <p className="cp-guide-final-note">{guideCopy.final.note}</p>
-          </div>
-        </section>
+        <div className="cp-container cp-guide-cta">
+          <CpCtaBand
+            tone="amber"
+            content={guidesIndexCopy.final}
+            icon={categoryAsset('cta-pre-arrival')}
+          />
+        </div>
       </main>
-      <Footer brand={guideChrome.brand} content={guideFooter} assets={guideAssets} brandHref="/" />
+      <Footer brand="Canadian Plans" content={siteFooter} assets={guideAssets} brandHref="/" />
       <script
         id="guide-article-schema"
         type="application/ld+json"

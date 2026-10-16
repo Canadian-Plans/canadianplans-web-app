@@ -10,7 +10,11 @@ import { fileURLToPath } from 'node:url';
 const app = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const evidence = resolve(app, '../../docs/EVIDENCE/contact');
 await mkdir(evidence, { recursive: true });
-const browser = await chromium.launch();
+const browser = await chromium.launch(
+  process.env.PLAYWRIGHT_CHROMIUM_PATH
+    ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH }
+    : {},
+);
 const results = [];
 const sourceHashes = {
   '/design/legal/0-imgSearchIcon.svg':
@@ -42,8 +46,8 @@ try {
     const page = await context.newPage();
     const consoleErrors = [];
     page.on('pageerror', (error) => consoleErrors.push(error.message));
-    await page.goto('http://127.0.0.1:3127/contact');
-    await page.getByRole('heading', { name: 'Talk to a real person.' }).waitFor();
+    await page.goto(`${process.env.AUDIT_ORIGIN ?? 'http://127.0.0.1:3127'}/contact`);
+    await page.getByRole('heading', { name: 'Talk to a real person' }).waitFor();
     await page.evaluate(() => globalThis.document.fonts.ready);
     await page.addStyleTag({ content: 'nextjs-portal {visibility:hidden;}' });
     await page.screenshot({ path: resolve(evidence, `contact-${width}.png`), fullPage: true });
@@ -87,6 +91,8 @@ try {
     );
     for (const asset of assets) {
       assert.ok(asset.loaded, asset.src);
+      // Shared site header/footer icons (15 Oct 2026) are not contact-page Figma exports.
+      if (!(asset.src in sourceHashes)) continue;
       assert.ok(
         Math.abs(asset.width - asset.declaredWidth) < 0.55 &&
           Math.abs(asset.height - asset.declaredHeight) < 0.55,
@@ -244,7 +250,11 @@ try {
       await expect(trigger).toBeFocused();
     }
     if (width === 390) {
+      // Site header (15 Oct 2026): the chat button jumps to the contact options; the
+      // WhatsApp option there opens the preview dialog.
       await page.getByRole('button', { name: 'WhatsApp us', exact: true }).click();
+      await expect(page).toHaveURL(/#contact-options$/u);
+      await page.getByRole('button', { name: 'Chat on WhatsApp', exact: true }).click();
       await expect(
         page.getByRole('dialog', { name: 'Contact preview', exact: true }),
       ).toContainText('verified business number');

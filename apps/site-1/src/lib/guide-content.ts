@@ -1,4 +1,5 @@
-import { guideArticles, guideChrome, guideCopy, type GuideArticle } from '@content/guides';
+import { guideArticles, guideCopy, type GuideArticle } from '@content/guides';
+import { siteChrome } from '@content/site-chrome';
 
 export function findGuide(slug: string): GuideArticle | undefined {
   return guideArticles.find((article) => article.slug === slug);
@@ -24,7 +25,7 @@ export function articleSchema(article: GuideArticle, origin: string) {
     articleSection: article.category,
     author: { '@type': 'Person', name: article.author.name },
     reviewedBy: { '@type': 'Person', name: article.reviewer.name },
-    publisher: { '@type': 'Organization', name: guideChrome.brand },
+    publisher: { '@type': 'Organization', name: siteChrome.brand },
     dateModified: article.updated,
     inLanguage: 'en-CA',
     url,

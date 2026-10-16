@@ -1,0 +1,8 @@
+/* Requested shared token additions for source-exact category-sim avatar sizing. */
+:root {
+  --cp-catsim-avatar-size: 36px;
+  --cp-catsim-price-circle-size: 9.375rem;
+  --cp-catsim-mobile-price-circle-size: 8.47rem;
+  --cp-catsim-barcode-width: 10.875rem;
+  --cp-catsim-plan-surface: #f1f2ee;
+}

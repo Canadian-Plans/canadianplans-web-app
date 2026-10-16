@@ -1,8 +1,4 @@
-import type {
-  PlanCardContent,
-  FigmaAsset,
-  TestimonialContent,
-} from '@canadian-plans/ui/canadian-plans';
+import type { PlanCardContent, FigmaAsset } from '@canadian-plans/ui/canadian-plans';
 import {
   chromeContent,
   footerContent,
@@ -136,102 +132,12 @@ export const internetCopy = {
     caption: 'Family on the sofa watching a hockey game on the living-room TV',
     button: 'See TV bundles →',
   },
-  equipment: {
-    title: 'What’s in the box',
-    caption: 'WiFi 6 modem and a WiFi pod on a living-room shelf',
-    items: [
-      {
-        title: 'WiFi 6 modem',
-        description: 'Included with every plan — no rental fee.',
-        asset: 'router',
-      },
-      {
-        title: 'WiFi pods (optional)',
-        description: 'For bigger homes or basements with weak signal.',
-        asset: 'wifi',
-      },
-      {
-        title: 'Professional install',
-        description: 'A technician sets everything up and tests every room.',
-        asset: 'wrench',
-      },
-    ],
-  },
-  timeline: {
-    title: 'From order to online',
-    caption: 'Technician setting up a modem in a new apartment, moving boxes nearby',
-    steps: [
-      {
-        time: 'Day 0',
-        title: 'Send your details',
-        description: 'One short form — address, move-in date, contact.',
-        tone: 'blush',
-      },
-      {
-        time: 'Within 2 hours',
-        title: 'We call or WhatsApp',
-        description: 'Confirm the plan and book an install slot that suits you.',
-        tone: 'blush',
-      },
-      {
-        time: 'Day 2–3',
-        title: 'Technician installs',
-        description: 'Modem set up, every room tested.',
-        tone: 'blush',
-      },
-      {
-        time: 'Same day',
-        title: 'You’re online',
-        description: 'Questions later? Same advisor, same number.',
-        tone: 'sun',
-      },
-    ],
-  },
-  coverage: {
-    heading: {
-      eyebrow: 'Where we install',
-      title: ['Five provinces. Find your city.'],
-    },
-    provinces: [
-      {
-        title: 'British Columbia',
-        cities: ['Vancouver →', 'Surrey →', 'Burnaby →', 'Richmond →', 'Abbotsford →'],
-      },
-      {
-        title: 'Ontario',
-        cities: ['Toronto →', 'Brampton →', 'Mississauga →', 'Ottawa →', 'Hamilton →'],
-      },
-      {
-        title: 'Alberta',
-        cities: ['Calgary →', 'Edmonton →', 'Red Deer →'],
-      },
-      {
-        title: 'Manitoba',
-        cities: ['Winnipeg →', 'Brandon →'],
-      },
-      {
-        title: 'Saskatchewan',
-        cities: ['Saskatoon →', 'Regina →'],
-      },
-    ],
-    note: 'Don’t see your city? We probably still cover it. Check your address above or ask an advisor.',
-  },
-  reviews: {
-    eyebrow: 'REVIEWS',
-    title: ['Newcomers', 'recommend us.'],
-    score: '4.8',
-    stars: '★★★★★',
-    count: '1,200+ Google reviews',
-  },
   faq: {
     heading: {
       eyebrow: 'FAQ',
       title: ['Home internet', 'questions'],
       description: 'Talk to an advisor, Monday to Saturday, 9am–9pm Pacific time.',
     },
-    button: 'WhatsApp us',
-    expand: '+',
-    collapse: '−',
     items: [
       {
         id: 'install',
@@ -266,13 +172,6 @@ export const internetCopy = {
         answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
       },
     ],
-  },
-  final: {
-    title: 'Online on move-in day.',
-    description:
-      "Check your address in seconds. An advisor books your install, and you pay nothing until it's confirmed.",
-    primary: 'Check my address →',
-    secondary: 'Talk to an advisor',
   },
   result: {
     title: 'Check your address',
@@ -310,10 +209,6 @@ export const internetCopy = {
       'Internet and TV are planned for a later launch. This preview creates no booking or order.',
     back: 'Back to address results',
     dismiss: 'Close preview',
-  },
-  controls: {
-    image: 'IMAGE',
-    check: '✓',
   },
 };
 export interface InternetPlan extends PlanCardContent {
@@ -640,56 +535,6 @@ export const internetAssets = {
     nodeId: '308-73-imgFrame',
   },
 } satisfies Record<string, FigmaAsset>;
-export const internetReviews: readonly TestimonialContent[] = [
-  {
-    id: 'aarav',
-    initial: 'A',
-    stars: '★★★★★',
-    ratingLabel: 'Five out of five stars',
-    quote:
-      '“Had my Canadian number two weeks before my flight. Used it to open my bank account online — landed at YVR and it just worked.”',
-    name: 'Aarav S.',
-    detail: 'Student · Delhi → Vancouver',
-    avatar: {
-      src: '/design/home-internet/106-34-imgEllipse3.svg',
-      width: 40,
-      height: 40,
-      nodeId: '106-34-imgEllipse3',
-    },
-  },
-  {
-    id: 'maria',
-    initial: 'M',
-    stars: '★★★★★',
-    ratingLabel: 'Five out of five stars',
-    quote:
-      '“Internet was installed in our Brampton apartment three days after we moved in. Someone actually called back when they said.”',
-    name: 'Maria L.',
-    detail: 'Nurse · Manila → Brampton',
-    avatar: {
-      src: '/design/home-internet/106-34-imgEllipse4.svg',
-      width: 40,
-      height: 40,
-      nodeId: '106-34-imgEllipse4',
-    },
-  },
-  {
-    id: 'tanvir',
-    initial: 'T',
-    stars: '★★★★★',
-    ratingLabel: 'Five out of five stars',
-    quote:
-      '“Clear prices, no surprises on the first bill. The advisor explained Fido vs Rogers in plain words.”',
-    name: 'Tanvir H.',
-    detail: 'PR · Dhaka → Calgary',
-    avatar: {
-      src: '/design/home-internet/106-34-imgEllipse5.svg',
-      width: 40,
-      height: 40,
-      nodeId: '106-34-imgEllipse5',
-    },
-  },
-];
 export const internetChrome: ChromeContent = {
   ...chromeContent,
   promo: 'Moving in soon? Book your install date now and be online on move-in day.',
@@ -701,7 +546,7 @@ export const internetChrome: ChromeContent = {
     { label: 'Pre-arrival SIM', href: '/pre-arrival-sim' },
     { label: 'Home Internet', href: '/home-internet' },
     { label: 'Mobile Plans', href: '/plans' },
-    { label: 'Guides', href: '#installation' },
+    { label: 'Guides', href: '/guides' },
   ],
   phone: { ...chromeContent.phone, href: '#contact' },
   track: { ...chromeContent.track, href: '/track' },
@@ -737,11 +582,6 @@ export const internetChromeAssets = {
   chat: internetAssets['212-51-imgIcon'],
   menu: internetAssets['212-51-imgIcon1'],
   footerLogo: internetAssets['106-34-imgFrame'],
-};
-export const internetEquipmentAssets = {
-  router: internetAssets['106-34-imgIconRouter'],
-  wifi: internetAssets['106-34-imgIconWifi'],
-  wrench: internetAssets['106-34-imgIconWrench'],
 };
 export const internetLookupFixtures = {
   availablePostalCode: 'V3T 1Z2',

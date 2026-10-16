@@ -90,7 +90,7 @@
         }
       ],
       "image": {
-        "src": "http://127.0.0.1:3148/design/components/312-2-imgIcon.svg",
+        "src": "http://localhost:3001/design/components/312-2-imgIcon.svg",
         "width": 32,
         "height": 32,
         "naturalWidth": 32,
@@ -186,7 +186,7 @@
         }
       ],
       "image": {
-        "src": "http://127.0.0.1:3148/design/components/312-2-imgIcon.svg",
+        "src": "http://localhost:3001/design/components/312-2-imgIcon.svg",
         "width": 32,
         "height": 32,
         "naturalWidth": 32,
@@ -282,7 +282,7 @@
         }
       ],
       "image": {
-        "src": "http://127.0.0.1:3148/design/components/312-2-imgIcon.svg",
+        "src": "http://localhost:3001/design/components/312-2-imgIcon.svg",
         "width": 32,
         "height": 32,
         "naturalWidth": 32,
@@ -378,7 +378,7 @@
         }
       ],
       "image": {
-        "src": "http://127.0.0.1:3148/design/components/312-2-imgIcon.svg",
+        "src": "http://localhost:3001/design/components/312-2-imgIcon.svg",
         "width": 32,
         "height": 32,
         "naturalWidth": 32,
@@ -474,7 +474,7 @@
         }
       ],
       "image": {
-        "src": "http://127.0.0.1:3148/design/components/312-2-imgIcon.svg",
+        "src": "http://localhost:3001/design/components/312-2-imgIcon.svg",
         "width": 32,
         "height": 32,
         "naturalWidth": 32,
@@ -570,7 +570,7 @@
         }
       ],
       "image": {
-        "src": "http://127.0.0.1:3148/design/components/312-2-imgIcon.svg",
+        "src": "http://localhost:3001/design/components/312-2-imgIcon.svg",
         "width": 32,
         "height": 32,
         "naturalWidth": 32,
