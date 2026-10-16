@@ -16,6 +16,8 @@ export interface PreviewLink {
 
 export interface ChromeContent {
   readonly brand: string;
+  /** Utility bar line (final homepage design, 16 October 2026). */
+  readonly dealer: string;
   readonly moving: string;
   readonly living: string;
   readonly phone: PreviewLink;
@@ -96,6 +98,7 @@ export const componentAssets = {
 /** Figma examples only. The dev route keeps every link/action inside the showcase. */
 export const chromeContent: ChromeContent = {
   brand: 'Canadian Plans',
+  dealer: 'Authorized Rogers, Fido & Chatr dealer · Surrey, BC',
   moving: "I'm moving to Canada",
   living: 'I already live here',
   phone: { label: '1-888-555-0199', href: '#contact' },

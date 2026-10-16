@@ -14,11 +14,14 @@ export function SiteHeader({
   content,
   planHref,
   chatHref = content.contact.href,
+  promo = true,
 }: {
   content: ChromeContent;
   planHref: string;
   /** Where the mobile chat button goes; the contact page points it at its own options. */
   chatHref?: string;
+  /** The home page has no promo strip (final homepage design, 16 October 2026). */
+  promo?: boolean;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
@@ -36,7 +39,7 @@ export function SiteHeader({
         }}
         onContact={() => window.location.assign(chatHref)}
       />
-      <PromoStrip content={content} />
+      {promo ? <PromoStrip content={content} /> : null}
     </>
   );
 }

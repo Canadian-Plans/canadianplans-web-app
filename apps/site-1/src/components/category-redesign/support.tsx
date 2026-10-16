@@ -42,7 +42,7 @@ export function CategorySupport({
         </div>
       ) : null}
       {who ? (
-        <div className="cp-rd-block">
+        <div className="cp-rd-block cp-rd-who">
           <CpBlockHeading title={who.title} headingLevel={headingLevel} />
           <CpFeatureGrid columns={3}>
             {who.items.map((item) => (

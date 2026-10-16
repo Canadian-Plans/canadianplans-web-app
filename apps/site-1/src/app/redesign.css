@@ -204,3 +204,41 @@
     gap: var(--cp-space-14);
   }
 }
+
+/* "Who it's for" cards: small icon on a white tile (final homepage design, 16 October 2026) */
+.cp-rd-who .cp-feature-card-icon {
+  width: var(--cp-icon-target);
+  height: var(--cp-icon-target);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--cp-radius-12);
+  background: var(--cp-color-white);
+}
+.cp-rd-who .cp-feature-card-icon > :is(svg, img) {
+  width: var(--cp-space-22);
+}
+
+/* FAQ toggle: "+" on grey, turning into a dark "×" when open (final homepage design) */
+.cp-rd-faq .cp-faq-toggle {
+  width: var(--cp-space-32);
+  height: var(--cp-space-32);
+  background: var(--cp-color-grey);
+  transition: transform var(--cp-transition-duration);
+}
+.cp-rd-faq .cp-faq-item[open] .cp-faq-toggle {
+  background: var(--cp-color-ink);
+  color: var(--cp-color-white);
+  transform: rotate(45deg);
+}
+.cp-rd-faq .cp-faq-item[open] .cp-faq-expand {
+  display: block;
+}
+.cp-rd-faq .cp-faq-item[open] .cp-faq-collapse {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cp-rd-faq .cp-faq-toggle {
+    transition: none;
+  }
+}

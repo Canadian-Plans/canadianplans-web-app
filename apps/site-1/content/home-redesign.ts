@@ -411,7 +411,7 @@ export const homeRedesign = {
     ],
   },
   explorer: {
-    title: 'Get connected, your way. Discover everything we offer.',
+    title: 'Discover everything we offer.',
     navLabel: 'Service categories',
     info: {
       title: 'Who am I buying from?',
@@ -422,7 +422,7 @@ export const homeRedesign = {
     help: {
       lead: 'Not sure which plan fits?',
       links: [
-        { label: 'Find my plan ›', href: '#popular-plans' },
+        { label: 'Find my plan ›', href: '/pre-arrival-sim#plans', finder: true },
         { label: 'Compare ›', href: '/compare/rogers-vs-fido' },
         { label: 'Guides ›', href: '/guides' },
       ],
@@ -736,7 +736,7 @@ export const homeRedesign = {
     title: 'Getting connected is easy',
     description:
       'Tell us what you need, pick a plan, and we take care of the rest. No contract, no store visit.',
-    primary: { label: 'Find my plan', href: '#popular-plans' },
+    primary: { label: 'Find my plan', href: '/pre-arrival-sim#plans' },
     secondary: { label: 'Talk to an advisor', href: '/contact' },
     stepLabel: 'Step',
     listLabel: 'How it works',

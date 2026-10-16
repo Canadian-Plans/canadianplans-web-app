@@ -11,6 +11,7 @@ import {
 } from '@content/internet-order';
 import { HomeInternetOrderForm } from '@/components/internet-order/form';
 import { InternetOrderSummary } from '@/components/internet-order/summary';
+import { BrandMark } from '@/components/shared/brand-mark';
 export const metadata: Metadata = pageMetadata('/order/home-internet', {
   title: copy.title,
   robots: { index: false, follow: false },
@@ -31,9 +32,8 @@ export default async function InternetOrderPage({
       </SkipLink>
       <header className="cp-io-header">
         <div className="cp-container">
-          <a href="/" className="cp-brand">
-            <CpAsset asset={assets.logo} />
-            <span>{copy.brand}</span>
+          <a href="/" className="cp-brand" aria-label={`${copy.brand} home`}>
+            <BrandMark />
           </a>
           <div className="cp-io-desktop-help">
             <strong>{copy.header.payment}</strong>

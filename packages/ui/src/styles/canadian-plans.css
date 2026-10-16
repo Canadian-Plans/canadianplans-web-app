@@ -527,6 +527,7 @@
 
   --cp-weight-regular: 400;
   --cp-weight-medium: 500;
+  --cp-weight-semibold: 600;
   --cp-weight-bold: 700;
   --cp-weight-extra-bold: 800;
   --cp-leading-display: 0.95;
@@ -662,18 +663,18 @@
   /* Electric Blue homepage composition (apps/site-1 (home)/home-redesign.css). */
   --cp-rd-lead-width: 40rem;
   --cp-rd-eyebrow-tracking: 0.08em;
-  --cp-rd-hero-copy-basis: 27.5rem;
-  --cp-rd-hero-visual-basis: 22.5rem;
+  --cp-rd-hero-copy-basis: 32.5rem;
+  --cp-rd-hero-visual-basis: 25rem;
   --cp-rd-hero-leading: 1.04;
   --cp-rd-hero-photo-height: 23.75rem;
   --cp-rd-hero-badge-size: 7rem;
   --cp-rd-sticker-top: 9rem;
   --cp-rd-sticker-right: 1rem;
   --cp-rd-sticker-tilt: -6deg;
-  --cp-rd-plan-card-width: 15rem;
+  --cp-rd-plan-card-width: 14.375rem;
   --cp-rd-finder-field-basis: 9.5rem;
   --cp-rd-usage-fill: 12.4%;
-  --cp-rd-picker-min: 13.75rem;
+  --cp-rd-picker-min: 11.875rem;
   --cp-rd-picker-art-height: 6rem;
   --cp-rd-column-icon-height: 4rem;
   --cp-rd-price-leading: 0.9;
@@ -726,6 +727,33 @@
   --cp-landing-section-gap: 7rem;
   --cp-landing-section-gap-stacked: 5rem;
   --cp-landing-heading-gap: 2rem;
+  /* Final homepage design chrome (16 October 2026): header, logo and footer. */
+  --cp-utility-ink: #c7ccd6;
+  --cp-brand-mark-size: 2.25rem;
+  --cp-brand-mark-icon: 1.375rem;
+  --cp-brand-mark-stroke: 2.4;
+  --cp-brand-word-size: 1.3125rem;
+  --cp-brand-word-size-mobile: 1rem;
+  --cp-brand-word-tracking: -0.03em;
+  --cp-nav-icon-size: 1.25rem;
+  --cp-nav-icon-stroke: 2;
+  --cp-footer-text: #b7c1e0;
+  --cp-footer-link: #c9d3f0;
+  --cp-footer-contact: #dce3f7;
+  --cp-footer-legal: #9aa6cc;
+  --cp-footer-rule: rgb(255 255 255 / 0.14);
+  /* Final homepage design type scale and cards (16 October 2026). */
+  --cp-rd-display-size: 3.625rem;
+  --cp-rd-final-title-size: 3rem;
+  --cp-rd-feature-title-size: 3.25rem;
+  --cp-rd-section-title-size: 2.75rem;
+  --cp-rd-picker-well-height: 9.375rem;
+  --cp-rd-finder-need-basis: 13.5rem;
+  --cp-rd-finder-detail-basis: 9rem;
+  --cp-rd-pill-tracking: 0.04em;
+  --cp-rd-card-border: #eef0f4;
+  --cp-rd-card-shadow: 0 0.625rem 1.875rem -1rem rgb(17 24 39 / 0.2);
+  --cp-rd-card-shadow-hover: 0 1.125rem 2.25rem -1.125rem var(--cp-color-blue);
   --cp-landing-fact-min: 11rem;
   --cp-landing-keyfacts-width: 20rem;
   --cp-landing-check-size: 1.75rem;

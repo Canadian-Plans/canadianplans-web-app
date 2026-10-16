@@ -1,17 +1,16 @@
-import { CpAsset } from '@canadian-plans/ui/canadian-plans';
 import type { ChromeContent, ComponentAssets, FooterContent } from '@content/components';
 import { CookieSettingsTrigger } from './cookie-consent';
 import { cookieCopy, systemCopy } from '@content/system';
 import { chromeAccessibility } from '@content/metadata';
 import { categoryTemplateLinks } from '@content/category-links';
+import { BrandMark } from './brand-mark';
 
+/** Dark utility bar from the final homepage design: dealer line, then phone and help links. */
 export function UtilityBar({
   content,
-  assets,
-  planHref = '#plans',
 }: {
   content: ChromeContent;
-  assets: ComponentAssets;
+  assets?: ComponentAssets;
   planHref?: string;
 }) {
   return (
@@ -21,15 +20,9 @@ export function UtilityBar({
       aria-label={chromeAccessibility.utility}
     >
       <div className="cp-chrome-container">
-        <div className="cp-utility-audiences">
-          <a href={planHref}>{content.moving}</a>
-          <a href={planHref}>{content.living}</a>
-        </div>
+        <p className="cp-utility-dealer">{content.dealer}</p>
         <div className="cp-utility-links">
           <a href={content.phone.href} className="cp-utility-phone">
-            <span className="cp-mobile-phone">
-              <CpAsset asset={assets.phone} />
-            </span>
             {content.phone.label}
           </a>
           <div className="cp-utility-secondary">
@@ -64,12 +57,12 @@ export function PromoStrip({ content }: { content: ChromeContent }) {
 export function Footer({
   brand,
   content,
-  assets,
   brandHref = '#components',
 }: {
   brand: string;
   content: FooterContent;
-  assets: ComponentAssets;
+  /** Kept for callers; the footer logo is now the shared BrandMark. */
+  assets?: ComponentAssets;
   brandHref?: string;
 }) {
   return (
@@ -77,9 +70,8 @@ export function Footer({
       <div className="cp-chrome-container">
         <div className="cp-footer-top">
           <div className="cp-footer-about">
-            <a href={brandHref} className="cp-brand cp-brand-inverse">
-              <CpAsset asset={assets.footerLogo} />
-              <span>{brand}</span>
+            <a href={brandHref} className="cp-brand cp-brand-inverse" aria-label={`${brand} home`}>
+              <BrandMark />
             </a>
             <p>{content.description}</p>
             <div className="cp-footer-contact" id="contact">

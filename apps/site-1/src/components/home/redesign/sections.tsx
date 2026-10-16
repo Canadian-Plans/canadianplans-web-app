@@ -8,6 +8,7 @@ import {
 import { RedesignFaqSection } from '@/components/category-redesign/faq';
 import { CategorySupport, categoryAsset as asset } from '@/components/category-redesign/support';
 import { ExplorerNav } from './explorer-nav';
+import { FinderLink } from '@/components/shared/finder-link';
 
 const sectionId = (key: string) => `cat-${key}`;
 
@@ -17,7 +18,7 @@ export function CategoryPicker() {
   return (
     <section className="cp-rd-section cp-container" aria-labelledby="picker-title">
       <div className="cp-rd-centered">
-        <p className="cp-rd-eyebrow cp-rd-eyebrow-mint">{p.eyebrow}</p>
+        <p className="cp-rd-pill-eyebrow">{p.eyebrow}</p>
         <h2 id="picker-title" className="cp-rd-display">
           {p.title}
         </h2>
@@ -104,7 +105,7 @@ export function CategoryExplorer() {
   const e = homeRedesign.explorer;
   return (
     <section className="cp-rd-section cp-container" aria-labelledby="explorer-title">
-      <h2 id="explorer-title" className="cp-rd-heading cp-rd-centered-text">
+      <h2 id="explorer-title" className="cp-rd-display cp-rd-centered-text">
         {e.title}
       </h2>
       <div className="cp-rd-explorer">
@@ -127,11 +128,17 @@ export function CategoryExplorer() {
           ))}
           <p className="cp-rd-help-pill">
             <span>{e.help.lead}</span>
-            {e.help.links.map((link) => (
-              <a key={link.label} href={link.href}>
-                {link.label}
-              </a>
-            ))}
+            {e.help.links.map((link) =>
+              'finder' in link && link.finder ? (
+                <FinderLink key={link.label} href={link.href}>
+                  {link.label}
+                </FinderLink>
+              ) : (
+                <a key={link.label} href={link.href}>
+                  {link.label}
+                </a>
+              ),
+            )}
           </p>
         </div>
       </div>

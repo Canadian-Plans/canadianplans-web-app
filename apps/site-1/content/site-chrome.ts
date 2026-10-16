@@ -14,9 +14,10 @@ export const siteChrome: ChromeContent = {
   navigationLabel: 'Main navigation',
   mobileNavigationLabel: 'Canadian Plans menu',
   navigation: [
-    { label: 'Pre-arrival SIM', href: '/pre-arrival-sim' },
+    { label: 'Pre-arrival Plans', href: '/pre-arrival-sim' },
     { label: 'Home Internet', href: '/home-internet' },
     { label: 'Mobile Plans', href: '/mobile-plans' },
+    { label: 'Business Internet', href: '/business-internet' },
     { label: 'Guides', href: '/guides' },
   ],
 };
@@ -33,49 +34,56 @@ export const siteChromeWithPromo = (
 });
 
 /**
- * One footer for every redesigned page (15 October 2026): real destinations instead of the
- * per-page `#plans` / `#contact` placeholders. Links only to pages that exist.
+ * One footer for every page, laid out as in the final homepage design (16 October 2026):
+ * Plans / Help / Company columns. The design's email sign-up and social links wait for a
+ * backend and real accounts; a Popular column keeps links to the landing pages instead.
+ * Links only to pages that exist.
  */
 export const siteFooter: FooterContent = {
   ...footerContent,
+  description:
+    'Authorized Rogers, Fido & Chatr dealer. We help you pick the right plan and stay your contact afterwards.',
   groups: [
     {
-      title: 'Pre-arrival SIM',
+      title: 'Plans',
       links: [
-        { label: 'All SIM plans', href: '/pre-arrival-sim' },
-        { label: 'Students', href: '/pre-arrival-sim/students' },
-        { label: 'From India', href: '/pre-arrival-sim/from-india' },
-        { label: 'Toronto Pearson', href: '/pre-arrival-sim/toronto-pearson' },
+        { label: 'Pre-arrival Plans', href: '/pre-arrival-sim' },
+        { label: 'Home Internet', href: '/home-internet' },
+        { label: 'Mobile Plans', href: '/mobile-plans' },
+        { label: 'Business Internet', href: '/business-internet' },
       ],
     },
     {
-      title: 'Home Internet',
+      title: 'Popular',
       links: [
-        { label: 'All plans', href: '/home-internet' },
-        { label: 'Vancouver', href: '/home-internet/vancouver' },
-        { label: 'Ontario', href: '/home-internet/ontario' },
-        { label: 'Business internet', href: '/business-internet' },
-      ],
-    },
-    {
-      title: 'Mobile Plans',
-      links: [
-        { label: 'All plans', href: '/mobile-plans' },
-        { label: 'Rogers', href: '/mobile-plans/rogers' },
+        { label: 'Student SIM', href: '/pre-arrival-sim/students' },
+        { label: 'SIM from India', href: '/pre-arrival-sim/from-india' },
+        { label: 'Toronto Pearson SIM', href: '/pre-arrival-sim/toronto-pearson' },
+        { label: 'Vancouver internet', href: '/home-internet/vancouver' },
+        { label: 'Ontario internet', href: '/home-internet/ontario' },
+        { label: 'Rogers plans', href: '/mobile-plans/rogers' },
         { label: 'Rogers vs Fido', href: '/compare/rogers-vs-fido' },
       ],
     },
     {
       title: 'Help',
       links: [
-        { label: 'Guides', href: '/guides' },
-        { label: 'FAQ', href: '/faq' },
         { label: 'Track order', href: '/track' },
-        { label: 'Contact', href: '/contact' },
+        { label: 'FAQ', href: '/faq' },
+        { label: 'Guides', href: '/guides' },
+        { label: 'Contact us', href: '/contact' },
+      ],
+    },
+    {
+      title: 'Company',
+      links: [
         { label: 'About us', href: '/about' },
+        { label: 'Why buy from a dealer', href: '/about#why-us' },
       ],
     },
   ],
+  copyright:
+    '© 2026 Canadian Plans. Rogers, Fido and Chatr are trademarks of their respective owners.',
   legalLabel: 'Legal links',
   legal: [
     { label: 'Privacy', href: '/privacy' },

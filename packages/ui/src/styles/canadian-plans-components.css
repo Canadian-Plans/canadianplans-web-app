@@ -1530,3 +1530,244 @@
     transition: none;
   }
 }
+
+/* ===== Final homepage design chrome (16 October 2026) =====
+   Dark utility bar, mark + wordmark logo, icon search, blue pill finder, footer colours. */
+.cp-utility {
+  background: var(--cp-color-ink);
+  color: var(--cp-utility-ink);
+  font-size: var(--cp-text-12);
+  font-weight: var(--cp-weight-regular);
+  @variant cp-chrome {
+    background: var(--cp-color-ink);
+    font-size: var(--cp-text-12);
+  }
+}
+.cp-utility .cp-chrome-container {
+  height: auto;
+  flex-wrap: wrap;
+  gap: var(--cp-space-2) var(--cp-space-12);
+  padding-block: var(--cp-space-8);
+  @variant cp-chrome {
+    height: auto;
+  }
+}
+.cp-utility-dealer {
+  margin: 0;
+}
+.cp-utility a {
+  color: var(--cp-utility-ink);
+}
+.cp-utility a:hover {
+  color: var(--cp-color-white);
+}
+.cp-utility-links {
+  width: auto;
+  justify-content: flex-start;
+  gap: var(--cp-space-18);
+  @variant cp-chrome {
+    gap: var(--cp-space-18);
+  }
+}
+.cp-utility-phone {
+  min-height: auto;
+  font-weight: var(--cp-weight-regular);
+}
+.cp-utility-secondary {
+  gap: var(--cp-space-18);
+  @variant cp-chrome {
+    gap: var(--cp-space-18);
+  }
+}
+.cp-utility-secondary .cp-utility-contact {
+  display: inline;
+}
+.cp-utility-secondary a {
+  min-height: auto;
+  line-height: var(--cp-leading-caption);
+}
+.cp-nav {
+  @variant cp-chrome {
+    border-top: 0;
+  }
+}
+.cp-nav-inner {
+  gap: var(--cp-space-12);
+  @variant cp-chrome {
+    padding-block: var(--cp-space-14);
+  }
+}
+.cp-nav-left {
+  @variant cp-chrome {
+    gap: var(--cp-space-44);
+  }
+}
+.cp-brand {
+  gap: var(--cp-space-9);
+}
+.cp-brand-mark {
+  flex: none;
+  width: var(--cp-brand-mark-size);
+  height: var(--cp-brand-mark-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--cp-radius-10);
+  background: var(--cp-color-blue);
+}
+.cp-brand-mark svg {
+  width: var(--cp-brand-mark-icon);
+  height: var(--cp-brand-mark-icon);
+  stroke: var(--cp-color-white);
+  stroke-width: var(--cp-brand-mark-stroke);
+  stroke-linecap: round;
+}
+.cp-brand-mark circle {
+  fill: var(--cp-color-white);
+  stroke: none;
+}
+.cp-brand .cp-brand-word {
+  font-size: var(--cp-brand-word-size);
+  font-weight: var(--cp-weight-extra-bold);
+  letter-spacing: var(--cp-brand-word-tracking);
+  line-height: var(--cp-leading-title);
+  color: var(--cp-color-ink);
+}
+.cp-brand .cp-brand-word span {
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--cp-color-blue);
+}
+.cp-brand-inverse .cp-brand-word {
+  color: var(--cp-color-white);
+}
+.cp-brand-inverse .cp-brand-word span {
+  color: var(--cp-color-mint-strong);
+}
+.cp-nav-links {
+  @variant cp-chrome {
+    gap: var(--cp-space-26);
+  }
+}
+.cp-nav-links a {
+  font-size: var(--cp-text-15);
+  font-weight: var(--cp-weight-semibold);
+}
+.cp-nav-desktop-actions {
+  gap: var(--cp-space-8);
+}
+.cp-nav-search {
+  width: var(--cp-icon-target);
+  height: var(--cp-icon-target);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--cp-radius-999);
+  color: var(--cp-color-ink);
+}
+.cp-nav-search:hover {
+  background: var(--cp-color-grey);
+}
+.cp-nav-search svg {
+  width: var(--cp-nav-icon-size);
+  height: var(--cp-nav-icon-size);
+  stroke: currentColor;
+  stroke-width: var(--cp-nav-icon-stroke);
+}
+.cp-nav-finder.cp-button {
+  border-radius: var(--cp-radius-999);
+  padding-inline: var(--cp-space-24);
+  white-space: nowrap;
+}
+.cp-nav-mobile-actions {
+  align-items: center;
+  gap: var(--cp-space-8);
+}
+.cp-nav-mobile-actions .cp-nav-finder.cp-button {
+  padding-inline: var(--cp-space-18);
+}
+.cp-nav-mobile-actions .cp-button:first-child {
+  border: 0;
+}
+
+/* Footer */
+.cp-footer {
+  @variant cp-chrome {
+    padding-top: var(--cp-space-64);
+    padding-bottom: var(--cp-space-32);
+  }
+}
+.cp-footer-about > p {
+  color: var(--cp-footer-text);
+  font-size: var(--cp-text-14);
+}
+.cp-footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-space-4);
+  color: var(--cp-footer-contact);
+  font-size: var(--cp-text-14);
+}
+.cp-footer-group {
+  @variant cp-chrome {
+    gap: var(--cp-space-14);
+  }
+}
+.cp-footer-group h2 {
+  font-size: var(--cp-text-14);
+}
+.cp-footer-group ul {
+  @variant cp-chrome {
+    gap: var(--cp-space-8);
+  }
+}
+.cp-footer-group a {
+  font-size: var(--cp-text-14);
+  color: var(--cp-footer-link);
+  @variant cp-chrome {
+    color: var(--cp-footer-link);
+  }
+}
+.cp-footer-group a:hover,
+.cp-footer-bottom nav a:hover {
+  color: var(--cp-color-white);
+}
+.cp-footer-bottom {
+  border-color: var(--cp-footer-rule);
+  @variant cp-chrome {
+    padding-top: var(--cp-space-24);
+    border-color: var(--cp-footer-rule);
+  }
+}
+.cp-footer-bottom > p,
+.cp-footer-bottom nav :is(a, button),
+.cp-footer-legal-separator {
+  color: var(--cp-footer-legal);
+}
+.cp-footer-legal-separator {
+  @variant cp-chrome {
+    display: none;
+  }
+}
+.cp-footer-bottom nav ul {
+  @variant cp-chrome {
+    gap: var(--cp-space-18);
+  }
+}
+.cp-brand .cp-brand-word {
+  font-size: var(--cp-brand-word-size-mobile);
+  @variant cp-chrome {
+    font-size: var(--cp-brand-word-size);
+  }
+}
+.cp-nav-mobile-actions .cp-nav-finder.cp-button {
+  min-height: var(--cp-space-40);
+  padding-inline: var(--cp-space-14);
+  font-size: var(--cp-text-14);
+}
+/* Very narrow phones: the finder stays in the menu so the logo is never clipped. */
+@media (width < 23.4375rem) {
+  .cp-nav-mobile-actions .cp-nav-finder.cp-button {
+    display: none;
+  }
+}

@@ -1356,3 +1356,33 @@ SEO without inventing facts. Tracker, decisions and open placeholders:
   system pages: home-style headings, navy instead of ink panels, CTA band.
 - New shared React components in `@canadian-plans/ui`: none. New app components:
   `LandingPage`, `InternetLanding`, `SiteHeader`.
+
+## Final homepage design pass — 16 October 2026
+
+Source: the owner's "FINAL · Homepage (building section by section)" Claude Design export
+(`Home.dc.html`), compared section by section with the live page at 1440 and 390.
+
+- Owner decisions (16 October): keep Google Sans Flex (the export still uses Archivo); hero
+  keeps opening on "I'm moving to Canada"; remove the Popular plans section (`PopularPlans`,
+  `#popular-plans`) as in the design; use the design's header and footer on every page with
+  real links, leaving out the email sign-up and social icons until there is a backend and real
+  accounts.
+- Header (all pages): dark utility bar with the dealer line; new `BrandMark` logo (blue mark +
+  "canadianplans" wordmark, mint "plans" on navy) also in the checkout headers; nav adds
+  Business Internet and reads "Pre-arrival Plans"; search is an icon link to `/search`;
+  "Find my plan" is a blue pill. Mobile keeps the menu (the export has none) and hides the
+  header finder below 375px so the logo is never clipped; the finder stays in the menu.
+- Footer (all pages): Plans / Popular / Help / Company columns, design colours and sizes.
+  The Popular column (landing pages) takes the slot of the omitted sign-up form.
+- Home: hero plan card sits on the photo, wider copy column; the finder button wraps under
+  the fields instead of truncating "A number before I arrive"; picker cards get the grey
+  icon well and shadow; display headings 58px, feature titles 52px, testimonials/FAQ 44px;
+  explorer heading "Discover everything we offer."; "Who it's for" icons on white tiles;
+  FAQ toggle is "+" on grey turning into a dark "×". "Find my plan" links open the plan finder.
+- Not built: the hero carousel arrows/dots (the export has no slides behind them) and the
+  white "See mobile plans" button (kept blue so it is visible on white, per 14 October).
+- Removed: `src/components/home/interactive.tsx` (HomeNavigation, PopularPlans and older
+  unused previews) and `homeChrome` / `homeFooter`.
+- Verification: typecheck, lint, format, 175 unit tests, production build, full audit
+  (28 routes × 320/390/1440: one h1, no overflow, anchors, axe, no errors; 24 internal links).
+  `scaffold.spec.ts` now expects the home nav "Mobile Plans" link to open `/mobile-plans`.

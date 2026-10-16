@@ -67,7 +67,7 @@ test('keyboard skip link and navigation work', async ({ page }) => {
       .focus();
     await page.keyboard.press('Enter');
   }
-  await expect(page).toHaveURL(/#popular-plans$/);
+  await expect(page).toHaveURL(/\/mobile-plans$/);
 });
 
 test('Umami loads only with complete public configuration', async ({ page }) => {

@@ -17,7 +17,7 @@
 }
 .cp-rd-display {
   margin: 0;
-  font-size: var(--cp-text-48);
+  font-size: var(--cp-rd-display-size);
   font-weight: var(--cp-weight-extra-bold);
   line-height: var(--cp-leading-heading);
   letter-spacing: var(--cp-tracking-tight);
@@ -38,7 +38,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--cp-space-40);
-  padding: var(--cp-space-48);
+  padding: var(--cp-space-48) var(--cp-space-56);
   border-radius: var(--cp-radius-32);
   background: var(--cp-color-grey);
 }
@@ -78,7 +78,7 @@
 }
 .cp-rd-hero-title {
   margin: 0;
-  font-size: var(--cp-text-56);
+  font-size: var(--cp-rd-display-size);
   font-weight: var(--cp-weight-extra-bold);
   line-height: var(--cp-rd-hero-leading);
   letter-spacing: var(--cp-tracking-tight);
@@ -202,8 +202,8 @@
 }
 .cp-rd-plan-card {
   position: absolute;
-  left: calc(var(--cp-space-24) * -1);
-  bottom: var(--cp-space-24);
+  left: var(--cp-space-20);
+  bottom: var(--cp-space-20);
   width: var(--cp-rd-plan-card-width);
   display: flex;
   flex-direction: column;
@@ -261,22 +261,33 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: var(--cp-space-8);
-  padding: var(--cp-space-24) var(--cp-space-16);
-  border: var(--cp-border-strong) solid var(--cp-color-line);
-  border-radius: var(--cp-radius-20);
+  align-items: stretch;
+  gap: var(--cp-space-12);
+  padding: var(--cp-space-10) var(--cp-space-10) var(--cp-space-22);
+  border: var(--cp-border-strong) solid var(--cp-rd-card-border);
+  border-radius: var(--cp-radius-16);
   background: var(--cp-color-white);
+  box-shadow: var(--cp-rd-card-shadow);
   color: var(--cp-color-ink);
   text-decoration: none;
   text-align: center;
   transition:
     border-color var(--cp-transition-duration),
+    box-shadow var(--cp-transition-duration),
     transform var(--cp-transition-duration);
 }
 .cp-rd-picker-card:hover {
   border-color: var(--cp-color-blue);
-  transform: translateY(calc(var(--cp-space-2) * -1));
+  box-shadow: var(--cp-rd-card-shadow-hover);
+  transform: translateY(calc(var(--cp-space-3) * -1));
+}
+.cp-rd-picker-art {
+  height: var(--cp-rd-picker-well-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--cp-radius-12);
+  background: var(--cp-color-grey);
 }
 .cp-rd-picker-card:focus-visible {
   outline: var(--cp-border-strong) solid var(--cp-focus-color);
@@ -929,4 +940,66 @@
   @variant cp-redesign-narrow {
     font-size: var(--cp-text-36);
   }
+}
+
+/* Final homepage design pass (16 October 2026) */
+.cp-rd-final .cp-rd-display {
+  font-size: var(--cp-rd-final-title-size);
+}
+.cp-rd-section .cp-rd-heading {
+  font-size: var(--cp-rd-section-title-size);
+}
+.cp-rd-explorer-main .cp-feature-row-title {
+  font-size: var(--cp-rd-feature-title-size);
+}
+.cp-rd-picker-card strong {
+  font-size: var(--cp-text-19);
+}
+.cp-rd-picker .cp-rd-eyebrow,
+.cp-rd-pill-eyebrow {
+  align-self: center;
+  display: inline-block;
+  padding: var(--cp-space-6) var(--cp-space-14);
+  border-radius: var(--cp-radius-999);
+  background: var(--cp-color-mint-strong);
+  color: var(--cp-color-mint-deep);
+  font-size: var(--cp-text-12);
+  font-weight: var(--cp-weight-extra-bold);
+}
+.cp-rd-final .cp-rd-display,
+.cp-rd-section .cp-rd-heading,
+.cp-rd-explorer-main .cp-feature-row-title {
+  @variant cp-redesign-narrow {
+    font-size: var(--cp-text-36);
+  }
+}
+.cp-rd-display.cp-rd-centered-text {
+  margin-bottom: var(--cp-space-48);
+}
+
+/* Hero finder and card placement (final homepage design) */
+.cp-rd-finder-field:first-child {
+  flex: 2 1 var(--cp-rd-finder-need-basis);
+  min-width: var(--cp-rd-finder-need-basis);
+}
+.cp-rd-finder-divider {
+  flex: 1 1 var(--cp-rd-finder-detail-basis);
+  min-width: var(--cp-rd-finder-detail-basis);
+}
+.cp-rd-finder .cp-rd-finder-submit {
+  flex: 1 0 auto;
+  border-radius: var(--cp-radius-12);
+  font-size: var(--cp-text-15);
+}
+.cp-rd-hero-visual {
+  align-self: center;
+}
+.cp-rd-hero-copy .cp-rd-eyebrow {
+  text-transform: none;
+  letter-spacing: normal;
+}
+.cp-rd-pill-eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: var(--cp-rd-pill-tracking);
 }

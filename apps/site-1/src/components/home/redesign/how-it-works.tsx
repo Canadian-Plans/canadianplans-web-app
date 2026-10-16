@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { CpButton } from '@canadian-plans/ui/canadian-plans';
 import { homeRedesign } from '@content/home-redesign';
+import { FinderLink } from '@/components/shared/finder-link';
 
 export function RedesignHowItWorks() {
   const how = homeRedesign.how;
@@ -17,7 +18,7 @@ export function RedesignHowItWorks() {
         <p className="cp-rd-lead">{how.description}</p>
         <div className="cp-rd-actions-center">
           <CpButton asChild>
-            <a href={how.primary.href}>{how.primary.label}</a>
+            <FinderLink href={how.primary.href}>{how.primary.label}</FinderLink>
           </CpButton>
           <CpButton asChild tone="outline-brand">
             <a href={how.secondary.href}>{how.secondary.label}</a>
