@@ -13,7 +13,7 @@
 .cp-landing-section {
   display: flex;
   flex-direction: column;
-  gap: var(--cp-space-24);
+  gap: var(--cp-landing-heading-gap);
   padding-top: var(--cp-landing-section-gap);
   scroll-margin-top: var(--cp-space-24);
 }
@@ -369,8 +369,8 @@
 .cp-landing-related {
   display: flex;
   flex-direction: column;
-  gap: var(--cp-space-24);
-  padding-bottom: var(--cp-space-48);
+  gap: var(--cp-landing-heading-gap);
+  padding-bottom: var(--cp-space-72);
 }
 .cp-landing-related-grid {
   display: grid;

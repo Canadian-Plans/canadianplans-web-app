@@ -168,7 +168,7 @@
 }
 @variant cp-faq-columns {
   .cp-faq-page-group {
-    padding-block: var(--cp-space-64);
+    padding-block: var(--cp-space-80);
   }
   .cp-faq-page-sidebar {
     position: sticky;

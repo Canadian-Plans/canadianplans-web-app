@@ -4,7 +4,12 @@
    and the category page template. Values come from canadian-plans.css tokens only. */
 
 .cp-rd-section {
-  padding-block: var(--cp-space-48);
+  padding-block: var(--cp-rd-section-space);
+}
+.cp-rd-section {
+  @variant cp-redesign-stack {
+    padding-block: var(--cp-rd-section-space-stacked);
+  }
 }
 .cp-rd-eyebrow {
   margin: 0;
@@ -113,7 +118,12 @@
 .cp-cat-page-top {
   display: flex;
   flex-direction: column;
-  gap: var(--cp-space-24);
+  gap: var(--cp-page-top-gap);
+}
+.cp-cat-page-top {
+  @variant cp-redesign-stack {
+    gap: var(--cp-page-top-gap-stacked);
+  }
 }
 .cp-cat-page-top .cp-cat-banner {
   min-height: var(--cp-cat-hero-min-height);
@@ -160,7 +170,7 @@
 .cp-cat-page-intro {
   display: flex;
   flex-direction: column;
-  gap: var(--cp-space-48);
+  gap: var(--cp-cat-intro-gap);
   padding-block: var(--cp-cat-page-gap);
 }
 .cp-cat-page-cta {
@@ -169,6 +179,7 @@
 
 .cp-cat-page-intro {
   @variant cp-redesign-stack {
+    gap: var(--cp-cat-intro-gap-stacked);
     padding-block: var(--cp-cat-page-gap-stacked);
   }
 }

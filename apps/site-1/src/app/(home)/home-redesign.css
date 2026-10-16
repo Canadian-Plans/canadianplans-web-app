@@ -456,7 +456,7 @@
 .cp-rd-catsec {
   display: flex;
   flex-direction: column;
-  gap: var(--cp-space-48);
+  gap: var(--cp-rd-catsec-inner-gap);
   scroll-margin-top: var(--cp-space-24);
 }
 .cp-rd-help-pill {
@@ -854,6 +854,7 @@
 }
 .cp-rd-catsec {
   @variant cp-redesign-stack {
+    gap: var(--cp-rd-catsec-inner-gap-stacked);
     scroll-margin-top: var(--cp-rd-scroll-margin-stacked);
   }
 }

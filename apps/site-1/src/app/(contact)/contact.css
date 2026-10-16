@@ -425,7 +425,7 @@
   }
   .cp-contact-options {
     gap: var(--cp-space-20);
-    padding-block: var(--cp-space-16) var(--cp-space-56);
+    padding-block: var(--cp-space-16) var(--cp-space-80);
   }
   .cp-contact-option {
     min-height: var(--cp-contact-option-height);
@@ -438,7 +438,7 @@
   }
   .cp-contact-track-office {
     align-items: start;
-    padding-block: 0 var(--cp-space-56);
+    padding-block: 0 var(--cp-space-80);
   }
   .cp-contact-panel {
     padding: var(--cp-space-40);

@@ -91,6 +91,14 @@ Stale scripts (pre-date the 14 Oct redesign, fail on old h1 text / removed class
 and after this work): `verify-home.mjs`, `verify-pre-arrival.mjs`,
 `verify-home-internet.mjs`, `verify-mobile-plans.mjs`. Rewrite or retire them.
 
+## Spacing pass (16 October 2026)
+
+Owner feedback: pages felt congested. Section rhythm moved into tokens in
+`canadian-plans.css` (`--cp-rd-section-space`, `--cp-page-top-gap`, `--cp-cat-intro-gap`,
+`--cp-rd-catsec-inner-gap`, `--cp-landing-heading-gap`) and the existing page/landing gaps
+were raised (category 6→7.5rem, landing sections 5→7rem; smaller steps when stacked).
+Contact and FAQ sections got more room too. Full audit still clean (28 routes × 3 widths).
+
 ## Open placeholders and questions for the owner
 
 - The home header still links "Pre-arrival SIM" / "Mobile Plans" to `#popular-plans` on the

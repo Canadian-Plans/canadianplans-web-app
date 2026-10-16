@@ -681,7 +681,14 @@
   --cp-rd-aside-max: 16.25rem;
   --cp-rd-main-basis: 37.5rem;
   --cp-rd-catsec-gap: 10rem;
-  --cp-rd-catsec-gap-stacked: 6rem;
+  --cp-rd-catsec-gap-stacked: 7rem;
+  /* Section rhythm (16 Oct 2026): more white space between and inside page sections. */
+  --cp-rd-section-space: 4.5rem;
+  --cp-rd-section-space-stacked: 3.5rem;
+  --cp-rd-catsec-inner-gap: 4rem;
+  --cp-rd-catsec-inner-gap-stacked: 3rem;
+  --cp-page-top-gap: 2.5rem;
+  --cp-page-top-gap-stacked: 2rem;
   --cp-rd-scroll-margin-stacked: 5.25rem;
   --cp-rd-chipbar-shadow:
     0 0.0625rem 0 var(--cp-color-line), 0 0.5rem 1rem -0.75rem rgb(17 24 39 / 0.25);
@@ -708,14 +715,17 @@
   --cp-rd-stripe-b: #dce0e7;
   --cp-banner-description-opacity: 0.9;
   /* Electric Blue category page template (apps/site-1 category-redesign.css). */
-  --cp-cat-page-gap: 6rem;
-  --cp-cat-page-gap-stacked: 4rem;
+  --cp-cat-page-gap: 7.5rem;
+  --cp-cat-page-gap-stacked: 5rem;
+  --cp-cat-intro-gap: 4.5rem;
+  --cp-cat-intro-gap-stacked: 3.5rem;
   --cp-cat-hero-min-height: 22.5rem;
   --cp-cat-quick-rule: 0.25rem;
   --cp-cat-form-min: 15rem;
   /* Electric Blue landing pages (apps/site-1 landing.css, 15 October 2026). */
-  --cp-landing-section-gap: 5rem;
-  --cp-landing-section-gap-stacked: 3.5rem;
+  --cp-landing-section-gap: 7rem;
+  --cp-landing-section-gap-stacked: 5rem;
+  --cp-landing-heading-gap: 2rem;
   --cp-landing-fact-min: 11rem;
   --cp-landing-keyfacts-width: 20rem;
   --cp-landing-check-size: 1.75rem;
