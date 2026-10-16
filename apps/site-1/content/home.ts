@@ -2,7 +2,7 @@ import type { FigmaAsset } from '@canadian-plans/ui/canadian-plans';
 
 /** Figma design-preview copy. Not approved commercial or operational facts. */
 export const homeCopy = {
-  title: 'Canadian SIM & internet plans for newcomers.',
+  title: 'Canadian phone & internet plans, with real prices.',
   skip: 'Skip to main content',
   hero: {
     eyebrow: 'AUTHORIZED ROGERS, FIDO & CHATR DEALER',

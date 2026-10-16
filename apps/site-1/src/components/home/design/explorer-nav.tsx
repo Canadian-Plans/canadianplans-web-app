@@ -2,17 +2,20 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-export interface ExplorerNavItem {
+export interface HomeExplorerNavItem {
   readonly id: string;
   readonly label: string;
 }
 
-/** Sticky category nav with scroll-spy; becomes a swipeable chip row on narrow screens. */
-export function ExplorerNav({
+/**
+ * Sticky category nav with scroll-spy (final homepage design). The active link gets the
+ * "→" marker; below 900px it becomes a sticky, swipeable chip row.
+ */
+export function HomeExplorerNav({
   items,
   label,
 }: {
-  items: readonly ExplorerNavItem[];
+  items: readonly HomeExplorerNavItem[];
   label: string;
 }) {
   const [active, setActive] = useState(items[0]?.id ?? '');
@@ -50,13 +53,13 @@ export function ExplorerNav({
   }, [active]);
 
   return (
-    <nav ref={navRef} className="cp-rd-catnav" aria-label={label}>
+    <nav ref={navRef} className="cp-hd-catnav" aria-label={label}>
       {items.map((item) => (
         <a
           key={item.id}
           href={`#${item.id}`}
           data-target={item.id}
-          className="cp-rd-catlink"
+          className="cp-hd-catlink"
           aria-current={active === item.id ? 'true' : undefined}
           onClick={(event) => {
             event.preventDefault();
@@ -67,6 +70,9 @@ export function ExplorerNav({
             setActive(item.id);
           }}
         >
+          <span className="cp-hd-catlink-arrow" aria-hidden="true">
+            →{' '}
+          </span>
           {item.label}
         </a>
       ))}

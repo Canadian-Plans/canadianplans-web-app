@@ -323,8 +323,11 @@ export const homeRedesign = {
       },
     },
     needLabel: 'I need',
-    rating: '★★★★★ 4.8 · 1,200+ Google reviews',
-    assurances: ['✓ No credit check options', '✓ Pay $0 until we confirm'],
+    stars: '★★★★★',
+    ratingScore: '4.8',
+    ratingText: '· 1,200+ Google reviews',
+    assurances: ['No credit check options', 'Pay $0 until we confirm'],
+    carousel: { previous: 'Previous slide', next: 'Next slide', slide: 'Show slide' },
     badgeSuffix: '/mo · CAD',
     sticker: 'No contract',
     plan: {
@@ -464,7 +467,7 @@ export const homeRedesign = {
             marker: '2',
             title: 'Get your eSIM by email',
             body: 'Scan the QR code before you fly. Your number is ready.',
-            meta: 'Same day',
+            meta: 'Before your flight',
             art: 'step-pa-esim',
           },
           {
@@ -764,7 +767,7 @@ export const homeRedesign = {
   testimonials: {
     eyebrow: 'Customer stories',
     title: "People we've helped get connected",
-    more: { label: 'Read more reviews', href: '#' },
+    more: { label: 'Read more reviews', href: '#stories' },
     /** Placeholders only. Replace with real reviews used with permission; never invent quotes. */
     items: [
       {

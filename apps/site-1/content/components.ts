@@ -128,11 +128,35 @@ export const chromeContent: ChromeContent = {
   promoMobileLabel: 'See SIM plans →',
 };
 
+export interface FooterNewsletterContent {
+  readonly title: string;
+  readonly body: string;
+  readonly label: string;
+  readonly placeholder: string;
+  readonly action: string;
+  readonly invalid: string;
+  readonly preview: string;
+}
+
+export interface FooterLink extends PreviewLink {
+  /** Opens the global plan finder instead of following the link (href is the fallback). */
+  readonly finder?: true;
+}
+
 export interface FooterContent {
   readonly description: string;
   readonly address: string;
   readonly contactLine: string;
-  readonly groups: readonly { readonly title: string; readonly links: readonly PreviewLink[] }[];
+  /** Final homepage design: phone, email and address on separate lines. */
+  readonly contactLines?: readonly string[];
+  /** Small round social links; only real destinations are listed. */
+  readonly social?: readonly {
+    readonly label: string;
+    readonly short: string;
+    readonly href: string;
+  }[];
+  readonly newsletter?: FooterNewsletterContent;
+  readonly groups: readonly { readonly title: string; readonly links: readonly FooterLink[] }[];
   readonly copyright: string;
   readonly legalLabel: string;
   readonly legalSeparator: string;

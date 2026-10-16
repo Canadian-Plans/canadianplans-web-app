@@ -34,19 +34,24 @@ export const siteChromeWithPromo = (
 });
 
 /**
- * One footer for every page, laid out as in the final homepage design (16 October 2026):
- * Plans / Help / Company columns. The design's email sign-up and social links wait for a
- * backend and real accounts; a Popular column keeps links to the landing pages instead.
- * Links only to pages that exist.
+ * One footer for every page, as in the final homepage design (16 October 2026):
+ * Plans / Help / Company columns and the email sign-up (preview only, nothing is sent).
+ * Only real destinations: Careers waits for a careers page, and WhatsApp is the only social link
+ * (it goes to Contact until the business number is published).
  */
 export const siteFooter: FooterContent = {
   ...footerContent,
   description:
     'Authorized Rogers, Fido & Chatr dealer. We help you pick the right plan and stay your contact afterwards.',
+  contactLines: [
+    '1-888-555-0199',
+    'hello@canadianplans.ca',
+    '12-3456 King George Blvd, Surrey, BC',
+  ],
+  social: [{ label: 'WhatsApp', short: 'wa', href: '/contact' }],
   groups: [
     {
-      // Not "Plans": /plans has that h1, and page headings should stay unique.
-      title: 'Our plans',
+      title: 'Plans',
       links: [
         { label: 'Pre-arrival Plans', href: '/pre-arrival-sim' },
         { label: 'Home Internet', href: '/home-internet' },
@@ -55,21 +60,9 @@ export const siteFooter: FooterContent = {
       ],
     },
     {
-      title: 'Popular',
-      links: [
-        { label: 'Student SIM', href: '/pre-arrival-sim/students' },
-        { label: 'SIM from India', href: '/pre-arrival-sim/from-india' },
-        { label: 'Toronto Pearson SIM', href: '/pre-arrival-sim/toronto-pearson' },
-        { label: 'Vancouver internet', href: '/home-internet/vancouver' },
-        { label: 'Ontario internet', href: '/home-internet/ontario' },
-        { label: 'Rogers plans', href: '/mobile-plans/rogers' },
-        { label: 'Rogers vs Fido', href: '/compare/rogers-vs-fido' },
-      ],
-    },
-    {
       title: 'Help',
       links: [
-        { label: 'Track order', href: '/track' },
+        { label: 'Find my plan', href: '/pre-arrival-sim#plans', finder: true },
         { label: 'FAQ', href: '/faq' },
         { label: 'Guides', href: '/guides' },
         { label: 'Contact us', href: '/contact' },
@@ -80,9 +73,19 @@ export const siteFooter: FooterContent = {
       links: [
         { label: 'About us', href: '/about' },
         { label: 'Why buy from a dealer', href: '/about#why-us' },
+        { label: 'Reviews', href: '/#stories' },
       ],
     },
   ],
+  newsletter: {
+    title: 'Get plan deals by email',
+    body: 'Occasional offers, no spam. Unsubscribe anytime.',
+    label: 'Email address',
+    placeholder: 'you@email.com',
+    action: 'Sign up',
+    invalid: 'Enter a valid email address.',
+    preview: 'Thanks! Email sign-ups open soon. Nothing was sent or saved.',
+  },
   copyright:
     '© 2026 Canadian Plans. Rogers, Fido and Chatr are trademarks of their respective owners.',
   legalLabel: 'Legal links',
@@ -90,6 +93,7 @@ export const siteFooter: FooterContent = {
     { label: 'Privacy', href: '/privacy' },
     { label: 'Terms', href: '/terms' },
     { label: 'Accessibility', href: '/accessibility' },
+    { label: 'Sitemap', href: '/sitemap.xml' },
     { label: 'Cookie settings', href: '#cookie-settings' },
   ],
 };

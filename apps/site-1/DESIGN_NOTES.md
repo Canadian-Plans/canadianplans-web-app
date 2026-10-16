@@ -1386,3 +1386,39 @@ Source: the owner's "FINAL · Homepage (building section by section)" Claude Des
 - Verification: typecheck, lint, format, 175 unit tests, production build, full audit
   (28 routes × 320/390/1440: one h1, no overflow, anchors, axe, no errors; 24 internal links).
   `scaffold.spec.ts` now expects the home nav "Mobile Plans" link to open `/mobile-plans`.
+
+## Home page rebuilt to the final export — 16 October 2026
+
+Owner request: the coded home page was narrower than the design; rebuild it as an exact copy
+of the final homepage export, as a system rather than hard-coded values. Font stays Google
+Sans Flex.
+
+- Cause of the width gap: the export uses content-box sizing, so its hero card and final CTA
+  are 1296px wide (1184px content + 56px padding), its header content is 1280px and its sections
+  1184px. The old build used one 1200px container everywhere.
+- System: a home design token group `--cp-hd-*` in `canadian-plans.css` (layout widths,
+  gutters, colour roles, type roles, leading, tracking, radii, shadows, component sizes, flex
+  bases) plus the export's breakpoints as variants (`cp-hd-md` 1000px, `cp-hd-sticky` /
+  `cp-hd-nav` 900px, `cp-hd-sm` 760px, `cp-hd-xs` 640px). `--cp-hd-leading-normal` (1.27)
+  reproduces the export's normal line box instead of Tailwind's 1.5.
+- Components: `src/components/home/design/*` (hero with a two-slide carousel synced to the
+  audience tabs, picker, service columns with swipe dots, explorer with scroll-spy nav,
+  getting connected, stories, FAQ, final CTA), styled only by `src/app/(home)/home-design.css`.
+  The previous home components, `home.css` and `home-redesign.css` were removed; category and
+  landing pages are unchanged.
+- Header and footer (all pages): header content 1280px with 48px gutters; footer as in the
+  export (Plans / Help / Company, email sign-up, WhatsApp). The sign-up is a preview: it
+  validates and says sign-ups open soon; nothing is stored or sent
+  (`src/lib/newsletter-preview.ts`). Only WhatsApp is shown (links to Contact) until real
+  social URLs exist; Careers waits for a page. Footer column titles are not headings, so
+  "Plans" no longer collides with the `/plans` h1.
+- Owner decisions (16 October): hero opens on "I already live in Canada"; carousel has two
+  dots (one per audience); newsletter and WhatsApp as above.
+- Deliberate differences from the export: mint eyebrows on white use mint-ink (AA); the white
+  "See mobile plans" button gets an ink outline so it is visible; picker "See plans →" links
+  are full brand blue instead of 75% opacity (AA); the phone header keeps its menu button; the
+  desktop nav appears from 1280px (the export's nav overflows below about 1250px).
+- Verification: section offsets within a few pixels of the export at 1440 (remaining drift is
+  Google Sans Flex wrapping differently from Archivo), full audit 28 routes × 320/390/1440 with
+  0 problems, interactions (tabs, carousel, FAQ, how-it-works, sign-up, explorer nav, finder,
+  skip link, desktop and mobile nav) checked, 178 unit tests.

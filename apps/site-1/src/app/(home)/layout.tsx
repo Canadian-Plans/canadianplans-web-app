@@ -1,8 +1,6 @@
 import type { ReactNode } from 'react';
 import { Analytics } from '@/components/analytics';
-import './home.css';
-import '../redesign.css';
-import './home-redesign.css';
+import './home-design.css';
 
 export default function HomeLayout({ children }: { children: ReactNode }) {
   return (

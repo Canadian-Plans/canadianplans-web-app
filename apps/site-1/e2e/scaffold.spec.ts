@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 const pages = [
-  ['/', 'Canadian SIM & internet plans for newcomers.'],
+  ['/', 'Canadian phone & internet plans, with real prices.'],
   ['/plans', 'Plans'],
   ['/plans/test-plan', 'Plan details'],
   ['/order', 'Order your SIM plan'],

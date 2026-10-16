@@ -16,6 +16,13 @@
 @custom-variant cp-legal-desktop (@media (width >= 80rem));
 @custom-variant cp-redesign-stack (@media (width < 64rem));
 @custom-variant cp-redesign-narrow (@media (width < 48rem));
+/* Final homepage design system (16 October 2026): the export's own breakpoints. */
+@custom-variant cp-hd-wide (@media (width >= 62.5rem));
+@custom-variant cp-hd-md (@media (width <= 62.5rem));
+@custom-variant cp-hd-sticky (@media (width >= 56.25rem));
+@custom-variant cp-hd-nav (@media (width < 56.25rem));
+@custom-variant cp-hd-sm (@media (width <= 47.5rem));
+@custom-variant cp-hd-xs (@media (width <= 40rem));
 
 :root {
   /* Additional sizes verified in the category references. */
@@ -727,6 +734,182 @@
   --cp-landing-section-gap: 7rem;
   --cp-landing-section-gap-stacked: 5rem;
   --cp-landing-heading-gap: 2rem;
+  /* ===== Home design system (final homepage export, 16 October 2026) =====
+     Values are the export's own; widths reproduce its content-box sizing. */
+  /* Layout */
+  --cp-hd-gutter: 3rem;
+  --cp-hd-gutter-sm: 1rem;
+  --cp-hd-content: 74rem;
+  --cp-hd-chrome: 80rem;
+  --cp-hd-section-y: 6rem;
+  --cp-hd-wide-pad-x: 3.5rem;
+  --cp-hd-wide: calc(var(--cp-hd-content) + var(--cp-hd-wide-pad-x) * 2);
+  /* Colour roles */
+  --cp-hd-ink: var(--cp-color-ink);
+  --cp-hd-body: #3d4351;
+  --cp-hd-muted: var(--cp-color-muted);
+  --cp-hd-subtle: #6b7280;
+  --cp-hd-faint: #9ca3af;
+  --cp-hd-line: var(--cp-color-line);
+  --cp-hd-card-line: #eef0f4;
+  --cp-hd-surface: var(--cp-color-grey);
+  --cp-hd-surface-hover: #f5f6f8;
+  --cp-hd-brand: var(--cp-color-blue);
+  --cp-hd-mint: var(--cp-color-mint-strong);
+  --cp-hd-mint-soft: var(--cp-color-mint);
+  --cp-hd-mint-ink: var(--cp-color-mint-ink);
+  --cp-hd-mint-deep: var(--cp-color-mint-deep);
+  --cp-hd-mint-stroke: #1fb57a;
+  --cp-hd-amber: var(--cp-color-amber);
+  --cp-hd-amber-ink: var(--cp-color-amber-ink);
+  --cp-hd-amber-stroke: var(--cp-color-amber-stroke);
+  --cp-hd-navy: var(--cp-color-navy);
+  --cp-hd-star: #f5a400;
+  --cp-hd-dot: #cbd0d8;
+  --cp-hd-warm: #fff8ec;
+  --cp-hd-on-dark: #c7ccd6;
+  --cp-hd-stripe-a: #e3e6ec;
+  --cp-hd-stripe-b: #dce0e7;
+  --cp-hd-photo: #e3e6ec;
+  --cp-hd-glass: rgb(255 255 255 / 0.06);
+  --cp-hd-glass-hover: rgb(255 255 255 / 0.12);
+  --cp-hd-glass-line: rgb(255 255 255 / 0.12);
+  --cp-hd-glass-line-hover: rgb(255 255 255 / 0.35);
+  /* Swipe-card tints (service columns on phones) */
+  --cp-hd-tint-amber: #fff6e5;
+  --cp-hd-tint-amber-line: #ffe2b0;
+  --cp-hd-tint-mint: #eafaf2;
+  --cp-hd-tint-mint-line: #c6f0db;
+  --cp-hd-tint-blue: #eef2ff;
+  --cp-hd-tint-blue-line: #d5dfff;
+  --cp-hd-tint-navy: #eceff7;
+  --cp-hd-tint-navy-line: #d3d9ea;
+  /* Type: heading and number styles */
+  --cp-hd-heading-weight: 800;
+  --cp-hd-heading-tracking: -0.03em;
+  --cp-hd-heading-leading: 1.04;
+  --cp-hd-num-weight: 900;
+  --cp-hd-num-tracking: -0.05em;
+  --cp-hd-num-leading: 0.88;
+  --cp-hd-eyebrow-tracking: 0.08em;
+  --cp-hd-tracking-tight: -0.03em;
+  --cp-hd-tracking-snug: -0.02em;
+  --cp-hd-tracking-title: -0.01em;
+  --cp-hd-tracking-button: 0.02em;
+  --cp-hd-tracking-pill: 0.04em;
+  --cp-hd-tracking-field: 0.05em;
+  --cp-hd-tracking-label: 0.06em;
+  /* The export's text uses the font's normal line box (Archivo: 19px on 15px). */
+  --cp-hd-leading-normal: 1.27;
+  --cp-hd-leading-lead: 1.55;
+  --cp-hd-leading-body: 1.6;
+  --cp-hd-leading-answer: 1.65;
+  --cp-hd-leading-how: 1.05;
+  --cp-hd-leading-price: 0.9;
+  --cp-hd-leading-quote: 0.6;
+  --cp-hd-leading-overlay: 1.1;
+  --cp-hd-weight-light: 300;
+  --cp-hd-weight-regular: 400;
+  --cp-hd-weight-semibold: 600;
+  --cp-hd-weight-bold: 700;
+  --cp-hd-weight-heavy: 800;
+  /* Type scale (roles) */
+  --cp-hd-display: 3.625rem;
+  --cp-hd-price-large: 3.5rem;
+  --cp-hd-how-number: 2.875rem;
+  --cp-hd-overlay: 2.5rem;
+  --cp-hd-quote-mark: 2.75rem;
+  --cp-hd-badge-price: 2.25rem;
+  --cp-hd-feature-price: 2rem;
+  --cp-hd-display-sm: 2.5rem;
+  --cp-hd-display-2: 3.5rem;
+  --cp-hd-display-2-sm: 2.375rem;
+  --cp-hd-feature-title: 3.25rem;
+  --cp-hd-final-title: 3rem;
+  --cp-hd-section-title: 2.75rem;
+  --cp-hd-column-title: 1.75rem;
+  --cp-hd-step-title: 1.625rem;
+  --cp-hd-band-title: 1.5rem;
+  --cp-hd-block-title: 1.375rem;
+  --cp-hd-lead: 1.0625rem;
+  --cp-hd-card-title: 1.0625rem;
+  /* Radii */
+  --cp-hd-radius-hero: 1.75rem;
+  --cp-hd-radius-final: 2rem;
+  --cp-hd-radius-band: 1.5rem;
+  --cp-hd-radius-card: 1.25rem;
+  --cp-hd-radius-tile: 1rem;
+  --cp-hd-radius-control: 0.75rem;
+  /* Shadows */
+  --cp-hd-shadow-card: 0 0.625rem 1.875rem -1rem rgb(17 24 39 / 0.2);
+  --cp-hd-shadow-card-hover: 0 1.125rem 2.25rem -1.125rem var(--cp-hd-brand);
+  --cp-hd-shadow-story: 0 0.625rem 1.875rem -1.125rem rgb(17 24 39 / 0.25);
+  --cp-hd-shadow-finder: 0 0.625rem 1.5rem -0.875rem rgb(17 24 39 / 0.25);
+  --cp-hd-shadow-badge: 0 0.625rem 1.5rem -0.5rem var(--cp-hd-brand);
+  --cp-hd-shadow-sticker: 0 0.5rem 1.125rem -0.5rem rgb(11 43 30 / 0.4);
+  --cp-hd-shadow-plan: 0 0.75rem 1.75rem rgb(17 24 39 / 0.16);
+  --cp-hd-shadow-sticky:
+    0 0.0625rem 0 var(--cp-hd-line), 0 0.5rem 1rem -0.75rem rgb(17 24 39 / 0.25);
+  /* Component sizes */
+  --cp-hd-control-height: 3rem;
+  --cp-hd-pill-height: 2.875rem;
+  --cp-hd-band-button-height: 3.125rem;
+  --cp-hd-finder-max: 37.5rem;
+  --cp-hd-hero-photo: 23.75rem;
+  --cp-hd-badge: 7rem;
+  --cp-hd-plan-card: 14.375rem;
+  --cp-hd-dot-size: 0.75rem;
+  --cp-hd-icon-tile: 3.5rem;
+  --cp-hd-final-tile-icon: 3.25rem;
+  --cp-hd-who-tile: 2.75rem;
+  --cp-hd-step-marker: 2.5rem;
+  --cp-hd-faq-toggle: 2rem;
+  --cp-hd-picker-well: 9.375rem;
+  --cp-hd-art-max: 23.75rem;
+  --cp-hd-art-box: 20rem;
+  --cp-hd-how-media: 28.75rem;
+  --cp-hd-catnav-basis: 14.375rem;
+  --cp-hd-catnav-max: 16.25rem;
+  --cp-hd-catsec-gap: 10rem;
+  --cp-hd-catsec-gap-sm: 6rem;
+  --cp-hd-band-glow: 13.75rem;
+  --cp-hd-final-glow-a: 23.75rem;
+  --cp-hd-final-glow-b: 20rem;
+  --cp-hd-final-glow-a-top: -8.75rem;
+  --cp-hd-final-glow-a-right: -7.5rem;
+  --cp-hd-final-glow-b-bottom: -10rem;
+  --cp-hd-final-glow-b-left: -6.25rem;
+  --cp-hd-band-glow-top: -5rem;
+  --cp-hd-band-glow-right: -3.75rem;
+  /* Flex bases and grid minimums (the export's own) */
+  --cp-hd-hero-copy-basis: 32.5rem;
+  --cp-hd-hero-visual-basis: 25rem;
+  --cp-hd-lead-max: 31.25rem;
+  --cp-hd-field-need: 11.25rem;
+  --cp-hd-field-detail: 9.375rem;
+  --cp-hd-finder-button: 10rem;
+  --cp-hd-usage-fill: 12.4%;
+  --cp-hd-picker-min: 11.875rem;
+  --cp-hd-picker-art: 7rem;
+  --cp-hd-picker-art-tall: 5.25rem;
+  --cp-hd-swipe-card: 78%;
+  --cp-hd-catcol-basis: 37.5rem;
+  --cp-hd-scroll-margin-sm: 5.25rem;
+  --cp-hd-feature-basis: 17.5rem;
+  --cp-hd-feature-art-basis: 16.25rem;
+  --cp-hd-step-line-top: 2.4375rem;
+  --cp-hd-step-line-left: 4.125rem;
+  --cp-hd-card-min: 12.5rem;
+  --cp-hd-who-min: 11.25rem;
+  --cp-hd-band-copy-basis: 20rem;
+  --cp-hd-how-lead-max: 37.5rem;
+  --cp-hd-how-basis: 26.25rem;
+  --cp-hd-heading-max: 40rem;
+  --cp-hd-story-min: 17.5rem;
+  --cp-hd-faq-intro-basis: 18.75rem;
+  --cp-hd-faq-list-basis: 32.5rem;
+  --cp-hd-tile-min: 15rem;
+
   /* Final homepage design chrome (16 October 2026): header, logo and footer. */
   --cp-utility-ink: #c7ccd6;
   --cp-brand-mark-size: 2.25rem;
@@ -742,6 +925,14 @@
   --cp-footer-contact: #dce3f7;
   --cp-footer-legal: #9aa6cc;
   --cp-footer-rule: rgb(255 255 255 / 0.14);
+  --cp-footer-social-line: rgb(255 255 255 / 0.25);
+  --cp-footer-field: rgb(255 255 255 / 0.08);
+  --cp-footer-field-line: rgb(255 255 255 / 0.18);
+  --cp-footer-placeholder: #8e9bc4;
+  --cp-footer-about-basis: 15rem;
+  --cp-footer-about-max: 20rem;
+  --cp-footer-column-basis: 10rem;
+  --cp-footer-newsletter-basis: 13.75rem;
   /* Final homepage design type scale and cards (16 October 2026). */
   --cp-rd-display-size: 3.625rem;
   --cp-rd-final-title-size: 3rem;
