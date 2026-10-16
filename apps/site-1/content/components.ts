@@ -368,7 +368,7 @@ export const componentCopy = {
     button: 'See plans',
   },
   stickySelected: {
-    title: 'Rogers Plus · 100 GB',
+    title: 'Rogers · 100 GB',
     detail: '$40/mo + tax · $0 due today',
     button: 'Continue →',
   },

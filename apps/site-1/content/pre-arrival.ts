@@ -11,7 +11,7 @@ const audienceOptions: readonly { readonly id: ArrivalAudience; readonly label: 
   { id: 'student', label: 'Student' },
   { id: 'worker', label: 'Worker' },
   { id: 'resident', label: 'Permanent resident' },
-  { id: 'visitor', label: 'Visitor' },
+  { id: 'visitor', label: 'Visitor / Super Visa' },
 ];
 
 /** Source copy is a design preview, not approved commercial facts. */
@@ -31,13 +31,13 @@ export const arrivalCopy = {
   ],
   hero: {
     description:
-      'Get a Rogers or Fido number before you leave home, ready for bank, school and job forms. It works the minute you land. For students, workers, families and visitors.',
+      'Get a Rogers, Fido or Chatr number before you leave home, ready for bank, school and job forms. It works the minute you land. Monthly plans for students, workers and PRs; prepaid plans for visitors.',
   },
   quick: {
     eyebrow: 'Quick answer · Updated October 2026',
     title: 'Can I get a Canadian phone number before I arrive?',
     description:
-      "Yes. Order a pre-arrival eSIM on Rogers or Fido 1 to 3 weeks before your flight. You get your number right away, and your plan starts when you land. Plans start at $35 a month (CAD, plus tax). You don't need a Canadian credit history, just your passport and your visa or permit.",
+      "Yes. Order a pre-arrival eSIM 1 to 3 weeks before your flight. You get your number right away, and your plan starts when you land. Students, workers and PRs get monthly Rogers or Fido plans from $35 a month; visitors get Chatr prepaid plans from $35 for 30 days (CAD, plus tax). You don't need a Canadian credit history, just your passport and your visa or permit.",
   },
   picker: {
     step: 'Step 1 of 2',
@@ -65,7 +65,6 @@ export const arrivalCopy = {
     regionLabel: 'Pre-arrival plans',
     selectedAnnouncement: 'Selected plan',
     filterAnnouncement: 'plans shown for',
-    period: '/mo',
     due: '$0 due today',
     stepTwoTitle: 'Step 2 preview',
     stepTwoDescription:
@@ -160,26 +159,39 @@ export interface ArrivalPlan extends PlanCardContent {
   readonly audiences: readonly ArrivalAudience[];
   readonly summaryName: string;
   readonly popular: boolean;
+  /** Billing term shown after the price, e.g. "/mo" (postpaid) or "/30 days" (prepaid). */
+  readonly term: string;
 }
-/** Audience mapping is for UI demonstration; backend eligibility is not inferred. */
+const longTerm: readonly ArrivalAudience[] = ['student', 'worker', 'resident'];
+const internationalMinutes = '✓ 1,000 min to India, China, Bangladesh, Mexico & UK';
+/**
+ * Pre-arrival offer, matched to the owner's partner offer (getcanadasim.com, checked 16
+ * October 2026). Students, workers and PRs get monthly postpaid Rogers/Fido plans;
+ * visitors (tourist, Super Visa) get Chatr prepaid. Audience mapping is for the UI only;
+ * backend eligibility is not inferred.
+ */
 export const arrivalPlans: readonly ArrivalPlan[] = [
   {
     id: 'preview-fido-essential',
     originalPrice: '$60/mo',
     finePrint: 'in store · $0 due today',
-    audiences: ['student', 'resident', 'visitor'],
-    summaryName: 'Fido Essential',
+    audiences: longTerm,
+    summaryName: 'Fido',
     previewOnly: true,
     popular: false,
-    carrier: 'Fido · Essential',
+    carrier: 'Fido · 5G',
+    payType: 'Postpaid',
     allowance: '75 GB',
     amount: '$35',
+    term: '/mo',
     period: '/mo + tax',
-    goodFor: 'Good for: Everyday use at a lower monthly cost.',
+    goodFor: 'Good for: Everyday use at the lowest monthly price.',
     features: [
-      '✓ Unlimited Canada talk & text',
-      '✓ 1,000 international minutes',
-      '✓ 5G network · no contract',
+      '✓ 75 GB of 5G data',
+      '✓ Unlimited Canada-wide calling',
+      '✓ Unlimited local & international texts',
+      internationalMinutes,
+      '✓ No contract · hotspot not included',
     ],
     buttonLabel: 'Choose this plan',
     selectedLabel: 'Selected ✓',
@@ -188,19 +200,23 @@ export const arrivalPlans: readonly ArrivalPlan[] = [
     id: 'preview-rogers-plus',
     originalPrice: '$80/mo',
     finePrint: 'in store · $0 due today',
-    audiences: ['student', 'worker', 'resident'],
-    summaryName: 'Rogers Plus',
+    audiences: longTerm,
+    summaryName: 'Rogers',
     previewOnly: true,
     popular: true,
-    carrier: 'Rogers · Plus',
+    carrier: 'Rogers · 5G',
+    payType: 'Postpaid',
     allowance: '100 GB',
     amount: '$40',
+    term: '/mo',
     period: '/mo + tax',
     goodFor: 'Good for: Heavy data users who want room to spare.',
     features: [
-      '✓ Unlimited Canada talk & text',
-      '✓ 1,000 international minutes',
-      '✓ 5G network · works the moment you land',
+      '✓ 100 GB at up to 1 Gbps, then unlimited at reduced speed',
+      '✓ Unlimited Canada-wide calling',
+      '✓ Unlimited local & international texts',
+      internationalMinutes,
+      '✓ No contract · hotspot included',
     ],
     buttonLabel: 'Choose this plan',
     selectedLabel: 'Selected ✓',
@@ -209,19 +225,97 @@ export const arrivalPlans: readonly ArrivalPlan[] = [
   {
     id: 'preview-rogers-unlimited',
     finePrint: 'Pre-arrival price · $0 due today',
-    audiences: ['student', 'worker', 'resident'],
-    summaryName: 'Rogers Unlimited',
+    audiences: longTerm,
+    summaryName: 'Rogers Canada + USA',
     previewOnly: true,
     popular: false,
-    carrier: 'Rogers · Unlimited',
+    carrier: 'Rogers · 5G',
+    payType: 'Postpaid',
     allowance: '120 GB',
     amount: '$50',
+    term: '/mo',
     period: '/mo + tax',
     goodFor: 'Good for: Trips to the USA and heavy data use.',
     features: [
-      '✓ Unlimited Canada–US talk & text',
+      '✓ 120 GB at up to 1 Gbps, then unlimited at reduced speed',
       '✓ USA & Canada roaming included',
-      '✓ 1,000 international minutes',
+      '✓ Unlimited USA & Canada-wide calling',
+      '✓ Unlimited local & international texts',
+      internationalMinutes,
+      '✓ No contract · hotspot included',
+    ],
+    buttonLabel: 'Choose this plan',
+    selectedLabel: 'Selected ✓',
+  },
+  {
+    id: 'preview-chatr-50',
+    finePrint: 'Pre-arrival price · $0 due today',
+    audiences: ['visitor'],
+    summaryName: 'Chatr 30-day',
+    previewOnly: true,
+    popular: false,
+    carrier: 'Chatr · 4G LTE',
+    payType: 'Prepaid',
+    allowance: '50 GB',
+    amount: '$35',
+    term: '/30 days',
+    period: '/30 days + tax',
+    goodFor: 'Good for: Short visits of up to a month.',
+    features: [
+      '✓ 50 GB of 4G LTE data, then slower speed',
+      '✓ 5 GB bonus with Autopay',
+      '✓ Unlimited Canada & US calling',
+      '✓ Unlimited Canada, US & international texts',
+      '✓ eSIM activated 24 hours before you land',
+    ],
+    buttonLabel: 'Choose this plan',
+    selectedLabel: 'Selected ✓',
+  },
+  {
+    id: 'preview-chatr-90',
+    originalPrice: '$67',
+    finePrint: 'in store · $0 due today',
+    audiences: ['visitor'],
+    summaryName: 'Chatr 30-day',
+    previewOnly: true,
+    popular: true,
+    carrier: 'Chatr · 4G LTE',
+    payType: 'Prepaid',
+    allowance: '90 GB',
+    amount: '$40',
+    term: '/30 days',
+    period: '/30 days + tax',
+    goodFor: 'Good for: Visitors who stream, video call and use maps a lot.',
+    features: [
+      '✓ 90 GB of 4G LTE data, then slower speed',
+      '✓ 10 GB bonus with Autopay',
+      '✓ Unlimited Canada & US calling',
+      '✓ Unlimited Canada, US & international texts',
+      '✓ eSIM activated 24 hours before you land',
+    ],
+    buttonLabel: 'Choose this plan',
+    selectedLabel: 'Selected ✓',
+    badge: 'Popular with visitors',
+  },
+  {
+    id: 'preview-chatr-90-day',
+    finePrint: 'Pre-arrival price · $0 due today',
+    audiences: ['visitor'],
+    summaryName: 'Chatr 90-day',
+    previewOnly: true,
+    popular: false,
+    carrier: 'Chatr · 4G LTE',
+    payType: 'Prepaid',
+    allowance: '75 GB',
+    amount: '$75',
+    term: '/90 days',
+    period: '/90 days + tax',
+    goodFor: 'Good for: Super Visa and longer stays of up to 3 months.',
+    features: [
+      '✓ 75 GB of 4G LTE data over 90 days, then slower speed',
+      '✓ Unlimited Canada-wide calling',
+      '✓ Unlimited Canada, US & international texts',
+      '✓ eSIM activated 24 hours before you land',
     ],
     buttonLabel: 'Choose this plan',
     selectedLabel: 'Selected ✓',

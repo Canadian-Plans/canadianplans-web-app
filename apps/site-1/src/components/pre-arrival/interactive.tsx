@@ -108,7 +108,7 @@ export function PlanPicker({
                 onSelect={() => {
                   setSelectedId(plan.id);
                   setAnnouncement(
-                    `${copy.selectedAnnouncement}: ${plan.summaryName}, ${plan.allowance}, ${plan.amount}${copy.period}.`,
+                    `${copy.selectedAnnouncement}: ${plan.summaryName}, ${plan.allowance}, ${plan.amount}${plan.term}.`,
                   );
                 }}
               />
@@ -139,9 +139,9 @@ export function PlanPicker({
               </strong>
               <p>
                 {selected.amount}
-                {copy.period}
+                {selected.term}
                 <span className="cp-arrival-selection-detail">
-                  {selected.period.replace('/mo', '')} · {copy.due}
+                  {selected.period.replace(selected.term, '')} · {copy.due}
                 </span>
               </p>
             </div>

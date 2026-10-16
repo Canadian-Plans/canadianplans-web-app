@@ -102,14 +102,14 @@ export const preArrivalOrderCopy = {
     details: 'Details',
     hide: 'Hide',
     esim: 'eSIM',
-    period: '/mo · CAD, taxes extra',
+    period: ' · CAD, taxes extra',
     dueLabel: 'Due today',
     due: '$0',
     firstBill: 'First bill',
     starts: 'After your plan starts',
     recap: 'Order summary',
     planLabel: 'Plan',
-    priceLabel: 'Monthly price',
+    priceLabel: 'Price',
     noPaymentTitle: "You don't pay anything online",
     noPayment:
       'A real person confirms your order by phone or WhatsApp before anything is activated or billed.',
@@ -117,11 +117,6 @@ export const preArrivalOrderCopy = {
       'A real person confirms your order by phone',
       'or WhatsApp before anything is activated or',
       'billed.',
-    ],
-    rogersFeatures: [
-      '✓ Unlimited Canada talk & text',
-      '✓ 1,000 international minutes',
-      '✓ 5G network · eSIM ready',
     ],
   },
   persistence: {
@@ -202,7 +197,7 @@ export const preArrivalOrderCopy = {
       },
     ],
     order: 'Your preview',
-    labels: ['Plan', 'SIM type', 'Arriving', 'Monthly price', 'Charged today'],
+    labels: ['Plan', 'SIM type', 'Arriving', 'Price', 'Charged today'],
     beforeTitle: 'Before we call',
     before: [
       { text: '✓ Keep your passport nearby' },

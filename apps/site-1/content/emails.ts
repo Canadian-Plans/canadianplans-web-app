@@ -94,7 +94,7 @@ export const emailFixtures = {
     previewOnly: true,
     customerName: 'Aarav',
     orderReference: 'CP-2026-10482',
-    plan: 'Rogers Plus · 100 GB · eSIM',
+    plan: 'Rogers · 100 GB · eSIM',
     monthlyPrice: '$40/mo + tax',
     paidToday: '$0',
   },
@@ -102,7 +102,7 @@ export const emailFixtures = {
     previewOnly: true,
     customerName: 'Aarav',
     number: '+1 (604) 555-0142',
-    plan: 'Rogers Plus · 100 GB',
+    plan: 'Rogers · 100 GB',
     starts: 'When you land, Nov 14',
   },
   'install-booked': {

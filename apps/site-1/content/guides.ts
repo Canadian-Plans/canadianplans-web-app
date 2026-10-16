@@ -200,7 +200,7 @@ export const studentIndiaGuide: GuideArticle = {
       rows: [
         {
           id: 'fido',
-          name: 'Fido Essential',
+          name: 'Fido',
           data: '75 GB',
           price: '$35/mo',
           storePrice: '$60',
@@ -209,7 +209,7 @@ export const studentIndiaGuide: GuideArticle = {
         },
         {
           id: 'rogers-plus',
-          name: 'Rogers Plus',
+          name: 'Rogers',
           data: '100 GB',
           price: '$40/mo',
           storePrice: '$80',
@@ -220,7 +220,7 @@ export const studentIndiaGuide: GuideArticle = {
         },
         {
           id: 'rogers-unlimited',
-          name: 'Rogers Unlimited',
+          name: 'Rogers Canada + USA',
           data: '120 GB',
           price: '$50/mo',
           detail: 'USA roaming incl.',
@@ -234,8 +234,8 @@ export const studentIndiaGuide: GuideArticle = {
     {
       kind: 'plan-cta',
       eyebrow: 'Most students pick',
-      text: 'Rogers Plus · 100 GB · $40/mo + tax',
-      mobileLines: ['Rogers Plus · 100 GB', '$40/mo + tax'],
+      text: 'Rogers · 100 GB · $40/mo + tax',
+      mobileLines: ['Rogers · 100 GB', '$40/mo + tax'],
       label: 'See this plan →',
     },
     {

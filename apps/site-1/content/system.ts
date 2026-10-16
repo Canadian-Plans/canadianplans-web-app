@@ -58,7 +58,7 @@ export const searchCopy = {
   helpButton: 'Chat on WhatsApp',
   featured: {
     label: 'PLAN · MOST POPULAR WITH STUDENTS',
-    title: 'Rogers Plus · 100 GB eSIM',
+    title: 'Rogers · 100 GB eSIM',
     description:
       'Unlimited Canada calls & texts · 1,000 international minutes · ready the moment you land',
     price: '$40',
@@ -107,7 +107,7 @@ export const searchItems: readonly SearchItem[] = [
     category: 'plans',
     featured: true,
     previewOnly: true,
-    title: 'Rogers Plus · 100 GB eSIM',
+    title: 'Rogers · 100 GB eSIM',
     description:
       'Unlimited Canada calls & texts · 1,000 international minutes · ready the moment you land',
     label: 'PLAN · MOST POPULAR WITH STUDENTS',

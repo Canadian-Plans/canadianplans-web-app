@@ -134,5 +134,8 @@ and after this work): `verify-home.mjs`, `verify-pre-arrival.mjs`,
   The Vancouver credit-history answer now also appears on Ontario.
 - Done 15 Oct: removed the unused `public/design/category-{sim,rogers,airport-compare,internet}/`
   assets and their 136 `--cp-cat{sim,ac,net,rog}-*` tokens.
-- Plan cards still show “$60/$80 in store” comparison prices from the pre-arrival fixtures;
-  confirm the source before launch.
+- Pre-arrival plans (16 Oct) now match the owner's partner offer on getcanadasim.com (home
+  and /plans, checked 16 October 2026): students, workers and PRs get Fido 75 GB $35, Rogers
+  100 GB $40 and Rogers 120 GB Canada + USA $50 (monthly postpaid; in-store $60/$80);
+  visitors get Chatr prepaid 50 GB $35/30 days, 90 GB $40/30 days (in-store $67) and 75 GB
+  $75/90 days. Prices change often; re-check before launch.
