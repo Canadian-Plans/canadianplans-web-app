@@ -1,0 +1,77 @@
+name: Backup
+on:
+  schedule:
+    # 06:17 UTC daily — an off-peak, non-round-number minute so the run does
+    # not compete with every other project's on-the-hour cron (E10).
+    - cron: '17 6 * * *'
+  workflow_dispatch: {}
+permissions:
+  contents: read
+concurrency:
+  group: backup-${{ github.workflow }}
+  cancel-in-progress: false
+jobs:
+  backup:
+    # A GitHub Environment lets the owner require reviewers/restrict which
+    # branches can deploy it, and scopes every secret below to this job only
+    # (IMPLEMENTATION_PLAN §13: "protected, pinned GitHub Actions workflow
+    # with dedicated backup secrets"). Configure the "backup" environment's
+    # protection rules and secrets in the repository settings before the
+    # first scheduled run; this workflow file only references them by name.
+    environment: backup
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
+        with:
+          version: 9.15.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.19.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install age (encrypts every payload and manifest before upload)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y age
+          age --version
+      - name: Install Supabase CLI (db dump)
+        # TODO(owner, before first production run): pin this to a verified commit
+        # SHA, matching the checkout/pnpm/setup-node actions above — this
+        # session has no network access to resolve and verify one.
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Install PostgreSQL client tools (psql, for the referenced-object manifest and lease)
+        run: sudo apt-get install -y postgresql-client
+      - name: Run the independent daily backup
+        env:
+          # Read/export source credentials (never delete-capable).
+          SOURCE_DATABASE_URL: ${{ secrets.BACKUP_SOURCE_DATABASE_URL }}
+          BACKUP_LEASE_DATABASE_URL: ${{ secrets.BACKUP_LEASE_DATABASE_URL }}
+          SUPABASE_PROJECT_REF: ${{ secrets.BACKUP_SUPABASE_PROJECT_REF }}
+          R2_ACCOUNT_ID: ${{ secrets.BACKUP_R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.BACKUP_R2_READ_ONLY_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.BACKUP_R2_READ_ONLY_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.BACKUP_R2_BUCKET }}
+          SANITY_PROJECT_ID: ${{ secrets.BACKUP_SANITY_PROJECT_ID }}
+          SANITY_DATASET: production
+          SANITY_SITE_FILTER: site-1
+          # Public recovery recipient only — never the private decryption key.
+          RECOVERY_AGE_RECIPIENT: ${{ secrets.RECOVERY_AGE_RECIPIENT }}
+          # Archive-writer credential: list + write only, no read, no delete
+          # (see docs/RUNBOOKS/restore.md and jobs/src/backup/archive-store.ts).
+          B2_ARCHIVE_ENDPOINT: ${{ secrets.B2_ARCHIVE_ENDPOINT }}
+          B2_ARCHIVE_REGION: ${{ secrets.B2_ARCHIVE_REGION }}
+          B2_ARCHIVE_BUCKET: ${{ secrets.B2_ARCHIVE_BUCKET }}
+          B2_ARCHIVE_WRITER_KEY_ID: ${{ secrets.B2_ARCHIVE_WRITER_KEY_ID }}
+          B2_ARCHIVE_WRITER_APPLICATION_KEY: ${{ secrets.B2_ARCHIVE_WRITER_APPLICATION_KEY }}
+        run: pnpm --filter @canadian-plans/jobs run backup
+      - name: Sanitized failure diagnostics (no secrets, no payload bytes)
+        if: failure()
+        run: echo 'Backup run failed — see the "Run the independent daily backup" step output above for the (secret-free) error event.' >&2
+# No delete-capable credential is ever present in this workflow. Retention
+# runs from a completely separate workflow/credential (backup-retention.yml).

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Analytics } from '@/components/analytics';
-import './about.css';
+import '../redesign.css';
+import '../landing.css';
 
 export default function AboutLayout({ children }: { children: ReactNode }) {
   return (

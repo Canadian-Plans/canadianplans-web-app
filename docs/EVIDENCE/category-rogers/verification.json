@@ -1,28 +1,13 @@
 {
   "route": "/mobile-plans/rogers",
-  "origin": "http://127.0.0.1:3128",
-  "createdAt": "2026-10-13T12:36:05.241Z",
+  "origin": "http://127.0.0.1:3127",
+  "createdAt": "2026-10-13T12:42:35.657Z",
   "widths": {
-    "320": {
-      "scrollWidth": 320,
-      "clientWidth": 320
-    },
-    "390": {
-      "scrollWidth": 390,
-      "clientWidth": 390
-    },
-    "768": {
-      "scrollWidth": 768,
-      "clientWidth": 768
-    },
-    "1024": {
-      "scrollWidth": 1024,
-      "clientWidth": 1024
-    },
-    "1440": {
-      "scrollWidth": 1440,
-      "clientWidth": 1440
-    }
+    "320": { "scrollWidth": 320, "clientWidth": 320 },
+    "390": { "scrollWidth": 390, "clientWidth": 390 },
+    "768": { "scrollWidth": 768, "clientWidth": 768 },
+    "1024": { "scrollWidth": 1024, "clientWidth": 1024 },
+    "1440": { "scrollWidth": 1440, "clientWidth": 1440 }
   },
   "errors": [],
   "interactions": {
@@ -34,158 +19,47 @@
     "focusRestored": true
   },
   "headings": [
-    {
-      "level": "H1",
-      "text": "Rogers plans, explained in plain words."
-    },
-    {
-      "level": "H2",
-      "text": "Is Rogers worth it for newcomers?"
-    },
-    {
-      "level": "H2",
-      "text": "Rogers at a glance"
-    },
-    {
-      "level": "H2",
-      "text": "Every Rogers plan we offer"
-    },
-    {
-      "level": "H3",
-      "text": "Rogers Essentials"
-    },
-    {
-      "level": "H3",
-      "text": "Rogers Popular"
-    },
-    {
-      "level": "H3",
-      "text": "Rogers Plus"
-    },
-    {
-      "level": "H3",
-      "text": "Rogers Ultimate"
-    },
-    {
-      "level": "H2",
-      "text": "What we like"
-    },
-    {
-      "level": "H2",
-      "text": "Watch out for"
-    },
-    {
-      "level": "H2",
-      "text": "Rogers vs Fido vs Chatr"
-    },
-    {
-      "level": "H3",
-      "text": "Best for"
-    },
-    {
-      "level": "H3",
-      "text": "Pay"
-    },
-    {
-      "level": "H3",
-      "text": "Credit check"
-    },
-    {
-      "level": "H3",
-      "text": "5G"
-    },
-    {
-      "level": "H3",
-      "text": "US use"
-    },
-    {
-      "level": "H3",
-      "text": "Plans from"
-    },
-    {
-      "level": "H2",
-      "text": "Switch to Rogers in 4 steps — keep your number"
-    },
-    {
-      "level": "H3",
-      "text": "Keep your old plan active"
-    },
-    {
-      "level": "H3",
-      "text": "Send us your account number & PIN"
-    },
-    {
-      "level": "H3",
-      "text": "We transfer your number"
-    },
-    {
-      "level": "H3",
-      "text": "Switch on"
-    },
+    { "level": "H1", "text": "Rogers plans, explained in plain words." },
+    { "level": "H2", "text": "Is Rogers worth it for newcomers?" },
+    { "level": "H2", "text": "Rogers at a glance" },
+    { "level": "H2", "text": "Every Rogers plan we offer" },
+    { "level": "H3", "text": "Rogers Essentials" },
+    { "level": "H3", "text": "Rogers Popular" },
+    { "level": "H3", "text": "Rogers Plus" },
+    { "level": "H3", "text": "Rogers Ultimate" },
+    { "level": "H2", "text": "What we like" },
+    { "level": "H2", "text": "Watch out for" },
+    { "level": "H2", "text": "Rogers vs Fido vs Chatr" },
+    { "level": "H3", "text": "Best for" },
+    { "level": "H3", "text": "Pay" },
+    { "level": "H3", "text": "Credit check" },
+    { "level": "H3", "text": "5G" },
+    { "level": "H3", "text": "US use" },
+    { "level": "H3", "text": "Plans from" },
+    { "level": "H2", "text": "Switch to Rogers in 4 steps — keep your number" },
+    { "level": "H3", "text": "Keep your old plan active" },
+    { "level": "H3", "text": "Send us your account number & PIN" },
+    { "level": "H3", "text": "We transfer your number" },
+    { "level": "H3", "text": "Switch on" },
     {
       "level": "H2",
       "text": "Rogers for newcomers: what to know before you sign"
     },
-    {
-      "level": "H3",
-      "text": "Can I get Rogers without a credit history?"
-    },
-    {
-      "level": "H3",
-      "text": "Is Rogers better than Fido or Chatr?"
-    },
-    {
-      "level": "H3",
-      "text": "What about phone financing?"
-    },
-    {
-      "level": "H3",
-      "text": "Key facts"
-    },
-    {
-      "level": "H2",
-      "text": "Newcomersrecommend us."
-    },
-    {
-      "level": "H2",
-      "text": "Rogers plan questions"
-    },
-    {
-      "level": "H2",
-      "text": "Explore more"
-    },
-    {
-      "level": "H3",
-      "text": "Other brands"
-    },
-    {
-      "level": "H3",
-      "text": "By need"
-    },
-    {
-      "level": "H3",
-      "text": "Compare"
-    },
-    {
-      "level": "H2",
-      "text": "Switch to Rogers. Keep your number."
-    },
-    {
-      "level": "H2",
-      "text": "Pre-arrival SIM"
-    },
-    {
-      "level": "H2",
-      "text": "Home Internet"
-    },
-    {
-      "level": "H2",
-      "text": "Mobile Plans"
-    },
-    {
-      "level": "H2",
-      "text": "Help"
-    }
+    { "level": "H3", "text": "Can I get Rogers without a credit history?" },
+    { "level": "H3", "text": "Is Rogers better than Fido or Chatr?" },
+    { "level": "H3", "text": "What about phone financing?" },
+    { "level": "H3", "text": "Key facts" },
+    { "level": "H2", "text": "Newcomersrecommend us." },
+    { "level": "H2", "text": "Rogers plan questions" },
+    { "level": "H2", "text": "Explore more" },
+    { "level": "H3", "text": "Other brands" },
+    { "level": "H3", "text": "By need" },
+    { "level": "H3", "text": "Compare" },
+    { "level": "H2", "text": "Switch to Rogers. Keep your number." },
+    { "level": "H2", "text": "Pre-arrival SIM" },
+    { "level": "H2", "text": "Home Internet" },
+    { "level": "H2", "text": "Mobile Plans" },
+    { "level": "H2", "text": "Help" }
   ],
   "assets": {
     "390": [
@@ -487,12 +361,7 @@
         "width": 1440,
         "height": 642.9375
       },
-      {
-        "section": "cp-catrog-pros",
-        "y": 2226,
-        "width": 1440,
-        "height": 371
-      },
+      { "section": "cp-catrog-pros", "y": 2226, "width": 1440, "height": 371 },
       {
         "section": "cp-catrog-comparison",
         "y": 2597,

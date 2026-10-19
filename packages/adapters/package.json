@@ -15,6 +15,7 @@
   "dependencies": {
     "@aws-sdk/client-sesv2": "3.1136.0",
     "@canadian-plans/contracts": "workspace:*",
+    "@canadian-plans/observability": "workspace:*",
     "@canadian-plans/types": "workspace:*",
     "zod": "catalog:"
   },

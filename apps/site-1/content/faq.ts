@@ -1,30 +1,34 @@
 import type { FaqItemContent, SectionHeadingContent } from '@canadian-plans/ui/canadian-plans';
-import {
-  chromeContent,
-  componentAssets,
-  footerContent,
-  type ChromeContent,
-  type FooterContent,
-} from './components';
+import { componentAssets } from './components';
 
 export interface HelpFaqItem extends FaqItemContent {
-  readonly answerStatus: 'figma' | 'pending';
+  /**
+   * figma: owner design copy. site: answer reused from facts already published elsewhere on
+   * the site (15 Oct 2026 redesign). pending: awaiting approved content, never in JSON-LD.
+   */
+  readonly answerStatus: 'figma' | 'site' | 'pending';
   readonly keywords?: readonly string[];
 }
 export interface HelpFaqGroup {
   readonly id: string;
   readonly topic: string;
   readonly heading: SectionHeadingContent;
-  readonly imageCaption?: string;
   readonly items: readonly HelpFaqItem[];
 }
 export const faqCopy = {
   previewOnly: true,
-  title: 'Frequently Asked Questions | Canadian Plans',
+  title: 'FAQ: Canadian SIM, eSIM, Phone Plans & Orders | Canadian Plans',
+  description:
+    'Answers about getting a Canadian SIM or eSIM before you arrive, choosing Rogers, Fido or Chatr, documents, billing and tracking your order.',
+  breadcrumb: {
+    label: 'Breadcrumb',
+    separator: '/',
+    items: [{ label: 'Home', href: '/' }, { label: 'FAQ' }],
+  },
   skip: 'Skip to main content',
   hero: {
     eyebrow: 'Help center',
-    title: 'Frequently asked questions',
+    title: 'Canadian SIM and phone plan FAQ',
     description:
       'Answers for every stage: before you land, while choosing a plan, and after you order. Can’t find it here? Reach a real advisor below.',
   },
@@ -47,9 +51,9 @@ export const faqCopy = {
   },
   final: {
     title: 'Still have a question?',
-    description: 'A real advisor answers in minutes. WhatsApp, call or message us.',
-    primary: 'Browse all plans  →',
-    secondary: 'Talk to an advisor',
+    subtitle: 'A real advisor answers by WhatsApp, phone or email. Nothing to pay.',
+    primary: { label: 'Talk to an advisor →', href: '/contact' },
+    secondary: { label: 'Browse all plans ›', href: '/mobile-plans' },
   },
   destinations: {
     plans: '/mobile-plans',
@@ -65,14 +69,26 @@ const pending = (id: string, question: string): HelpFaqItem => ({
   answer: faqCopy.controls.pendingAnswer,
   answerStatus: 'pending',
 });
+const site = (
+  id: string,
+  question: string,
+  answer: string,
+  keywords?: readonly string[],
+): HelpFaqItem => ({
+  id,
+  question,
+  answer,
+  answerStatus: 'site',
+  ...(keywords ? { keywords } : {}),
+});
 /** Source design copy only; closed questions have explicit pending answer slots. */
 export const faqGroups: readonly HelpFaqGroup[] = [
   {
     id: 'faq-eligibility',
     topic: 'Eligibility',
     heading: {
-      eyebrow: 'FAQ',
-      title: ['General &', 'eligibility'],
+      eyebrow: 'Eligibility',
+      title: ['General and eligibility'],
       description: 'Talk to an advisor, Monday to Saturday, 9am–9pm Pacific time.',
     },
     items: [
@@ -84,20 +100,41 @@ export const faqGroups: readonly HelpFaqGroup[] = [
         answerStatus: 'figma',
         keywords: ['no credit check', 'credit history', 'newcomer'],
       },
-      pending('sin', 'Do I need a SIN to sign up?'),
-      pending('before-arrival', 'Can I order before I land in Canada?'),
-      pending('identification', 'What ID do I need to order?'),
+      site(
+        'sin',
+        'Do I need a SIN to sign up?',
+        'No. To order you need your passport, your study or work permit (or letter of introduction, visa or COPR), your arrival date and city, and an email address.',
+      ),
+      site(
+        'before-arrival',
+        'Can I order before I land in Canada?',
+        'Yes. Order your eSIM online 1 to 3 weeks before your flight, from any country. Your Canadian number is ready before you fly and the line switches on when you land.',
+        ['pre-arrival', 'esim'],
+      ),
+      site(
+        'identification',
+        'What ID do I need to order?',
+        'Your passport photo page and your study or work permit, letter of introduction, visa or PR confirmation (COPR). A clear photo or PDF of each is enough.',
+        ['documents', 'passport', 'permit'],
+      ),
       pending('english', 'What if my English isn’t perfect?'),
-      pending('choose-carrier', 'Which carrier should I pick: Rogers, Fido or Chatr?'),
-      pending('official-carrier', 'Is Canadian Plans an official carrier?'),
+      site(
+        'choose-carrier',
+        'Which carrier should I pick: Rogers, Fido or Chatr?',
+        'All three use the Rogers network, so coverage is the same. Chatr has the lowest price, Fido is the best value for most people, and Rogers adds 5G+ speeds and Canada–US plans.',
+      ),
+      site(
+        'official-carrier',
+        'Is Canadian Plans an official carrier?',
+        'No. We are an independent authorized dealer for Rogers, Fido and Chatr. Your plan and bill come from the carrier you choose, at the carrier’s own prices.',
+        ['dealer', 'authorized'],
+      ),
     ],
   },
   {
     id: 'faq-plans-sim',
     topic: 'Plans & SIM',
-    heading: { eyebrow: 'FAQ', title: ['Plans, SIM &', 'activation'] },
-    imageCaption:
-      'A phone showing the eSIM install screen with a QR code, next to a physical SIM card',
+    heading: { eyebrow: 'Plans & SIM', title: ['Plans, SIM and activation'] },
     items: [
       {
         id: 'esim-physical',
@@ -106,18 +143,30 @@ export const faqGroups: readonly HelpFaqGroup[] = [
           "An eSIM is a digital SIM built into newer phones, so there's no card to ship or insert. You can order it from any country and turn it on the moment you land. A physical SIM is the small card that goes in your phone's SIM tray. We'll check that your phone supports eSIM before we confirm.",
         answerStatus: 'figma',
       },
-      pending('esim-support', 'How do I know if my phone supports eSIM?'),
+      site(
+        'esim-support',
+        'How do I know if my phone supports eSIM?',
+        'On an iPhone, go to Settings → General → About and look for “EID” or “Digital SIM”. On Samsung and Android, go to Settings → Connections → SIM manager and look for “Add eSIM”. Your phone must also be unlocked.',
+      ),
       pending('activation-time', 'How long does activation take?'),
-      pending('home-country-number', 'Can I keep my number from my home country?'),
+      site(
+        'home-country-number',
+        'Can I keep my number from my home country?',
+        'Yes, keep your home SIM alongside your Canadian eSIM in a dual-SIM phone so you still get one-time codes from your bank. Turn off roaming on the home SIM to avoid charges.',
+        ['dual sim', 'otp'],
+      ),
       pending('data-limit', 'What happens when my data runs out?'),
-      pending('change-plan', 'Can I switch plans later?'),
+      site(
+        'change-plan',
+        'Can I switch plans later?',
+        'Yes. You can change your plan after the first month if you use more or less data than expected.',
+      ),
     ],
   },
   {
     id: 'faq-orders-billing',
     topic: 'Orders & billing',
-    heading: { eyebrow: 'FAQ', title: ['Orders, billing', '& tracking'] },
-    imageCaption: 'Close-up of a hand holding a phone with the order tracking page open',
+    heading: { eyebrow: 'Orders & billing', title: ['Orders, billing and tracking'] },
     items: [
       {
         id: 'order-tracking',
@@ -126,11 +175,21 @@ export const faqGroups: readonly HelpFaqGroup[] = [
           'Use the Track order page with your order number and email. You’ll see live status, every document we have on file, and can request a change or upload anything missing right from there. No need to call unless you want to.',
         answerStatus: 'figma',
       },
-      pending('payment-time', 'When am I charged?'),
+      site(
+        'payment-time',
+        'When am I charged?',
+        'Nothing is paid online when you order. Once your number is active, your first bill comes from the carrier, and an advisor walks you through the date before anything is billed.',
+        ['payment', 'bill'],
+      ),
       pending('change-order', 'Can I change my order after placing it?'),
       pending('missing-document', 'What if a document is missing or wrong?'),
       pending('cancel-refund', 'How do I cancel or get a refund?'),
-      pending('support', 'Who do I contact if something goes wrong?'),
+      site(
+        'support',
+        'Who do I contact if something goes wrong?',
+        'Contact us by WhatsApp, phone or email, Monday to Saturday, 9am–9pm Pacific time. You will reach the same advisors who confirm every order.',
+        ['help', 'contact'],
+      ),
     ],
   },
 ];
@@ -138,48 +197,4 @@ export const faqAssets = {
   ...componentAssets,
   phone: { src: '/design/faq/1-imgPhoneIcon.svg', width: 16, height: 16, nodeId: '364:2155' },
   faqSearch: { src: '/design/faq/0-imgIconSearch.svg', width: 20, height: 20, nodeId: '332:818' },
-};
-export const faqChrome: ChromeContent = {
-  ...chromeContent,
-  navigation: [
-    { label: 'Pre-arrival SIM', href: '/pre-arrival-sim' },
-    { label: 'Home Internet', href: '/home-internet' },
-    { label: 'Mobile Plans', href: '/mobile-plans' },
-    { label: 'Guides', href: '#faq-eligibility' },
-  ],
-  phone: { ...chromeContent.phone, href: faqCopy.destinations.whatsapp },
-  track: { ...chromeContent.track, href: faqCopy.destinations.track },
-  contact: { ...chromeContent.contact, href: '/contact' },
-  help: { ...chromeContent.help, href: '#faq-main' },
-  promoLink: { ...chromeContent.promoLink, href: '/pre-arrival-sim#plans' },
-};
-export const faqFooter: FooterContent = {
-  ...footerContent,
-  groups: footerContent.groups.map((group) => ({
-    ...group,
-    links: group.links.map((link) => ({
-      ...link,
-      href:
-        group.title === 'Pre-arrival SIM'
-          ? '/pre-arrival-sim#plans'
-          : group.title === 'Home Internet'
-            ? '/home-internet#internet-plans'
-            : group.title === 'Mobile Plans'
-              ? '/mobile-plans#mobile-plans'
-              : link.label === 'Track order'
-                ? faqCopy.destinations.track
-                : link.label === 'Contact'
-                  ? '/contact'
-                  : '#faq-eligibility',
-    })),
-  })),
-  legal: footerContent.legal.map((link) => ({
-    ...link,
-    href:
-      link.label === 'Privacy'
-        ? '/privacy'
-        : link.label === 'Terms'
-          ? '/terms'
-          : '/contact#message-us',
-  })),
 };

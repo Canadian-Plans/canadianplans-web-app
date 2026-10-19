@@ -24,16 +24,8 @@ import {
   CpChip,
   CpPlanCard,
   CpSectionHeading,
-  type CpButtonTone,
 } from '@canadian-plans/ui/canadian-plans';
-import {
-  internetCopy,
-  internetPlans,
-  internetAssets,
-  internetChrome,
-  internetChromeAssets,
-} from '@content/home-internet';
-import { Navigation } from '@/components/shared/component-lab-client';
+import { internetCopy, internetPlans, internetAssets } from '@content/home-internet';
 import { isValidPostalCode } from '@/lib/postal-preview';
 import { isValidMoveInDate, type InternetLookupResult } from '@/lib/internet-check';
 import { checkInternetAddressAction } from '@/app/(home-internet)/actions';
@@ -371,50 +363,6 @@ export function AddressCheckForm() {
       </CpButton>
       <p className="cp-internet-form-note">{copy.note}</p>
     </form>
-  );
-}
-
-export function InternetNavigation() {
-  const [menuOpen, setMenuOpen] = useState(false),
-    preview = usePreview();
-  return (
-    <Navigation
-      content={internetChrome}
-      assets={internetChromeAssets}
-      brandHref="/"
-      menuOpen={menuOpen}
-      onMenuOpenChange={setMenuOpen}
-      onAction={() => {
-        setMenuOpen(false);
-        document.getElementById('speed-finder')?.scrollIntoView({ behavior: 'instant' });
-        document.getElementById('finder-people-1')?.focus({ preventScroll: true });
-      }}
-      onContact={() => preview.openPreview('advisor')}
-    />
-  );
-}
-
-export function InternetAction({
-  label,
-  view = 'address',
-  tone = 'primary',
-  className,
-}: {
-  label: string;
-  view?: PreviewView;
-  tone?: CpButtonTone;
-  className?: string;
-}) {
-  const preview = usePreview();
-  return (
-    <CpButton
-      className={className}
-      tone={tone}
-      scale="large"
-      onClick={() => (view === 'address' ? preview.openAddress() : preview.openPreview(view))}
-    >
-      {label}
-    </CpButton>
   );
 }
 

@@ -18,7 +18,7 @@ catalog:
   vitest: 5.0.0
   '@vitest/coverage-v8': 5.0.0
   '@playwright/test': 1.63.0
-  '@axe-core/playwright': 4.11.1
+  '@axe-core/playwright': 4.10.2
   tsx: 4.23.13
   zod: 4.6.4
   drizzle-orm: 0.45.2

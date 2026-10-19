@@ -73,6 +73,8 @@ export const domainErrorCodeSchema = z.enum([
   'illegal_transition',
   'cancellation_reason_required',
   'dispatch_details_required',
+  'documents_incomplete',
+  'document_override_reason_required',
   'feature_not_ready',
   'assignee_not_found',
   'reminder_not_found',

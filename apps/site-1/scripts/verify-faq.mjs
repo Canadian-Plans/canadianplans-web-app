@@ -32,7 +32,11 @@ const sourceHashes = {
     '51c40f39354f2d490a0acfedf723d78b96df243b4a7bb7d2553b01ba7a6dcd45',
 };
 const results = [];
-const browser = await chromium.launch();
+const browser = await chromium.launch(
+  process.env.PLAYWRIGHT_CHROMIUM_PATH
+    ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH }
+    : {},
+);
 try {
   for (const width of [390, 1440]) {
     const context = await browser.newContext({
@@ -49,7 +53,9 @@ try {
       /<script[^>]*id="faq-page-schema"[^>]*>(.*?)<\/script>/su,
     )?.[1];
     assert.ok(sourceSchema, 'FAQPage must be rendered in the server HTML');
-    await page.getByRole('heading', { name: 'Frequently asked questions', exact: true }).waitFor();
+    await page
+      .getByRole('heading', { name: 'Canadian SIM and phone plan FAQ', exact: true })
+      .waitFor();
     await page.evaluate(() => globalThis.document.fonts.ready);
     await page.addStyleTag({ content: 'nextjs-portal {visibility:hidden;}' });
     await page.screenshot({ path: resolve(evidence, `faq-${width}.png`), fullPage: true });
@@ -98,6 +104,8 @@ try {
           Math.abs(asset.height - asset.declaredHeight) < 0.55,
         JSON.stringify(asset),
       );
+      // Shared site header/footer icons (15 Oct 2026) are not FAQ-page Figma exports.
+      if (!(asset.src in sourceHashes)) continue;
       const svg = await readFile(resolve(app, `public${asset.src}`), 'utf8');
       assert.equal(createHash('sha256').update(svg).digest('hex'), sourceHashes[asset.src]);
       const root = svg.match(/<svg\b[^>]*>/u)?.[0] ?? '';
@@ -111,13 +119,12 @@ try {
         height: node.getBoundingClientRect().height,
       })),
     );
-    assert.deepEqual(
-      row.imageSlots,
-      Array.from({ length: 2 }, () => ({
-        width: width === 390 ? 350 : 380,
-        height: width === 390 ? 200 : 240,
-      })),
-    );
+    // Electric Blue alignment (15 Oct 2026) removed the empty photo placeholders.
+    assert.deepEqual(row.imageSlots, []);
+    const schemaCount = await page
+      .locator('#faq-page-schema')
+      .evaluate((node) => JSON.parse(node.textContent ?? '{}').mainEntity.length);
+    assert.equal(schemaCount, 13);
     results.push(row);
     console.info(JSON.stringify(row));
     if (process.env.FAQ_BASELINE === '1') {
@@ -133,7 +140,7 @@ try {
     assert.deepEqual(JSON.parse(sourceSchema), schema);
     assert.equal(schema['@type'], 'FAQPage');
     assert.equal(schema['@context'], 'https://schema.org');
-    assert.equal(schema.mainEntity.length, 3);
+    assert.equal(schema.mainEntity.length, 13);
     for (const item of schema.mainEntity) {
       const disclosure = items.filter({
         has: page.locator('summary').filter({ hasText: item.name }),
@@ -144,7 +151,8 @@ try {
         item.acceptedAnswer.text,
       );
     }
-    const second = page.locator('#faq-eligibility details').nth(1);
+    // The fifth eligibility question (English) is still pending approved content.
+    const second = page.locator('#faq-eligibility details').nth(4);
     await second.locator('summary').focus();
     await page.keyboard.press('Enter');
     await expect(second).toHaveAttribute('open', '');
@@ -213,11 +221,11 @@ try {
     ).toHaveAttribute('href', '/mobile-plans');
     await expect(
       page
-        .locator('.cp-faq-page-final-actions')
-        .getByRole('link', { name: 'Talk to an advisor', exact: true }),
-    ).toHaveAttribute('href', '/contact#message-us');
+        .locator('.cp-faq-page-cta')
+        .getByRole('link', { name: 'Talk to an advisor →', exact: true }),
+    ).toHaveAttribute('href', '/contact');
     row.schema =
-      'three source Q&A pairs match the visible expandable answers; server-rendered schema remains unchanged during local search';
+      '13 answered Q&A pairs match the visible expandable answers; server-rendered schema remains unchanged during local search';
     row.interactions =
       '19 disclosures, keyboard toggling, exclusive groups, question/answer/alias search, empty/clear, keyboard topics, global finder and CTA destinations passed';
     row.overflow = [];

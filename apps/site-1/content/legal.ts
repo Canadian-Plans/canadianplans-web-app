@@ -1,10 +1,4 @@
-import {
-  chromeContent,
-  componentAssets,
-  footerContent,
-  type ChromeContent,
-  type FooterContent,
-} from './components';
+import { componentAssets } from './components';
 import type { FigmaAsset } from '@canadian-plans/ui/canadian-plans';
 export type LegalRoute = 'privacy' | 'terms';
 export interface LegalDraftSection {
@@ -317,51 +311,4 @@ export const legalAssets = {
   phone: asset('/design/legal/1-imgPhoneIcon.svg', 16, 16, '364:2155'),
   jump: asset('/design/legal/1-imgIcon2.svg', 18, 18, '317:771'),
   expand: asset('/design/legal/1-imgIcon3.svg', 20, 20, '317:791'),
-};
-export const legalChrome: ChromeContent = {
-  ...chromeContent,
-  phone: { ...chromeContent.phone, href: '/contact#contact-options' },
-  track: { ...chromeContent.track, href: '/track-order' },
-  contact: { ...chromeContent.contact, href: '/contact' },
-  help: { ...chromeContent.help, href: '/faq' },
-  navigation: [
-    { label: 'Pre-arrival SIM', href: '/pre-arrival-sim' },
-    { label: 'Home Internet', href: '/home-internet' },
-    { label: 'Mobile Plans', href: '/mobile-plans' },
-    { label: 'Guides', href: '/guides' },
-  ],
-};
-export const legalFooter: FooterContent = {
-  ...footerContent,
-  groups: footerContent.groups.map((group) => ({
-    ...group,
-    links: group.links.map((link) => ({
-      ...link,
-      href:
-        group.title === 'Pre-arrival SIM'
-          ? '/pre-arrival-sim#plans'
-          : group.title === 'Home Internet'
-            ? '/home-internet#internet-plans'
-            : group.title === 'Mobile Plans'
-              ? '/mobile-plans'
-              : link.label === 'Track order'
-                ? '/track-order'
-                : link.label === 'Contact'
-                  ? '/contact'
-                  : link.label === 'Guides'
-                    ? '/guides'
-                    : '/faq',
-    })),
-  })),
-  legal: footerContent.legal.map((link) => ({
-    ...link,
-    href:
-      link.label === 'Privacy'
-        ? '/privacy'
-        : link.label === 'Terms'
-          ? '/terms'
-          : link.label === 'Cookie settings'
-            ? '#legal-cookie-settings'
-            : '/contact',
-  })),
 };

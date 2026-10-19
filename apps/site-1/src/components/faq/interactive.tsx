@@ -1,12 +1,10 @@
 'use client';
 
 import { createContext, useContext, useRef, useState, type ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
 import { Input } from '@canadian-plans/ui';
 import { CpAsset, CpButton, CpFaqAccordion, CpLinkPill } from '@canadian-plans/ui/canadian-plans';
-import { faqAssets, faqChrome, faqCopy, faqGroups, type HelpFaqGroup } from '@content/faq';
+import { faqAssets, faqCopy, faqGroups, type HelpFaqGroup } from '@content/faq';
 import { filterFaqGroup, normalizeFaqSearch } from '@/lib/faq-content';
-import { Navigation } from '@/components/shared/component-lab-client';
 
 interface SearchContext {
   readonly query: string;
@@ -21,21 +19,6 @@ function useFaqSearch() {
 export function FaqSearchProvider({ children }: { children: ReactNode }) {
   const [query, setQuery] = useState('');
   return <Context value={{ query, setQuery }}>{children}</Context>;
-}
-export function FaqNavigation() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const router = useRouter();
-  return (
-    <Navigation
-      content={faqChrome}
-      assets={faqAssets}
-      brandHref="/"
-      menuOpen={menuOpen}
-      onMenuOpenChange={setMenuOpen}
-      onAction={() => router.push(faqCopy.destinations.contact)}
-      onContact={() => router.push(faqCopy.destinations.whatsapp)}
-    />
-  );
 }
 export function FaqSearchControls() {
   const { query, setQuery } = useFaqSearch();
@@ -150,7 +133,7 @@ export function FaqEmptyState() {
         {faqCopy.controls.clear}
       </CpButton>
       <CpButton asChild>
-        <a href={faqCopy.destinations.contact}>{faqCopy.final.secondary}</a>
+        <a href={faqCopy.final.primary.href}>{faqCopy.final.primary.label}</a>
       </CpButton>
     </section>
   );

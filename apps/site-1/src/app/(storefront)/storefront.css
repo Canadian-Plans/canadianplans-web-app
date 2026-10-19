@@ -1,0 +1,41 @@
+@reference './globals.css';
+
+/* Electric Blue restyle of the backend-connected order flow (15 October 2026).
+   Typography and spacing only; values come from canadian-plans.css tokens. */
+
+.cp-storefront-main {
+  max-width: var(--cp-landing-article-width);
+  padding-block: var(--cp-space-48) var(--cp-cat-page-gap-stacked);
+}
+.cp-storefront-main h1 {
+  margin: 0;
+  font-size: var(--cp-text-36);
+  font-weight: var(--cp-weight-extra-bold);
+  line-height: var(--cp-leading-heading);
+  letter-spacing: var(--cp-tracking-tight);
+}
+.cp-storefront-main h2 {
+  font-weight: var(--cp-weight-extra-bold);
+  letter-spacing: var(--cp-tracking-snug);
+}
+.cp-storefront-main [data-slot='card'] {
+  border-radius: var(--cp-radius-24);
+  border-color: var(--cp-color-line);
+  box-shadow: none;
+}
+.cp-storefront-main :is([data-slot='button'], button[type='submit']) {
+  border-radius: var(--cp-radius-999);
+}
+.cp-storefront-main {
+  @variant cp-chrome {
+    padding-bottom: var(--cp-cat-page-gap);
+  }
+}
+.cp-storefront-main h1 {
+  @variant cp-chrome {
+    font-size: var(--cp-text-48);
+  }
+}
+.cp-storefront-main h1 + p {
+  margin-top: var(--cp-space-12);
+}

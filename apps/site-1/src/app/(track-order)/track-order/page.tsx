@@ -2,16 +2,11 @@ import { pageMetadata } from '@/lib/page-metadata';
 import type { Metadata } from 'next';
 import { SkipLink } from '@canadian-plans/ui';
 import { CpBreadcrumb } from '@canadian-plans/ui/canadian-plans';
-import {
-  trackingCopy as copy,
-  trackingChrome,
-  trackingAssets,
-  trackingFooter,
-  trackingFixtures,
-} from '@content/track-order';
+import { trackingCopy as copy, trackingAssets, trackingFixtures } from '@content/track-order';
+import { siteChrome, siteFooter } from '@content/site-chrome';
 import { parseTrackingState } from '@/lib/tracking-preview';
-import { Footer, UtilityBar } from '@/components/shared/chrome';
-import { TrackingNavigation } from '@/components/track-order/navigation';
+import { Footer } from '@/components/shared/chrome';
+import { SiteHeader } from '@/components/shared/site-header';
 import { TrackingPageClient } from '@/components/track-order/page-client';
 export const metadata: Metadata = pageMetadata('/track-order', {
   title: copy.title,
@@ -25,20 +20,16 @@ export default async function Page({
 }) {
   const { state } = await searchParams;
   const selected = parseTrackingState(state);
+  // Site header (15 Oct 2026); the tracking result and lookup states are unchanged.
   return (
     <>
       <SkipLink href="#tracking-main" className="cp-tracking-skip">
         {copy.skip}
       </SkipLink>
-      <UtilityBar
-        content={trackingChrome}
-        assets={{
-          ...trackingAssets,
-          phone: selected === 'lookup' ? trackingAssets.phone : trackingAssets.resultPhone,
-        }}
+      <SiteHeader
         planHref={copy.destinations.plans}
+        content={{ ...siteChrome, track: { ...siteChrome.track, href: '#tracking-main' } }}
       />
-      <TrackingNavigation />
       <div className="cp-tracking-breadcrumb">
         <CpBreadcrumb
           label={copy.breadcrumbLabel}
@@ -48,8 +39,8 @@ export default async function Page({
       </div>
       <TrackingPageClient key={selected} fixture={trackingFixtures[selected]} />
       <Footer
-        brand={trackingChrome.brand}
-        content={trackingFooter}
+        brand={siteChrome.brand}
+        content={siteFooter}
         assets={trackingAssets}
         brandHref={copy.destinations.home}
       />

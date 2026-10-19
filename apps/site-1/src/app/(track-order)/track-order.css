@@ -46,9 +46,9 @@
 }
 .cp-tracking-lookup-hero h1 {
   font-size: var(--cp-text-36);
-  line-height: var(--cp-space-36);
-  letter-spacing: var(--cp-tracking-3);
-  font-weight: var(--cp-weight-bold);
+  line-height: var(--cp-leading-heading);
+  letter-spacing: var(--cp-tracking-tight);
+  font-weight: var(--cp-weight-extra-bold);
   text-align: center;
 }
 .cp-tracking-lookup-hero > div > p:last-child {
@@ -204,7 +204,7 @@
 .cp-tracking-help {
   padding: var(--cp-space-24);
   border-radius: var(--cp-radius-32);
-  background: var(--cp-color-ink);
+  background: var(--cp-color-navy);
   color: var(--cp-color-white);
   display: flex;
   flex-direction: column;
@@ -363,10 +363,10 @@
 }
 .cp-tracking-action {
   padding: var(--cp-space-24);
-  border: var(--cp-border-strong) solid var(--cp-color-ink);
+  /* Electric Blue: soft amber card; the ink outline and offset shadow are retired. */
+  border: var(--cp-border-thin) solid var(--cp-color-amber-stroke);
   border-radius: var(--cp-radius-28);
-  box-shadow: var(--cp-track-attention-shadow);
-  background: var(--cp-color-lemon);
+  background: var(--cp-color-amber-soft);
   display: flex;
   flex-direction: column;
   gap: var(--cp-space-16);
@@ -378,8 +378,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: var(--cp-border-strong) solid var(--cp-color-ink);
-  background: var(--cp-color-sun);
+  background: var(--cp-color-amber);
   border-radius: var(--cp-radius-999);
   font-size: var(--cp-text-24);
   line-height: var(--cp-space-28);
@@ -1257,8 +1256,7 @@ body:has(.cp-tracking-change-dialog) [data-slot='dialog-overlay'] {
     align-items: center;
   }
   .cp-tracking-lookup-hero h1 {
-    font-size: var(--cp-text-96);
-    line-height: var(--cp-track-hero-line);
+    font-size: var(--cp-text-56);
   }
   .cp-tracking-lookup-hero > div > p:last-child {
     font-size: var(--cp-text-20);
@@ -1272,7 +1270,7 @@ body:has(.cp-tracking-change-dialog) [data-slot='dialog-overlay'] {
     gap: var(--cp-space-32);
   }
   .cp-tracking-meanings > h2 {
-    font-size: var(--cp-text-56);
+    font-size: var(--cp-text-36);
     line-height: var(--cp-track-meaning-line);
   }
   .cp-tracking-meanings ol {
@@ -1530,10 +1528,10 @@ body:has(.cp-tracking-change-dialog) [data-slot='dialog-overlay'] {
   }
 }
 .cp-tracking {
-  background: var(--cp-color-legacy-page);
+  background: var(--cp-color-white);
 }
 .cp-tracking-breadcrumb {
-  background: var(--cp-color-legacy-page);
+  background: var(--cp-color-white);
 }
 .cp-tracking-lookup-help .cp-button {
   box-shadow: inset 0 0 0 var(--cp-border-strong) var(--cp-color-blue);

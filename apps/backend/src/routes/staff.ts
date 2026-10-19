@@ -726,6 +726,9 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         transition = { toStatus: 'cancelled', reason: body.data.reason };
       }
 
+      const documentOverrideReason =
+        body.data.action === 'cancel' ? undefined : body.data.documentOverrideReason;
+
       const outcome = await dependencies.orderTransitionStore.transition({
         workspaceId: workspaceId.data,
         actorId: actor.actorId,
@@ -733,6 +736,7 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         orderId: orderId.data,
         expectedVersion: body.data.expectedVersion,
         ...transition,
+        ...(documentOverrideReason ? { documentOverride: { reason: documentOverrideReason } } : {}),
       });
       switch (outcome.status) {
         case 'transitioned':
@@ -751,6 +755,16 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
           return;
         case 'dispatch_details_required':
           sendDomainError(res, req.id, 'dispatch_details_required', 400);
+          return;
+        case 'documents_incomplete':
+          // 409, not 403: the actor is permitted, the order is not yet ready.
+          // The outstanding types are named so staff know what to chase.
+          sendDomainError(res, req.id, 'documents_incomplete', 409, {
+            missingDocuments: outcome.missingDocuments ?? [],
+          });
+          return;
+        case 'document_override_reason_required':
+          sendDomainError(res, req.id, 'document_override_reason_required', 400);
           return;
         case 'feature_not_ready':
           sendDomainError(res, req.id, 'feature_not_ready', 409);

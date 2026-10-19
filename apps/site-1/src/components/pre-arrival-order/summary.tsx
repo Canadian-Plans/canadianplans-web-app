@@ -39,10 +39,13 @@ export function PreArrivalSummary({
         </h3>
         <div>
           <strong>{plan.amount}</strong>
-          <span>{c.period}</span>
+          <span>
+            {plan.term}
+            {c.period}
+          </span>
         </div>
       </div>
-      {(plan.id === 'preview-rogers-plus' ? c.rogersFeatures : plan.features).map((feature) => (
+      {plan.features.map((feature) => (
         <p className="cp-io-feature" key={feature}>
           {feature}
         </p>

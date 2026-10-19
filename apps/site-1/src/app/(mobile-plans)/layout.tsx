@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Analytics } from '@/components/analytics';
+import '../redesign.css';
 import './mobile-plans.css';
 
 export default function MobilePlansLayout({ children }: { children: ReactNode }) {

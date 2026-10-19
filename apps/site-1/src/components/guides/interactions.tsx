@@ -1,25 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { CpAsset, CpButton } from '@canadian-plans/ui/canadian-plans';
-import { guideAssets, guideChrome, guideCopy } from '@content/guides';
-import { Navigation } from '@/components/shared/component-lab-client';
+import { guideAssets, guideCopy } from '@content/guides';
 
-export function GuideNavigation() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const router = useRouter();
-  return (
-    <Navigation
-      content={guideChrome}
-      assets={guideAssets}
-      brandHref="/"
-      menuOpen={menuOpen}
-      onMenuOpenChange={setMenuOpen}
-      onAction={() => router.push(guideCopy.destinations.advisor)}
-      onContact={() => router.push(guideCopy.destinations.contact)}
-    />
-  );
-}
 export function GuideContents({
   items,
   mobile = false,

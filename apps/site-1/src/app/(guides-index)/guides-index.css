@@ -2,7 +2,7 @@
 
 .cp-guides-index {
   color: var(--cp-color-ink);
-  background: var(--cp-color-legacy-page);
+  background: var(--cp-color-white);
 }
 .cp-guides-index .cp-guides-skip:focus {
   top: var(--cp-space-16);
@@ -39,10 +39,10 @@
 }
 .cp-guides-hero h1 {
   max-width: var(--cp-about-copy-mobile-width);
-  font-size: var(--cp-text-48);
-  line-height: var(--cp-contact-display-line);
-  letter-spacing: var(--cp-tracking-3);
-  font-weight: var(--cp-weight-bold);
+  font-size: var(--cp-text-36);
+  line-height: var(--cp-leading-heading);
+  letter-spacing: var(--cp-tracking-tight);
+  font-weight: var(--cp-weight-extra-bold);
   text-align: center;
 }
 .cp-guides-intro {
@@ -129,7 +129,7 @@
   flex-direction: column;
   gap: var(--cp-space-16);
   border-radius: var(--cp-radius-32);
-  background: var(--cp-color-ink);
+  background: var(--cp-color-navy);
   color: var(--cp-color-white);
   overflow: hidden;
 }
@@ -295,54 +295,6 @@
   line-height: var(--cp-space-28);
   font-weight: var(--cp-weight-bold);
 }
-.cp-guides-final {
-  padding-block: var(--cp-space-48);
-  background: var(--cp-color-white);
-}
-.cp-guides-final-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--cp-space-24);
-  padding: var(--cp-space-40) var(--cp-space-28);
-  border-radius: var(--cp-radius-40);
-  background: var(--cp-color-blue);
-  color: var(--cp-color-white);
-  text-align: center;
-}
-.cp-guides-final h2 {
-  font-size: var(--cp-text-36);
-  line-height: var(--cp-space-40);
-  letter-spacing: var(--cp-tracking-2);
-  font-weight: var(--cp-weight-bold);
-}
-.cp-guides-final-card > p {
-  font-size: var(--cp-text-20);
-  line-height: var(--cp-leading-small);
-}
-.cp-guides-final-actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--cp-space-12);
-  padding-top: var(--cp-space-8);
-  width: 100%;
-}
-.cp-guides-final-actions .cp-button {
-  width: 100%;
-  line-height: var(--cp-space-22);
-  padding: var(--cp-space-18) var(--cp-space-32);
-}
-.cp-guides-final-actions .cp-button[data-tone='outline-inverse'] {
-  padding-block: var(--cp-space-16);
-}
-.cp-guides-final-actions .cp-button:focus-visible {
-  outline-color: var(--cp-color-white);
-}
-.cp-guides-final-card > .cp-guides-final-note {
-  font-size: var(--cp-text-15);
-  line-height: var(--cp-space-19);
-  font-weight: var(--cp-weight-medium);
-}
 @variant md {
   .cp-guides-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -388,8 +340,7 @@
   }
   .cp-guides-hero h1 {
     max-width: var(--cp-guides-title-width);
-    font-size: var(--cp-text-80);
-    line-height: var(--cp-guide-title-line);
+    font-size: var(--cp-text-56);
   }
   .cp-guides-intro {
     max-width: var(--cp-guides-search-width);
@@ -473,34 +424,19 @@
   .cp-guides-questions a {
     padding-block: var(--cp-space-20);
   }
-  .cp-guides-final {
-    padding-block: 0 var(--cp-space-96);
-  }
-  .cp-guides-final-card {
-    padding: var(--cp-space-88) var(--cp-space-80);
-  }
-  .cp-guides-final h2 {
-    font-size: var(--cp-text-96);
-    line-height: var(--cp-contact-desktop-display-line);
-    letter-spacing: var(--cp-tracking-3);
-    white-space: nowrap;
-  }
-  .cp-guides-final-actions {
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: center;
-    width: auto;
-  }
-  .cp-guides-final-actions .cp-button {
-    width: auto;
-  }
-  .cp-guides-final-card > .cp-guides-final-note {
-    font-size: var(--cp-text-16);
-    line-height: var(--cp-space-20);
-  }
   .cp-guides-index .cp-footer-bottom p,
   .cp-guides-index .cp-footer-bottom nav a,
   .cp-guides-index .cp-footer-bottom nav span {
     line-height: var(--cp-contact-label-line);
+  }
+}
+
+/* Electric Blue alignment (15 October 2026) */
+.cp-guides-cta {
+  padding-block: var(--cp-space-24) var(--cp-cat-page-gap-stacked);
+}
+@variant cp-chrome {
+  .cp-guides-cta {
+    padding-bottom: var(--cp-cat-page-gap);
   }
 }

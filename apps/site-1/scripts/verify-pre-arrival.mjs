@@ -10,7 +10,11 @@ const appRoot = fileURLToPath(new URL('../', import.meta.url));
 const evidence = path.resolve(appRoot, '../../docs/EVIDENCE/pre-arrival');
 const origin = process.env.ARRIVAL_TEST_URL ?? process.env.AUDIT_ORIGIN ?? 'http://127.0.0.1:3127';
 await mkdir(evidence, { recursive: true });
-const browser = await chromium.launch();
+const browser = await chromium.launch(
+  process.env.PLAYWRIGHT_CHROMIUM_PATH
+    ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH }
+    : {},
+);
 const results = [];
 try {
   for (const width of [390, 1440]) {

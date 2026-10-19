@@ -1,9 +1,8 @@
 import type { FigmaAsset } from '@canadian-plans/ui/canadian-plans';
-import { chromeContent, footerContent, type ChromeContent, type FooterContent } from './components';
 
 /** Figma design-preview copy. Not approved commercial or operational facts. */
 export const homeCopy = {
-  title: 'Canadian SIM & internet plans for newcomers.',
+  title: 'Canadian phone & internet plans, with real prices.',
   skip: 'Skip to main content',
   hero: {
     eyebrow: 'AUTHORIZED ROGERS, FIDO & CHATR DEALER',
@@ -82,7 +81,7 @@ export const homeCopy = {
           '✓  Add TV & streaming anytime',
         ],
         price: '$55',
-        href: '#internet',
+        href: '/home-internet',
       },
       {
         id: 'mobile',
@@ -548,39 +547,3 @@ export const homeAssets = {
   },
 } satisfies Record<string, FigmaAsset>;
 export type HomeCopy = typeof homeCopy;
-
-export const homeChrome: ChromeContent = {
-  ...chromeContent,
-  navigationLabel: 'Main navigation',
-  mobileNavigationLabel: 'Navigation menu',
-  phone: { ...chromeContent.phone, href: '#contact' },
-  track: { ...chromeContent.track, href: '/track' },
-  help: { ...chromeContent.help, href: '#faq' },
-  promoLink: { ...chromeContent.promoLink, href: '#popular-plans' },
-  navigation: [
-    { label: 'Pre-arrival SIM', href: '#popular-plans' },
-    { label: 'Home Internet', href: '#internet' },
-    { label: 'Mobile Plans', href: '#popular-plans' },
-    { label: 'Guides', href: '#how-it-works' },
-  ],
-};
-export const homeFooter: FooterContent = {
-  ...footerContent,
-  legalLabel: 'Legal links',
-  groups: footerContent.groups.map((group) => ({
-    ...group,
-    links: group.links.map((link) => ({
-      ...link,
-      href:
-        group.title === 'Home Internet'
-          ? '#internet'
-          : group.title === 'Help'
-            ? '#faq'
-            : '#popular-plans',
-    })),
-  })),
-  legal: footerContent.legal.map((link) => ({
-    ...link,
-    href: link.label === 'Privacy' ? '/privacy' : link.label === 'Terms' ? '/terms' : '#contact',
-  })),
-};

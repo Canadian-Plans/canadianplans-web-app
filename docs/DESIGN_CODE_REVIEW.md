@@ -66,19 +66,6 @@ Visual cleanup comparisons are in
 
 ## Remaining scope
 
-### Rogers follow-up
-
-The subsequent Rogers comparison found desktop fidelity errors missed by the
-earlier route-health checks. Both source frames were re-read and the hero/meta,
-quick answer, segmented scorecard, plans, comparison, switching, guide, reviews,
-FAQ and final CTA were corrected. The production verifier now asserts key Figma
-dimensions and typography, with zero axe violations at 390/1440 and no overflow
-at five widths. See [Rogers evidence](EVIDENCE/category-rogers/README.md).
-
-Committed evidence contains full source/render pairs, current audit captures and
-performance summaries. Intermediate captures, extra section crops and raw Figma
-responses remain local. The original 32-case performance audit is historical.
-
 Approved photography, missing FAQ/article content, carrier/business claims,
 live CMS/catalogue wiring, provider operations and production release remain
 the existing separate work. Native controls, font rendering and dashed strokes

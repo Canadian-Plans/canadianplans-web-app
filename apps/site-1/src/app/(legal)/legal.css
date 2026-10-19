@@ -35,9 +35,9 @@
 }
 .cp-legal-header h1 {
   font-size: var(--cp-text-36);
-  line-height: var(--cp-space-36);
-  letter-spacing: var(--cp-tracking-3);
-  font-weight: var(--cp-weight-bold);
+  line-height: var(--cp-leading-heading);
+  letter-spacing: var(--cp-tracking-tight);
+  font-weight: var(--cp-weight-extra-bold);
   overflow-wrap: anywhere;
 }
 .cp-legal-dates {
@@ -155,10 +155,10 @@
   gap: var(--cp-space-12);
   padding: var(--cp-space-24);
   border-radius: var(--cp-radius-24);
-  background: var(--cp-color-mint);
+  background: var(--cp-color-grey);
 }
 .cp-legal-short[data-policy='terms'] {
-  background: var(--cp-color-sky);
+  background: var(--cp-color-grey);
 }
 .cp-legal-short h2 {
   font-size: var(--cp-text-24);
@@ -211,7 +211,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--cp-space-20);
-  background: var(--cp-color-ink);
+  background: var(--cp-color-navy);
   color: var(--cp-color-white);
 }
 .cp-legal-contact h2 {
@@ -266,8 +266,7 @@
     height: var(--cp-space-16);
   }
   .cp-legal-header h1 {
-    font-size: var(--cp-text-80);
-    line-height: var(--cp-legal-hero-line);
+    font-size: var(--cp-text-56);
   }
   .cp-legal-breadcrumb {
     gap: var(--cp-space-8);

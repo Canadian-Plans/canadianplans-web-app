@@ -1246,3 +1246,179 @@ Existing shared primitives are composed; changes affect Rogers CSS/content and
 Rogers-specific central tokens only. Source and actual captures, geometry assertions,
 keyboard/focus behavior, axe and 320/390/768/1024/1440 overflow checks are recorded in
 `docs/EVIDENCE/category-rogers/`. Small font rasterization differences remain.
+
+## Electric Blue redesign — 14 October 2026
+
+Source of truth for this redesign is the Claude Design canvas "Canadian Plans — Homepage
+Redesign" (Home.dc.html), not Figma; the owner approved this exception to AGENTS.md rule 2.
+
+- Tokens: palette moved to electric blue `#2457ff`, ink `#111827`, mint, amber and navy;
+  Archivo replaces Google Sans Flex for the storefront (`--font-archivo`). New tokens are
+  grouped under "Electric Blue redesign" and `--cp-rd-*` in `canadian-plans.css`.
+- Shared primitives (new): `CpCategoryBanner`, `CpFeatureRow`, `CpBlockHeading`,
+  `CpStepTimeline`, `CpFeatureCard`, `CpFeatureGrid`, `CpCtaBand`, `CpSwipeRow`;
+  `CpButton` tones `amber | mint | navy | white`; `CpBadge` tones `mint | amber`.
+- Home: composition in `src/components/home/redesign/*`, copy in `content/home-redesign.ts`,
+  styles in `src/app/(home)/home-redesign.css`, illustrations in `public/design/redesign/`.
+  The previous composition was removed with the other backups. `PopularPlans` is retained as the
+  pricing section (`#popular-plans`). Footer background is navy site-wide.
+- Open: bracketed copy, business pricing, real testimonial quotes/photos, 390/1440
+  screenshot verification.
+
+## Electric Blue category template — 14 October 2026
+
+One template (`src/components/category-redesign/template.tsx`) now renders Pre-arrival
+(`/pre-arrival-sim`), Home Internet (`/home-internet`), Mobile Plans (`/mobile-plans`) and the
+new Business Internet preview (`/business-internet`, noindex, not in the sitemap). Order:
+breadcrumb → `CpCategoryBanner` hero (h1, category tone) → quick answer → feature row →
+steps / who / cards → the page's own plan block → comparison → FAQ → `CpCtaBand`.
+
+- Owner decisions (14 October): keep the quick answer and comparison table; drop reviews,
+  coverage, TV, equipment and who-can-order blocks; hero colours follow the category system
+  (amber-soft, ink, blue, navy), not the blue canvas stubs; create `/business-internet`.
+- Category copy (banner, feature, steps, cards, CTA) is shared with the homepage explorer via
+  `homeRedesign.categories`; page additions live in `content/category-redesign.ts`, business copy
+  in `content/business-internet.ts`. Shared redesign CSS moved to `src/app/redesign.css`.
+- Plan blocks are unchanged components with their existing preview data and order handoffs:
+  `PlanPicker`, `AddressCheckForm` + `SpeedFinder` + `InternetSpeedCards`, `MobilePlanBrowser`.
+  The hero action and CTA band point at each page's plan block.
+- Business has no plan list (`[PRICE]` open), so its plan slot is a UI-only quote form: client
+  validation plus a typed stub server action (`(business-internet)/actions.ts`) that stores and
+  sends nothing and reports a preview result. FAQ answers keep bracketed open inputs.
+- Shared changes: `CpCategoryBanner` gains `description` and `headingLevel="h1"`; feature-row
+  columns size to content when stacked (removed ~130px gap at 390); `--cp-cat-*` tokens added.
+  Homepage `#internet` links (dead since the redesign) now go to `/home-internet`; removed-section
+  anchors on category navs/promos were repointed. New shared React components: none.
+- Open: unused legacy components/content/CSS from the removed sections (cleanup after review);
+  `audit-records.mjs` expects a `figmaAssets` key `audit-pages.mjs` never collects, so every
+  audited route reports "Incomplete audit results" (pre-existing).
+- Owner follow-up (14 October): category banners removed from the homepage explorer; each
+  explorer block is now feature row → steps/cards → CTA band. The banner remains the H1 hero on
+  the four category pages.
+- Owner follow-up (14 October): explorer feature rows now carry the category eyebrow, action and
+  price (`CpFeatureRow` gains optional `tone`, `eyebrow`, `action`, `price*`). Eyebrows use the
+  category text tones (amber-ink, mint-ink, blue, navy) because mint on white is ~1.8:1; buttons
+  are ink / blue / blue / mint so none is white on white.
+
+## Electric Blue re-skin of remaining pages — 14 October 2026
+
+About, Contact, FAQ, Guides, Guides index, order flows, tracking, legal and system pages keep their
+layouts and behaviour; only clashes with the new style were changed (page CSS only):
+
+- Legacy beige page backgrounds (`--cp-color-legacy-page`) → white on About, Contact, FAQ, Guides
+  index and tracking; About bands/benefit cards and the FAQ search field → grey.
+- Decorative tinted blocks → grey: contact option cards, guide checklist and device cards, legal
+  summary boxes, order-summary plan cards, pre-arrival eSIM panel.
+- Kept on purpose: tracking/order status fills (done, attention, info, problem), the guide tip
+  callout (amber-soft), active table-of-contents and popular-row highlights.
+- Image placeholder slots are grey (`--cp-color-slot-*`), shared with the transactional emails;
+  `pnpm emails:tokens` regenerated and `emails:verify` passes.
+- About final CTA gets top spacing on desktop so it no longer sits flush against the grey band.
+- `/order` and `/track` behaviour unchanged. Audit: 22 routes × 390/1440, zero problems.
+
+## Electric Blue wrap-up — 14 October 2026
+
+- Homepage hero now defaults to "I'm moving to Canada" (newcomer audience per PLATFORM_CONTEXT);
+  the H1 matches the page title again and `scaffold.spec.ts` passes unchanged.
+- Removed code left unused by the category template: `EsimArt` + `content/pre-arrival-art.ts`,
+  `AdvisorPreview`, `InternetAction`, `MobilePreviewAction`, `ExploreNeeds`, the three per-page
+  review arrays, `internetEquipmentAssets`, unreferenced copy sections, and ~400 dead CSS rules in
+  `pre-arrival.css`, `home-internet.css`, `mobile-plans.css` and `home.css` (screenshots
+  pixel-identical before/after at 390 and 1440).
+- Tracking "action needed" card: soft amber card; the ink outline/offset shadow (and its
+  `--cp-track-attention-shadow` token) are retired.
+- Google Sans Flex now loads only on `/dev/emails` (emails keep it); the storefront loads Archivo only.
+- Handoff backups (`*.bak-2026-10-14`, `page.legacy.tsx.bak`, `rd-tokens.merged…`,
+  `claude-transfer.tgz`) moved out of the repo.
+- Verification: typecheck, lint, 200 unit tests, production build, 36/36 backend-free e2e specs,
+  page audit 22 routes × 390/1440 with zero problems, `emails:verify`. Not run here: `order.spec.ts`
+  and `a2-launch-gates.spec.ts` (need the Postgres e2e harness).
+- Owner change (14 October): the storefront font is **Google Sans Flex** again, not Archivo.
+  `--cp-font-family` uses `--font-google-sans-flex` (root layout); Archivo is removed. Emails were
+  already Google Sans Flex. Audit re-run: 22 routes × 390/1440 clean, no overflow at 320.
+
+## Page-by-page Electric Blue redesign — 15 October 2026
+
+Owner request: bring every page in line with the home page, rewrite copy for clarity and
+SEO without inventing facts. Tracker, decisions and open placeholders:
+[docs/REDESIGN_PROGRESS.md](docs/REDESIGN_PROGRESS.md).
+
+- **Landing kit** (`src/components/landing/*`, `src/app/landing.css`, `content/landing/*`):
+  banner hero, quick answer, facts strip, steps, checklist, cards, pros/cons, data table,
+  guide with key facts, FAQ, related links, CTA band; BreadcrumbList + FAQPage JSON-LD
+  (pending answers excluded). Used by the seven SEO pages and /about. The old
+  category-sim/rogers/airport-compare/internet route groups, assets and `--cp-cat*` tokens
+  are removed.
+- **Site chrome**: `SiteHeader` + `siteChrome` / `siteFooter` (`content/site-chrome.ts`)
+  replace per-page chrome with real links on every page except the home header.
+- **Aligned in place**: contact, FAQ (10 answers filled from existing site copy), guides
+  index/article (index lists only real content), track order, order-flow layout, legal and
+  system pages: home-style headings, navy instead of ink panels, CTA band.
+- New shared React components in `@canadian-plans/ui`: none. New app components:
+  `LandingPage`, `InternetLanding`, `SiteHeader`.
+
+## Final homepage design pass — 16 October 2026
+
+Source: the owner's "FINAL · Homepage (building section by section)" Claude Design export
+(`Home.dc.html`), compared section by section with the live page at 1440 and 390.
+
+- Owner decisions (16 October): keep Google Sans Flex (the export still uses Archivo); hero
+  keeps opening on "I'm moving to Canada"; remove the Popular plans section (`PopularPlans`,
+  `#popular-plans`) as in the design; use the design's header and footer on every page with
+  real links, leaving out the email sign-up and social icons until there is a backend and real
+  accounts.
+- Header (all pages): dark utility bar with the dealer line; new `BrandMark` logo (blue mark +
+  "canadianplans" wordmark, mint "plans" on navy) also in the checkout headers; nav adds
+  Business Internet and reads "Pre-arrival Plans"; search is an icon link to `/search`;
+  "Find my plan" is a blue pill. Mobile keeps the menu (the export has none) and hides the
+  header finder below 375px so the logo is never clipped; the finder stays in the menu.
+- Footer (all pages): Plans / Popular / Help / Company columns, design colours and sizes.
+  The Popular column (landing pages) takes the slot of the omitted sign-up form.
+- Home: hero plan card sits on the photo, wider copy column; the finder button wraps under
+  the fields instead of truncating "A number before I arrive"; picker cards get the grey
+  icon well and shadow; display headings 58px, feature titles 52px, testimonials/FAQ 44px;
+  explorer heading "Discover everything we offer."; "Who it's for" icons on white tiles;
+  FAQ toggle is "+" on grey turning into a dark "×". "Find my plan" links open the plan finder.
+- Not built: the hero carousel arrows/dots (the export has no slides behind them) and the
+  white "See mobile plans" button (kept blue so it is visible on white, per 14 October).
+- Removed: `src/components/home/interactive.tsx` (HomeNavigation, PopularPlans and older
+  unused previews) and `homeChrome` / `homeFooter`.
+- Verification: typecheck, lint, format, 175 unit tests, production build, full audit
+  (28 routes × 320/390/1440: one h1, no overflow, anchors, axe, no errors; 24 internal links).
+  `scaffold.spec.ts` now expects the home nav "Mobile Plans" link to open `/mobile-plans`.
+
+## Home page rebuilt to the final export — 16 October 2026
+
+Owner request: the coded home page was narrower than the design; rebuild it as an exact copy
+of the final homepage export, as a system rather than hard-coded values. Font stays Google
+Sans Flex.
+
+- Cause of the width gap: the export uses content-box sizing, so its hero card and final CTA
+  are 1296px wide (1184px content + 56px padding), its header content is 1280px and its sections
+  1184px. The old build used one 1200px container everywhere.
+- System: a home design token group `--cp-hd-*` in `canadian-plans.css` (layout widths,
+  gutters, colour roles, type roles, leading, tracking, radii, shadows, component sizes, flex
+  bases) plus the export's breakpoints as variants (`cp-hd-md` 1000px, `cp-hd-sticky` /
+  `cp-hd-nav` 900px, `cp-hd-sm` 760px, `cp-hd-xs` 640px). `--cp-hd-leading-normal` (1.27)
+  reproduces the export's normal line box instead of Tailwind's 1.5.
+- Components: `src/components/home/design/*` (hero with a two-slide carousel synced to the
+  audience tabs, picker, service columns with swipe dots, explorer with scroll-spy nav,
+  getting connected, stories, FAQ, final CTA), styled only by `src/app/(home)/home-design.css`.
+  The previous home components, `home.css` and `home-redesign.css` were removed; category and
+  landing pages are unchanged.
+- Header and footer (all pages): header content 1280px with 48px gutters; footer as in the
+  export (Plans / Help / Company, email sign-up, WhatsApp). The sign-up is a preview: it
+  validates and says sign-ups open soon; nothing is stored or sent
+  (`src/lib/newsletter-preview.ts`). Only WhatsApp is shown (links to Contact) until real
+  social URLs exist; Careers waits for a page. Footer column titles are not headings, so
+  "Plans" no longer collides with the `/plans` h1.
+- Owner decisions (16 October): hero opens on "I already live in Canada"; carousel has two
+  dots (one per audience); newsletter and WhatsApp as above.
+- Deliberate differences from the export: mint eyebrows on white use mint-ink (AA); the white
+  "See mobile plans" button gets an ink outline so it is visible; picker "See plans →" links
+  are full brand blue instead of 75% opacity (AA); the phone header keeps its menu button; the
+  desktop nav appears from 1280px (the export's nav overflows below about 1250px).
+- Verification: section offsets within a few pixels of the export at 1440 (remaining drift is
+  Google Sans Flex wrapping differently from Archivo), full audit 28 routes × 320/390/1440 with
+  0 problems, interactions (tabs, carousel, FAQ, how-it-works, sign-up, explorer nav, finder,
+  skip link, desktop and mobile nav) checked, 178 unit tests.

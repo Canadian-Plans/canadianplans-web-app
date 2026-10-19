@@ -83,3 +83,44 @@ export {
   presignUrl,
   type R2Config,
 } from './r2-s3.js';
+
+export {
+  presignS3Url,
+  signS3Request,
+  type PresignS3Params,
+  type S3SigningConfig,
+  type SignS3RequestInput,
+} from './sigv4.js';
+
+export {
+  createErrorTrackerFromEnv,
+  NoopErrorTracker,
+  parseSentryDsn,
+  SentryHttpErrorTracker,
+  FakeErrorTracker,
+  buildErrorEvent,
+  type CapturedErrorEvent,
+  type CreateErrorTrackerOptions,
+  type ErrorTracker,
+  type ErrorTrackerContext,
+  type SentryDsn,
+  type SentryHttpErrorTrackerConfig,
+} from './error-tracking.js';
+
+export { logEvent, buildLogRecord, scrubValue, type LogFields, type LogRecord } from './logging.js';
+
+export {
+  createOwnerAlertChannelFromEnv,
+  EmailOwnerAlertChannel,
+  FakeOwnerAlertChannel,
+  MultiOwnerAlertChannel,
+  NoopOwnerAlertChannel,
+  ownerAlertKinds,
+  WebhookOwnerAlertChannel,
+  type CreateOwnerAlertChannelOptions,
+  type EmailOwnerAlertChannelConfig,
+  type OwnerAlert,
+  type OwnerAlertChannel,
+  type OwnerAlertKind,
+  type WebhookOwnerAlertChannelConfig,
+} from './alerts.js';

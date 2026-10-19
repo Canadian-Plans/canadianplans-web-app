@@ -33,14 +33,15 @@ describe('FAQ search and structured content', () => {
   it('does not treat the pending editorial notice as FAQ answer content', () => {
     expect(matches('awaiting approved')).toEqual([]);
   });
-  it('emits the three complete source Q&A pairs and excludes all 16 pending answers', () => {
+  it('emits the 13 answered Q&A pairs and excludes the 6 pending answers', () => {
     const schema = buildFaqPageSchema(faqGroups);
     expect(schema['@type']).toBe('FAQPage');
     expect(schema['@context']).toBe('https://schema.org');
     const complete = faqGroups.flatMap((group) =>
-      group.items.filter((item) => item.answerStatus === 'figma'),
+      group.items.filter((item) => item.answerStatus !== 'pending'),
     );
-    expect(schema.mainEntity).toHaveLength(3);
+    expect(complete).toHaveLength(13);
+    expect(schema.mainEntity).toHaveLength(13);
     expect(
       schema.mainEntity.map((item) => ({ question: item.name, answer: item.acceptedAnswer.text })),
     ).toEqual(complete.map((item) => ({ question: item.question, answer: item.answer })));

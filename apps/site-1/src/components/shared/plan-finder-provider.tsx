@@ -16,6 +16,10 @@ export function usePlanFinder() {
   if (!open) throw new Error('Global plan finder provider missing');
   return open;
 }
+/** Like usePlanFinder, but null when no provider is mounted (links then follow their href). */
+export function useOptionalPlanFinder() {
+  return useContext(Context);
+}
 
 export function PlanFinderProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);

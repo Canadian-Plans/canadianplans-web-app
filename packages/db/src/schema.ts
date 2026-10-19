@@ -1407,6 +1407,26 @@ export const rateLimitBuckets = appSchema
   )
   .enableRLS();
 
+/**
+ * Global pause marker written directly by the independent backup runner's own
+ * privileged credential (never `app_runtime`) while it builds the referenced-
+ * object manifest and copies R2 objects (IMPLEMENTATION_PLAN §13: "Prevent
+ * object cleanup racing the archive with a snapshot reference set and
+ * lease."). Not tenant-scoped: a backup run spans every workspace. `app_runtime`
+ * has no direct grant; it only calls `app.backup_lease_active()` (see the
+ * accompanying migration), matching `rate_limit_buckets`/`resolve_website_credential`.
+ */
+export const backupLeases = appSchema
+  .table(
+    'backup_leases',
+    {
+      runId: text('run_id').primaryKey(),
+      expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
+    },
+    (table) => [index('backup_leases_expires_at_idx').on(table.expiresAt)],
+  )
+  .enableRLS();
+
 export const auditEvents = appSchema
   .table(
     'audit_events',
@@ -2028,6 +2048,7 @@ export const schema = {
   paymentRecords,
   serviceCredentials,
   rateLimitBuckets,
+  backupLeases,
   auditEvents,
   deletionIntents,
   trackingChallenges,

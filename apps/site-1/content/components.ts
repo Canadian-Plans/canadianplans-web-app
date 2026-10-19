@@ -16,6 +16,8 @@ export interface PreviewLink {
 
 export interface ChromeContent {
   readonly brand: string;
+  /** Utility bar line (final homepage design, 16 October 2026). */
+  readonly dealer: string;
   readonly moving: string;
   readonly living: string;
   readonly phone: PreviewLink;
@@ -96,6 +98,7 @@ export const componentAssets = {
 /** Figma examples only. The dev route keeps every link/action inside the showcase. */
 export const chromeContent: ChromeContent = {
   brand: 'Canadian Plans',
+  dealer: 'Authorized Rogers, Fido & Chatr dealer · Surrey, BC',
   moving: "I'm moving to Canada",
   living: 'I already live here',
   phone: { label: '1-888-555-0199', href: '#contact' },
@@ -125,11 +128,35 @@ export const chromeContent: ChromeContent = {
   promoMobileLabel: 'See SIM plans →',
 };
 
+export interface FooterNewsletterContent {
+  readonly title: string;
+  readonly body: string;
+  readonly label: string;
+  readonly placeholder: string;
+  readonly action: string;
+  readonly invalid: string;
+  readonly preview: string;
+}
+
+export interface FooterLink extends PreviewLink {
+  /** Opens the global plan finder instead of following the link (href is the fallback). */
+  readonly finder?: true;
+}
+
 export interface FooterContent {
   readonly description: string;
   readonly address: string;
   readonly contactLine: string;
-  readonly groups: readonly { readonly title: string; readonly links: readonly PreviewLink[] }[];
+  /** Final homepage design: phone, email and address on separate lines. */
+  readonly contactLines?: readonly string[];
+  /** Small round social links; only real destinations are listed. */
+  readonly social?: readonly {
+    readonly label: string;
+    readonly short: string;
+    readonly href: string;
+  }[];
+  readonly newsletter?: FooterNewsletterContent;
+  readonly groups: readonly { readonly title: string; readonly links: readonly FooterLink[] }[];
   readonly copyright: string;
   readonly legalLabel: string;
   readonly legalSeparator: string;
@@ -368,7 +395,7 @@ export const componentCopy = {
     button: 'See plans',
   },
   stickySelected: {
-    title: 'Rogers Plus · 100 GB',
+    title: 'Rogers · 100 GB',
     detail: '$40/mo + tax · $0 due today',
     button: 'Continue →',
   },

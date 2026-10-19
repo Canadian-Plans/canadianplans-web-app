@@ -1,8 +1,4 @@
-import type {
-  PlanCardContent,
-  FigmaAsset,
-  TestimonialContent,
-} from '@canadian-plans/ui/canadian-plans';
+import type { PlanCardContent, FigmaAsset } from '@canadian-plans/ui/canadian-plans';
 import {
   chromeContent,
   footerContent,
@@ -39,46 +35,8 @@ export const mobileCopy = {
   ],
   separator: '/',
   hero: {
-    eyebrow: 'Mobile plans · Already in Canada',
-    title: 'Compare Rogers, Fido & Chatr phone plans.',
-    pricePrefix: 'Plans from',
-    price: '$29/mo',
-    priceSuffix: '+ tax · No contract',
     description:
       "See every plan side by side, explained in plain words. Keep your number and bring your own phone. Prepaid plans don't need a Canadian credit history.",
-    primary: 'Compare plans ↓',
-    secondary: 'Help me choose',
-    features: [
-      '✓ Authorized Rogers, Fido & Chatr dealer',
-      '✓ Pay $0 to order. We call you to confirm.',
-      '★★★★★ 4.8 on Google · 1,200+ reviews',
-    ],
-    carriers: [
-      {
-        id: 'chatr',
-        name: 'Chatr',
-        description: 'Lowest price · prepaid',
-        amount: '$29',
-        tone: 'lemon',
-      },
-      {
-        id: 'fido',
-        name: 'Fido',
-        description: 'Best value · 5G',
-        amount: '$45',
-        tone: 'mint',
-      },
-      {
-        id: 'rogers',
-        name: 'Rogers',
-        description: 'Premium · 5G+ & US roaming',
-        amount: '$55',
-        tone: 'sky',
-      },
-    ],
-    from: 'from',
-    period: '/mo',
-    network: 'All three run on the Rogers network.',
   },
   quick: {
     eyebrow: 'Quick answer · Updated October 2026',
@@ -219,100 +177,10 @@ export const mobileCopy = {
     ],
     note: 'VERIFY before publishing: network features (5G/5G+), credit checks and roaming options per brand.',
   },
-  payment: {
-    eyebrow: 'No credit history yet?',
-    title: 'Prepaid or postpaid: what’s the difference?',
-    cards: [
-      {
-        tone: 'lemon',
-        title: 'Prepaid',
-        subtitle: 'Pay before the month starts',
-        features: [
-          '✓ No credit check, just a passport',
-          '✓ No surprise bills: you top up',
-          '✓ Switch or stop anytime',
-          '✓ Doesn’t build Canadian credit',
-        ],
-      },
-      {
-        tone: 'sky',
-        title: 'Postpaid',
-        subtitle: 'Pay after the month ends',
-        features: [
-          '✓ Builds your Canadian credit history',
-          '✓ Phone financing available',
-          '✓ Usually more data per dollar',
-          '✓ Needs a credit check or deposit',
-        ],
-      },
-    ],
-    tipTitle: 'Newcomer tip',
-    tip: "Many newcomers start with prepaid. After a few months they move to postpaid to start building a Canadian credit history. We'll tell you when the switch makes sense for you.",
-    caption: 'Newcomer holding a passport and a Chatr prepaid SIM card at the store counter',
-  },
-  switching: {
-    title: 'Keep your number. We do the switching.',
-    caption: 'Advisor moving a customer’s number onto a new phone at the Surrey store counter',
-    steps: [
-      {
-        number: '1',
-        title: 'Don’t cancel your old plan',
-        description:
-          'If you cancel first, you could lose your number. Keep your old plan active until the switch is done.',
-        tone: 'mint',
-      },
-      {
-        number: '2',
-        title: 'Tell us your number & account',
-        description: 'Find your account number and PIN on your current carrier’s bill or app.',
-        tone: 'sky',
-      },
-      {
-        number: '3',
-        title: 'We transfer your number',
-        description: 'Your number moves to the new plan, usually the same day.',
-        tone: 'lemon',
-      },
-      {
-        number: '4',
-        title: 'Check your phone',
-        description: 'Unlocked? Insert the new SIM or eSIM. Locked? We’ll show you how to unlock.',
-        tone: 'pink',
-      },
-    ],
-    button: 'Switch my number',
-    note: 'VERIFY: number transfer timing (“usually the same day”) with Rogers before publishing.',
-  },
-  explore: {
-    title: 'Explore by need',
-    links: [
-      'Rogers plans →',
-      'Fido plans →',
-      'Chatr plans →',
-      'Unlimited data →',
-      'No credit check →',
-      'Students →',
-      'Seniors →',
-      'Rogers vs Fido →',
-      'Fido vs Chatr →',
-      'eSIM vs physical SIM →',
-    ],
-  },
-  reviews: {
-    eyebrow: 'REVIEWS',
-    title: ['Customers', 'recommend us.'],
-    score: '4.8',
-    stars: '★★★★★',
-    count: '1,200+ Google reviews',
-  },
   faq: {
     eyebrow: 'FAQ',
     title: ['Mobile plan', 'questions'],
     description: 'Talk to an advisor, Monday to Saturday, 9am–9pm Pacific time.',
-    button: 'WhatsApp us',
-    caption: 'Canadian Plans advisor answering a customer’s WhatsApp message at the Surrey store',
-    expand: '+',
-    collapse: '−',
     items: [
       {
         id: 'mobile-faq-0',
@@ -352,15 +220,6 @@ export const mobileCopy = {
       },
     ],
   },
-  final: {
-    title: 'Keep your number. Lower your bill.',
-    description:
-      "Compare plans in 2 minutes. An advisor sets everything up, and you pay nothing until it's confirmed.",
-    primary: 'Compare plans →',
-    secondary: 'Talk to an advisor',
-    caption:
-      'Two Canadian Plans advisors smiling at the Surrey store counter, phones and SIM cards on display',
-  },
   preview: {
     title: 'Mobile plan preview',
     description:
@@ -370,7 +229,6 @@ export const mobileCopy = {
       'Advisor contact will be connected separately. This preview sends no message.',
     close: 'Back to plans',
     selected: 'Selected',
-    image: 'IMAGE',
     ratingLabel: '5 out of 5 stars',
     unavailableNeed:
       'This need is not tagged in the preview plan data. Use the filters to compare plans, or ask an advisor when the service is connected.',
@@ -633,56 +491,6 @@ export const mobileAssets = {
     nodeId: '367:2760',
   },
 } satisfies Record<string, FigmaAsset>;
-export const mobileReviews: readonly TestimonialContent[] = [
-  {
-    id: 'mobile-review-0',
-    stars: '★★★★★',
-    ratingLabel: '5 out of 5 stars',
-    quote:
-      '“I was with Bell and didn’t want to lose my number. The advisor called to confirm everything first, then moved it over for me.”',
-    name: 'Daniel R.',
-    detail: 'Teacher · Calgary',
-    avatar: {
-      src: '/design/mobile-plans/106-65-imgPhotoIcon.svg',
-      width: 22,
-      height: 22,
-      nodeId: '106:65',
-    },
-    avatarTone: 'sky',
-  },
-  {
-    id: 'mobile-review-1',
-    stars: '★★★★★',
-    ratingLabel: '5 out of 5 stars',
-    quote:
-      '“Internet was installed in our Brampton apartment three days after we moved in. Someone actually called back when they said.”',
-    name: 'Maria L.',
-    detail: 'Nurse · Manila → Brampton',
-    avatar: {
-      src: '/design/mobile-plans/106-65-imgPhotoIcon.svg',
-      width: 22,
-      height: 22,
-      nodeId: '106:65',
-    },
-    avatarTone: 'mint',
-  },
-  {
-    id: 'mobile-review-2',
-    stars: '★★★★★',
-    ratingLabel: '5 out of 5 stars',
-    quote:
-      '“Clear prices, no surprises on the first bill. The advisor explained Fido vs Rogers in plain words.”',
-    name: 'Tanvir H.',
-    detail: 'PR · Dhaka → Calgary',
-    avatar: {
-      src: '/design/mobile-plans/106-65-imgPhotoIcon.svg',
-      width: 22,
-      height: 22,
-      nodeId: '106:65',
-    },
-    avatarTone: 'pink',
-  },
-];
 export const mobileChrome: ChromeContent = {
   ...chromeContent,
   track: { ...chromeContent.track, href: '/track' },
@@ -698,7 +506,7 @@ export const mobileChrome: ChromeContent = {
             : '#faq',
   })),
   promo: 'Switching carriers? Keep your number. We handle the transfer for you.',
-  promoLink: { label: 'How switching works →', href: '#switching' },
+  promoLink: { label: 'How switching works →', href: '#mobile-steps' },
   promoMobileLabel: 'How switching works →',
   contact: { ...chromeContent.contact, href: '#contact' },
   help: { ...chromeContent.help, href: '#faq' },
