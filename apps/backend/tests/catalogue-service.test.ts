@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { PublishedOffer, Quote } from '@canadian-plans/contracts';
+import type { ProvinceCode, PublishedOffer, Quote, RegionCode } from '@canadian-plans/contracts';
 import type { SanityCatalogue, SiteRevalidator } from '@canadian-plans/adapters';
 
 import {
@@ -311,12 +311,13 @@ function harness(policy: QuoteWithdrawalPolicy = 'immediate') {
   return { store, sanity, revalidator, service, setNow: (value: Date) => (now = value) };
 }
 
-async function issue(service: CatalogueService) {
+async function issue(service: CatalogueService, province?: ProvinceCode) {
   return service.createQuote({
     workspaceId: WORKSPACE,
     actorId: ACTOR,
     draftId: DRAFT,
     productId: PRODUCT,
+    province,
     grantToken: GRANT,
     requestId: '90000000-0000-4000-8000-000000000401',
   });
@@ -463,6 +464,55 @@ describe('catalogue sync and quote consistency', () => {
     expect((await service.validateQuote(WORKSPACE, ACTOR, quoted.quote.id, DRAFT)).status).toBe(
       'expired',
     );
+  });
+
+  describe('regional plans', () => {
+    function regionalHarness(regions: RegionCode[]) {
+      const context = harness();
+      const national = offer(3_500);
+      context.sanity.current = {
+        ...national,
+        commercial: { ...national.commercial, regions },
+      };
+      return context;
+    }
+
+    it('quotes a provincial plan for a customer in that province', async () => {
+      const { service } = regionalHarness(['SK']);
+      expect((await issue(service, 'SK')).status).toBe('created');
+    });
+
+    it('refuses a provincial plan for another province and when no province is given', async () => {
+      const { service, store } = regionalHarness(['SK']);
+      expect(await issue(service, 'MB')).toEqual({ status: 'region_not_served' });
+      expect(await issue(service)).toEqual({ status: 'region_not_served' });
+      expect(store.quotes.size).toBe(0);
+    });
+
+    it('releases the lease after refusing, so the customer can try again', async () => {
+      const { service, store } = regionalHarness(['SK']);
+      expect(await issue(service, 'MB')).toEqual({ status: 'region_not_served' });
+      expect(store.leases.size).toBe(0);
+      expect((await issue(service, 'SK')).status).toBe('created');
+    });
+
+    it('does not withdraw the product when a customer picks the wrong province', async () => {
+      const { service, store } = regionalHarness(['SK']);
+      await issue(service, 'MB');
+      expect(store.withdrawnKeys).toEqual([]);
+    });
+
+    it('quotes a national plan in any province, with or without one', async () => {
+      const { service } = regionalHarness(['CA']);
+      expect((await issue(service, 'ON')).status).toBe('created');
+      expect((await issue(service)).status).toBe('created');
+    });
+
+    it('quotes a plan sold in several provinces only in those provinces', async () => {
+      const { service } = regionalHarness(['BC', 'AB']);
+      expect((await issue(service, 'AB')).status).toBe('created');
+      expect(await issue(service, 'SK')).toEqual({ status: 'region_not_served' });
+    });
   });
 
   it('returns the unpriced-lead outcome during a CMS outage', async () => {

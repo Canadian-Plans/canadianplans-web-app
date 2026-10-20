@@ -15,6 +15,11 @@ export const offerPresentationSchema = z.object({
   bestFor: z.string().min(1).max(200).optional(),
   tag: z.string().min(1).max(40).optional(),
   popular: z.boolean().optional(),
+  /** Who a storefront picker offers the plan to (for example `student`, `visitor`). */
+  audiences: z
+    .array(z.string().regex(/^[a-z][a-z-]*$/))
+    .max(8)
+    .optional(),
   features: z.array(z.string().min(1).max(200)).max(16),
   note: z.string().min(1).max(400).optional(),
 });
@@ -62,6 +67,11 @@ export const commercialOfferSchema = z.object({
     }),
   offerName: z.string().min(1).max(200),
   currency: currencyCodeSchema,
+  /**
+   * How often the recurring charge bills: monthly postpaid, or a prepaid 30- or
+   * 90-day term. Absent means monthly, so existing offers keep their stored content.
+   */
+  billingPeriod: z.enum(['month', '30_days', '90_days']).optional(),
   recurringChargeAmountMinor: z.int().nonnegative(),
   oneTimeFees: z
     .array(

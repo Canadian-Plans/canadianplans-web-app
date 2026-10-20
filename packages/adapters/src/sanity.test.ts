@@ -78,6 +78,8 @@ describe('SanityCatalogueAdapter', () => {
       productKey: 'rogers-sim-5gb',
       productTitle: 'Rogers SIM 5 GB',
       productType: 'sim',
+      // A Sanity document carries no regions, so it is sold nationally.
+      regions: ['CA'],
       offerName: 'Rogers 5 GB',
       currency: 'CAD',
       recurringChargeAmountMinor: 4500,

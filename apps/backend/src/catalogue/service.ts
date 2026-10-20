@@ -5,7 +5,13 @@ import {
   type SanityCatalogue,
   type SiteRevalidator,
 } from '@canadian-plans/adapters';
-import type { ChargeComponent, Quote } from '@canadian-plans/contracts';
+import {
+  NATIONAL_REGION,
+  isOfferSoldIn,
+  type ChargeComponent,
+  type ProvinceCode,
+  type Quote,
+} from '@canadian-plans/contracts';
 
 import { MachineRegistry } from '../machines/registry.js';
 import { commercialContentHash } from './canonical.js';
@@ -38,7 +44,9 @@ export interface CatalogueProvider {
 
 export type CatalogueProviderResolver = (workspaceId: string) => CatalogueProvider | undefined;
 
-export function providerResolverFromRegistry(registry: MachineRegistry): CatalogueProviderResolver {
+export function providerResolverFromRegistry(
+  registry: Pick<MachineRegistry, 'sanityForWorkspace'>,
+): CatalogueProviderResolver {
   return (workspaceId) => {
     const integration = registry.sanityForWorkspace(workspaceId);
     if (!integration) return undefined;
@@ -62,6 +70,7 @@ export type CreateQuoteOutcome =
         | 'checkout_disabled'
         | 'cms_unavailable'
         | 'offer_unavailable'
+        | 'region_not_served'
         | 'draft_invalid'
         | 'draft_expired'
         | 'product_not_found'
@@ -73,6 +82,8 @@ export interface CreateQuoteInput {
   actorId: string;
   draftId: string;
   productId: string;
+  /** The province the customer chose; required for an offer sold only in some provinces. */
+  province?: ProvinceCode;
   grantToken: string;
   requestId: string;
 }
@@ -165,6 +176,17 @@ export class CatalogueService {
           this.now(),
         );
         return { status: 'offer_unavailable' };
+      }
+
+      // Region is enforced here, on the authoritative offer, never from the
+      // browser: a provincial plan is quoted only for a customer who chose a
+      // province it is sold in (invariant 4).
+      const regions = published.commercial.regions;
+      if (
+        !regions.includes(NATIONAL_REGION) &&
+        (!input.province || !isOfferSoldIn(regions, input.province))
+      ) {
+        return { status: 'region_not_served' };
       }
 
       const issuedAt = this.now();

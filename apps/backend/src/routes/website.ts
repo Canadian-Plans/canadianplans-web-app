@@ -6,6 +6,8 @@ import {
   createQuoteRequestSchema,
   createUploadIntentRequestSchema,
   finalizeUploadRequestSchema,
+  isOfferSoldIn,
+  listWebsiteOffersQuerySchema,
   submitOrderRequestSchema,
   trackingOtpRequestSchema,
   trackingVerifyRequestSchema,
@@ -21,7 +23,8 @@ import type { DocumentService } from '../documents/service.js';
 import { sendDomainError } from '../http/domain-errors.js';
 import { isConnectionLevelError, logRequestError } from '../http/logger.js';
 import { sendWebsiteError } from '../http/website-errors.js';
-import { CatalogueService, providerResolverFromRegistry } from '../catalogue/service.js';
+import { catalogueProviderResolver } from '../catalogue/provider-resolver.js';
+import { CatalogueService } from '../catalogue/service.js';
 import { loadQuoteWithdrawalPolicy } from '../catalogue/policy.js';
 import { DatabaseCatalogueStore, type CatalogueStore } from '../catalogue/store.js';
 import { DatabaseLeadStore, type LeadStore } from '../leads/store.js';
@@ -85,7 +88,7 @@ export function createDefaultWebsiteRouteDependencies(): WebsiteRouteDependencie
     quotes: {
       service: new CatalogueService(
         new DatabaseCatalogueStore(),
-        providerResolverFromRegistry(registry),
+        catalogueProviderResolver(registry),
         loadQuoteWithdrawalPolicy(),
       ),
     },
@@ -138,6 +141,7 @@ export function createQuoteRouter(dependencies: WebsiteRouteDependencies): Route
           actorId: ctx.credentialId,
           draftId: body.data.leadId,
           productId: body.data.productId,
+          province: body.data.province,
           grantToken,
           requestId: req.id,
         });
@@ -159,6 +163,10 @@ export function createQuoteRouter(dependencies: WebsiteRouteDependencies): Route
         }
         if (outcome.status === 'offer_unavailable') {
           sendDomainError(res, req.id, 'offer_unavailable', 409);
+          return;
+        }
+        if (outcome.status === 'region_not_served') {
+          sendDomainError(res, req.id, 'region_not_served', 409);
           return;
         }
         if (outcome.status === 'checkout_disabled') {
@@ -330,12 +338,21 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
       return;
     }
 
+    const query = listWebsiteOffersQuerySchema.safeParse(req.query);
+    if (!query.success) {
+      sendDomainError(res, req.id, 'validation_error', 400);
+      return;
+    }
+    const { province } = query.data;
+
     try {
       const ctx = websiteContext(req);
       const rows = await catalogue.store.listPublishedOffers(ctx.workspaceId, ctx.credentialId);
       const offers = rows.flatMap((row) => {
         const content = commercialOfferSchema.safeParse(row.content);
         if (!content.success) return [];
+        // With a province, only offers sold there (and national ones) are exposed.
+        if (province && !isOfferSoldIn(content.data.regions, province)) return [];
         return [
           {
             productId: row.productId,
