@@ -117,8 +117,10 @@ Depends on Stage 1 findings and the Stage 2 answers.
   `NEXT_PUBLIC_SITE_URL`, `ADMIN_ORIGIN`/CORS origins updated.
 - ☐ **3.2 Email sending** _(Both)_ — verify the domain in Resend, SPF/DKIM/DMARC records,
   `EMAIL_PROVIDER=resend`, sender address from 2.8. Send a test acknowledgement.
-- ☐ **3.3 Turn on checkout** _(Both)_ — set `QUOTE_WITHDRAWAL_POLICY=honour_until_expiry`
-  on Railway (decided 21 Sep, OPEN_INPUTS #14) and redeploy.
+- ◐ **3.3 Turn on checkout** _(Both)_ — set `QUOTE_WITHDRAWAL_POLICY=honour_until_expiry`
+  on Railway (decided 21 Sep, OPEN_INPUTS #14) and redeploy. _20 Oct: set and live
+  (deployment `4267deeb`); the no-`checkout_disabled` check waits for real offers (3.7)
+  and the site-1 credential (3.5)._
 - ◐ **3.4 Turn on the scheduler** _(Both)_ — `ENABLE_SCHEDULER=1` on the backend and the
   machine registry entries for `outbox:run` / `reconcile:run` for site-1. Without it, no
   catalogue sync and no customer emails. _20 Oct: scheduler runs; catalogue sync still
