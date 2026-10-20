@@ -19,5 +19,15 @@ export const siteConfig = {
      * server-issued quote, never from here.
      */
     consentVersion: 'TEST-disclosure-v1',
+    /**
+     * Version of the credit-check consent a mobile customer accepts, recorded with
+     * the order (invariant 11). TEST placeholder until the owner approves the text.
+     */
+    creditCheckConsentVersion: 'TEST-credit-check-v1',
+    /**
+     * Version of the notice shown with the region wish list, recorded with the
+     * address (ADR 0005, D5). TEST placeholder until the owner approves the text.
+     */
+    waitlistConsentVersion: 'TEST-waitlist-v1',
   },
 };

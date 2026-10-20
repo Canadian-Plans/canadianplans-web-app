@@ -61,6 +61,7 @@ function commercial(planKey: string, amountMinor: number): CommercialOffer {
     productKey: planKey,
     productTitle: 'Store Integration Plan',
     productType: 'sim',
+    regions: ['CA'],
     offerName: `${planKey} offer`,
     currency: 'CAD',
     recurringChargeAmountMinor: amountMinor,

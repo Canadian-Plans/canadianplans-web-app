@@ -5,8 +5,8 @@ export const emailCommon = {
   subjectLabel: 'Subject:',
   previewLabel: 'Preview:',
   footer: [
-    'Questions? Reply to this email, WhatsApp us, or call 1-888-555-0199 (Mon–Sat, 9am–9pm Pacific).',
-    'Canadian Plans · Authorized Rogers, Fido and Chatr dealer · 12-3456 King George Blvd, Surrey, BC',
+    'Questions? Reply to this email, WhatsApp us, or call +1 778-682-3771 (Mon–Sat, 9am–9pm Pacific).',
+    'Canadian Plans · Authorized Rogers, Fido and Chatr dealer · 9981 Whalley Blvd, Surrey, BC',
     'You’re getting this email because you placed an order with us. We will never ask for your password or card number by email.',
   ],
   image: { src: '/design/components/312-2-imgIcon.svg', width: 32, height: 32, nodeId: '312:3' },
@@ -114,6 +114,6 @@ export const emailFixtures = {
     shortDate: 'Thu, Oct 15',
     date: 'Thursday, October 15',
     window: '8am and 12pm',
-    address: '12-3456 King George Blvd, Surrey',
+    address: '9981 Whalley Blvd, Surrey',
   },
 } as const;

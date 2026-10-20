@@ -3,7 +3,8 @@ import { z } from 'zod';
 
 import { loadMachineRegistry } from '../machines/registry.js';
 import { loadQuoteWithdrawalPolicy } from './policy.js';
-import { CatalogueService, providerResolverFromRegistry } from './service.js';
+import { catalogueProviderResolver } from './provider-resolver.js';
+import { CatalogueService } from './service.js';
 import { DatabaseCatalogueStore } from './store.js';
 
 const argumentsSchema = z.discriminatedUnion('action', [
@@ -34,7 +35,7 @@ async function main(): Promise<void> {
     const registry = loadMachineRegistry();
     const service = new CatalogueService(
       new DatabaseCatalogueStore(database),
-      providerResolverFromRegistry(registry),
+      catalogueProviderResolver(registry),
       loadQuoteWithdrawalPolicy(),
     );
     if (args.action === 'process-event') {

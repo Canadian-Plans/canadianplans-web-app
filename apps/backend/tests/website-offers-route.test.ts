@@ -30,6 +30,7 @@ function commercial(productKey: string, offerName: string): CommercialOffer {
     productKey,
     productTitle: 'Rogers SIM',
     productType: 'sim',
+    regions: ['CA'],
     offerName,
     currency: 'CAD',
     recurringChargeAmountMinor: 3_500,
@@ -131,9 +132,20 @@ describe('GET /api/v1/website/offers', () => {
     await new Promise<void>((resolve) => server.close(() => resolve()));
   });
 
-  function get(headers: Record<string, string> = {}) {
-    return fetch(`${baseUrl}/api/v1/website/offers`, { headers });
+  function get(headers: Record<string, string> = {}, query = '') {
+    return fetch(`${baseUrl}/api/v1/website/offers${query}`, { headers });
   }
+
+  const regional = (
+    productKey: string,
+    regions: CommercialOffer['regions'],
+  ): PublishedOfferRow => ({
+    productId: `30000000-0000-4000-8000-0000000009${regions[0] === 'CA' ? '90' : '91'}`,
+    productKey,
+    offerVersionId: '60000000-0000-4000-8000-000000000990',
+    lastSyncedAt: null,
+    content: { ...commercial(productKey, productKey), regions },
+  });
 
   it('returns exactly the workspace offers and reads them with the credential context', async () => {
     store.rows = [FIRST_ROW, SECOND_ROW];
@@ -156,6 +168,55 @@ describe('GET /api/v1/website/offers', () => {
       },
     ]);
     expect(store.calls).toEqual([{ workspaceId: WORKSPACE, actorId: CREDENTIAL }]);
+  });
+
+  describe('province filter', () => {
+    const sk = regional('internet-sk-1000', ['SK']);
+    const mb = regional('internet-mb-500', ['MB']);
+    const national = regional('mobile-can-us-100', ['CA']);
+    const auth = { authorization: `Bearer ${VALID_SECRET}` };
+
+    it('returns every offer when no province is given', async () => {
+      store.rows = [sk, mb, national];
+      const response = await get(auth);
+      const body = listWebsiteOffersResponseSchema.parse(await response.json());
+      expect(body.offers.map((offer) => offer.commercial.productKey)).toEqual([
+        'internet-sk-1000',
+        'internet-mb-500',
+        'mobile-can-us-100',
+      ]);
+    });
+
+    it('returns that province plus national offers, and no other province', async () => {
+      store.rows = [sk, mb, national];
+      const response = await get(auth, '?province=SK');
+      expect(response.status).toBe(200);
+      const body = listWebsiteOffersResponseSchema.parse(await response.json());
+      expect(body.offers.map((offer) => offer.commercial.productKey)).toEqual([
+        'internet-sk-1000',
+        'mobile-can-us-100',
+      ]);
+    });
+
+    it('returns only national offers for a province with no plans', async () => {
+      store.rows = [sk, mb, national];
+      const response = await get(auth, '?province=ON');
+      const body = listWebsiteOffersResponseSchema.parse(await response.json());
+      expect(body.offers.map((offer) => offer.commercial.productKey)).toEqual([
+        'mobile-can-us-100',
+      ]);
+    });
+
+    it('rejects an unknown province and the national marker', async () => {
+      for (const query of ['?province=XX', '?province=CA', '?province=Saskatchewan']) {
+        const response = await get(auth, query);
+        expect(response.status).toBe(400);
+        expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe(
+          'validation_error',
+        );
+      }
+      expect(store.calls).toHaveLength(0);
+    });
   });
 
   it('omits a row whose commercial content fails validation', async () => {

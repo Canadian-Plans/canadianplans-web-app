@@ -2,9 +2,43 @@ import { z } from 'zod';
 
 import { currencyCodeSchema, isoDateTimeSchema, requestIdSchema } from './common';
 import { documentChecklistKeySchema } from './domain';
+import { NATIONAL_REGION, productTypeSchema, regionCodeSchema } from './regions';
 
 const boundedTextSchema = z.string().min(1).max(4_000);
 const portableTextBlockSchema = z.record(z.string(), z.unknown());
+
+/**
+ * Customer-facing copy that travels with the offer, so a storefront renders it
+ * from the catalogue instead of hardcoding it next to a price.
+ */
+export const offerPresentationSchema = z.object({
+  bestFor: z.string().min(1).max(200).optional(),
+  tag: z.string().min(1).max(40).optional(),
+  popular: z.boolean().optional(),
+  /** Who a storefront picker offers the plan to (for example `student`, `visitor`). */
+  audiences: z
+    .array(z.string().regex(/^[a-z][a-z-]*$/))
+    .max(8)
+    .optional(),
+  features: z.array(z.string().min(1).max(200)).max(16),
+  note: z.string().min(1).max(400).optional(),
+});
+export type OfferPresentation = z.infer<typeof offerPresentationSchema>;
+
+/**
+ * A promotion that applies to this offer in its region (promotions vary by
+ * province). Frozen with the offer version, so an existing order never changes.
+ */
+export const offerPromotionSchema = z.object({
+  id: z
+    .string()
+    .min(1)
+    .max(64)
+    .regex(/^[a-z0-9][a-z0-9-]*$/),
+  headline: z.string().min(1).max(120),
+  terms: z.array(z.string().min(1).max(300)).min(1).max(8),
+});
+export type OfferPromotion = z.infer<typeof offerPromotionSchema>;
 
 /**
  * The exact validated commercial payload copied into an immutable offer
@@ -18,9 +52,26 @@ export const commercialOfferSchema = z.object({
     .max(120)
     .regex(/^[a-z0-9][a-z0-9-]*$/),
   productTitle: z.string().min(1).max(200),
-  productType: z.literal('sim'),
+  productType: productTypeSchema,
+  /**
+   * Where the offer is sold: provinces, or `CA` for all of Canada. Offers stored
+   * before regions existed carry no value and are national.
+   */
+  regions: z
+    .array(regionCodeSchema)
+    .min(1)
+    .max(14)
+    .default([NATIONAL_REGION])
+    .refine((regions) => !regions.includes(NATIONAL_REGION) || regions.length === 1, {
+      message: 'A national offer lists only CA',
+    }),
   offerName: z.string().min(1).max(200),
   currency: currencyCodeSchema,
+  /**
+   * How often the recurring charge bills: monthly postpaid, or a prepaid 30- or
+   * 90-day term. Absent means monthly, so existing offers keep their stored content.
+   */
+  billingPeriod: z.enum(['month', '30_days', '90_days']).optional(),
   recurringChargeAmountMinor: z.int().nonnegative(),
   oneTimeFees: z
     .array(
@@ -38,6 +89,8 @@ export const commercialOfferSchema = z.object({
   billingParty: z.string().min(1).max(200),
   contractTerms: z.array(portableTextBlockSchema).min(1).max(256),
   termsVersion: z.string().min(1).max(64),
+  presentation: offerPresentationSchema.optional(),
+  promotion: offerPromotionSchema.optional(),
   specs: z.object({
     carrier: z.string().min(1).max(160),
     dataAllowance: z.string().min(1).max(160),

@@ -10,6 +10,8 @@ import {
   partnerStatuses,
   paymentStates,
   permissionEffects,
+  productTypes,
+  provinceCodes,
   staffPermissionNames,
   staffRoleNames,
 } from '@canadian-plans/types';
@@ -66,6 +68,8 @@ const membershipStatusList = sql.raw(membershipStatuses.map((status) => `'${stat
 const partnerStatusList = sql.raw(partnerStatuses.map((status) => `'${status}'`).join(', '));
 const leadStatusList = sql.raw(leadStatuses.map((status) => `'${status}'`).join(', '));
 const orderStatusList = sql.raw(orderStatuses.map((status) => `'${status}'`).join(', '));
+const provinceList = sql.raw(provinceCodes.map((code) => `'${code}'`).join(', '));
+const productTypeList = sql.raw(productTypes.map((type) => `'${type}'`).join(', '));
 const commissionRuleTypeList = sql.raw(commissionRuleTypes.map((type) => `'${type}'`).join(', '));
 const commissionStateList = sql.raw(commissionStates.map((state) => `'${state}'`).join(', '));
 const invoiceStatusList = sql.raw(invoiceStatuses.map((status) => `'${status}'`).join(', '));
@@ -1541,6 +1545,46 @@ export const trackingChallenges = appSchema
   )
   .enableRLS();
 
+/**
+ * A visitor asking to be told when a province we do not serve yet gets plans
+ * (ADR 0005, D5). Holds an email address, so it is personal data: the consent
+ * version is recorded with it, it is never written to logs or analytics, and an
+ * audit event records the join without the address. One row per workspace,
+ * province and (case-insensitive) email, so repeated sign-ups are harmless.
+ */
+export const regionWaitlist = appSchema
+  .table(
+    'region_waitlist',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      province: text('province').notNull(),
+      email: text('email').notNull(),
+      /** The plan type the visitor asked about, when known. */
+      interest: text('interest'),
+      consentVersion: text('consent_version').notNull(),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('region_waitlist_workspace_id_id_unique').on(table.workspaceId, table.id),
+      check('region_waitlist_province_check', sql`${table.province} in (${provinceList})`),
+      check(
+        'region_waitlist_interest_check',
+        sql`${table.interest} is null or ${table.interest} in (${productTypeList})`,
+      ),
+      uniqueIndex('region_waitlist_workspace_province_email_unique').on(
+        table.workspaceId,
+        table.province,
+        sql`lower(${table.email})`,
+      ),
+      index('region_waitlist_workspace_province_idx').on(table.workspaceId, table.province),
+      tenantPolicy('region_waitlist_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
 export type Workspace = typeof workspaces.$inferSelect;
 export type Membership = typeof memberships.$inferSelect;
 export type Role = typeof roles.$inferSelect;
@@ -2052,6 +2096,7 @@ export const schema = {
   auditEvents,
   deletionIntents,
   trackingChallenges,
+  regionWaitlist,
   files,
   fileRevisions,
   fileReviewEvents,

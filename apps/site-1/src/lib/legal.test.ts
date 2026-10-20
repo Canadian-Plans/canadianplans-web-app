@@ -70,3 +70,27 @@ it('reads only published legal content even with a preview credential and older 
     clientMocks.createClient.mockClear();
   }
 });
+
+describe('getLegalPage without Sanity', () => {
+  it('shows the legal text kept in the repo, with a real version, never the placeholder', async () => {
+    for (const slug of ['privacy', 'terms'] as const) {
+      const page = await getLegalPage(slug);
+      expect(page.source).toBe('repo');
+      expect(page.version).toBe(1);
+      expect(page.effectiveDate).toBe('2026-10-20');
+      const text = page.body.map((block) => block.children?.map((c) => c.text).join('')).join('\n');
+      expect(text).toContain('9981 Whalley Blvd, Surrey, BC V3T 0A8');
+      expect(text).toContain('info@canadianplans.com');
+      expect(text).not.toMatch(/\[[^\]]*\]|TEST|OWNER TO CONFIRM/);
+    }
+  });
+
+  it('states the owner-confirmed terms: British Columbia law and 6-month ID retention', async () => {
+    const terms = (await getLegalPage('terms')).body.map((b) => b.children?.[0]?.text).join('\n');
+    const privacy = (await getLegalPage('privacy')).body
+      .map((b) => b.children?.[0]?.text)
+      .join('\n');
+    expect(terms).toContain('governed by the laws of British Columbia');
+    expect(privacy).toContain('delete identity documents 6 months after your order is completed');
+  });
+});

@@ -32,6 +32,20 @@ export {
 } from './messaging.js';
 
 export {
+  INTERNET_PROVINCES,
+  OPEN_INPUT_PREFIX,
+  site1CommercialOffers,
+  type InternetProvince,
+} from './static-catalogue/site-1-plans.js';
+
+export {
+  StaticCatalogue,
+  findOpenInputs,
+  type OpenInput,
+  type StaticCatalogueOptions,
+} from './static-catalogue/static-catalogue.js';
+
+export {
   LogAnalyticsSink,
   UmamiAnalyticsSink,
   type AnalyticsLogLine,

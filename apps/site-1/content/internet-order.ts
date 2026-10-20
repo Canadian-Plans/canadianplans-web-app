@@ -16,7 +16,7 @@ export const internetOrderCopy = {
   skip: 'Skip to form',
   header: {
     payment: '✓ No payment online',
-    help: 'Questions? 1-888-555-0199 · WhatsApp',
+    help: 'Questions? +1 778-682-3771 · WhatsApp',
     call: 'Call us',
   },
   eyebrow: 'Home internet · one short form',

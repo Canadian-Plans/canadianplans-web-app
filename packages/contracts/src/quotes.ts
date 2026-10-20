@@ -8,6 +8,7 @@ import {
   versionedFormSchema,
 } from './common';
 import { documentChecklistKeySchema } from './domain';
+import { provinceCodeSchema } from './regions';
 
 /**
  * Priced quotes — `POST /quotes`. Caller: website credential (`quotes:create`).
@@ -53,6 +54,11 @@ export type Quote = z.infer<typeof quoteSchema>;
 export const createQuoteRequestSchema = z.object({
   leadId: z.uuid(),
   productId: z.uuid(),
+  /**
+   * The province the customer chose. Required for an offer sold in specific
+   * provinces; the backend rejects a plan not sold there (`region_not_served`).
+   */
+  province: provinceCodeSchema.optional(),
   form: versionedFormSchema(z.record(z.string(), z.unknown())).optional(),
 });
 export type CreateQuoteRequest = z.infer<typeof createQuoteRequestSchema>;

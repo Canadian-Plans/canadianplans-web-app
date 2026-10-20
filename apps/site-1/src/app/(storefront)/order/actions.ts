@@ -1,19 +1,23 @@
 'use server';
 
 import { randomUUID } from 'node:crypto';
-import { BackendError, type SubmitOrderResponse } from '@canadian-plans/contracts';
+import {
+  BackendError,
+  type ProvinceCode,
+  type SubmitOrderResponse,
+  type WebsiteOffer,
+} from '@canadian-plans/contracts';
 import { z } from 'zod';
 
 import { getBackendClient } from '@/lib/backendClient';
+import { siteConfig } from '@/site.config';
+import { buildOrderForm, parseOrderDetails, type ParsedOrder } from './details';
 import { readOrderDraft, writeOrderDraft } from './draft';
 import type {
   ActionResult,
   CallbackInput,
   DocumentFinalizeResult,
   DocumentIntentResult,
-  OrderDetailField,
-  OrderDetailsInput,
-  OrderFieldErrors,
   QuoteResult,
   SaveDetailsInput,
   SaveDocumentsInput,
@@ -28,73 +32,52 @@ import type {
  * submission idempotency key live in an httpOnly cookie (see `draft.ts`).
  */
 
-const detailsSchema = z.object({
-  fullName: z.string().trim().min(1).max(160),
-  email: z.email().max(254),
-  phone: z.string().trim().min(5).max(32),
-  countryCode: z
-    .string()
-    .trim()
-    .toUpperCase()
-    .regex(/^[A-Z]{2}$/),
-  currentCountry: z.string().trim().min(1).max(80),
-  destination: z.string().trim().min(1).max(160),
-  arrivalDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-});
-
 const documentKeysSchema = z.array(z.string().regex(/^[a-z0-9_]{1,64}$/)).max(32);
 
-const FIELD_BY_PATH: Record<string, OrderDetailField> = {
-  fullName: 'fullName',
-  email: 'email',
-  phone: 'phone',
-  countryCode: 'countryCode',
-  currentCountry: 'currentCountry',
-  destination: 'destination',
-  arrivalDate: 'arrivalDate',
-};
-
-function fieldErrors(error: z.ZodError): OrderFieldErrors {
-  const errors: OrderFieldErrors = {};
-  for (const issue of error.issues) {
-    const path = issue.path[0];
-    if (typeof path !== 'string') continue;
-    const field = FIELD_BY_PATH[path];
-    if (field && !errors[field]) errors[field] = issue.message;
-  }
-  return errors;
-}
-
-/** One API payload shape, so a later PATCH replaces (never drops) earlier steps. */
-function buildForm(
-  details: OrderDetailsInput,
-  documentKeys: readonly string[],
-  acknowledged: boolean,
-  extra: Record<string, unknown> = {},
-) {
+/**
+ * Validates what the browser sent, on the server, against the category's rules.
+ * A failure carries per-field messages for the form's error summary.
+ */
+function checkDetails(
+  details: unknown,
+): { ok: true; order: ParsedOrder } | { ok: false; failure: ActionResult<never> } {
+  const parsed = parseOrderDetails(details);
+  if (parsed.ok) return { ok: true, order: parsed.order };
   return {
-    schemaVersion: 1,
-    payload: {
-      currentCountry: details.currentCountry,
-      destination: details.destination,
-      arrivalDate: details.arrivalDate,
-      documents: {
-        required: [...documentKeys],
-        // Real uploads arrive in T17; this records only that the step was seen.
-        acknowledged,
-      },
-      ...extra,
+    ok: false,
+    failure: {
+      ok: false,
+      code: 'validation_error',
+      message: 'Please correct the highlighted fields.',
+      fieldErrors: parsed.errors,
     },
   };
 }
 
-function buildContact(details: OrderDetailsInput) {
-  return {
-    fullName: details.fullName,
-    email: details.email,
-    phone: details.phone,
-    countryCode: details.countryCode,
-  };
+/** One API payload shape, so a later PATCH replaces (never drops) earlier steps. */
+function formFor(
+  order: ParsedOrder,
+  documentKeys: readonly string[],
+  acknowledged: boolean,
+  extra: Record<string, unknown> = {},
+) {
+  return buildOrderForm(order, documentKeys, acknowledged, {
+    creditCheckConsentVersion: siteConfig.legal.creditCheckConsentVersion,
+    extra,
+  });
+}
+
+/**
+ * The offer the customer picked, read from the backend (the browser is not
+ * trusted on what a product is). A provincial plan is only returned for a
+ * province it is sold in.
+ */
+async function findOffer(
+  productId: string,
+  province: ProvinceCode | undefined,
+): Promise<WebsiteOffer | undefined> {
+  const { offers } = await getBackendClient().offers.list(province ? { province } : undefined);
+  return offers.find((offer) => offer.productId === productId);
 }
 
 function notSaved(): ActionResult<never> {
@@ -125,6 +108,14 @@ function isFinishedDraft(error: unknown): boolean {
       error.code === 'draft_not_found' ||
       error.code === 'draft_already_submitted')
   );
+}
+
+function regionNotServed(): ActionResult<never> {
+  return {
+    ok: false,
+    code: 'region_not_served',
+    message: "That plan isn't sold in the province you chose. Choose another plan or province.",
+  };
 }
 
 function alreadyOrdered(): ActionResult<never> {
@@ -164,6 +155,7 @@ function failureFrom(error: unknown): ActionResult<never> {
         message: 'That plan is no longer available.',
       };
     }
+    if (error.code === 'region_not_served') return regionNotServed();
     if (error.code === 'priced_checkout_disabled') {
       return { ok: false, code: 'callback', message: 'Online pricing is unavailable right now.' };
     }
@@ -176,6 +168,7 @@ function quoteFailureFrom(error: unknown): ActionResult<never> {
   if (error instanceof BackendError) {
     if (error.code === 'draft_already_submitted') return alreadyOrdered();
     if (error.code === 'draft_expired' || error.code === 'draft_not_found') return draftExpired();
+    if (error.code === 'region_not_served') return regionNotServed();
     if (error.code === 'offer_unavailable') {
       return {
         ok: false,
@@ -191,6 +184,18 @@ function quoteFailureFrom(error: unknown): ActionResult<never> {
   };
 }
 
+/** The plan is not on offer for this customer: not sold in their province, or gone. */
+function planNotAvailable(order: ParsedOrder): ActionResult<never> {
+  if (order.category === 'internet') {
+    return {
+      ok: false,
+      code: 'region_not_served',
+      message: "That plan isn't sold in the province you chose. Choose another plan or province.",
+    };
+  }
+  return { ok: false, code: 'offer_unavailable', message: 'That plan is no longer available.' };
+}
+
 /**
  * End of step 2: create the draft lead (or update it when resuming), then issue
  * and persist the one idempotency key this draft will ever use.
@@ -198,27 +203,35 @@ function quoteFailureFrom(error: unknown): ActionResult<never> {
 export async function saveDetails(
   input: SaveDetailsInput,
 ): Promise<ActionResult<{ leadId: string }>> {
-  const parsed = detailsSchema.safeParse(input.details);
-  if (!parsed.success) {
-    return {
-      ok: false,
-      code: 'validation_error',
-      message: 'Please correct the highlighted fields.',
-      fieldErrors: fieldErrors(parsed.error),
-    };
-  }
+  const checked = checkDetails(input.details);
+  if (!checked.ok) return checked.failure;
+  const { order } = checked;
   const documentKeys = documentKeysSchema.safeParse(input.documentKeys);
   const productId = z.uuid().safeParse(input.productId);
   if (!documentKeys.success || !productId.success) {
     return { ok: false, code: 'validation_error', message: 'The selected plan is invalid.' };
   }
+  // Only an internet plan is priced by province; the quote needs it again later.
+  const province = order.category === 'internet' ? order.province : undefined;
 
   const existing = await readOrderDraft();
-  const contact = buildContact(parsed.data);
-  const form = buildForm(parsed.data, documentKeys.data, false);
+  const contact = order.contact;
+  const form = formFor(order, documentKeys.data, false);
   const client = getBackendClient();
 
   try {
+    // The browser is not trusted on what the product is or where it is sold: the
+    // plan is read from the backend, and the form must match its category.
+    const offer = await findOffer(productId.data, order.province);
+    if (!offer) return planNotAvailable(order);
+    if (offer.commercial.productType !== order.category) {
+      return {
+        ok: false,
+        code: 'validation_error',
+        message: 'Those details do not match the plan you selected. Please start again.',
+      };
+    }
+
     if (existing) {
       try {
         const updated = await client.leads.update(
@@ -227,7 +240,7 @@ export async function saveDetails(
           { draftGrant: existing.draftGrant },
         );
         // Same draft, same grant, same submission key — only the plan may change.
-        await writeOrderDraft({ ...existing, productId: productId.data });
+        await writeOrderDraft({ ...existing, productId: productId.data, province });
         return { ok: true, data: { leadId: updated.lead.id } };
       } catch (error) {
         // The cookie still points at a draft that can no longer be edited —
@@ -251,6 +264,7 @@ export async function saveDetails(
       // Generated exactly once per draft and reused by every later attempt.
       idempotencyKey: `order-${randomUUID()}`,
       productId: productId.data,
+      province,
     });
     return { ok: true, data: { leadId: created.lead.id } };
   } catch (error) {
@@ -261,15 +275,8 @@ export async function saveDetails(
 export async function saveDocuments(
   input: SaveDocumentsInput,
 ): Promise<ActionResult<{ leadId: string }>> {
-  const parsed = detailsSchema.safeParse(input.details);
-  if (!parsed.success) {
-    return {
-      ok: false,
-      code: 'validation_error',
-      message: 'Please correct the highlighted fields.',
-      fieldErrors: fieldErrors(parsed.error),
-    };
-  }
+  const checked = checkDetails(input.details);
+  if (!checked.ok) return checked.failure;
   const draft = await readOrderDraft();
   if (!draft) return draftExpired();
 
@@ -277,8 +284,8 @@ export async function saveDocuments(
     const updated = await getBackendClient().leads.update(
       draft.leadId,
       {
-        contact: buildContact(parsed.data),
-        form: buildForm(parsed.data, input.documentKeys, input.acknowledged),
+        contact: checked.order.contact,
+        form: formFor(checked.order, input.documentKeys, input.acknowledged),
         productId: draft.productId,
       },
       { draftGrant: draft.draftGrant },
@@ -386,7 +393,7 @@ export async function requestQuote(): Promise<ActionResult<QuoteResult>> {
   if (!draft) return draftExpired();
   try {
     const result = await getBackendClient().quotes.create(
-      { leadId: draft.leadId, productId: draft.productId },
+      { leadId: draft.leadId, productId: draft.productId, province: draft.province },
       { draftGrant: draft.draftGrant },
     );
     return { ok: true, data: { quote: result.quote } };
@@ -401,21 +408,14 @@ export async function requestCallback(
 ): Promise<ActionResult<{ requested: true }>> {
   const draft = await readOrderDraft();
   if (!draft) return draftExpired();
-  const details = detailsSchema.safeParse(input.details);
-  if (!details.success) {
-    return {
-      ok: false,
-      code: 'validation_error',
-      message: 'Please correct the highlighted fields.',
-      fieldErrors: fieldErrors(details.error),
-    };
-  }
+  const checked = checkDetails(input.details);
+  if (!checked.ok) return checked.failure;
   try {
     await getBackendClient().leads.update(
       draft.leadId,
       {
-        contact: buildContact(details.data),
-        form: buildForm(details.data, input.documentKeys, false, { callbackRequested: true }),
+        contact: checked.order.contact,
+        form: formFor(checked.order, input.documentKeys, false, { callbackRequested: true }),
         productId: draft.productId,
       },
       { draftGrant: draft.draftGrant },
@@ -437,15 +437,8 @@ export async function submitOrder(
 ): Promise<ActionResult<SubmitOrderResult>> {
   const draft = await readOrderDraft();
   if (!draft) return draftExpired();
-  const details = detailsSchema.safeParse(input.details);
-  if (!details.success) {
-    return {
-      ok: false,
-      code: 'validation_error',
-      message: 'Please correct the highlighted fields.',
-      fieldErrors: fieldErrors(details.error),
-    };
-  }
+  const checked = checkDetails(input.details);
+  if (!checked.ok) return checked.failure;
   const quoteId = z.uuid().safeParse(input.quoteId);
   const termsVersion = z.string().min(1).max(64).safeParse(input.termsVersion);
   if (!quoteId.success || !termsVersion.success) {
@@ -459,7 +452,7 @@ export async function submitOrder(
   const body = {
     quoteId: quoteId.data,
     termsVersion: termsVersion.data,
-    form: buildForm(details.data, input.documentKeys, true),
+    form: formFor(checked.order, input.documentKeys, true),
     consent: {
       termsVersion: termsVersion.data,
       marketingOptIn: input.marketingOptIn,

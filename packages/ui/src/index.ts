@@ -44,6 +44,7 @@ export {
   type FormFieldControlProps,
 } from './components/form-field';
 export { Input } from './components/input';
+export { NativeSelect } from './components/native-select';
 export { Label } from './components/label';
 export { ReviewCard, type ReviewCardProps } from './components/review-card';
 export {

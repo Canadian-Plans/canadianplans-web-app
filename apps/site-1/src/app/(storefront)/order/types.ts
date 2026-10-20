@@ -1,19 +1,16 @@
 import type { Quote, RawAttribution } from '@canadian-plans/contracts';
 
-/** The four detail fields the customer enters in step 2 (REQ 16/17). */
-export interface OrderDetailsInput {
-  fullName: string;
-  email: string;
-  phone: string;
-  countryCode: string;
-  currentCountry: string;
-  destination: string;
-  arrivalDate: string;
-}
+import type { OrderDetailsInput, OrderFieldErrors } from './details';
 
-export type OrderDetailField = keyof OrderDetailsInput | 'terms' | 'marketing';
-
-export type OrderFieldErrors = Partial<Record<OrderDetailField, string>>;
+export type {
+  ArrivalDetails,
+  InternetDetails,
+  MobileDetails,
+  OrderCategory,
+  OrderDetailField,
+  OrderDetailsInput,
+  OrderFieldErrors,
+} from './details';
 
 /** Failure codes the form reacts to. Never carries a reference. */
 export type OrderErrorCode =
@@ -23,6 +20,7 @@ export type OrderErrorCode =
   | 'callback'
   | 'quote_restart'
   | 'offer_unavailable'
+  | 'region_not_served'
   | 'terms_changed'
   | 'unavailable';
 

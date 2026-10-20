@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 vi.mock('server-only', () => ({}));
 vi.mock('@/components/shared/site-header', () => ({ SiteHeader: () => null }));
 import { LegalPage } from './page';
-import { testPlaceholder } from '@/lib/legal';
+import { repoLegalPage, testPlaceholder } from '@/lib/legal';
 import { legalDrafts } from '@content/legal';
 describe('legal page source ownership', () => {
   beforeAll(() => vi.stubGlobal('React', React));
@@ -43,5 +43,21 @@ describe('legal page source ownership', () => {
     expect(html).not.toContain('[X]');
     expect(html).not.toContain('privacy-who-we-are');
     expect(html).not.toContain('not approved legal text');
+  });
+
+  it('renders the repo legal text under the headings the site navigation uses', () => {
+    for (const [slug, heading] of [
+      ['terms', 'Terms of Service'],
+      ['privacy', 'Privacy Policy'],
+    ] as const) {
+      const html = renderToStaticMarkup(
+        createElement(LegalPage, { slug, page: repoLegalPage(slug) }),
+      );
+      expect(html).toContain(`<h1>${heading}</h1>`);
+      expect(html).toContain('<h2');
+      expect(html).toContain('9981 Whalley Blvd');
+      expect(html.replace(/<!--.*?-->/gu, '')).toContain('Version 1');
+      expect(html).not.toContain('not approved legal text');
+    }
   });
 });

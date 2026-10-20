@@ -9,7 +9,7 @@ export const preArrivalOrderCopy = {
   skip: 'Skip to form',
   header: {
     payment: '✓ No payment online',
-    help: 'Questions? 1-888-555-0199 · WhatsApp',
+    help: 'Questions? +1 778-682-3771 · WhatsApp',
     call: 'Call us',
   },
   steps: ['Plan & you', 'Documents & eSIM'],
@@ -202,8 +202,8 @@ export const preArrivalOrderCopy = {
     before: [
       { text: '✓ Keep your passport nearby' },
       {
-        text: '✓ Save 1-888-555-0199 so you know it’s us',
-        mobileLines: ['✓ Save 1-888-555-0199 so you know', 'it’s us'],
+        text: '✓ Save +1 778-682-3771 so you know it’s us',
+        mobileLines: ['✓ Save +1 778-682-3771 so you know', 'it’s us'],
       },
       {
         text: '✓ We will never ask for a card number by text',

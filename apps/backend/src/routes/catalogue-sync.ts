@@ -2,7 +2,8 @@ import { Router, type RequestHandler } from 'express';
 
 import { loadQuoteWithdrawalPolicy } from '../catalogue/policy.js';
 import { CatalogueSyncRunner, type CatalogueSyncRunSummary } from '../catalogue/runner.js';
-import { CatalogueService, providerResolverFromRegistry } from '../catalogue/service.js';
+import { catalogueProviderResolver } from '../catalogue/provider-resolver.js';
+import { CatalogueService } from '../catalogue/service.js';
 import { DatabaseCatalogueStore } from '../catalogue/store.js';
 import { loadDeploymentEnvironment } from '../config/deployment.js';
 import { sendStaffAuthError } from '../http/staff-errors.js';
@@ -23,7 +24,7 @@ export function createDefaultCatalogueSyncRouteDependencies(): CatalogueSyncRout
   const registry = loadMachineRegistry();
   const service = new CatalogueService(
     new DatabaseCatalogueStore(),
-    providerResolverFromRegistry(registry),
+    catalogueProviderResolver(registry),
     loadQuoteWithdrawalPolicy(),
   );
   const runner = new CatalogueSyncRunner({ handlers: service });

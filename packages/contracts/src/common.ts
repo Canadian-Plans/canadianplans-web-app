@@ -60,6 +60,7 @@ export const domainErrorCodeSchema = z.enum([
   'draft_expired',
   'draft_already_submitted',
   'offer_unavailable',
+  'region_not_served',
   'unpriced_lead_required',
   'priced_checkout_disabled',
   'quote_not_found',

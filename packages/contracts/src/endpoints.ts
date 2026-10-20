@@ -78,6 +78,10 @@ import {
 } from './workspace-orders';
 import { listWorkspaceLeadsQuerySchema, listWorkspaceLeadsResponseSchema } from './workspace-leads';
 import { sourceReportQuerySchema, sourceReportResponseSchema } from './reports';
+import {
+  joinRegionWaitlistRequestSchema,
+  joinRegionWaitlistResponseSchema,
+} from './region-waitlist';
 import { listWebsiteOffersResponseSchema } from './website-offers';
 import { webhookAckResponseSchema, webhookDeliveryRequestSchema } from './webhooks';
 
@@ -519,6 +523,16 @@ export const endpoints: readonly EndpointDef[] = [
     request: updateLeadRequestSchema,
     response: updateLeadResponseSchema,
     headers: [DRAFT_GRANT],
+  },
+  {
+    operationId: 'joinRegionWaitlist',
+    method: 'POST',
+    path: '/api/v1/website/region-waitlist',
+    summary: 'Leave an email for a province we do not serve yet.',
+    auth: 'website',
+    successStatus: 201,
+    request: joinRegionWaitlistRequestSchema,
+    response: joinRegionWaitlistResponseSchema,
   },
   {
     operationId: 'createQuote',
