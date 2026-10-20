@@ -57,13 +57,42 @@ province on the quote and the order.
 first" note. Internet orders are requests: the service address is collected and an advisor
 confirms availability before installation, as on Canada Wide.
 
-## Assumptions to confirm
+**D7 — Order forms follow the Canada Wide forms, as three separate categories.** Each
+category has its own form, stored in the versioned `form.payload` the lead and order
+contracts already carry (no new tables for it):
 
-- Internet and TV are sold on the site-1 storefront and workspace. (`PLATFORM_CONTEXT.md`
-  describes internet as separate brands, sites 2 and 3; that stays a Phase B option.)
-- A file-based provider can plug into the existing catalogue sync interface without
-  changing quote logic. **Verify first** before building.
-- `region_waitlist` needs migration `0020`; no change to existing tables.
+- **Internet and TV:** full name, date of birth (18+), email, phone, service street
+  address, apartment/unit, city, postal code, current provider, preferred installation
+  time, contact consent. The province comes from the visitor's choice, and the server
+  rejects a postal code that does not belong to it. The order is a request: an advisor
+  confirms availability at the address before installation.
+- **Mobile BYOD:** plan, number of lines (1–10), full name, email, phone, current provider,
+  keep my number (yes/no), eSIM or physical SIM (no default for either), address, city,
+  postal code, then a second step: ID type (driver's licence, provincial ID, passport), the
+  ID file, and credit-check consent. The first step saves a resumable draft, so no lead is
+  lost, as on Canada Wide.
+- **Pre-arrival eSIM:** its own existing form, unchanged.
+
+Changes from Canada Wide: the ID goes through the platform's private, signature-verified
+uploads and the plan's document checklist (not a 4 MB request body); the credit-check
+consent is recorded with a version at capture (invariant 11); the lead saves under the
+platform's draft grant rather than a bare row id.
+
+## Confirmed and verified
+
+- Internet and TV are sold on the site-1 storefront and workspace — **confirmed by the
+  owner, 20 October 2026.** (`PLATFORM_CONTEXT.md` describes internet as separate brands,
+  sites 2 and 3; that remains a Phase B option.)
+- A file-based provider fits the existing sync — **verified in code.** The sync only
+  needs the three read methods of `SanityCatalogue` (`fetchPublishedByDocumentId`,
+  `fetchPublishedByProductKey`, `listPublished`), each returning a `PublishedOffer`. A
+  static provider implements them, and the provider resolver returns it (with a no-op
+  revalidator) for a workspace with no Sanity entry. Quote logic is untouched.
+- A province field needs no database migration: offer content is stored as JSON in
+  `offer_versions.content`. It does need a field added to the shared offer contract.
+  Promotion terms can ride in the existing `contractTerms` list, which is already frozen
+  into the order snapshot.
+- `region_waitlist` needs one new migration (`0020`); no change to existing tables.
 
 ## Consequences
 

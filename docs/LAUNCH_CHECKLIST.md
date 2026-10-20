@@ -121,10 +121,11 @@ tools. **verified** = checked directly today · **read** = from repo code/docs �
 These block the first order. Each is a row in `docs/OPEN_INPUTS.md`; answer there.
 
 - ☑ **2.1 Domain** (#2) — `canadianplans.com`, confirmed by the owner 20 Oct 2026.
-- ◐ **2.2 Plans to sell at launch** (#3) — real Rogers plans: names, data, terms. Start
+- ☑ **2.2 Plans to sell at launch** (#3) — real Rogers plans: names, data, terms. Start
   with a short list (3–5 plans) rather than the whole catalogue. _20 Oct: the owner chose
-  all Canada Wide plans (internet and TV by province, national BYOD mobile). Draft table in
-  [LAUNCH_PLANS.md](LAUNCH_PLANS.md), awaiting "yes, correct"._
+  all Canada Wide plans (internet and TV by province, national BYOD mobile) and confirmed
+  the tables in [LAUNCH_PLANS.md](LAUNCH_PLANS.md) as correct. Pre-arrival stays a separate
+  category._
 - ◐ **2.3 Prices** (#4) — monthly charge, one-time fees, amount payable today, per plan.
   _20 Oct: monthly prices drafted in LAUNCH_PLANS.md; fees and amount due today still open._
 - ☐ **2.4 Upfront payment** (#5) — which plans need payment before fulfilment, and how

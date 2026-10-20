@@ -1,7 +1,8 @@
 # LAUNCH_PLANS — plans, prices and promotions at launch
 
-**Status: DRAFT, awaiting the owner's explicit "yes, correct" (20 October 2026).**
-Nothing here is published, seeded or enabled until the owner confirms each table.
+**Status: tables A–D confirmed by the owner as shown (20 October 2026).**
+Not yet published or seeded; that follows the catalogue build in ADR 0005. The carrier
+names and "in store" comparison prices in table D are still unverified claims (section E).
 Prices are CAD. Feeds OPEN_INPUTS #3 and #4, tasks 2.2–2.6 and 3.7–3.9 of
 [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md), and [ADR 0005](ADR/0005-static-catalogue-regional-plans.md).
 
@@ -15,6 +16,11 @@ Prices are CAD. Feeds OPEN_INPUTS #3 and #4, tasks 2.2–2.6 and 3.7–3.9 of
 - **Mobile plans** (the Canada Wide "bring your own device" plans and the pre-arrival eSIM
   plans) are **national**: same price in every province.
 - **All mobile plans are bring-your-own-device (BYOD).**
+- **Internet and TV are sold on Canadian Plans** (site-1), the same plans as Canada Wide.
+- **Three separate categories, not merged:** internet and TV, BYOD mobile (table C), and
+  pre-arrival eSIM (table D). Each is sold and presented on its own.
+- **The $40 "limited time offer" has no automatic end date.** The owner changes it by hand.
+- **Order forms follow the Canada Wide forms** for internet and for mobile (ADR 0005, D7).
 - Sanity is **not** used for now. Plan data is hardcoded in the repo.
 - A region we do not serve yet gets an **easy wish-list lead**, and we **count which
   regions and plans people look at**, so we know where to add data next.
@@ -77,10 +83,8 @@ From the site-1 design content; all "$0 due today", prices before tax.
 
 ## E. Still needed from the owner before this becomes the real catalogue
 
-- A "yes, correct" on tables A–D, or the corrections.
-- Are the pre-arrival plans (D) sold alongside the Canada Wide mobile plans (C), and do the
-  "in store" prices and the carrier names (Fido, Rogers, Chatr) hold up as public claims?
-- When does the $40 "limited time offer" end?
+- Do the "in store" prices in table D ($60, $80, $67) and the carrier names (Fido, Rogers,
+  Chatr) hold up as true public claims?
 - Any one-time fees (SIM, activation, shipping), and what the customer pays today per plan
   (OPEN_INPUTS #4, #5).
 - Required documents per plan (OPEN_INPUTS #6); mobile currently needs ID plus a credit check.
