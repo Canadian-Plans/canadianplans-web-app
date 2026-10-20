@@ -27,7 +27,7 @@ import {
 
 import { orderFormContent } from '@content/order-forms';
 
-import { trackPlanSelected } from '../../../lib/analytics';
+import { trackPlanSelected, trackRegionSelected } from '../../../lib/analytics';
 import { requestCallback, requestQuote, saveDetails, saveDocuments, submitOrder } from './actions';
 import {
   ORDER_DETAIL_FIELDS,
@@ -42,6 +42,7 @@ import {
 import { DocumentUploads } from './document-uploads';
 import { ArrivalFields, FIELD_IDS, InternetFields, MobileFields } from './fields';
 import type { ActionResult, OrderDetailsInput, OrderFieldErrors } from './types';
+import { WaitlistForm } from './waitlist-form';
 
 const STEPS = [
   { id: 'plan', label: 'Plan' },
@@ -124,6 +125,20 @@ export function OrderForm({
   useEffect(() => {
     if (selectedProductId) trackPlanSelected(selectedProductId);
   }, [selectedProductId]);
+
+  const provinceServed =
+    province !== undefined &&
+    offers.some(
+      (offer) =>
+        offer.commercial.productType === 'internet' &&
+        isOfferSoldIn(offer.commercial.regions, province),
+    );
+
+  // One `region_selected` per province looked at, served or not: the count of
+  // unserved provinces is what decides where to expand next.
+  useEffect(() => {
+    if (province) trackRegionSelected(province, provinceServed);
+  }, [province, provinceServed]);
 
   /** Moves to a step and focuses its content, so keyboard users follow the flow. */
   function goToStep(index: number): void {
@@ -392,7 +407,12 @@ export function OrderForm({
             {copy.provinceApply}
           </Button>
         </form>
-        {province && internet.length === 0 ? <p>{copy.noInternetInProvince}</p> : null}
+        {province && internet.length === 0 ? (
+          <div className="space-y-3">
+            <p>{copy.noInternetInProvince}</p>
+            <WaitlistForm key={province} province={province} />
+          </div>
+        ) : null}
         {internet.length > 0 ? (
           <ul className="space-y-3">{internet.map((offer) => renderOfferCard(offer))}</ul>
         ) : null}

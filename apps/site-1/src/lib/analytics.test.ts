@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { trackPlanSelected } from './analytics';
+import { trackPlanSelected, trackRegionSelected } from './analytics';
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -47,5 +47,28 @@ describe('trackPlanSelected', () => {
     // before it is fully populated. This must never throw.
     vi.stubGlobal('window', { umami: {} });
     expect(() => trackPlanSelected('plan-x')).not.toThrow();
+  });
+});
+
+describe('trackRegionSelected', () => {
+  it('emits the province code and whether it is served, and nothing else', () => {
+    const track = vi.fn();
+    vi.stubGlobal('window', {
+      umami: { track },
+      localStorage: {
+        getItem: () => JSON.stringify({ version: 1, analytics: true, marketing: false }),
+      },
+    });
+
+    trackRegionSelected('NS', false);
+
+    expect(track).toHaveBeenCalledWith('region_selected', { province: 'NS', served: false });
+  });
+
+  it('does not emit without analytics consent', () => {
+    const track = vi.fn();
+    vi.stubGlobal('window', { umami: { track }, localStorage: { getItem: () => null } });
+    trackRegionSelected('NS', false);
+    expect(track).not.toHaveBeenCalled();
   });
 });

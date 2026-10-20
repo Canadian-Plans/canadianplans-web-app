@@ -50,6 +50,19 @@ const checklistLabels: Readonly<Record<string, string>> = {
 export const orderFormContent = {
   checklistLabels,
 
+  waitlist: {
+    title: 'Tell me when you arrive',
+    description:
+      'Leave your email and we will write to you once when internet and TV plans become available in your province.',
+    emailLabel: 'Email',
+    submit: 'Add me to the list',
+    notice:
+      'We use your email only to tell you about plans in this province. You can ask us to remove it at any time.',
+    emailError: 'Enter a valid email address.',
+    failed: 'We could not add you to the list. Please try again.',
+    done: 'Thank you. We will email you when plans are available in your province.',
+  },
+
   fields: {
     fullName: { label: 'Full name' },
     email: { label: 'Email' },
@@ -124,8 +137,7 @@ export const orderFormContent = {
       mobile: 'Mobile plans, bring your own phone',
       sim: 'Pre-arrival eSIM',
     },
-    noInternetInProvince:
-      "We don't sell internet or TV in that province yet. Tell us where you are and we will let you know when we do.",
+    noInternetInProvince: "We don't sell internet or TV in that province yet.",
     perPeriod: {
       month: '/ month',
       '30_days': '/ 30 days',

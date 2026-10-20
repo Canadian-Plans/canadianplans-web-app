@@ -109,6 +109,17 @@ tools. **verified** = checked directly today Â· **read** = from repo code/docs Â
   and code, and it depends on the launch plans and prices (2.2, 2.3). Tasks 3.7 and 3.8
   are on hold until that is decided. The catalogue sync logging `provider_unavailable`
   every 5 minutes is the expected result of having no Sanity registry entry.
+- **Regional plans and wish list built (code, not yet deployed).** The repo catalogue
+  (ADR 0005), province-aware offers and quotes, the internet and mobile order forms, and the
+  region wish list (migration `0020`, `POST /api/v1/website/region-waitlist`, a one-field
+  form on `/order` for a province with no internet plans, `region_selected` analytics
+  events) are committed on the working branch. Still to do before they work in production:
+  apply migration `0020` to Supabase (owner go-ahead), deploy the backend to Railway, set
+  `SITE_1_STATIC_CATALOGUE_WORKSPACE_ID` (and decide `CATALOGUE_ALLOW_OPEN_INPUTS` while
+  `TEST-` placeholders remain, see `docs/ENV.md`). The wish list consent notice
+  (`TEST-waitlist-v1`) is a placeholder the owner must approve. The 15 database-backed
+  backend tests, including the new wish list store test, only run in CI, which runs on pull
+  requests and `main`, so they are unverified until a pull request is opened.
 - **Vercel:** the Vercel account connected to this session is the owner's personal Hobby
   account (`md-takibuddin`, team "Md takib 's projects"). It holds older projects, has no
   project linked to this repository and no deployment of any commit from it. The admin and

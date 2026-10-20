@@ -52,6 +52,10 @@ province on the quote and the order.
 - Which provinces and plans are viewed or selected is counted with PII-free analytics
   events (province code, served or not, plan id) through the existing analytics sink, with
   no new table. Waitlist rows give the exact demand per province.
+  Built: `POST /api/v1/website/region-waitlist` (scope `leads:write`) answers the same for a
+  new and a repeated email, and its audit entry holds the province, interest and consent
+  version but never the email. The storefront emits `region_selected`
+  (`{ province, served }`) once per province viewed, with analytics consent only.
 
 **D6 — Scope.** Internet and TV launch with mobile, superseding the 12 October "mobility
 first" note. Internet orders are requests: the service address is collected and an advisor
