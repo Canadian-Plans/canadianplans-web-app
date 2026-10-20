@@ -8,7 +8,7 @@ Business questions that are not yet answered. **AI agents: never invent an answe
 
 | # | Input | Needed by | Placeholder in use | Answer |
 |---|---|---|---|---|
-| 2 | Website 1 domain | T0 DNS / T18 sender / T28 launch | non-production preview URL | |
+| 2 | Website 1 domain | T0 DNS / T18 sender / T28 launch | non-production preview URL | `canadianplans.com` — confirmed by the owner 20 Oct 2026 (DNS on Cloudflare; not yet pointed at site-1, task 3.1) |
 | 3 | Real Rogers plan list — names, data allowance, contract terms | T9 | 3 TEST offers in Sanity test dataset | |
 | 4 | Real prices — recurring charge, one-time fees, amount payable today, per plan | T9 / before live publishing | Illustrative TEST prices | |
 | 5 | Which plans require payment up front (`paymentRequired`) and how much | T9 | `false` on all TEST offers | |

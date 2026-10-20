@@ -48,8 +48,8 @@ tools. **verified** = checked directly today · **read** = from repo code/docs �
 
 **What this changes in the plan:**
 
-- ◐ **3.0 (new) Redeploy the backend** and apply migrations `0016`–`0019` before anything
-  in Stage 3. Backend redeployed 20 Oct (see below); migrations still pending.
+- ☑ **3.0 (new) Redeploy the backend** and apply migrations `0016`–`0019` before anything
+  in Stage 3. Both done 20 Oct (see below).
 - **2.1** is probably answered already (`canadianplans.com`); the owner needs to confirm it.
   3.1 is still open.
 - **3.6** also covers the workspace's DB name ("Northern Arrival Mobile").
@@ -79,15 +79,48 @@ tools. **verified** = checked directly today · **read** = from repo code/docs �
   Vercel. Side effect: the Sanity smoke-test offer has not synced. _(verified from
   `catalogue_sync_state` and `catalogue/service.ts`)_
 - **`QUOTE_WITHDRAWAL_POLICY=honour_until_expiry`** set on the backend (OPEN_INPUTS #14).
-- **Still open, outside Railway:** migrations `0016`–`0019` (Supabase), the Railway
-  config file migration to `.railway/railway.ts` (repo change), a stale empty staged
-  Railway patch from 17 Sep (`03e15f7e`, left untouched).
+- **Still open, outside Railway:** the Railway config file migration to
+  `.railway/railway.ts` (repo change), a stale empty staged Railway patch from 17 Sep
+  (`03e15f7e`, left untouched).
+
+### Supabase migrations applied (20 October 2026)
+
+- `0016_bumpy_puppet_master`, `0017_worthless_synch`, `0018_lowly_dragon_lord` and
+  `0019_backup_leases` were applied to production (`ixbhodlvfyxjctpsjibj`) with the
+  owner's go-ahead. All four are additive (new tables, indexes, RLS policies, grants, two
+  functions); none drops or rewrites data. Each ran as one atomic batch together with its
+  `drizzle.__drizzle_migrations` row (hash and journal timestamp as Drizzle computes
+  them), so `pnpm --filter @canadian-plans/db db:migrate` sees production as up to date.
+  _(verified: 20 of 20 journal entries recorded; the 16 new tables exist.)_
+- All new tenant tables have RLS enabled and forced. The only app table without forced RLS
+  is `workspaces`, the global tenant registry, which `PLATFORM_CONTEXT.md` §4 exempts.
+  Supabase's security advisor reports `app.backup_leases` and `app.rate_limit_buckets` as
+  "RLS enabled, no policy": intended (deny-all; `backup_leases` is read only through a
+  security-definer function) _(read)_. It also reports "leaked password protection
+  disabled", a Supabase Auth setting the owner turns on in the dashboard.
+
+### Decisions recorded (20 October 2026)
+
+- **Sanity is deferred.** The owner does not want Sanity for now; it will be added later.
+  Consequence: the only catalogue source the backend has is the Sanity adapter, so until a
+  replacement exists `/order` cannot list priced plans and no order can be taken. The
+  hardcoded storefront pages are display-only and cannot feed checkout (prices must come
+  from the server, `PLATFORM_CONTEXT.md` §4.4). A non-Sanity catalogue source needs an ADR
+  and code, and it depends on the launch plans and prices (2.2, 2.3). Tasks 3.7 and 3.8
+  are on hold until that is decided. The catalogue sync logging `provider_unavailable`
+  every 5 minutes is the expected result of having no Sanity registry entry.
+- **Vercel:** the Vercel account connected to this session is the owner's personal Hobby
+  account (`md-takibuddin`, team "Md takib 's projects"). It holds older projects, has no
+  project linked to this repository and no deployment of any commit from it. The admin and
+  site-1 projects are not in it, so nothing was created. Hobby is also non-commercial under
+  Vercel's fair-use terms. Needed: the "Canadian Plans" Vercel team connected to the
+  session, or the owner's go-ahead to create the projects in another team.
 
 ## Stage 2 — Business decisions only you can make (You)
 
 These block the first order. Each is a row in `docs/OPEN_INPUTS.md`; answer there.
 
-- ☐ **2.1 Domain** (#2) — buy or choose the domain for website 1.
+- ☑ **2.1 Domain** (#2) — `canadianplans.com`, confirmed by the owner 20 Oct 2026.
 - ☐ **2.2 Plans to sell at launch** (#3) — real Rogers plans: names, data, terms. Start
   with a short list (3–5 plans) rather than the whole catalogue.
 - ☐ **2.3 Prices** (#4) — monthly charge, one-time fees, amount payable today, per plan.
