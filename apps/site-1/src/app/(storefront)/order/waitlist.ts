@@ -1,6 +1,7 @@
 'use server';
 
 import { joinRegionWaitlistRequestSchema } from '@canadian-plans/contracts';
+import { z } from 'zod';
 
 import { getBackendClient } from '@/lib/backendClient';
 import { siteConfig } from '@/site.config';
@@ -16,6 +17,7 @@ import type { ActionResult } from './types';
 export async function joinWaitlist(input: {
   province: string;
   email: string;
+  turnstileToken?: string;
 }): Promise<ActionResult<{ joined: true }>> {
   const parsed = joinRegionWaitlistRequestSchema.safeParse({
     province: input.province,
@@ -32,7 +34,10 @@ export async function joinWaitlist(input: {
     };
   }
   try {
-    await getBackendClient().regionWaitlist.join(parsed.data);
+    const token = z.string().min(1).max(2048).safeParse(input.turnstileToken);
+    await getBackendClient(token.success ? { turnstileToken: token.data } : {}).regionWaitlist.join(
+      parsed.data,
+    );
     return { ok: true, data: { joined: true } };
   } catch {
     return {

@@ -137,6 +137,12 @@ tools. **verified** = checked directly today Â· **read** = from repo code/docs Â
   needed. Site-wide placeholder phone, address and emails were replaced with the real ones.
   Still to check: the assumptions listed in `docs/LAUNCH_PLANS.md`, a lawyer's review, and
   the phone number the owner will change.
+- **Bot check (21 Oct):** the backend wanted a Turnstile token on every storefront call, which
+  the site never sent, so `/order` showed "Plans are unavailable". Now only writes need the
+  token (reads such as the plan list do not), and the site gets a fresh token before each
+  write. `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is set on Vercel (widget "canadianplans.com (Spin)").
+  Check that the widget lists canadianplans.com and www, and that Railway's
+  `TURNSTILE_SECRET_KEY` and `TURNSTILE_HOSTNAME=canadianplans.com` belong to it.
 - **Vercel:** the Vercel account connected to this session is the owner's personal Hobby
   account (`md-takibuddin`, team "Md takib 's projects"). It holds older projects, has no
   project linked to this repository and no deployment of any commit from it. The admin and

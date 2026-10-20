@@ -34,6 +34,8 @@ export type ActionResult<T> =
     };
 
 export interface SaveDetailsInput {
+  /** A fresh Turnstile token for this call; each one is single-use. */
+  turnstileToken?: string;
   details: OrderDetailsInput;
   /** The selected offer's `documentChecklist`, persisted with the draft. */
   documentKeys: readonly string[];
@@ -44,6 +46,8 @@ export interface SaveDetailsInput {
 }
 
 export interface SaveDocumentsInput {
+  /** A fresh Turnstile token for this call; each one is single-use. */
+  turnstileToken?: string;
   details: OrderDetailsInput;
   documentKeys: readonly string[];
   /** The placeholder step records that the customer saw the checklist. */
@@ -51,11 +55,15 @@ export interface SaveDocumentsInput {
 }
 
 export interface CallbackInput {
+  /** A fresh Turnstile token for this call; each one is single-use. */
+  turnstileToken?: string;
   details: OrderDetailsInput;
   documentKeys: readonly string[];
 }
 
 export interface SubmitOrderInput {
+  /** A fresh Turnstile token for this call; each one is single-use. */
+  turnstileToken?: string;
   quoteId: string;
   termsVersion: string;
   marketingOptIn: boolean;

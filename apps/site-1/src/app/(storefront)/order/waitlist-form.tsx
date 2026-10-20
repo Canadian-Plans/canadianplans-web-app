@@ -6,6 +6,7 @@ import { Button, FormField, Input } from '@canadian-plans/ui';
 
 import { orderFormContent } from '@content/order-forms';
 
+import { useTurnstile } from '../../../lib/use-turnstile';
 import { joinWaitlist } from './waitlist';
 
 const copy = orderFormContent.waitlist;
@@ -19,13 +20,22 @@ export function WaitlistForm({ province }: { province: ProvinceCode }) {
   const [error, setError] = useState<string | undefined>(undefined);
   const [done, setDone] = useState(false);
   const [busy, setBusy] = useState(false);
+  const turnstile = useTurnstile();
 
   async function onSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     if (busy) return;
     setBusy(true);
     setError(undefined);
-    const result = await joinWaitlist({ province, email });
+    let token: string | undefined;
+    try {
+      token = await turnstile.getToken();
+    } catch {
+      setBusy(false);
+      setError(copy.failed);
+      return;
+    }
+    const result = await joinWaitlist({ province, email, turnstileToken: token });
     setBusy(false);
     if (result.ok) {
       setDone(true);
@@ -48,6 +58,7 @@ export function WaitlistForm({ province }: { province: ProvinceCode }) {
         {copy.title} — {provinceNames[province]}
       </h4>
       <p>{copy.description}</p>
+      <div ref={turnstile.containerRef} />
       <FormField id="waitlist-email" label={copy.emailLabel} required error={error}>
         <Input
           type="email"

@@ -78,6 +78,25 @@ describe('createBackendClient transport', () => {
     expect(calls).toHaveLength(1);
   });
 
+  it('adds extra headers to every call without letting them replace the credential', async () => {
+    const calls: Headers[] = [];
+    const client = createBackendClient({
+      baseUrl: 'https://api.example.test',
+      credential: 'cplsk_real',
+      extraHeaders: { 'x-turnstile-token': 'tok', authorization: 'Bearer evil' },
+      fetch: async (_url, init) => {
+        calls.push(new Headers(init?.headers));
+        return new Response(JSON.stringify({ offers: [], requestId: UUID }), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        });
+      },
+    });
+    await client.offers.list();
+    expect(calls[0]?.get('x-turnstile-token')).toBe('tok');
+    expect(calls[0]?.get('authorization')).toBe('Bearer cplsk_real');
+  });
+
   it('serialises a JSON body with content-type on writes', async () => {
     const { client, calls } = harness(201, {
       lead: {

@@ -25,6 +25,8 @@ function originOf(raw: string | undefined): string | undefined {
 const apiOrigin = originOf(process.env.NEXT_PUBLIC_API_BASE_URL);
 const umamiOrigin = originOf(process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL);
 const sentryOrigin = originOf(process.env.NEXT_PUBLIC_SENTRY_DSN);
+// Cloudflare Turnstile, the bot check on forms, loads a script and a challenge frame.
+const TURNSTILE_ORIGIN = 'https://challenges.cloudflare.com';
 
 // Sanity CDN / API hosts used by the storefront queries and the embedded Studio.
 const SANITY_CONNECT = [
@@ -65,10 +67,12 @@ function buildCsp(scope: 'storefront' | 'studio'): string {
       "'self'",
       "'unsafe-inline'",
       umamiOrigin,
+      ...(scope === 'storefront' ? [TURNSTILE_ORIGIN] : []),
       ...(scope === 'studio' ? SANITY_STUDIO_SCRIPT : []),
       ...scriptExtra,
     ]),
     'connect-src': connect,
+    'frame-src': scope === 'storefront' ? [TURNSTILE_ORIGIN] : ["'self'"],
     'worker-src': ["'self'", 'blob:'],
     'manifest-src': ["'self'"],
   };

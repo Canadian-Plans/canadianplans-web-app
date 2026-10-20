@@ -4,14 +4,19 @@ import { BackendError } from '@canadian-plans/contracts';
 vi.mock('server-only', () => ({}));
 
 const join = vi.fn();
+const clientOptions = vi.fn();
 vi.mock('@/lib/backendClient', () => ({
-  getBackendClient: () => ({ regionWaitlist: { join } }),
+  getBackendClient: (options: unknown) => {
+    clientOptions(options);
+    return { regionWaitlist: { join } };
+  },
 }));
 
 const { joinWaitlist } = await import('./waitlist');
 
 beforeEach(() => {
   join.mockReset();
+  clientOptions.mockReset();
 });
 
 describe('joinWaitlist', () => {
@@ -47,5 +52,11 @@ describe('joinWaitlist', () => {
     expect(result.ok).toBe(false);
     expect(JSON.stringify(result)).not.toContain('pat@example.test');
     if (!result.ok) expect(result.code).toBe('not_saved');
+  });
+
+  it('forwards the visitor bot-check token to the backend', async () => {
+    join.mockResolvedValue({ requestId: 'x' });
+    await joinWaitlist({ province: 'NS', email: 'pat@example.test', turnstileToken: 'tok-w' });
+    expect(clientOptions).toHaveBeenCalledWith({ turnstileToken: 'tok-w' });
   });
 });

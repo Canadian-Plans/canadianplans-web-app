@@ -17,11 +17,14 @@ Read-only provider observation on 2026-09-14 found no Vercel projects in the
 Canadian Plans team and one Supabase project in `us-west-2`. Do not use that
 project as evidence of Canadian staging compliance (required: `ca-central-1`).
 
-The default website-write route validates `X-Turnstile-Token` through Cloudflare
+Website routes that write validate `X-Turnstile-Token` through Cloudflare
 Siteverify before database work. It denies missing configuration, invalid tokens,
-hostname/action mismatches and provider failures. The storefront must forward a
-fresh widget token with action `lead-submit`; deployed widget verification remains
-pending. Tests inject explicit admission or mock the provider response.
+hostname/action mismatches and provider failures. Reads (`GET`, such as the plan
+list the storefront renders on the server) need no token, because no visitor is
+present to produce one; they stay behind the credential, its scope and the rate
+limits. The storefront gets a fresh widget token with action `lead-submit` before
+every call that writes (`apps/site-1/src/lib/turnstile.ts`) and forwards it from its
+server actions. Tests inject explicit admission or mock the provider response.
 The backend does not trust caller-controlled `X-Forwarded-For`; any deployment
 proxy trust policy must be narrowly verified before enabling public traffic.
 
@@ -87,6 +90,10 @@ The verifier has a five-second network timeout and does not cache successful tok
 It never takes the allowed hostname from the request. Do not place live Turnstile
 credentials in previews. The current credential proof endpoint uses `lead-submit`;
 future public actions must bind their own expected action explicitly.
+
+Storefront (site-1, Vercel): `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is the widget's public
+site key. Without it the form sends no token and the backend refuses every write.
+Allow `challenges.cloudflare.com` in the storefront CSP (`next.config.ts`).
 
 ## Per-endpoint rate limits (REQ 37)
 

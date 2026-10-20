@@ -56,11 +56,15 @@ export async function backendFetch(path: string, options: BackendRequestOptions 
  * reads the current configuration and never caches a credential across
  * requests.
  */
-export function getBackendClient(): BackendClient {
+export function getBackendClient(options: { turnstileToken?: string } = {}): BackendClient {
   const config = getBackendConfig();
   return createBackendClient({
     baseUrl: config.backendUrl,
     credential: config.serviceCredential,
+    // The visitor's single-use bot-check token, forwarded on calls that write.
+    ...(options.turnstileToken
+      ? { extraHeaders: { 'x-turnstile-token': options.turnstileToken } }
+      : {}),
   });
 }
 

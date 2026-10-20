@@ -32,6 +32,15 @@ import type {
  * submission idempotency key live in an httpOnly cookie (see `draft.ts`).
  */
 
+/** The visitor's single-use bot-check token; anything else is dropped, never trusted. */
+const turnstileTokenSchema = z.string().min(1).max(2048);
+
+/** A backend client that forwards the bot-check token on the calls that write. */
+function backend(turnstileToken: unknown) {
+  const parsed = turnstileTokenSchema.safeParse(turnstileToken);
+  return getBackendClient(parsed.success ? { turnstileToken: parsed.data } : {});
+}
+
 const documentKeysSchema = z.array(z.string().regex(/^[a-z0-9_]{1,64}$/)).max(32);
 
 /**
@@ -217,7 +226,7 @@ export async function saveDetails(
   const existing = await readOrderDraft();
   const contact = order.contact;
   const form = formFor(order, documentKeys.data, false);
-  const client = getBackendClient();
+  const client = backend(input.turnstileToken);
 
   try {
     // The browser is not trusted on what the product is or where it is sold: the
@@ -281,7 +290,7 @@ export async function saveDocuments(
   if (!draft) return draftExpired();
 
   try {
-    const updated = await getBackendClient().leads.update(
+    const updated = await backend(input.turnstileToken).leads.update(
       draft.leadId,
       {
         contact: checked.order.contact,
@@ -325,6 +334,7 @@ function documentErrorMessage(error: unknown): string {
  * The service credential and draft grant stay on the server (in the httpOnly cookie).
  */
 export async function createDocumentIntent(input: {
+  turnstileToken?: string;
   documentType: string;
   fileName: string;
   contentType: string;
@@ -340,7 +350,7 @@ export async function createDocumentIntent(input: {
   const draft = await readOrderDraft();
   if (!draft) return { ok: false, message: 'Your saved details have expired. Please start again.' };
   try {
-    const intent = await getBackendClient().uploads.createIntent(
+    const intent = await backend(input.turnstileToken).uploads.createIntent(
       {
         parentType: 'lead',
         parentId: draft.leadId,
@@ -365,6 +375,7 @@ export async function createDocumentIntent(input: {
 
 /** T17 step 3: finalize the uploaded object; the backend verifies and attaches it. */
 export async function finalizeDocument(input: {
+  turnstileToken?: string;
   uploadId: string;
   checksumSha256: string;
 }): Promise<DocumentFinalizeResult> {
@@ -376,7 +387,7 @@ export async function finalizeDocument(input: {
   const draft = await readOrderDraft();
   if (!draft) return { ok: false, message: 'Your saved details have expired. Please start again.' };
   try {
-    const finalized = await getBackendClient().uploads.finalize(
+    const finalized = await backend(input.turnstileToken).uploads.finalize(
       uploadId.data,
       { checksumSha256: checksum.data },
       { draftGrant: draft.draftGrant },
@@ -388,11 +399,11 @@ export async function finalizeDocument(input: {
 }
 
 /** Step 4 (first half): a server-authoritative quote for the saved draft. */
-export async function requestQuote(): Promise<ActionResult<QuoteResult>> {
+export async function requestQuote(turnstileToken?: string): Promise<ActionResult<QuoteResult>> {
   const draft = await readOrderDraft();
   if (!draft) return draftExpired();
   try {
-    const result = await getBackendClient().quotes.create(
+    const result = await backend(turnstileToken).quotes.create(
       { leadId: draft.leadId, productId: draft.productId, province: draft.province },
       { draftGrant: draft.draftGrant },
     );
@@ -411,7 +422,7 @@ export async function requestCallback(
   const checked = checkDetails(input.details);
   if (!checked.ok) return checked.failure;
   try {
-    await getBackendClient().leads.update(
+    await backend(input.turnstileToken).leads.update(
       draft.leadId,
       {
         contact: checked.order.contact,
@@ -459,7 +470,7 @@ export async function submitOrder(
     },
   };
   const options = { draftGrant: draft.draftGrant, idempotencyKey: draft.idempotencyKey };
-  const client = getBackendClient();
+  const client = backend(input.turnstileToken);
 
   try {
     let result: SubmitOrderResponse;

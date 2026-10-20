@@ -20,12 +20,16 @@ const leadsCreate = vi.fn();
 const leadsUpdate = vi.fn();
 const offersList = vi.fn();
 const quotesCreate = vi.fn();
+const clientOptions = vi.fn();
 vi.mock('@/lib/backendClient', () => ({
-  getBackendClient: () => ({
-    leads: { create: leadsCreate, update: leadsUpdate },
-    offers: { list: offersList },
-    quotes: { create: quotesCreate },
-  }),
+  getBackendClient: (options: unknown) => {
+    clientOptions(options);
+    return {
+      leads: { create: leadsCreate, update: leadsUpdate },
+      offers: { list: offersList },
+      quotes: { create: quotesCreate },
+    };
+  },
 }));
 
 const { requestQuote, saveDetails } = await import('./actions');
@@ -78,6 +82,7 @@ beforeEach(() => {
   leadsUpdate.mockReset();
   offersList.mockReset();
   quotesCreate.mockReset();
+  clientOptions.mockReset();
   offersList.mockResolvedValue({ offers: [offerOfType('sim')] });
 });
 
@@ -262,5 +267,34 @@ describe('requestQuote', () => {
     await startInternetDraft();
     quotesCreate.mockRejectedValue(new BackendError('region_not_served', 409, 'req-4'));
     expect(await requestQuote()).toMatchObject({ ok: false, code: 'region_not_served' });
+  });
+});
+
+describe('bot-check token', () => {
+  it('forwards the visitor token on calls that write, and none on reads', async () => {
+    leadsCreate.mockResolvedValue({ lead: { id: LEAD_A }, draftGrant: { token: 'grant-a' } });
+    await saveDetails({ ...input(), turnstileToken: 'tok-1' });
+    const writes = clientOptions.mock.calls.map(([options]) => options);
+    expect(writes).toContainEqual({ turnstileToken: 'tok-1' });
+    // The plan lookup that precedes the write is a read and carries no token.
+    expect(writes).toContainEqual(undefined);
+  });
+
+  it('passes the token to the quote request', async () => {
+    leadsCreate.mockResolvedValue({ lead: { id: LEAD_A }, draftGrant: { token: 'grant-a' } });
+    await saveDetails(input());
+    clientOptions.mockClear();
+    quotesCreate.mockResolvedValue({ quote: { id: 'q' } });
+    await requestQuote('tok-quote');
+    expect(clientOptions).toHaveBeenCalledWith({ turnstileToken: 'tok-quote' });
+  });
+
+  it('drops a token that is empty or far too long instead of forwarding it', async () => {
+    leadsCreate.mockResolvedValue({ lead: { id: LEAD_A }, draftGrant: { token: 'grant-a' } });
+    await saveDetails({ ...input(), turnstileToken: 'x'.repeat(3000) });
+    await saveDetails({ ...input(), turnstileToken: '' });
+    for (const [options] of clientOptions.mock.calls) {
+      expect(JSON.stringify(options ?? {})).not.toContain('turnstileToken');
+    }
   });
 });

@@ -213,6 +213,11 @@ export interface BackendClientOptions {
   readonly fetch?: typeof fetch;
   /** Per-request timeout in milliseconds. Defaults to 10s. */
   readonly timeoutMs?: number;
+  /**
+   * Headers added to every request, for example a single-use bot-check token.
+   * They never replace the credential or request id.
+   */
+  readonly extraHeaders?: Readonly<Record<string, string>>;
 }
 
 type HeaderMap = Record<string, string | undefined>;
@@ -423,6 +428,10 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
       accept: 'application/json',
       'x-request-id': globalThis.crypto.randomUUID(),
     });
+    for (const [key, value] of Object.entries(options.extraHeaders ?? {})) {
+      const name = key.toLowerCase();
+      if (name !== 'authorization' && name !== 'x-request-id') headers.set(key, value);
+    }
     if (config.body !== undefined) {
       headers.set('content-type', 'application/json');
     }

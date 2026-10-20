@@ -28,6 +28,7 @@ import {
 import { orderFormContent } from '@content/order-forms';
 
 import { trackPlanSelected, trackRegionSelected } from '../../../lib/analytics';
+import { useTurnstile } from '../../../lib/use-turnstile';
 import { requestCallback, requestQuote, saveDetails, saveDocuments, submitOrder } from './actions';
 import {
   ORDER_DETAIL_FIELDS,
@@ -115,6 +116,7 @@ export function OrderForm({
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [busy, setBusy] = useState(false);
+  const turnstile = useTurnstile();
   const summaryRef = useRef<HTMLDivElement>(null);
   const stepRef = useRef<HTMLDivElement>(null);
 
@@ -191,6 +193,24 @@ export function OrderForm({
     focusSummary();
   }
 
+  /**
+   * A fresh bot-check token for the next call that writes. On failure the form
+   * shows an error and stops; the visitor can simply try again.
+   */
+  async function freshToken(): Promise<{ token: string | undefined } | undefined> {
+    try {
+      return { token: await turnstile.getToken() };
+    } catch {
+      setBusy(false);
+      setOrderError({
+        code: 'not_saved',
+        message: "We couldn't run the security check. Please try again.",
+      });
+      focusSummary();
+      return undefined;
+    }
+  }
+
   async function handleDetails(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     if (!selected) return;
@@ -201,7 +221,10 @@ export function OrderForm({
       return;
     }
     setBusy(true);
+    const check = await freshToken();
+    if (!check) return;
     const result = await saveDetails({
+      turnstileToken: check.token,
       details,
       documentKeys,
       productId: selected.productId,
@@ -228,7 +251,14 @@ export function OrderForm({
       return;
     }
     setBusy(true);
-    const result = await saveDocuments({ details, documentKeys, acknowledged: true });
+    const check = await freshToken();
+    if (!check) return;
+    const result = await saveDocuments({
+      turnstileToken: check.token,
+      details,
+      documentKeys,
+      acknowledged: true,
+    });
     setBusy(false);
     if (!result.ok) {
       applyFailure(result);
@@ -241,7 +271,9 @@ export function OrderForm({
     setBusy(true);
     setQuoteFailed(undefined);
     setOrderError(undefined);
-    const result = await requestQuote();
+    const check = await freshToken();
+    if (!check) return;
+    const result = await requestQuote(check.token);
     setBusy(false);
     goToStep(3);
     if (result.ok) {
@@ -260,7 +292,10 @@ export function OrderForm({
     if (!quote) return;
     setBusy(true);
     setOrderError(undefined);
+    const check = await freshToken();
+    if (!check) return;
     const result = await submitOrder({
+      turnstileToken: check.token,
       quoteId: quote.id,
       termsVersion: quote.termsVersion,
       marketingOptIn,
@@ -300,7 +335,9 @@ export function OrderForm({
 
   async function handleCallback(): Promise<void> {
     setBusy(true);
-    const result = await requestCallback({ details, documentKeys });
+    const check = await freshToken();
+    if (!check) return;
+    const result = await requestCallback({ turnstileToken: check.token, details, documentKeys });
     setBusy(false);
     if (result.ok) {
       setCallbackRequested(true);
@@ -549,6 +586,7 @@ export function OrderForm({
             <DocumentUploads
               documentKeys={documentKeys.filter((key) => key !== 'none')}
               labelFor={checklistLabel}
+              getToken={turnstile.getToken}
             />
           ) : (
             <p>Nothing to upload for this plan.</p>
@@ -710,6 +748,7 @@ export function OrderForm({
 
   return (
     <div className="space-y-8">
+      <div ref={turnstile.containerRef} />
       <Stepper steps={STEPS} currentStepId={STEPS[stepIndex]?.id ?? 'plan'} />
       {showSummary && stepIndex !== 4 ? (
         <div
