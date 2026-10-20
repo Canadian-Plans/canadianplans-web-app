@@ -128,16 +128,20 @@ These block the first order. Each is a row in `docs/OPEN_INPUTS.md`; answer ther
   category._
 - ◐ **2.3 Prices** (#4) — monthly charge, one-time fees, amount payable today, per plan.
   _20 Oct: monthly prices drafted in LAUNCH_PLANS.md; fees and amount due today still open._
-- ☐ **2.4 Upfront payment** (#5) — which plans need payment before fulfilment, and how
+- ◐ **2.4 Upfront payment** (#5) — which plans need payment before fulfilment, and how
   much. Phase A has no card checkout; say how customers will pay you (e-Transfer etc.).
+  _20 Oct: the owner decided no payment on the website for any plan. Open: who bills the
+  customer, and when._
 - ☐ **2.5 Documents per plan** (#6) — passport / visa / address proof / none.
 - ☐ **2.6 Carrier and fees** (#19) — eligibility rules, activation evidence, who collects
   each fee, taxes.
 - ☐ **2.7 Courier** (#9) — who ships SIMs, and how you book them.
 - ☐ **2.8 Sender email** (#11) — e.g. `orders@<domain>`.
 - ☐ **2.9 Retention periods** (#10, #16) — needed so the privacy policy is truthful.
-- ☐ **2.10 Terms and privacy text** (#24) — your own or a lawyer's; Claude can draft a
-  first version for you to review, but it is your legal responsibility.
+- ◐ **2.10 Terms and privacy text** (#24) — your own or a lawyer's; Claude can draft a
+  first version for you to review, but it is your legal responsibility. _20 Oct: drafts
+  adapted from the Canada Wide texts are in `docs/legal/` (`terms-v1-draft.md`,
+  `privacy-v1-draft.md`) with `[OWNER TO CONFIRM]` gaps to fill._
 - ☐ **2.11 Cancellation process** (#20) — what staff do if a customer cancels after paying
   or after activation.
 - ☐ **2.12 Storefront claims** — replace the bracketed placeholders on the site

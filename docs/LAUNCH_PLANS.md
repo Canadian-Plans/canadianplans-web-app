@@ -21,6 +21,11 @@ Prices are CAD. Feeds OPEN_INPUTS #3 and #4, tasks 2.2–2.6 and 3.7–3.9 of
   pre-arrival eSIM (table D). Each is sold and presented on its own.
 - **The $40 "limited time offer" has no automatic end date.** The owner changes it by hand.
 - **Order forms follow the Canada Wide forms** for internet and for mobile (ADR 0005, D7).
+- **No payment on the website, on any plan.** `paymentRequired = false` and
+  `amountPayableToday = 0` everywhere; customers submit a request and are not charged.
+- **Terms and privacy** start from the Canada Wide texts: drafts in
+  [legal/terms-v1-draft.md](legal/terms-v1-draft.md) and
+  [legal/privacy-v1-draft.md](legal/privacy-v1-draft.md).
 - Sanity is **not** used for now. Plan data is hardcoded in the repo.
 - A region we do not serve yet gets an **easy wish-list lead**, and we **count which
   regions and plans people look at**, so we know where to add data next.
@@ -85,7 +90,7 @@ From the site-1 design content; all "$0 due today", prices before tax.
 
 - Do the "in store" prices in table D ($60, $80, $67) and the carrier names (Fido, Rogers,
   Chatr) hold up as true public claims?
-- Any one-time fees (SIM, activation, shipping), and what the customer pays today per plan
-  (OPEN_INPUTS #4, #5).
+- Any one-time fees (SIM, activation, shipping) that the provider bills (OPEN_INPUTS #4).
+- Who bills the customer, and when (the provider, after activation, or Canadian Plans).
 - Required documents per plan (OPEN_INPUTS #6); mobile currently needs ID plus a credit check.
 - Tax handling and who collects each fee (OPEN_INPUTS #19).

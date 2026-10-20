@@ -11,7 +11,7 @@ Business questions that are not yet answered. **AI agents: never invent an answe
 | 2 | Website 1 domain | T0 DNS / T18 sender / T28 launch | non-production preview URL | `canadianplans.com` — confirmed by the owner 20 Oct 2026 (DNS on Cloudflare; not yet pointed at site-1, task 3.1) |
 | 3 | Real Rogers plan list — names, data allowance, contract terms | T9 | 3 TEST offers in Sanity test dataset | |
 | 4 | Real prices — recurring charge, one-time fees, amount payable today, per plan | T9 / before live publishing | Illustrative TEST prices | |
-| 5 | Which plans require payment up front (`paymentRequired`) and how much | T9 | `false` on all TEST offers | |
+| 5 | Which plans require payment up front (`paymentRequired`) and how much | T9 | `false` on all TEST offers | None: customers do not pay on the website. `paymentRequired = false` and `amountPayableToday = 0` on every plan — owner, 20 Oct 2026. Still open: who bills the customer, and when. |
 | 6 | Document checklist per plan (passport / visa / address proof / none) | T9 | passport only, on TEST offers | |
 | 7 | Commission rule — fixed CAD per activation, or percentage, and the value | T19 | TEST-only rule; live partnered activation disabled | |
 | 8 | Invoice billing identity — legal business name, address, tax number if any | B1 or an explicitly approved interim payout workflow | placeholder strings | |
