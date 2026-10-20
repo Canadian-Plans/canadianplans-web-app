@@ -120,6 +120,16 @@ tools. **verified** = checked directly today Â· **read** = from repo code/docs Â
   (`TEST-waitlist-v1`) is a placeholder the owner must approve. The 15 database-backed
   backend tests, including the new wish list store test, only run in CI, which runs on pull
   requests and `main`, so they are unverified until a pull request is opened.
+- **Done 20 Oct (afternoon):** migration `0020_region_waitlist` applied to production
+  Supabase (tracking row id 21; `app_runtime` can insert, not delete; FORCE RLS on). Railway
+  `backend` now has `SITE_1_STATIC_CATALOGUE_WORKSPACE_ID` set (no redeploy; the running code
+  ignores it until the new code is deployed). The Canadian Plans Vercel team is connected: the
+  `canadianplans-web-app-site-1` and `-admin` projects exist and build; `canadianplans.com`
+  and `www.canadianplans.com` (308 to the apex) are attached to site-1, and
+  `apex.canadianplans.com` stays on admin (owner confirmed). Remaining: Cloudflare DNS for
+  the apex and www (owner), site-1 service credential and `SITE_1_SERVICE_CREDENTIAL` on
+  Vercel (owner MFA), merging the working branch to `main` so Railway (which tracks `main`)
+  deploys the new code, the `CATALOGUE_ALLOW_OPEN_INPUTS` decision, and Vercel Pro.
 - **Vercel:** the Vercel account connected to this session is the owner's personal Hobby
   account (`md-takibuddin`, team "Md takib 's projects"). It holds older projects, has no
   project linked to this repository and no deployment of any commit from it. The admin and
