@@ -37,6 +37,7 @@ import {
   type ArrivalDetails,
   type InternetDetails,
   type MobileDetails,
+  type OrderCategory,
 } from './details';
 import { DocumentUploads } from './document-uploads';
 import { ArrivalFields, FIELD_IDS, InternetFields, MobileFields } from './fields';
@@ -55,6 +56,8 @@ export interface OrderFormProps {
   selected: WebsiteOffer | undefined;
   /** The province chosen to see internet and TV plans, if any. */
   province: ProvinceCode | undefined;
+  /** The plan type chosen on the plan step, if any. */
+  category: OrderCategory | undefined;
   attribution: RawAttribution;
   /** Disclosure version recorded with the saved draft (REQ 17). */
   consentVersion: string;
@@ -90,6 +93,7 @@ export function OrderForm({
   offers,
   selected,
   province,
+  category,
   attribution,
   consentVersion,
   hasDraft,
@@ -135,16 +139,30 @@ export function OrderForm({
     window.setTimeout(() => summaryRef.current?.focus(), 0);
   }
 
+  /** Editing a field clears its message, so a corrected field never keeps a stale error. */
+  function clearErrorsFor(patch: object): void {
+    const edited = ORDER_DETAIL_FIELDS.filter((field) => field in patch);
+    setFieldErrors((current) => {
+      if (!edited.some((field) => current[field] !== undefined)) return current;
+      const next = { ...current };
+      for (const field of edited) delete next[field];
+      return next;
+    });
+  }
+
   // Each form edits only its own category's fields; an edit for another
   // category (a stale event after the plan changed) is ignored.
   function patchArrival(patch: Partial<ArrivalDetails>): void {
     setDetails((current) => (current.category === 'sim' ? { ...current, ...patch } : current));
+    clearErrorsFor(patch);
   }
   function patchInternet(patch: Partial<InternetDetails>): void {
     setDetails((current) => (current.category === 'internet' ? { ...current, ...patch } : current));
+    clearErrorsFor(patch);
   }
   function patchMobile(patch: Partial<MobileDetails>): void {
     setDetails((current) => (current.category === 'mobile' ? { ...current, ...patch } : current));
+    clearErrorsFor(patch);
   }
 
   function applyFailure(result: Extract<ActionResult<unknown>, { ok: false }>): void {
@@ -382,10 +400,49 @@ export function OrderForm({
     );
   }
 
+  /** One card per plan type, so the visitor chooses what they want before any list. */
+  function renderCategoryChooser(present: readonly OrderCategory[]) {
+    const copy = orderFormContent.planStep;
+    return (
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">{copy.chooseTitle}</h3>
+        <ul className="grid gap-4 sm:grid-cols-3">
+          {present.map((type) => (
+            <li key={type}>
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle>
+                    <h4 className="text-lg">{copy.categories[type]}</h4>
+                  </CardTitle>
+                  <CardDescription>{copy.categoryDescriptions[type]}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button asChild>
+                    <Link href={`/order?category=${type}`}>
+                      {copy.seePlans}
+                      <span className="sr-only"> for {copy.categories[type]}</span>
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+
   function renderPlanStep() {
     const copy = orderFormContent.planStep;
-    const byType = (type: WebsiteOffer['commercial']['productType']) =>
+    const byType = (type: OrderCategory) =>
       offers.filter((offer) => offer.commercial.productType === type);
+    const present = (['internet', 'mobile', 'sim'] as const).filter(
+      (type) => byType(type).length > 0,
+    );
+    // A province only means something for internet; one plan type needs no chooser.
+    const active: OrderCategory | undefined = province
+      ? 'internet'
+      : (category ?? (present.length === 1 ? present[0] : undefined));
     return (
       <Card>
         <CardHeader>
@@ -399,9 +456,17 @@ export function OrderForm({
             <p>{copy.empty}</p>
           ) : (
             <>
-              {renderOfferGroup(copy.categories.mobile, byType('mobile'))}
-              {renderOfferGroup(copy.categories.sim, byType('sim'))}
-              {renderInternetGroup()}
+              {active && present.length > 1 ? (
+                <Link href="/order" className="text-sm underline">
+                  {copy.allCategories}
+                </Link>
+              ) : null}
+              {active === undefined ? renderCategoryChooser(present) : null}
+              {active === 'mobile'
+                ? renderOfferGroup(copy.categories.mobile, byType('mobile'))
+                : null}
+              {active === 'sim' ? renderOfferGroup(copy.categories.sim, byType('sim')) : null}
+              {active === 'internet' ? renderInternetGroup() : null}
             </>
           )}
         </CardContent>

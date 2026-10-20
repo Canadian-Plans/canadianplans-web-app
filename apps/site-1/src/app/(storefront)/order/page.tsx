@@ -2,7 +2,7 @@ import { pageMetadata } from '@/lib/page-metadata';
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { Card, CardDescription, CardHeader, CardTitle } from '@canadian-plans/ui';
-import { provinceFromName, type WebsiteOffer } from '@canadian-plans/contracts';
+import { productTypeSchema, provinceFromName, type WebsiteOffer } from '@canadian-plans/contracts';
 
 import { siteConfig } from '@/site.config';
 import { getBackendClient } from '@/lib/backendClient';
@@ -47,6 +47,7 @@ export default async function OrderPage({ searchParams }: { searchParams: Promis
   // Internet and TV are priced by province, chosen by name (or code) in the picker.
   const requestedProvince = typeof params['province'] === 'string' ? params['province'] : undefined;
   const province = requestedProvince ? provinceFromName(requestedProvince) : undefined;
+  const category = productTypeSchema.safeParse(params['category']);
   const requestedPlan = typeof params['plan'] === 'string' ? params['plan'] : undefined;
   const selected =
     offers.find((offer) => offer.productId === requestedPlan) ??
@@ -73,6 +74,7 @@ export default async function OrderPage({ searchParams }: { searchParams: Promis
           offers={offers}
           selected={selected}
           province={province}
+          category={category.success ? category.data : undefined}
           attribution={attribution}
           consentVersion={siteConfig.legal.consentVersion}
           hasDraft={draft !== undefined}

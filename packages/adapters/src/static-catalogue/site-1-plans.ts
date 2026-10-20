@@ -140,7 +140,7 @@ interface InternetPlanInput {
   /** Part of the product key and name: `1000`, `500`, `tv-1000`, `streamsaver-1000`. */
   slug: string;
   tier: 'entry' | 'upper' | 'tv' | 'streamsaver';
-  /** Display speed, e.g. `1 Gbps`. */
+  /** The speed alone, e.g. `1 Gbps`; the TV part is added to the stored speed where it applies. */
   speed: string;
   /** The entry plan's speed, referenced by "Everything in …, plus:". */
   entrySpeed?: string;
@@ -230,6 +230,9 @@ function internetOffer(input: InternetPlanInput): CommercialOffer {
     },
   }[tier];
 
+  const speedLabel =
+    tier === 'tv' ? `${speed} + TV` : tier === 'streamsaver' ? `${speed} + StreamSaver TV` : speed;
+
   return offer({
     productKey: byTier.productKey,
     productTitle: byTier.productTitle,
@@ -244,7 +247,7 @@ function internetOffer(input: InternetPlanInput): CommercialOffer {
     terms: internetTerms(province),
     carrier: PROVIDER_OPEN,
     dataAllowance: 'Unlimited data',
-    speed,
+    speed: speedLabel,
     presentation: {
       bestFor: byTier.bestFor,
       ...(byTier.tag ? { tag: byTier.tag } : {}),
@@ -271,14 +274,14 @@ const westernPlans = (province: 'BC' | 'AB'): CommercialOffer[] => [
     province,
     slug: '1000',
     tier: 'streamsaver',
-    speed: '1 Gbps + StreamSaver TV',
+    speed: '1 Gbps',
     priceDollars: 115,
   }),
   internetOffer({
     province,
     slug: '1000',
     tier: 'tv',
-    speed: '1 Gbps + TV',
+    speed: '1 Gbps',
     priceDollars: 140,
   }),
 ];
@@ -298,7 +301,7 @@ const internetOffers: CommercialOffer[] = [
     province: 'SK',
     slug: '1000',
     tier: 'tv',
-    speed: '1 Gbps + TV',
+    speed: '1 Gbps',
     priceDollars: 90,
   }),
   // Manitoba
@@ -321,7 +324,7 @@ const internetOffers: CommercialOffer[] = [
     province: 'MB',
     slug: '2000',
     tier: 'tv',
-    speed: '2 Gbps + TV',
+    speed: '2 Gbps',
     priceDollars: 150,
   }),
   // British Columbia and Alberta

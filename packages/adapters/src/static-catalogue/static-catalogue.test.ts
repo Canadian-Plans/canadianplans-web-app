@@ -85,6 +85,16 @@ describe('site-1 catalogue contents', () => {
     expect(offer.billingPeriod).toBe(period);
   });
 
+  it('names bundles without repeating TV, and stores the full speed', () => {
+    expect(byKey('internet-tv-sk-1000').offerName).toBe('Internet + TV Bundle 1 Gbps');
+    expect(byKey('internet-tv-sk-1000').specs.speed).toBe('1 Gbps + TV');
+    expect(byKey('internet-streamsaver-bc-1000').offerName).toBe(
+      'Internet + StreamSaver TV 1 Gbps',
+    );
+    expect(byKey('internet-streamsaver-bc-1000').specs.speed).toBe('1 Gbps + StreamSaver TV');
+    expect(byKey('internet-sk-1000').specs.speed).toBe('1 Gbps');
+  });
+
   it('takes no payment on the website for any plan', () => {
     for (const offer of site1CommercialOffers) {
       expect(offer.paymentRequired).toBe(false);
