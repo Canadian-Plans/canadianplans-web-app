@@ -28,6 +28,8 @@ export interface DocumentUploadsProps {
   labelFor: (key: string) => string;
   /** Called with the set of checklist keys that now have an attached document. */
   onUploadedChange?: (uploaded: readonly string[]) => void;
+  /** A fresh bot-check token, needed before each call that writes. */
+  getToken?: () => Promise<string | undefined>;
 }
 
 /**
@@ -42,6 +44,7 @@ export function DocumentUploads({
   documentKeys,
   labelFor,
   onUploadedChange,
+  getToken,
 }: DocumentUploadsProps) {
   const baseId = useId();
   const [states, setStates] = useState<Record<string, UploadState>>({});
@@ -78,6 +81,7 @@ export function DocumentUploads({
     try {
       const checksum = await sha256Hex(file);
       const intent = await createDocumentIntent({
+        turnstileToken: await getToken?.(),
         documentType: key,
         fileName: file.name,
         contentType,
@@ -97,6 +101,7 @@ export function DocumentUploads({
         return;
       }
       const finalized = await finalizeDocument({
+        turnstileToken: await getToken?.(),
         uploadId: intent.uploadId,
         checksumSha256: checksum,
       });

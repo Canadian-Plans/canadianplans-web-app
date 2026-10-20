@@ -60,6 +60,11 @@ function context(req: Request): WebsiteContext {
  * body, Host, Origin or CORS (PLATFORM_CONTEXT §4b, invariant 2). Size and
  * edge/bot admission run before any database work; a durable, bounded per-IP
  * and per-credential rate limiter gates database work without a global counter.
+ *
+ * Bot admission (a fresh Turnstile widget token) applies to requests that write.
+ * A read such as the plan list is made by the storefront's server while it
+ * renders a page, when no visitor interaction exists to produce a token; it is
+ * still gated by the credential, its scope and the rate limits.
  */
 export function requireWebsiteCredential(deps: WebsiteAuthDependencies): RequestHandler {
   const limits = deps.limits ?? DEFAULT_WEBSITE_RATE_LIMITS;
@@ -67,10 +72,14 @@ export function requireWebsiteCredential(deps: WebsiteAuthDependencies): Request
 
   return async (req: Request, res: Response, next: NextFunction) => {
     let admitted = false;
-    try {
-      admitted = await botCheck(req);
-    } catch {
-      // Provider failures deny admission before any database work.
+    if (req.method === 'GET' || req.method === 'HEAD') {
+      admitted = true;
+    } else {
+      try {
+        admitted = await botCheck(req);
+      } catch {
+        // Provider failures deny admission before any database work.
+      }
     }
     if (!admitted) {
       sendWebsiteError(res, req.id, 'caller_forbidden', 403);
