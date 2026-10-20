@@ -4,7 +4,7 @@ const pages = [
   ['/', 'Canadian phone & internet plans, with real prices.'],
   ['/plans', 'Plans'],
   ['/plans/test-plan', 'Plan details'],
-  ['/order', 'Order your SIM plan'],
+  ['/order', 'Order a plan'],
   ['/track', 'Track your order'],
   ['/privacy', 'Privacy Policy'],
   ['/terms', 'Terms of Service'],

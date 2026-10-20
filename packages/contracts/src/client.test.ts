@@ -47,6 +47,17 @@ describe('createBackendClient transport', () => {
     expect(call?.headers.get('x-request-id')).toMatch(/^[0-9a-f-]{36}$/i);
   });
 
+  it('reads offers with and without a province filter, and refuses an invalid province', async () => {
+    const { client, calls } = harness(200, { offers: [], requestId: UUID });
+    await client.offers.list();
+    await client.offers.list({ province: 'SK' });
+    expect(calls[0]?.url).toBe('https://api.example.test/api/v1/website/offers');
+    expect(calls[1]?.url).toBe('https://api.example.test/api/v1/website/offers?province=SK');
+    // @ts-expect-error a province must be a province code, never the national marker
+    expect(() => client.offers.list({ province: 'CA' })).toThrow();
+    expect(calls).toHaveLength(2);
+  });
+
   it('serialises a JSON body with content-type on writes', async () => {
     const { client, calls } = harness(201, {
       lead: {

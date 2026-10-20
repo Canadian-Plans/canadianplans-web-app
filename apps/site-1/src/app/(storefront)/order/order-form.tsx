@@ -3,7 +3,15 @@
 import Link from 'next/link';
 import { OrderConfirmation } from '@/components/shared/order-confirmation';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import type { Quote, RawAttribution, WebsiteOffer } from '@canadian-plans/contracts';
+import {
+  isOfferSoldIn,
+  provinceCodeSchema,
+  provinceNames,
+  type ProvinceCode,
+  type Quote,
+  type RawAttribution,
+  type WebsiteOffer,
+} from '@canadian-plans/contracts';
 import {
   Button,
   Card,
@@ -12,15 +20,28 @@ import {
   CardHeader,
   CardTitle,
   FormField,
-  Input,
+  NativeSelect,
   ReviewCard,
   Stepper,
 } from '@canadian-plans/ui';
 
+import { orderFormContent } from '@content/order-forms';
+
 import { trackPlanSelected } from '../../../lib/analytics';
 import { requestCallback, requestQuote, saveDetails, saveDocuments, submitOrder } from './actions';
+import {
+  ORDER_DETAIL_FIELDS,
+  initialDetails,
+  parseOrderDetails,
+  reviewRows,
+  type ArrivalDetails,
+  type InternetDetails,
+  type MobileDetails,
+} from './details';
 import { DocumentUploads } from './document-uploads';
+import { ArrivalFields, FIELD_IDS, InternetFields, MobileFields } from './fields';
 import type { ActionResult, OrderDetailsInput, OrderFieldErrors } from './types';
+
 const STEPS = [
   { id: 'plan', label: 'Plan' },
   { id: 'details', label: 'Details' },
@@ -29,26 +50,11 @@ const STEPS = [
   { id: 'confirmation', label: 'Confirmation' },
 ] as const;
 
-const CHECKLIST_LABELS: Record<string, string> = {
-  passport: 'Passport',
-  visa: 'Visa or permit',
-  address_proof: 'Proof of address',
-  none: 'No documents required',
-};
-
-const EMPTY_DETAILS: OrderDetailsInput = {
-  fullName: '',
-  email: '',
-  phone: '',
-  countryCode: '',
-  currentCountry: '',
-  destination: '',
-  arrivalDate: '',
-};
-
 export interface OrderFormProps {
   offers: readonly WebsiteOffer[];
   selected: WebsiteOffer | undefined;
+  /** The province chosen to see internet and TV plans, if any. */
+  province: ProvinceCode | undefined;
   attribution: RawAttribution;
   /** Disclosure version recorded with the saved draft (REQ 17). */
   consentVersion: string;
@@ -60,56 +66,38 @@ function formatMoney(amountMinor: number, currency: string): string {
 }
 
 function checklistLabel(key: string): string {
-  return CHECKLIST_LABELS[key] ?? key.replace(/_/g, ' ');
+  return orderFormContent.checklistLabels[key] ?? key.replace(/_/g, ' ');
 }
-
-/** Maps a validated field to the element id the error-summary link targets. */
-const FIELD_IDS: Record<string, string> = {
-  fullName: 'order-full-name',
-  email: 'order-email',
-  phone: 'order-phone',
-  countryCode: 'order-country-code',
-  currentCountry: 'order-current-country',
-  destination: 'order-destination',
-  arrivalDate: 'order-arrival-date',
-  terms: 'order-terms',
-};
 
 function needsDocuments(keys: readonly string[]): boolean {
   return keys.length > 0 && !keys.every((key) => key === 'none');
 }
 
-function validateDetails(details: OrderDetailsInput): OrderFieldErrors {
-  const errors: OrderFieldErrors = {};
-  if (details.fullName.trim().length === 0) errors.fullName = 'Enter your full name.';
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(details.email.trim())) {
-    errors.email = 'Enter a valid email address.';
+/** The provinces that have at least one internet plan, for the picker's hint. */
+function servedProvinces(offers: readonly WebsiteOffer[]): Set<ProvinceCode> {
+  const served = new Set<ProvinceCode>();
+  for (const offer of offers) {
+    if (offer.commercial.productType !== 'internet') continue;
+    for (const region of offer.commercial.regions) {
+      const province = provinceCodeSchema.safeParse(region);
+      if (province.success) served.add(province.data);
+    }
   }
-  if (details.phone.trim().length < 5) errors.phone = 'Enter your phone number.';
-  if (!/^[A-Za-z]{2}$/.test(details.countryCode.trim())) {
-    errors.countryCode = 'Use the two-letter country code, for example BD.';
-  }
-  if (details.currentCountry.trim().length === 0) {
-    errors.currentCountry = 'Enter the country you are in now.';
-  }
-  if (details.destination.trim().length === 0) {
-    errors.destination = 'Enter your destination in Canada.';
-  }
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(details.arrivalDate)) {
-    errors.arrivalDate = 'Enter your arrival date.';
-  }
-  return errors;
+  return served;
 }
 
 export function OrderForm({
   offers,
   selected,
+  province,
   attribution,
   consentVersion,
   hasDraft,
 }: OrderFormProps) {
   const [stepIndex, setStepIndexState] = useState(selected ? 1 : 0);
-  const [details, setDetails] = useState<OrderDetailsInput>(EMPTY_DETAILS);
+  const [details, setDetails] = useState<OrderDetailsInput>(() =>
+    initialDetails(selected?.commercial ?? { productType: 'sim', regions: ['CA'] }),
+  );
   const [fieldErrors, setFieldErrors] = useState<OrderFieldErrors>({});
   const [acknowledged, setAcknowledged] = useState(false);
   const [quote, setQuote] = useState<Quote | undefined>(undefined);
@@ -147,8 +135,16 @@ export function OrderForm({
     window.setTimeout(() => summaryRef.current?.focus(), 0);
   }
 
-  function setField(id: keyof OrderDetailsInput, value: string): void {
-    setDetails((current) => ({ ...current, [id]: value }));
+  // Each form edits only its own category's fields; an edit for another
+  // category (a stale event after the plan changed) is ignored.
+  function patchArrival(patch: Partial<ArrivalDetails>): void {
+    setDetails((current) => (current.category === 'sim' ? { ...current, ...patch } : current));
+  }
+  function patchInternet(patch: Partial<InternetDetails>): void {
+    setDetails((current) => (current.category === 'internet' ? { ...current, ...patch } : current));
+  }
+  function patchMobile(patch: Partial<MobileDetails>): void {
+    setDetails((current) => (current.category === 'mobile' ? { ...current, ...patch } : current));
   }
 
   function applyFailure(result: Extract<ActionResult<unknown>, { ok: false }>): void {
@@ -165,9 +161,9 @@ export function OrderForm({
   async function handleDetails(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     if (!selected) return;
-    const errors = validateDetails(details);
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
+    const checked = parseOrderDetails(details);
+    if (!checked.ok) {
+      setFieldErrors(checked.errors);
       focusSummary();
       return;
     }
@@ -281,55 +277,132 @@ export function OrderForm({
     applyFailure(result);
   }
 
-  const summaryItems = Object.entries(fieldErrors).map(([field, message]) => ({
-    field,
-    message: message ?? 'Please check this field.',
-  }));
+  const summaryItems = ORDER_DETAIL_FIELDS.flatMap((field) => {
+    const message = fieldErrors[field];
+    return message === undefined ? [] : [{ field, message }];
+  });
   const showSummary = summaryItems.length > 0 || orderError !== undefined;
 
+  function renderOfferCard(offer: WebsiteOffer) {
+    const { commercial } = offer;
+    const period = orderFormContent.planStep.perPeriod[commercial.billingPeriod ?? 'month'];
+    return (
+      <li key={offer.productId}>
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <h4 className="text-lg">{commercial.offerName}</h4>
+            </CardTitle>
+            <CardDescription>
+              {commercial.presentation?.bestFor ?? commercial.productTitle}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {commercial.promotion ? (
+              <p className="text-sm font-medium">{commercial.promotion.headline}</p>
+            ) : null}
+            {commercial.presentation?.features.length ? (
+              <ul className="list-disc space-y-1 pl-5 text-sm">
+                {commercial.presentation.features.map((feature) => (
+                  <li key={feature}>{feature}</li>
+                ))}
+              </ul>
+            ) : null}
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <p className="font-medium">
+                {formatMoney(commercial.recurringChargeAmountMinor, commercial.currency)} {period}
+              </p>
+              <Button asChild>
+                <Link href={`/order?plan=${encodeURIComponent(offer.productId)}`}>
+                  Select {commercial.offerName}
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </li>
+    );
+  }
+
+  function renderOfferGroup(title: string, group: readonly WebsiteOffer[]) {
+    if (group.length === 0) return null;
+    return (
+      <section className="space-y-3" aria-labelledby={`plans-${title}`}>
+        <h3 id={`plans-${title}`} className="text-lg font-semibold">
+          {title}
+        </h3>
+        <ul className="space-y-3">{group.map((offer) => renderOfferCard(offer))}</ul>
+      </section>
+    );
+  }
+
+  /** Internet and TV are priced by province, so the visitor names theirs first. */
+  function renderInternetGroup() {
+    const copy = orderFormContent.planStep;
+    const served = servedProvinces(offers);
+    if (served.size === 0) return null;
+    const internet = province
+      ? offers.filter(
+          (offer) =>
+            offer.commercial.productType === 'internet' &&
+            isOfferSoldIn(offer.commercial.regions, province),
+        )
+      : [];
+    return (
+      <section className="space-y-3" aria-labelledby="plans-internet">
+        <h3 id="plans-internet" className="text-lg font-semibold">
+          {copy.categories.internet}
+        </h3>
+        <form method="get" action="/order" className="flex flex-wrap items-end gap-4">
+          <div className="min-w-[14rem] flex-1">
+            <FormField
+              id="order-province-picker"
+              label={copy.provinceLabel}
+              hint={copy.provincePrompt}
+            >
+              <NativeSelect name="province" defaultValue={province ?? ''}>
+                <option value="">{orderFormContent.fields.province.placeholder}</option>
+                {provinceCodeSchema.options.map((code) => (
+                  <option key={code} value={code}>
+                    {provinceNames[code]}
+                  </option>
+                ))}
+              </NativeSelect>
+            </FormField>
+          </div>
+          <Button type="submit" variant="outline">
+            {copy.provinceApply}
+          </Button>
+        </form>
+        {province && internet.length === 0 ? <p>{copy.noInternetInProvince}</p> : null}
+        {internet.length > 0 ? (
+          <ul className="space-y-3">{internet.map((offer) => renderOfferCard(offer))}</ul>
+        ) : null}
+      </section>
+    );
+  }
+
   function renderPlanStep() {
+    const copy = orderFormContent.planStep;
+    const byType = (type: WebsiteOffer['commercial']['productType']) =>
+      offers.filter((offer) => offer.commercial.productType === type);
     return (
       <Card>
         <CardHeader>
           <CardTitle>
-            <h2 className="text-xl">Choose a plan</h2>
+            <h2 className="text-xl">{copy.title}</h2>
           </CardTitle>
-          <CardDescription>
-            Prices are confirmed by our server when you reach the review step.
-          </CardDescription>
+          <CardDescription>{copy.description}</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-8">
           {offers.length === 0 ? (
-            <p>No plans are available right now. Please try again later.</p>
+            <p>{copy.empty}</p>
           ) : (
-            <ul className="space-y-3">
-              {offers.map((offer) => (
-                <li key={offer.productId}>
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>
-                        <h3 className="text-lg">{offer.commercial.offerName}</h3>
-                      </CardTitle>
-                      <CardDescription>{offer.commercial.productTitle}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-wrap items-center justify-between gap-4">
-                      <p className="font-medium">
-                        {formatMoney(
-                          offer.commercial.recurringChargeAmountMinor,
-                          offer.commercial.currency,
-                        )}{' '}
-                        / month
-                      </p>
-                      <Button asChild>
-                        <Link href={`/order?plan=${encodeURIComponent(offer.productId)}`}>
-                          Select {offer.commercial.offerName}
-                        </Link>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </li>
-              ))}
-            </ul>
+            <>
+              {renderOfferGroup(copy.categories.mobile, byType('mobile'))}
+              {renderOfferGroup(copy.categories.sim, byType('sim'))}
+              {renderInternetGroup()}
+            </>
           )}
         </CardContent>
       </Card>
@@ -347,85 +420,15 @@ export function OrderForm({
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={handleDetails} noValidate>
-            <FormField id="order-full-name" label="Full name" required error={fieldErrors.fullName}>
-              <Input
-                value={details.fullName}
-                onChange={(event) => setField('fullName', event.target.value)}
-                autoComplete="name"
-              />
-            </FormField>
-            <FormField id="order-email" label="Email" required error={fieldErrors.email}>
-              <Input
-                type="email"
-                value={details.email}
-                onChange={(event) => setField('email', event.target.value)}
-                autoComplete="email"
-              />
-            </FormField>
-            <div className="flex flex-wrap gap-4">
-              <div className="w-28">
-                <FormField
-                  id="order-country-code"
-                  label="Code"
-                  required
-                  hint="ISO country, e.g. BD"
-                  error={fieldErrors.countryCode}
-                >
-                  <Input
-                    value={details.countryCode}
-                    onChange={(event) => setField('countryCode', event.target.value.toUpperCase())}
-                    autoComplete="country"
-                    maxLength={2}
-                  />
-                </FormField>
-              </div>
-              <div className="min-w-[12rem] flex-1">
-                <FormField id="order-phone" label="Phone" required error={fieldErrors.phone}>
-                  <Input
-                    type="tel"
-                    value={details.phone}
-                    onChange={(event) => setField('phone', event.target.value)}
-                    autoComplete="tel"
-                  />
-                </FormField>
-              </div>
-            </div>
-            <FormField
-              id="order-current-country"
-              label="Country you are in now"
-              required
-              error={fieldErrors.currentCountry}
-            >
-              <Input
-                value={details.currentCountry}
-                onChange={(event) => setField('currentCountry', event.target.value)}
-                autoComplete="country-name"
-              />
-            </FormField>
-            <FormField
-              id="order-destination"
-              label="Destination in Canada"
-              required
-              error={fieldErrors.destination}
-            >
-              <Input
-                value={details.destination}
-                onChange={(event) => setField('destination', event.target.value)}
-                autoComplete="address-level2"
-              />
-            </FormField>
-            <FormField
-              id="order-arrival-date"
-              label="Arrival date"
-              required
-              error={fieldErrors.arrivalDate}
-            >
-              <Input
-                type="date"
-                value={details.arrivalDate}
-                onChange={(event) => setField('arrivalDate', event.target.value)}
-              />
-            </FormField>
+            {details.category === 'sim' ? (
+              <ArrivalFields details={details} errors={fieldErrors} onChange={patchArrival} />
+            ) : null}
+            {details.category === 'internet' ? (
+              <InternetFields details={details} errors={fieldErrors} onChange={patchInternet} />
+            ) : null}
+            {details.category === 'mobile' ? (
+              <MobileFields details={details} errors={fieldErrors} onChange={patchMobile} />
+            ) : null}
             {hasDraft ? (
               <p className="text-sm">We found your saved details and will update them.</p>
             ) : null}
@@ -537,20 +540,12 @@ export function OrderForm({
         </ReviewCard>
         <ReviewCard title="Your details" onEdit={() => goToStep(1)}>
           <dl className="grid gap-1 sm:grid-cols-2">
-            <dt>Name</dt>
-            <dd>{details.fullName}</dd>
-            <dt>Email</dt>
-            <dd>{details.email}</dd>
-            <dt>Phone</dt>
-            <dd>
-              +{details.countryCode} {details.phone}
-            </dd>
-            <dt>Current country</dt>
-            <dd>{details.currentCountry}</dd>
-            <dt>Destination</dt>
-            <dd>{details.destination}</dd>
-            <dt>Arrival</dt>
-            <dd>{details.arrivalDate}</dd>
+            {reviewRows(details).map((row) => (
+              <div key={row.label} className="contents">
+                <dt>{row.label}</dt>
+                <dd>{row.value}</dd>
+              </div>
+            ))}
           </dl>
         </ReviewCard>
         <ReviewCard title="Price" onEdit={() => goToStep(2)}>
@@ -645,7 +640,7 @@ export function OrderForm({
           <ul className="mt-2 list-disc space-y-1 pl-5">
             {summaryItems.map((item) => (
               <li key={item.field}>
-                <a href={`#${FIELD_IDS[item.field] ?? 'order-full-name'}`}>{item.message}</a>
+                <a href={`#${FIELD_IDS[item.field]}`}>{item.message}</a>
               </li>
             ))}
             {orderError ? <li key="order">{orderError.message}</li> : null}

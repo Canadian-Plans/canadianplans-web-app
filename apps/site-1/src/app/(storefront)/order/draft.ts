@@ -1,5 +1,6 @@
 import 'server-only';
 import { cookies } from 'next/headers';
+import { provinceCodeSchema } from '@canadian-plans/contracts';
 import { z } from 'zod';
 
 /**
@@ -25,6 +26,8 @@ export const orderDraftSchema = z.object({
   draftGrant: z.string().min(1).max(4_096),
   idempotencyKey: z.string().min(8).max(200),
   productId: z.uuid(),
+  /** The province an internet plan was chosen for; the quote needs it again. */
+  province: provinceCodeSchema.optional(),
 });
 export type OrderDraft = z.infer<typeof orderDraftSchema>;
 

@@ -115,6 +115,23 @@ of the existing per-email/per-IP OTP limits, which are unchanged.
 - `SITE_1_SANITY_PREVIEW_TOKEN` — site-1-scoped, read-only viewer token for editor draft preview only; never `NEXT_PUBLIC_*`
 - `SITE_1_REVALIDATE_SECRET` — site-1 server-only bearer secret accepted only by `/api/revalidate/catalogue`; must match the registry entry's `sanity.revalidateSecret`
 
+## Repo catalogue (ADR 0005)
+
+Used while Sanity is not connected. Plans, prices and promotions are written in
+`packages/adapters/src/static-catalogue/site-1-plans.ts` and published by the
+backend's catalogue sync. A Sanity registry entry for a workspace always wins, so
+connecting Sanity later needs no code change.
+
+- `SITE_1_STATIC_CATALOGUE_WORKSPACE_ID` — backend-only UUID of the one workspace
+  that reads the repo catalogue (site-1 is `10000000-0000-4000-8000-000000000101`).
+  Unset means no repo catalogue. Any other workspace never receives these plans.
+- `CATALOGUE_ALLOW_OPEN_INPUTS` — backend-only, set to `1` to publish offers that still
+  carry `TEST-` placeholders for unanswered owner decisions (who bills, provider
+  names, terms version, pre-arrival eligibility). Without it, `DEPLOYMENT_ENV=production`
+  and any unknown environment refuse to publish them (`catalogue_open_inputs` in the
+  sync status); `development` and `preview` publish them. Set it in production only as a
+  deliberate decision.
+
 ## Email (T18)
 
 - `EMAIL_PROVIDER` — backend-only, explicit selection: `fake`, `resend`, or `ses`. There is no implicit default; an unset or unrecognised value fails every email job closed with `provider_not_configured` rather than guessing. `fake` is only honoured outside `NODE_ENV=production`. Set to `fake` in CI and preview deployments; `resend` is the live default (OPEN_INPUTS #23: Resend selected for launch); `ses` remains available but is deferred to a later migration.

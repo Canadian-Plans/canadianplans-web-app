@@ -165,7 +165,12 @@ import {
   type DeleteCustomerDataRequest,
   type DeleteCustomerDataResponse,
 } from './deletion';
-import { listWebsiteOffersResponseSchema, type ListWebsiteOffersResponse } from './website-offers';
+import {
+  listWebsiteOffersQuerySchema,
+  listWebsiteOffersResponseSchema,
+  type ListWebsiteOffersQuery,
+  type ListWebsiteOffersResponse,
+} from './website-offers';
 
 /**
  * The one typed backend client, consumed by both admin (staff session as the
@@ -243,7 +248,8 @@ export interface BackendClient {
     create(body: CreateQuoteRequest, options: { draftGrant: string }): Promise<CreateQuoteResponse>;
   };
   offers: {
-    list(): Promise<ListWebsiteOffersResponse>;
+    /** The published offers; with a province, only those sold there plus national ones. */
+    list(query?: ListWebsiteOffersQuery): Promise<ListWebsiteOffersResponse>;
   };
   orders: {
     submit(
@@ -474,10 +480,11 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
     },
 
     offers: {
-      list: () =>
+      list: (query) =>
         call({
           method: 'GET',
           path: '/api/v1/website/offers',
+          query: listWebsiteOffersQuerySchema.parse(query ?? {}),
           responseSchema: listWebsiteOffersResponseSchema,
         }),
     },
