@@ -1,4 +1,4 @@
-# Terms and Conditions
+# Terms of Service
 
 Version 1, effective 20 October 2026.
 

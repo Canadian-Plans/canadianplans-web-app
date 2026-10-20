@@ -255,7 +255,7 @@ const privacyBody: readonly LegalBlock[] = [
 
 export const publishedLegal: Record<LegalSlug, PublishedLegal> = {
   terms: {
-    title: 'Terms and Conditions',
+    title: 'Terms of Service',
     version: 1,
     effectiveDate: '2026-10-20',
     body: termsBody,
