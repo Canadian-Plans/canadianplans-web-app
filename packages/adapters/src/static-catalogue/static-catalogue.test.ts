@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { commercialOfferSchema } from '@canadian-plans/contracts';
 
-import { OPEN_INPUT_PREFIX, site1CommercialOffers } from './site-1-plans.js';
+import { site1CommercialOffers } from './site-1-plans.js';
 import { StaticCatalogue, findOpenInputs } from './static-catalogue.js';
 
 const byKey = (key: string) => {
@@ -131,29 +131,37 @@ describe('site-1 catalogue contents', () => {
 });
 
 describe('open owner decisions', () => {
-  it('lists the placeholders still left for the owner', () => {
+  it('leaves only the terms version for the owner, until the terms text is published', () => {
     const open = findOpenInputs(site1CommercialOffers);
-    const fields = new Set(open.map((item) => item.field));
-    expect(fields).toEqual(
-      new Set(['billingParty', 'specs.carrier', 'eligibility', 'termsVersion']),
-    );
+    expect(new Set(open.map((item) => item.field))).toEqual(new Set(['termsVersion']));
     expect(open.every((item) => typeof item.productKey === 'string')).toBe(true);
   });
 
-  it('flags nothing once every placeholder is replaced', () => {
+  it('flags nothing once the terms version is replaced', () => {
     const resolved = site1CommercialOffers.map((offer) => ({
       ...offer,
-      billingParty: 'Provider',
       termsVersion: 'terms-2026-10-v1',
-      eligibility: offer.eligibility.startsWith(OPEN_INPUT_PREFIX)
-        ? 'Students and workers.'
-        : offer.eligibility,
-      specs: {
-        ...offer.specs,
-        carrier: offer.specs.carrier.startsWith(OPEN_INPUT_PREFIX) ? 'Rogers' : offer.specs.carrier,
-      },
     }));
     expect(findOpenInputs(resolved)).toEqual([]);
+  });
+
+  it("describes who sells and bills in the owner's own words, and who each pre-arrival plan is for", () => {
+    const byKey = (key: string) => {
+      const found = site1CommercialOffers.find((offer) => offer.productKey === key);
+      if (!found) throw new Error(`missing ${key}`);
+      return found;
+    };
+    expect(byKey('internet-sk-1000').billingParty).toMatch(/authorised sales agent/);
+    expect(byKey('mobile-can-us-100').billingParty).toMatch(/authorised sales agent/);
+    expect(byKey('prearrival-fido-essential-75').billingParty).toMatch(/authorised reseller/);
+    expect(byKey('prearrival-fido-essential-75').eligibility).toMatch(
+      /study permit.*more than 90 days/,
+    );
+    const chatr = site1CommercialOffers.filter((offer) =>
+      offer.productKey.startsWith('prearrival-chatr'),
+    );
+    expect(chatr.length).toBeGreaterThan(0);
+    for (const offer of chatr) expect(offer.eligibility).toMatch(/visitor visa.*under 90 days/);
   });
 });
 

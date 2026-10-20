@@ -94,3 +94,23 @@ From the site-1 design content; all "$0 due today", prices before tax.
 - Who bills the customer, and when (the provider, after activation, or Canadian Plans).
 - Required documents per plan (OPEN_INPUTS #6); mobile currently needs ID plus a credit check.
 - Tax handling and who collects each fee (OPEN_INPUTS #19).
+
+### Filled from the owner's other sites (20 October 2026)
+
+The owner pointed to two repos as the source for these facts. Check them before launch:
+
+- **Internet and mobile** follow Canada Wide (`app/(legal)/terms-and-conditions`): Canadian
+  Plans is an _authorised sales agent_; the service is supplied by the provider and the
+  service agreement is with them. The provider is not named on Canada Wide, so each plan
+  says it is confirmed by the advisor (internet) or at order approval (mobile).
+- **Pre-arrival** follows `canadaesim` (`src/lib/data.ts`, `PlanEligibilityModal`, terms):
+  an _authorised reseller_ of Rogers, Fido and chatr. Monthly postpaid plans (Fido, Rogers)
+  are for study permit, work permit and permanent resident arrivals staying over 90 days;
+  chatr prepaid plans are for visitor visa and Super Visa visitors staying under 90 days.
+  Regular online orders upload no documents.
+- **Still open:** the terms version. The published site-1 terms and privacy pages are
+  preview drafts with `[legal company name]` and `[X] days` placeholders, so no version can be
+  recorded yet. Two sources disagree on the legal facts: canadaesim is based in Dhaka
+  (Bangladesh law, Dhaka courts) with a Surrey office; Canada Wide has its own contact
+  details. The owner must choose the legal entity, address, contact email and phone, and
+  governing law for Canadian Plans.

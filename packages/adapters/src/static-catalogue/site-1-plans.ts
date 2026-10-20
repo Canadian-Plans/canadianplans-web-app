@@ -19,8 +19,18 @@ import {
 /** Marks a value that is a placeholder for an unanswered owner decision. */
 export const OPEN_INPUT_PREFIX = 'TEST-';
 
-const BILLING_PARTY_OPEN = 'TEST-OPEN-INPUT: who bills the customer';
-const PROVIDER_OPEN = 'TEST-OPEN-INPUT: provider name';
+/*
+ * Wording follows the owner's other businesses (20 October 2026). Canada Wide
+ * sells internet and mobile as an authorised sales agent: the service comes
+ * from the provider and the service agreement is with them. The pre-arrival
+ * eSIM site sells Rogers, Fido and chatr plans as an authorised reseller.
+ */
+const AGENT_BILLING_PARTY =
+  'Your service provider. Canadian Plans is its authorised sales agent, and your service agreement is with the provider.';
+const ARRIVAL_BILLING_PARTY =
+  'The carrier named on your plan. Canadian Plans is an authorised reseller, and nothing is charged on the website.';
+const INTERNET_PROVIDER = 'The provider is confirmed by your advisor before installation';
+const MOBILE_PROVIDER = 'The provider is confirmed when your order is approved';
 const TERMS_VERSION_OPEN = 'TEST-terms-2026-10-v1';
 
 const block = (text: string) => ({
@@ -40,6 +50,7 @@ interface OfferInput {
   documentChecklist: string[];
   eligibility: string;
   availability: string;
+  billingParty: string;
   terms: readonly string[];
   carrier: string;
   dataAllowance: string;
@@ -69,7 +80,7 @@ function offer(input: OfferInput): CommercialOffer {
     documentChecklist: input.documentChecklist,
     eligibility: input.eligibility,
     availability: input.availability,
-    billingParty: BILLING_PARTY_OPEN,
+    billingParty: input.billingParty,
     contractTerms: [...input.terms, ...promotionTerms].map(block),
     termsVersion: TERMS_VERSION_OPEN,
     presentation: input.presentation,
@@ -244,8 +255,9 @@ function internetOffer(input: InternetPlanInput): CommercialOffer {
     eligibility:
       'Subject to service being available at your address. An advisor confirms availability before installation.',
     availability: `${provinceLabel[province]}. Availability depends on your exact address.`,
+    billingParty: AGENT_BILLING_PARTY,
     terms: internetTerms(province),
-    carrier: PROVIDER_OPEN,
+    carrier: INTERNET_PROVIDER,
     dataAllowance: 'Unlimited data',
     speed: speedLabel,
     presentation: {
@@ -368,7 +380,8 @@ function mobileOffer(input: MobilePlanInput): CommercialOffer {
     eligibility: 'An identity and credit check is required.',
     availability: 'All provinces.',
     terms: mobileTerms,
-    carrier: PROVIDER_OPEN,
+    billingParty: AGENT_BILLING_PARTY,
+    carrier: MOBILE_PROVIDER,
     dataAllowance: input.dataAllowance,
     ...(input.note ? { notes: input.note } : {}),
     presentation: {
@@ -464,10 +477,14 @@ function arrivalOffer(input: ArrivalPlanInput): CommercialOffer {
     offerName: `${input.title} ${input.dataAllowance}`,
     billingPeriod: input.billingPeriod,
     priceDollars: input.priceDollars,
-    // OPEN_INPUTS #6 and #19: the documents and eligibility for pre-arrival plans are not decided.
+    // Regular online orders upload no documents; an advisor asks if anything is needed (canadaesim terms, section 4).
     documentChecklist: [],
-    eligibility: 'TEST-OPEN-INPUT: pre-arrival eligibility',
+    eligibility:
+      input.payType === 'Postpaid'
+        ? 'For people arriving in Canada on a study permit, a work permit or as a permanent resident, staying more than 90 days.'
+        : 'For visitors arriving on a visitor visa or a Super Visa, staying under 90 days.',
     availability: 'Ordered before you arrive in Canada. Available across Canada.',
+    billingParty: ARRIVAL_BILLING_PARTY,
     terms: arrivalTerms,
     carrier: input.carrier,
     dataAllowance: input.dataAllowance,
