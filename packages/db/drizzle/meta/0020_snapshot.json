@@ -154,12 +154,8 @@
           "tableFrom": "audit_events",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -169,10 +165,7 @@
         "audit_events_workspace_id_id_unique": {
           "name": "audit_events_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -180,9 +173,7 @@
           "name": "audit_events_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"audit_events\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"audit_events\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -372,12 +363,8 @@
           "tableFrom": "catalogue_sync_events",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -387,19 +374,12 @@
         "catalogue_sync_events_workspace_id_id_unique": {
           "name": "catalogue_sync_events_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "catalogue_sync_events_delivery_unique": {
           "name": "catalogue_sync_events_delivery_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "provider_account",
-            "delivery_id"
-          ]
+          "columns": ["workspace_id", "provider_account", "delivery_id"]
         }
       },
       "policies": {
@@ -407,9 +387,7 @@
           "name": "catalogue_sync_events_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"catalogue_sync_events\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"catalogue_sync_events\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -494,12 +472,8 @@
           "tableFrom": "catalogue_sync_leases",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -507,10 +481,7 @@
       "compositePrimaryKeys": {
         "catalogue_sync_leases_workspace_id_product_key_pk": {
           "name": "catalogue_sync_leases_workspace_id_product_key_pk",
-          "columns": [
-            "workspace_id",
-            "product_key"
-          ]
+          "columns": ["workspace_id", "product_key"]
         }
       },
       "uniqueConstraints": {},
@@ -519,9 +490,7 @@
           "name": "catalogue_sync_leases_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"catalogue_sync_leases\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"catalogue_sync_leases\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -579,12 +548,8 @@
           "tableFrom": "catalogue_sync_state",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -596,9 +561,7 @@
           "name": "catalogue_sync_state_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"catalogue_sync_state\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"catalogue_sync_state\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -690,12 +653,8 @@
           "tableFrom": "commission_line_events",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -704,14 +663,8 @@
           "tableFrom": "commission_line_events",
           "tableTo": "commission_lines",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "commission_line_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "commission_line_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -721,10 +674,7 @@
         "commission_line_events_workspace_id_id_unique": {
           "name": "commission_line_events_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -732,9 +682,7 @@
           "name": "commission_line_events_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"commission_line_events\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"commission_line_events\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -888,12 +836,8 @@
           "tableFrom": "commission_lines",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -902,14 +846,8 @@
           "tableFrom": "commission_lines",
           "tableTo": "orders",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "order_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "order_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -918,14 +856,8 @@
           "tableFrom": "commission_lines",
           "tableTo": "partners",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "partner_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "partner_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -934,14 +866,8 @@
           "tableFrom": "commission_lines",
           "tableTo": "commission_rules",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "rule_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "rule_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -950,14 +876,8 @@
           "tableFrom": "commission_lines",
           "tableTo": "invoices",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "invoice_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "invoice_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -967,18 +887,12 @@
         "commission_lines_workspace_id_id_unique": {
           "name": "commission_lines_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "commission_lines_workspace_order_unique": {
           "name": "commission_lines_workspace_order_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "order_id"
-          ]
+          "columns": ["workspace_id", "order_id"]
         }
       },
       "policies": {
@@ -986,9 +900,7 @@
           "name": "commission_lines_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"commission_lines\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"commission_lines\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -1106,12 +1018,8 @@
           "tableFrom": "commission_rules",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1121,10 +1029,7 @@
         "commission_rules_workspace_id_id_unique": {
           "name": "commission_rules_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -1132,9 +1037,7 @@
           "name": "commission_rules_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"commission_rules\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"commission_rules\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -1264,12 +1167,8 @@
           "tableFrom": "deletion_intents",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1279,10 +1178,7 @@
         "deletion_intents_workspace_id_id_unique": {
           "name": "deletion_intents_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -1290,9 +1186,7 @@
           "name": "deletion_intents_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"deletion_intents\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"deletion_intents\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -1397,12 +1291,8 @@
           "tableFrom": "dispatch_records",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1411,14 +1301,8 @@
           "tableFrom": "dispatch_records",
           "tableTo": "orders",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "order_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "order_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1428,10 +1312,7 @@
         "dispatch_records_workspace_id_id_unique": {
           "name": "dispatch_records_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -1439,9 +1320,7 @@
           "name": "dispatch_records_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"dispatch_records\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"dispatch_records\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -1527,12 +1406,8 @@
           "tableFrom": "draft_grants",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1541,14 +1416,8 @@
           "tableFrom": "draft_grants",
           "tableTo": "leads",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "lead_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "lead_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1558,9 +1427,7 @@
         "draft_grants_token_hash_unique": {
           "name": "draft_grants_token_hash_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token_hash"
-          ]
+          "columns": ["token_hash"]
         }
       },
       "policies": {
@@ -1568,9 +1435,7 @@
           "name": "draft_grants_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"draft_grants\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"draft_grants\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -1721,12 +1586,8 @@
           "tableFrom": "email_messages",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1735,14 +1596,8 @@
           "tableFrom": "email_messages",
           "tableTo": "leads",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "lead_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "lead_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1751,14 +1606,8 @@
           "tableFrom": "email_messages",
           "tableTo": "orders",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "order_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "order_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1768,18 +1617,12 @@
         "email_messages_workspace_id_id_unique": {
           "name": "email_messages_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "email_messages_workspace_message_id_unique": {
           "name": "email_messages_workspace_message_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "message_id"
-          ]
+          "columns": ["workspace_id", "message_id"]
         }
       },
       "policies": {
@@ -1787,9 +1630,7 @@
           "name": "email_messages_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"email_messages\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"email_messages\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -1896,12 +1737,8 @@
           "tableFrom": "email_provider_events",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1911,18 +1748,12 @@
         "email_provider_events_workspace_id_id_unique": {
           "name": "email_provider_events_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "email_provider_events_workspace_provider_event_unique": {
           "name": "email_provider_events_workspace_provider_event_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "provider_event_id"
-          ]
+          "columns": ["workspace_id", "provider_event_id"]
         }
       },
       "policies": {
@@ -1930,9 +1761,7 @@
           "name": "email_provider_events_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"email_provider_events\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"email_provider_events\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -2017,12 +1846,8 @@
           "tableFrom": "email_suppressions",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2032,19 +1857,12 @@
         "email_suppressions_workspace_id_id_unique": {
           "name": "email_suppressions_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "email_suppressions_workspace_contact_reason_unique": {
           "name": "email_suppressions_workspace_contact_reason_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "contact_hash",
-            "reason"
-          ]
+          "columns": ["workspace_id", "contact_hash", "reason"]
         }
       },
       "policies": {
@@ -2052,9 +1870,7 @@
           "name": "email_suppressions_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"email_suppressions\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"email_suppressions\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -2151,12 +1967,8 @@
           "tableFrom": "file_review_events",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2165,14 +1977,8 @@
           "tableFrom": "file_review_events",
           "tableTo": "files",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "file_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "file_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2182,10 +1988,7 @@
         "file_review_events_workspace_id_id_unique": {
           "name": "file_review_events_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -2193,9 +1996,7 @@
           "name": "file_review_events_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"file_review_events\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"file_review_events\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -2314,12 +2115,8 @@
           "tableFrom": "file_revisions",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2328,14 +2125,8 @@
           "tableFrom": "file_revisions",
           "tableTo": "files",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "file_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "file_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2345,19 +2136,12 @@
         "file_revisions_workspace_id_id_unique": {
           "name": "file_revisions_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "file_revisions_workspace_file_revision_unique": {
           "name": "file_revisions_workspace_file_revision_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "file_id",
-            "revision"
-          ]
+          "columns": ["workspace_id", "file_id", "revision"]
         }
       },
       "policies": {
@@ -2365,9 +2149,7 @@
           "name": "file_revisions_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"file_revisions\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"file_revisions\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -2633,12 +2415,8 @@
           "tableFrom": "files",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2648,10 +2426,7 @@
         "files_workspace_id_id_unique": {
           "name": "files_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -2659,9 +2434,7 @@
           "name": "files_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"files\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"files\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -2814,12 +2587,8 @@
           "tableFrom": "follow_up_schedules",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2828,14 +2597,8 @@
           "tableFrom": "follow_up_schedules",
           "tableTo": "leads",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "lead_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "lead_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2844,14 +2607,8 @@
           "tableFrom": "follow_up_schedules",
           "tableTo": "orders",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "order_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "order_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2861,10 +2618,7 @@
         "follow_up_schedules_workspace_id_id_unique": {
           "name": "follow_up_schedules_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -2872,9 +2626,7 @@
           "name": "follow_up_schedules_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"follow_up_schedules\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"follow_up_schedules\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -2994,12 +2746,8 @@
           "tableFrom": "idempotency_keys",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3008,14 +2756,8 @@
           "tableFrom": "idempotency_keys",
           "tableTo": "leads",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "lead_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "lead_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -3024,14 +2766,8 @@
           "tableFrom": "idempotency_keys",
           "tableTo": "orders",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "order_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "order_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -3041,19 +2777,12 @@
         "idempotency_keys_workspace_id_id_unique": {
           "name": "idempotency_keys_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "idempotency_keys_workspace_scope_key_unique": {
           "name": "idempotency_keys_workspace_scope_key_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "scope",
-            "key_hash"
-          ]
+          "columns": ["workspace_id", "scope", "key_hash"]
         }
       },
       "policies": {
@@ -3061,9 +2790,7 @@
           "name": "idempotency_keys_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"idempotency_keys\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"idempotency_keys\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -3164,12 +2891,8 @@
           "tableFrom": "invoice_lines",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3178,14 +2901,8 @@
           "tableFrom": "invoice_lines",
           "tableTo": "invoices",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "invoice_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "invoice_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3194,14 +2911,8 @@
           "tableFrom": "invoice_lines",
           "tableTo": "commission_lines",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "commission_line_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "commission_line_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -3211,18 +2922,12 @@
         "invoice_lines_workspace_id_id_unique": {
           "name": "invoice_lines_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "invoice_lines_workspace_commission_unique": {
           "name": "invoice_lines_workspace_commission_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "commission_line_id"
-          ]
+          "columns": ["workspace_id", "commission_line_id"]
         }
       },
       "policies": {
@@ -3230,9 +2935,7 @@
           "name": "invoice_lines_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"invoice_lines\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"invoice_lines\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -3350,12 +3053,8 @@
           "tableFrom": "invoices",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3364,14 +3063,8 @@
           "tableFrom": "invoices",
           "tableTo": "partners",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "partner_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "partner_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -3381,28 +3074,17 @@
         "invoices_workspace_id_id_unique": {
           "name": "invoices_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "invoices_workspace_number_unique": {
           "name": "invoices_workspace_number_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "invoice_number"
-          ]
+          "columns": ["workspace_id", "invoice_number"]
         },
         "invoices_workspace_partner_period_unique": {
           "name": "invoices_workspace_partner_period_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "partner_id",
-            "period_start",
-            "period_end"
-          ]
+          "columns": ["workspace_id", "partner_id", "period_start", "period_end"]
         }
       },
       "policies": {
@@ -3410,9 +3092,7 @@
           "name": "invoices_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"invoices\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"invoices\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -3576,12 +3256,8 @@
           "tableFrom": "leads",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3590,14 +3266,8 @@
           "tableFrom": "leads",
           "tableTo": "partners",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "partner_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "partner_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -3606,14 +3276,8 @@
           "tableFrom": "leads",
           "tableTo": "offer_versions",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "selected_offer_version_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "selected_offer_version_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -3623,10 +3287,7 @@
         "leads_workspace_id_id_unique": {
           "name": "leads_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -3634,9 +3295,7 @@
           "name": "leads_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"leads\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"leads\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -3745,12 +3404,8 @@
           "tableFrom": "marketing_consents",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3759,14 +3414,8 @@
           "tableFrom": "marketing_consents",
           "tableTo": "leads",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "lead_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "lead_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -3775,14 +3424,8 @@
           "tableFrom": "marketing_consents",
           "tableTo": "orders",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "order_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "order_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -3792,10 +3435,7 @@
         "marketing_consents_workspace_id_id_unique": {
           "name": "marketing_consents_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -3803,9 +3443,7 @@
           "name": "marketing_consents_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"marketing_consents\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"marketing_consents\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -3892,12 +3530,8 @@
           "tableFrom": "membership_permissions",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3906,14 +3540,8 @@
           "tableFrom": "membership_permissions",
           "tableTo": "memberships",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "membership_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "membership_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3922,14 +3550,8 @@
           "tableFrom": "membership_permissions",
           "tableTo": "permissions",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "permission_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "permission_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3939,19 +3561,12 @@
         "membership_permissions_workspace_id_id_unique": {
           "name": "membership_permissions_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "membership_permissions_workspace_membership_permission_unique": {
           "name": "membership_permissions_workspace_membership_permission_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "membership_id",
-            "permission_id"
-          ]
+          "columns": ["workspace_id", "membership_id", "permission_id"]
         }
       },
       "policies": {
@@ -3959,9 +3574,7 @@
           "name": "membership_permissions_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"membership_permissions\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"membership_permissions\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -4035,12 +3648,8 @@
           "tableFrom": "membership_roles",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4049,14 +3658,8 @@
           "tableFrom": "membership_roles",
           "tableTo": "memberships",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "membership_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "membership_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4065,14 +3668,8 @@
           "tableFrom": "membership_roles",
           "tableTo": "roles",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "role_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "role_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4082,19 +3679,12 @@
         "membership_roles_workspace_id_id_unique": {
           "name": "membership_roles_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "membership_roles_workspace_membership_role_unique": {
           "name": "membership_roles_workspace_membership_role_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "membership_id",
-            "role_id"
-          ]
+          "columns": ["workspace_id", "membership_id", "role_id"]
         }
       },
       "policies": {
@@ -4102,9 +3692,7 @@
           "name": "membership_roles_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"membership_roles\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"membership_roles\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -4258,12 +3846,8 @@
           "tableFrom": "memberships",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4273,18 +3857,12 @@
         "memberships_workspace_id_id_unique": {
           "name": "memberships_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "memberships_workspace_id_user_id_unique": {
           "name": "memberships_workspace_id_user_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "user_id"
-          ]
+          "columns": ["workspace_id", "user_id"]
         }
       },
       "policies": {
@@ -4292,9 +3870,7 @@
           "name": "memberships_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"memberships\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"memberships\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -4401,12 +3977,8 @@
           "tableFrom": "offer_versions",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4415,14 +3987,8 @@
           "tableFrom": "offer_versions",
           "tableTo": "products",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "product_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "product_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -4432,28 +3998,17 @@
         "offer_versions_workspace_id_id_unique": {
           "name": "offer_versions_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "offer_versions_workspace_product_content_hash_unique": {
           "name": "offer_versions_workspace_product_content_hash_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "product_id",
-            "content_hash"
-          ]
+          "columns": ["workspace_id", "product_id", "content_hash"]
         },
         "offer_versions_workspace_product_id_unique": {
           "name": "offer_versions_workspace_product_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "product_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "product_id", "id"]
         }
       },
       "policies": {
@@ -4461,9 +4016,7 @@
           "name": "offer_versions_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"offer_versions\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"offer_versions\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -4567,12 +4120,8 @@
           "tableFrom": "order_amendments",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4581,14 +4130,8 @@
           "tableFrom": "order_amendments",
           "tableTo": "orders",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "order_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "order_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4598,10 +4141,7 @@
         "order_amendments_workspace_id_id_unique": {
           "name": "order_amendments_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -4609,9 +4149,7 @@
           "name": "order_amendments_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"order_amendments\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"order_amendments\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -4716,12 +4254,8 @@
           "tableFrom": "order_change_requests",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4730,14 +4264,8 @@
           "tableFrom": "order_change_requests",
           "tableTo": "orders",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "order_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "order_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4747,10 +4275,7 @@
         "order_change_requests_workspace_id_id_unique": {
           "name": "order_change_requests_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -4758,9 +4283,7 @@
           "name": "order_change_requests_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"order_change_requests\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"order_change_requests\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -4851,12 +4374,8 @@
           "tableFrom": "order_notes",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4865,14 +4384,8 @@
           "tableFrom": "order_notes",
           "tableTo": "orders",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "order_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "order_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4882,10 +4395,7 @@
         "order_notes_workspace_id_id_unique": {
           "name": "order_notes_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -4893,9 +4403,7 @@
           "name": "order_notes_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"order_notes\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"order_notes\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -5013,12 +4521,8 @@
           "tableFrom": "order_reminders",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -5027,14 +4531,8 @@
           "tableFrom": "order_reminders",
           "tableTo": "orders",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "order_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "order_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -5044,10 +4542,7 @@
         "order_reminders_workspace_id_id_unique": {
           "name": "order_reminders_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -5055,9 +4550,7 @@
           "name": "order_reminders_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"order_reminders\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"order_reminders\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -5166,12 +4659,8 @@
           "tableFrom": "order_status_history",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -5180,14 +4669,8 @@
           "tableFrom": "order_status_history",
           "tableTo": "orders",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "order_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "order_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -5197,10 +4680,7 @@
         "order_status_history_workspace_id_id_unique": {
           "name": "order_status_history_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -5208,9 +4688,7 @@
           "name": "order_status_history_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"order_status_history\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"order_status_history\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -5419,12 +4897,8 @@
           "tableFrom": "orders",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -5433,14 +4907,8 @@
           "tableFrom": "orders",
           "tableTo": "leads",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "lead_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "lead_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -5449,14 +4917,8 @@
           "tableFrom": "orders",
           "tableTo": "memberships",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "assignee_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "assignee_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -5465,14 +4927,8 @@
           "tableFrom": "orders",
           "tableTo": "partners",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "partner_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "partner_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -5482,26 +4938,17 @@
         "orders_workspace_id_id_unique": {
           "name": "orders_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "orders_workspace_reference_unique": {
           "name": "orders_workspace_reference_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "reference"
-          ]
+          "columns": ["workspace_id", "reference"]
         },
         "orders_workspace_lead_unique": {
           "name": "orders_workspace_lead_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "lead_id"
-          ]
+          "columns": ["workspace_id", "lead_id"]
         }
       },
       "policies": {
@@ -5509,9 +4956,7 @@
           "name": "orders_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"orders\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"orders\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -5626,12 +5071,8 @@
           "tableFrom": "outbox_job_alerts",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -5640,14 +5081,8 @@
           "tableFrom": "outbox_job_alerts",
           "tableTo": "outbox_jobs",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "job_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "job_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -5657,10 +5092,7 @@
         "outbox_job_alerts_workspace_id_id_unique": {
           "name": "outbox_job_alerts_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -5668,9 +5100,7 @@
           "name": "outbox_job_alerts_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"outbox_job_alerts\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"outbox_job_alerts\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -5852,12 +5282,8 @@
           "tableFrom": "outbox_jobs",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -5867,19 +5293,12 @@
         "outbox_jobs_workspace_id_id_unique": {
           "name": "outbox_jobs_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "outbox_jobs_workspace_type_dedupe_unique": {
           "name": "outbox_jobs_workspace_type_dedupe_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "job_type",
-            "dedupe_key"
-          ]
+          "columns": ["workspace_id", "job_type", "dedupe_key"]
         }
       },
       "policies": {
@@ -5887,9 +5306,7 @@
           "name": "outbox_jobs_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"outbox_jobs\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"outbox_jobs\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -6007,12 +5424,8 @@
           "tableFrom": "partners",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -6022,10 +5435,7 @@
         "partners_workspace_id_id_unique": {
           "name": "partners_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -6033,9 +5443,7 @@
           "name": "partners_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"partners\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"partners\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -6162,12 +5570,8 @@
           "tableFrom": "payment_records",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -6176,14 +5580,8 @@
           "tableFrom": "payment_records",
           "tableTo": "orders",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "order_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "order_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -6193,10 +5591,7 @@
         "payment_records_workspace_id_id_unique": {
           "name": "payment_records_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -6204,9 +5599,7 @@
           "name": "payment_records_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"payment_records\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"payment_records\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -6266,12 +5659,8 @@
           "tableFrom": "permissions",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -6281,18 +5670,12 @@
         "permissions_workspace_id_id_unique": {
           "name": "permissions_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "permissions_workspace_id_name_unique": {
           "name": "permissions_workspace_id_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "name"
-          ]
+          "columns": ["workspace_id", "name"]
         }
       },
       "policies": {
@@ -6300,9 +5683,7 @@
           "name": "permissions_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"permissions\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"permissions\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -6352,12 +5733,8 @@
           "tableFrom": "product_availability",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -6366,14 +5743,8 @@
           "tableFrom": "product_availability",
           "tableTo": "products",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "product_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "product_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -6382,16 +5753,8 @@
           "tableFrom": "product_availability",
           "tableTo": "offer_versions",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "product_id",
-            "current_offer_version_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "product_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "product_id", "current_offer_version_id"],
+          "columnsTo": ["workspace_id", "product_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -6403,9 +5766,7 @@
           "name": "product_availability_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"product_availability\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"product_availability\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -6451,12 +5812,8 @@
           "tableFrom": "products",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -6466,18 +5823,12 @@
         "products_workspace_id_id_unique": {
           "name": "products_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "products_workspace_id_product_key_unique": {
           "name": "products_workspace_id_product_key_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "product_key"
-          ]
+          "columns": ["workspace_id", "product_key"]
         }
       },
       "policies": {
@@ -6485,9 +5836,7 @@
           "name": "products_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"products\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"products\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -6673,12 +6022,8 @@
           "tableFrom": "quotes",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -6687,14 +6032,8 @@
           "tableFrom": "quotes",
           "tableTo": "leads",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "draft_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "draft_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -6703,14 +6042,8 @@
           "tableFrom": "quotes",
           "tableTo": "products",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "product_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "product_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -6719,16 +6052,8 @@
           "tableFrom": "quotes",
           "tableTo": "offer_versions",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "product_id",
-            "offer_version_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "product_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "product_id", "offer_version_id"],
+          "columnsTo": ["workspace_id", "product_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -6737,14 +6062,8 @@
           "tableFrom": "quotes",
           "tableTo": "orders",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "consumed_by_order_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "consumed_by_order_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -6754,18 +6073,12 @@
         "quotes_workspace_id_id_unique": {
           "name": "quotes_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "quotes_workspace_consumed_order_unique": {
           "name": "quotes_workspace_consumed_order_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "consumed_by_order_id"
-          ]
+          "columns": ["workspace_id", "consumed_by_order_id"]
         }
       },
       "policies": {
@@ -6773,9 +6086,7 @@
           "name": "quotes_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"quotes\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"quotes\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -6855,10 +6166,7 @@
       "compositePrimaryKeys": {
         "rate_limit_buckets_bucket_key_window_start_pk": {
           "name": "rate_limit_buckets_bucket_key_window_start_pk",
-          "columns": [
-            "bucket_key",
-            "window_start"
-          ]
+          "columns": ["bucket_key", "window_start"]
         }
       },
       "uniqueConstraints": {},
@@ -6971,12 +6279,8 @@
           "tableFrom": "region_waitlist",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -6986,10 +6290,7 @@
         "region_waitlist_workspace_id_id_unique": {
           "name": "region_waitlist_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -6997,9 +6298,7 @@
           "name": "region_waitlist_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"region_waitlist\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"region_waitlist\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -7055,12 +6354,8 @@
           "tableFrom": "roles",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -7070,18 +6365,12 @@
         "roles_workspace_id_id_unique": {
           "name": "roles_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "roles_workspace_id_name_unique": {
           "name": "roles_workspace_id_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "name"
-          ]
+          "columns": ["workspace_id", "name"]
         }
       },
       "policies": {
@@ -7089,9 +6378,7 @@
           "name": "roles_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"roles\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"roles\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -7172,12 +6459,8 @@
           "tableFrom": "service_credentials",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -7187,17 +6470,12 @@
         "service_credentials_workspace_id_id_unique": {
           "name": "service_credentials_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         },
         "service_credentials_secret_hash_unique": {
           "name": "service_credentials_secret_hash_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "secret_hash"
-          ]
+          "columns": ["secret_hash"]
         }
       },
       "policies": {
@@ -7205,9 +6483,7 @@
           "name": "service_credentials_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"service_credentials\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"service_credentials\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -7340,12 +6616,8 @@
           "tableFrom": "tracking_challenges",
           "tableTo": "workspaces",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["workspace_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -7354,14 +6626,8 @@
           "tableFrom": "tracking_challenges",
           "tableTo": "orders",
           "schemaTo": "app",
-          "columnsFrom": [
-            "workspace_id",
-            "order_id"
-          ],
-          "columnsTo": [
-            "workspace_id",
-            "id"
-          ],
+          "columnsFrom": ["workspace_id", "order_id"],
+          "columnsTo": ["workspace_id", "id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -7371,10 +6637,7 @@
         "tracking_challenges_workspace_id_id_unique": {
           "name": "tracking_challenges_workspace_id_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "workspace_id",
-            "id"
-          ]
+          "columns": ["workspace_id", "id"]
         }
       },
       "policies": {
@@ -7382,9 +6645,7 @@
           "name": "tracking_challenges_tenant_policy",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "app_runtime"
-          ],
+          "to": ["app_runtime"],
           "using": "\"app\".\"tracking_challenges\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null",
           "withCheck": "\"app\".\"tracking_challenges\".\"workspace_id\" = nullif(\n      (select current_setting('app.workspace_id', true)),\n      ''\n    )::uuid and nullif(\n      (select current_setting('app.actor_id', true)),\n      ''\n    )::uuid is not null"
         }
@@ -7439,9 +6700,7 @@
         "workspaces_slug_unique": {
           "name": "workspaces_slug_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
+          "columns": ["slug"]
         }
       },
       "policies": {},
@@ -7453,18 +6712,12 @@
     "app.membership_type": {
       "name": "membership_type",
       "schema": "app",
-      "values": [
-        "staff",
-        "partner"
-      ]
+      "values": ["staff", "partner"]
     },
     "app.permission_effect": {
       "name": "permission_effect",
       "schema": "app",
-      "values": [
-        "allow",
-        "deny"
-      ]
+      "values": ["allow", "deny"]
     },
     "app.permission_name": {
       "name": "permission_name",
@@ -7481,14 +6734,7 @@
     "app.role_name": {
       "name": "role_name",
       "schema": "app",
-      "values": [
-        "owner",
-        "orders",
-        "partners",
-        "finance",
-        "content",
-        "viewer"
-      ]
+      "values": ["owner", "orders", "partners", "finance", "content", "viewer"]
     }
   },
   "schemas": {
