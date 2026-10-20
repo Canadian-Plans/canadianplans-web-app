@@ -45,7 +45,7 @@ export const contactCopy = {
     {
       id: 'call',
       label: 'Call us',
-      title: '1-888-555-0199',
+      title: '+1 778-682-3771',
       description: 'Toll-free in Canada. International callers: use WhatsApp.',
       action: 'Call now',
       tone: 'sky',
@@ -54,7 +54,7 @@ export const contactCopy = {
     {
       id: 'email',
       label: 'Email',
-      title: 'hello@canadianplans.ca',
+      title: 'info@canadianplans.com',
       description: 'We reply within 1 business day.',
       action: 'Send an email',
       tone: 'lemon',
@@ -77,8 +77,8 @@ export const contactCopy = {
   office: {
     title: 'Our office',
     image: 'Image',
-    caption: 'Our advisors outside the shop on King George Blvd, Surrey, with the sign in view',
-    address: ['12-3456 King George Blvd', 'Surrey, BC'],
+    caption: 'Our advisors outside the shop on Whalley Blvd, Surrey, with the sign in view',
+    address: ['9981 Whalley Blvd', 'Surrey, BC'],
     directions: 'Get directions →',
     hours: [
       { day: 'Mon–Fri', time: '9am – 9pm PT' },

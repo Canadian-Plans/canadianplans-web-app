@@ -68,7 +68,7 @@ export default function Page() {
                     {' '}
                     ·{' '}
                   </span>
-                  <a href="tel:18885550199">{copy.contactPhone}</a>
+                  <a href="tel:+17786823771">{copy.contactPhone}</a>
                 </p>
               </div>
               <CpButton asChild tone="sun">

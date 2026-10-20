@@ -18,7 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const legal = await Promise.all(
     legalSlugs.map(async (slug) => {
       const page = await getLegalPage(slug);
-      return page.source === 'sanity' ? `/${slug}` : null;
+      return page.source === 'test_placeholder' ? null : `/${slug}`;
     }),
   );
   const routes = [...PUBLIC_ROUTES, ...legal.filter((route): route is string => route !== null)];

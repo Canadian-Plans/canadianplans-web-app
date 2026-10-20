@@ -31,7 +31,11 @@ const ARRIVAL_BILLING_PARTY =
   'The carrier named on your plan. Canadian Plans is an authorised reseller, and nothing is charged on the website.';
 const INTERNET_PROVIDER = 'The provider is confirmed by your advisor before installation';
 const MOBILE_PROVIDER = 'The provider is confirmed when your order is approved';
-const TERMS_VERSION_OPEN = 'TEST-terms-2026-10-v1';
+/**
+ * The terms text customers accept: version 1 of `apps/site-1/content/legal-published.ts`
+ * (effective 20 October 2026, copy in docs/legal/terms-v1.md). Change both together.
+ */
+const TERMS_VERSION = 'terms-2026-10-v1';
 
 const block = (text: string) => ({
   _type: 'block',
@@ -82,7 +86,7 @@ function offer(input: OfferInput): CommercialOffer {
     availability: input.availability,
     billingParty: input.billingParty,
     contractTerms: [...input.terms, ...promotionTerms].map(block),
-    termsVersion: TERMS_VERSION_OPEN,
+    termsVersion: TERMS_VERSION,
     presentation: input.presentation,
     ...(input.promotion ? { promotion: input.promotion } : {}),
     specs: {

@@ -130,6 +130,13 @@ tools. **verified** = checked directly today Â· **read** = from repo code/docs Â
   the apex and www (owner), site-1 service credential and `SITE_1_SERVICE_CREDENTIAL` on
   Vercel (owner MFA), merging the working branch to `main` so Railway (which tracks `main`)
   deploys the new code, the `CATALOGUE_ALLOW_OPEN_INPUTS` decision, and Vercel Pro.
+- **Legal text and placeholders (21 Oct):** the plan catalogue no longer has `TEST-`
+  placeholders (billing party, provider and pre-arrival eligibility came from Canada Wide and
+  canadaesim; the terms version is `terms-2026-10-v1`). `/terms` and `/privacy` now publish real
+  text from the repo with the owner's business details, so `CATALOGUE_ALLOW_OPEN_INPUTS` is not
+  needed. Site-wide placeholder phone, address and emails were replaced with the real ones.
+  Still to check: the assumptions listed in `docs/LAUNCH_PLANS.md`, a lawyer's review, and
+  the phone number the owner will change.
 - **Vercel:** the Vercel account connected to this session is the owner's personal Hobby
   account (`md-takibuddin`, team "Md takib 's projects"). It holds older projects, has no
   project linked to this repository and no deployment of any commit from it. The admin and

@@ -108,9 +108,17 @@ The owner pointed to two repos as the source for these facts. Check them before 
   are for study permit, work permit and permanent resident arrivals staying over 90 days;
   chatr prepaid plans are for visitor visa and Super Visa visitors staying under 90 days.
   Regular online orders upload no documents.
-- **Still open:** the terms version. The published site-1 terms and privacy pages are
-  preview drafts with `[legal company name]` and `[X] days` placeholders, so no version can be
-  recorded yet. Two sources disagree on the legal facts: canadaesim is based in Dhaka
-  (Bangladesh law, Dhaka courts) with a Surrey office; Canada Wide has its own contact
-  details. The owner must choose the legal entity, address, contact email and phone, and
-  governing law for Canadian Plans.
+- **Terms and privacy (21 October 2026):** written from those two sites' texts with the
+  owner's details: Canadian Plans, 9981 Whalley Blvd, Surrey, BC V3T 0A8;
+  info@canadianplans.com; +1 778-682-3771 (the owner says this number will change); disputes
+  under British Columbia law; identity documents deleted 6 months after the order is
+  completed. They are published by the site from `apps/site-1/content/legal-published.ts`
+  (readable copies in `docs/legal/`) as version 1, effective 20 October 2026, and every offer
+  records `terms-2026-10-v1`. Change the text and both versions together.
+- **Assumptions to confirm:** the 6-month clock starts when the order is completed; wish-list
+  emails are kept until we write to that province or are asked to remove them; the
+  cancellation rule is "cancel with us any time before the provider activates"; cookie wording
+  says marketing cookies are used only if the visitor opts in. A Canadian lawyer should review
+  both texts.
+- **No placeholder is left in the plan catalogue**, so `CATALOGUE_ALLOW_OPEN_INPUTS` is not
+  needed.

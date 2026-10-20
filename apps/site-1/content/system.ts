@@ -121,7 +121,7 @@ export const searchItems: readonly SearchItem[] = [
     featured: false,
     previewOnly: true,
     label: 'GUIDE',
-    crumb: 'canadianplans.ca › guides › best-sim-students-india',
+    crumb: 'canadianplans.com › guides › best-sim-students-india',
     title: 'Best SIM for students from India (2026)',
     description:
       'Which plan to pick, how much data you really need, and how to get your Canadian number before you leave home.',
@@ -134,7 +134,7 @@ export const searchItems: readonly SearchItem[] = [
     featured: false,
     previewOnly: true,
     label: 'PAGE',
-    crumb: 'canadianplans.ca › pre-arrival-sim › students',
+    crumb: 'canadianplans.com › pre-arrival-sim › students',
     title: 'Student SIM card & eSIM plans',
     description:
       'Order your eSIM from home, get your Canadian number right away, and switch it on\nwhen you land.',
@@ -147,7 +147,7 @@ export const searchItems: readonly SearchItem[] = [
     featured: false,
     previewOnly: true,
     label: 'HELP',
-    crumb: 'canadianplans.ca › faq',
+    crumb: 'canadianplans.com › faq',
     title: 'How do I know if my phone supports eSIM?',
     description:
       'Most recent iPhone, Samsung Galaxy and Google Pixel phones support eSIM. Here is how to check in 30 seconds.',
@@ -160,7 +160,7 @@ export const searchItems: readonly SearchItem[] = [
     featured: false,
     previewOnly: true,
     label: 'GUIDE',
-    crumb: 'canadianplans.ca › guides › esim-vs-sim',
+    crumb: 'canadianplans.com › guides › esim-vs-sim',
     title: 'eSIM vs physical SIM: which should you get?',
     description:
       'An eSIM can be ordered from any country and installed by QR code. A physical SIM needs to be shipped or picked up.',
@@ -173,7 +173,7 @@ export const searchItems: readonly SearchItem[] = [
     featured: false,
     previewOnly: true,
     label: 'CITY',
-    crumb: 'canadianplans.ca › internet › vancouver',
+    crumb: 'canadianplans.com › internet › vancouver',
     title: 'Home internet in Vancouver',
     description:
       'Rogers-network internet for apartments and student housing, installed in about 3 days.',
@@ -208,9 +208,9 @@ export const accessibilityCopy = {
   contacts: [
     {
       title: 'Call us',
-      description: '1-888-555-0199',
+      description: '+1 778-682-3771',
       icon: 'call',
-      href: 'tel:18885550199',
+      href: 'tel:+17786823771',
     },
     {
       title: 'WhatsApp',
@@ -220,17 +220,17 @@ export const accessibilityCopy = {
     },
     {
       title: 'Email',
-      description: 'hello@canadianplans.ca',
+      description: 'info@canadianplans.com',
       icon: 'email',
-      href: 'mailto:hello@canadianplans.ca',
+      href: 'mailto:info@canadianplans.com',
     },
   ],
   problemTitle: 'Tell us about a problem',
   problem:
     'If something on this site is hard to use, please let us know. Tell us the page and what happened. We reply within 2 business days and fix issues as quickly as we can.',
   contactTitle: 'Report an accessibility problem',
-  contactEmail: 'accessibility@canadianplans.ca',
-  contactPhone: '1-888-555-0199',
+  contactEmail: 'info@canadianplans.com',
+  contactPhone: '+1 778-682-3771',
   contactButton: 'Email us',
 } as const;
 export const cookieCopy = {

@@ -43,11 +43,7 @@ export const siteFooter: FooterContent = {
   ...footerContent,
   description:
     'Authorized Rogers, Fido & Chatr dealer. We help you pick the right plan and stay your contact afterwards.',
-  contactLines: [
-    '1-888-555-0199',
-    'hello@canadianplans.ca',
-    '12-3456 King George Blvd, Surrey, BC',
-  ],
+  contactLines: ['+1 778-682-3771', 'info@canadianplans.com', '9981 Whalley Blvd, Surrey, BC'],
   social: [{ label: 'WhatsApp', short: 'wa', href: '/contact' }],
   groups: [
     {

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { commercialOfferSchema } from '@canadian-plans/contracts';
 
-import { site1CommercialOffers } from './site-1-plans.js';
+import { OPEN_INPUT_PREFIX, site1CommercialOffers } from './site-1-plans.js';
 import { StaticCatalogue, findOpenInputs } from './static-catalogue.js';
 
 const byKey = (key: string) => {
@@ -130,19 +130,21 @@ describe('site-1 catalogue contents', () => {
   });
 });
 
-describe('open owner decisions', () => {
-  it('leaves only the terms version for the owner, until the terms text is published', () => {
-    const open = findOpenInputs(site1CommercialOffers);
-    expect(new Set(open.map((item) => item.field))).toEqual(new Set(['termsVersion']));
-    expect(open.every((item) => typeof item.productKey === 'string')).toBe(true);
+describe('owner decisions', () => {
+  it('leaves no placeholder for the owner to fill, and uses the published terms version', () => {
+    expect(findOpenInputs(site1CommercialOffers)).toEqual([]);
+    expect(site1CommercialOffers.every((offer) => offer.termsVersion === 'terms-2026-10-v1')).toBe(
+      true,
+    );
   });
 
-  it('flags nothing once the terms version is replaced', () => {
-    const resolved = site1CommercialOffers.map((offer) => ({
-      ...offer,
-      termsVersion: 'terms-2026-10-v1',
-    }));
-    expect(findOpenInputs(resolved)).toEqual([]);
+  it('still catches a placeholder if one is added later', () => {
+    const withPlaceholder = site1CommercialOffers.map((offer, index) =>
+      index === 0 ? { ...offer, termsVersion: `${OPEN_INPUT_PREFIX}terms-next` } : offer,
+    );
+    const open = findOpenInputs(withPlaceholder);
+    expect(open.map((item) => item.field)).toEqual(['termsVersion']);
+    expect(open[0]?.productKey).toBe(site1CommercialOffers[0]?.productKey);
   });
 
   it("describes who sells and bills in the owner's own words, and who each pre-arrival plan is for", () => {
@@ -167,18 +169,28 @@ describe('open owner decisions', () => {
 
 describe('StaticCatalogue', () => {
   const open = new StaticCatalogue(site1CommercialOffers, { allowOpenInputs: true });
+  const withPlaceholder = site1CommercialOffers.map((offer, index) =>
+    index === 0 ? { ...offer, termsVersion: `${OPEN_INPUT_PREFIX}terms-next` } : offer,
+  );
 
   it('refuses to publish while owner decisions are open, unless explicitly allowed', async () => {
-    const guarded = new StaticCatalogue(site1CommercialOffers, { allowOpenInputs: false });
+    const guarded = new StaticCatalogue(withPlaceholder, { allowOpenInputs: false });
     await expect(guarded.listPublished()).rejects.toThrow('catalogue_open_inputs');
     await expect(guarded.fetchPublishedByProductKey('internet-sk-1000')).rejects.toThrow(
       'catalogue_open_inputs',
     );
-    await expect(open.listPublished()).resolves.toHaveLength(site1CommercialOffers.length);
+    await expect(
+      new StaticCatalogue(withPlaceholder, { allowOpenInputs: true }).listPublished(),
+    ).resolves.toHaveLength(site1CommercialOffers.length);
+    await expect(
+      new StaticCatalogue(site1CommercialOffers, { allowOpenInputs: false }).listPublished(),
+    ).resolves.toHaveLength(site1CommercialOffers.length);
   });
 
   it('defaults to the guarded behaviour', async () => {
-    await expect(new StaticCatalogue().listPublished()).rejects.toThrow('catalogue_open_inputs');
+    await expect(new StaticCatalogue(withPlaceholder).listPublished()).rejects.toThrow(
+      'catalogue_open_inputs',
+    );
   });
 
   it('finds an offer by product key and by document id, and returns undefined for unknowns', async () => {

@@ -101,7 +101,7 @@ export const chromeContent: ChromeContent = {
   dealer: 'Authorized Rogers, Fido & Chatr dealer · Surrey, BC',
   moving: "I'm moving to Canada",
   living: 'I already live here',
-  phone: { label: '1-888-555-0199', href: '#contact' },
+  phone: { label: '+1 778-682-3771', href: '#contact' },
   track: { label: 'Track order', href: '#breadcrumb' },
   contact: { label: 'Contact', href: '#contact' },
   help: { label: 'Help', href: '#faq' },
@@ -166,8 +166,8 @@ export interface FooterContent {
 export const footerContent: FooterContent = {
   description:
     'Canadian Plans is an authorized Rogers, Fido and Chatr dealer in Surrey, BC. We help newcomers and Canadians set up SIM cards, phone plans and home internet.',
-  address: '12-3456 King George Blvd, Surrey, BC',
-  contactLine: '1-888-555-0199 · hello@canadianplans.ca',
+  address: '9981 Whalley Blvd, Surrey, BC',
+  contactLine: '+1 778-682-3771 · info@canadianplans.com',
   groups: [
     {
       title: 'Pre-arrival SIM',

@@ -176,7 +176,7 @@ export const internetCopy = {
   result: {
     title: 'Check your address',
     availableTitle: 'Great news, internet is available here!',
-    address: '12-3456 King George Blvd, Surrey, BC',
+    address: '9981 Whalley Blvd, Surrey, BC',
     popular: 'POPULAR',
     earliestInstall: 'Earliest install: Thursday, Oct 15. You pay nothing until we confirm.',
     unavailableTitle: 'We can’t install at this address yet',

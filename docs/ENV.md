@@ -125,7 +125,8 @@ connecting Sanity later needs no code change.
 - `SITE_1_STATIC_CATALOGUE_WORKSPACE_ID` — backend-only UUID of the one workspace
   that reads the repo catalogue (site-1 is `10000000-0000-4000-8000-000000000101`).
   Unset means no repo catalogue. Any other workspace never receives these plans.
-- `CATALOGUE_ALLOW_OPEN_INPUTS` — backend-only, set to `1` to publish offers that still
+- `CATALOGUE_ALLOW_OPEN_INPUTS` — backend-only safety valve. The launch catalogue has no
+  placeholders left (21 Oct 2026), so it is not needed. Set to `1` to publish offers that still
   carry `TEST-` placeholders for unanswered owner decisions (who bills, provider
   names, terms version, pre-arrival eligibility). Without it, `DEPLOYMENT_ENV=production`
   and any unknown environment refuse to publish them (`catalogue_open_inputs` in the

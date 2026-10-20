@@ -130,7 +130,7 @@ export const legalDrafts = {
         id: 'privacy-contact-our-privacy-officer',
         title: '11. Contact our Privacy Officer',
         paragraphs: [
-          '[Name], Privacy Officer · privacy@canadianplans.ca · 12-3456 King George Blvd, Surrey, BC.',
+          '[Name], Privacy Officer · info@canadianplans.com · 9981 Whalley Blvd, Surrey, BC.',
         ],
         bullets: [],
       },
@@ -138,8 +138,8 @@ export const legalDrafts = {
     contact: {
       title: 'Questions about your privacy?',
       lines: ['Our Privacy Officer replies within [X] business days.'],
-      button: 'Email privacy@canadianplans.ca',
-      href: 'mailto:privacy@canadianplans.ca',
+      button: 'Email info@canadianplans.com',
+      href: 'mailto:info@canadianplans.com',
     },
   },
   terms: {
@@ -160,7 +160,7 @@ export const legalDrafts = {
         id: 'terms-about-these-terms',
         title: '1. About these terms',
         paragraphs: [
-          'These terms apply when you use canadianplans.ca or order through us. By sending an order you agree to them. [Legal company name] (“Canadian Plans”, “we”) is located in Surrey, British Columbia.',
+          'These terms apply when you use canadianplans.com or order through us. By sending an order you agree to them. [Legal company name] (“Canadian Plans”, “we”) is located in Surrey, British Columbia.',
         ],
         bullets: [],
       },
@@ -256,7 +256,7 @@ export const legalDrafts = {
         id: 'terms-contact',
         title: '13. Contact',
         paragraphs: [
-          'Questions about these terms: hello@canadianplans.ca · 1-888-555-0199 · 12-3456 King George Blvd, Surrey, BC.',
+          'Questions about these terms: info@canadianplans.com · +1 778-682-3771 · 9981 Whalley Blvd, Surrey, BC.',
         ],
         bullets: [],
       },

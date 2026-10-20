@@ -61,7 +61,7 @@ describe('catalogueProviderResolver', () => {
     ).toThrow('static_catalogue_workspace_invalid');
   });
 
-  it('publishes plans with open owner decisions in development and preview', async () => {
+  it('publishes plans in development and preview', async () => {
     for (const DEPLOYMENT_ENV of ['development', 'preview']) {
       const provider = catalogueProviderResolver(noSanity, {
         SITE_1_STATIC_CATALOGUE_WORKSPACE_ID: SITE_1,
@@ -72,24 +72,15 @@ describe('catalogueProviderResolver', () => {
     }
   });
 
-  it('refuses to publish open owner decisions in production and when the environment is unknown', async () => {
+  it('publishes the launch catalogue in production and when the environment is unknown, now that no owner decision is open', async () => {
     for (const env of [{ DEPLOYMENT_ENV: 'production' }, {}]) {
       const provider = catalogueProviderResolver(noSanity, {
         SITE_1_STATIC_CATALOGUE_WORKSPACE_ID: SITE_1,
         ...env,
       })(SITE_1);
-      await expect(provider?.catalogue.listPublished()).rejects.toThrow('catalogue_open_inputs');
+      const offers = await provider?.catalogue.listPublished();
+      expect(offers?.length).toBeGreaterThan(0);
     }
-  });
-
-  it('lets the owner publish them in production only by an explicit override', async () => {
-    const provider = catalogueProviderResolver(noSanity, {
-      SITE_1_STATIC_CATALOGUE_WORKSPACE_ID: SITE_1,
-      DEPLOYMENT_ENV: 'production',
-      CATALOGUE_ALLOW_OPEN_INPUTS: '1',
-    })(SITE_1);
-    const offers = await provider?.catalogue.listPublished();
-    expect(offers?.length).toBeGreaterThan(0);
   });
 
   it('has a revalidator that does nothing', async () => {
