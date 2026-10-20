@@ -33,6 +33,7 @@ function offer(amount: number, revisionId = `rev-${amount}`): PublishedOffer {
       productKey: 'rogers-sim-5gb',
       productTitle: 'Rogers SIM 5GB',
       productType: 'sim',
+      regions: ['CA'],
       offerName: 'Rogers 5GB',
       currency: 'CAD',
       recurringChargeAmountMinor: amount,

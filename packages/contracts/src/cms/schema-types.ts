@@ -1,3 +1,4 @@
+import { productTypes } from '@canadian-plans/types';
 import { defineArrayMember, defineField, defineType } from 'sanity';
 import type { SchemaTypeDefinition } from 'sanity';
 
@@ -19,8 +20,8 @@ export const DOCUMENT_CHECKLIST_VALUES = ['passport', 'visa', 'address_proof'] a
 export type DocumentChecklistValue = (typeof DOCUMENT_CHECKLIST_VALUES)[number];
 const DOCUMENT_CHECKLIST_VALUES_LIST: readonly string[] = DOCUMENT_CHECKLIST_VALUES;
 
-/** Only SIM plans exist in Phase A (PLATFORM_CONTEXT.md §5); widened in Phase B. */
-export const PRODUCT_TYPE_VALUES = ['sim'] as const;
+/** The product families a storefront sells; the same list the offer contract validates. */
+export const PRODUCT_TYPE_VALUES = productTypes;
 export type ProductType = (typeof PRODUCT_TYPE_VALUES)[number];
 const PRODUCT_TYPE_VALUES_LIST: readonly string[] = PRODUCT_TYPE_VALUES;
 

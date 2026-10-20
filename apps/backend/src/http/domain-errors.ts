@@ -12,6 +12,7 @@ const messages: Partial<Record<ApiErrorCode, string>> = {
   draft_expired: 'The draft grant has expired or been revoked.',
   draft_already_submitted: 'This draft has been submitted and can no longer be edited.',
   offer_unavailable: 'The selected offer is not currently available.',
+  region_not_served: 'The selected plan is not sold in the chosen province.',
   unpriced_lead_required: 'Current pricing could not be verified. Save an unpriced callback lead.',
   priced_checkout_disabled: 'Priced checkout is disabled until the withdrawal policy is confirmed.',
   idempotency_conflict: 'This idempotency key was already used with a different request.',

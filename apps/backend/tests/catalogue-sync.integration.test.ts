@@ -46,6 +46,7 @@ function offer(amount: number, revisionId: string): PublishedOffer {
       productKey: PRODUCT_KEY,
       productTitle: 'Sync Integration Plan',
       productType: 'sim',
+      regions: ['CA'],
       offerName: 'Sync 10 GB',
       currency: 'CAD',
       recurringChargeAmountMinor: amount,

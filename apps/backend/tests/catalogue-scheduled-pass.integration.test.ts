@@ -53,6 +53,7 @@ function offer(
       productKey,
       productTitle: 'Scheduled Pass Plan',
       productType: 'sim',
+      regions: ['CA'],
       offerName: 'Scheduled 10 GB',
       currency: 'CAD',
       recurringChargeAmountMinor: amountMinor,

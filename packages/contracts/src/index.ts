@@ -77,13 +77,32 @@ export {
   catalogueStatusResponseSchema,
   catalogueSyncErrorSchema,
   commercialOfferSchema,
+  offerPresentationSchema,
+  offerPromotionSchema,
   publishedOfferSchema,
   type CatalogueOfferStatus,
   type CatalogueStatusResponse,
   type CatalogueSyncError,
   type CommercialOffer,
+  type OfferPresentation,
+  type OfferPromotion,
   type PublishedOffer,
 } from './catalogue';
+
+export {
+  NATIONAL_REGION,
+  isOfferSoldIn,
+  productTypeSchema,
+  provinceCodeSchema,
+  provinceFromName,
+  provinceFromPostalCode,
+  provinceFromSlug,
+  provinceNames,
+  provinceSlug,
+  regionCodeSchema,
+  type ProvinceCode,
+  type RegionCode,
+} from './regions';
 
 export {
   apiErrorCodeSchema,
@@ -198,8 +217,10 @@ export {
 } from './quotes';
 
 export {
+  listWebsiteOffersQuerySchema,
   listWebsiteOffersResponseSchema,
   websiteOfferSchema,
+  type ListWebsiteOffersQuery,
   type ListWebsiteOffersResponse,
   type WebsiteOffer,
 } from './website-offers';

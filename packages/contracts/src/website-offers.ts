@@ -2,6 +2,16 @@ import { z } from 'zod';
 
 import { commercialOfferSchema } from './catalogue';
 import { isoDateTimeSchema, requestIdSchema } from './common';
+import { provinceCodeSchema } from './regions';
+
+/**
+ * Optional filter for the storefront read: with a province, only offers sold in
+ * it (and national offers) come back.
+ */
+export const listWebsiteOffersQuerySchema = z.object({
+  province: provinceCodeSchema.optional(),
+});
+export type ListWebsiteOffersQuery = z.infer<typeof listWebsiteOffersQuerySchema>;
 
 /**
  * The storefront read of the published catalogue: for each currently available

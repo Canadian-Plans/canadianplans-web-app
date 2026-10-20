@@ -64,6 +64,7 @@ const offer = {
   productKey: 'rogers-basic',
   productTitle: 'Rogers Basic',
   productType: 'sim',
+  regions: ['CA'],
   offerName: 'Basic 10 GB',
   currency: 'CAD',
   recurringChargeAmountMinor: 4500,

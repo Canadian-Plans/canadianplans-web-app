@@ -30,6 +30,7 @@ function commercial(productKey: string, offerName: string): CommercialOffer {
     productKey,
     productTitle: 'Rogers SIM',
     productType: 'sim',
+    regions: ['CA'],
     offerName,
     currency: 'CAD',
     recurringChargeAmountMinor: 3_500,

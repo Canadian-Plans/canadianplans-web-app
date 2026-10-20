@@ -68,6 +68,38 @@ export type InvoiceStatus = (typeof invoiceStatuses)[number];
 export const leadStatuses = tuple('incomplete', 'submitted');
 export type LeadStatus = (typeof leadStatuses)[number];
 
+/**
+ * Product families a storefront sells. `sim` is the pre-arrival eSIM, `mobile` a
+ * bring-your-own-device postpaid plan, `internet` internet and internet + TV.
+ */
+export const productTypes = tuple('sim', 'mobile', 'internet');
+export type ProductType = (typeof productTypes)[number];
+
+/** Canadian provinces and territories (ISO 3166-2:CA suffixes). */
+export const provinceCodes = tuple(
+  'AB',
+  'BC',
+  'MB',
+  'NB',
+  'NL',
+  'NS',
+  'NT',
+  'NU',
+  'ON',
+  'PE',
+  'QC',
+  'SK',
+  'YT',
+);
+export type ProvinceCode = (typeof provinceCodes)[number];
+
+/** The region value meaning "sold in every province". */
+export const NATIONAL_REGION = 'CA';
+
+/** Where an offer is sold: one or more provinces, or `CA` for all of Canada. */
+export const regionCodes = tuple(...provinceCodes, NATIONAL_REGION);
+export type RegionCode = (typeof regionCodes)[number];
+
 /** Independent order state dimensions (PLATFORM_CONTEXT invariant 9). */
 export const orderStatuses = tuple(
   'submitted',
