@@ -48,14 +48,40 @@ tools. **verified** = checked directly today · **read** = from repo code/docs �
 
 **What this changes in the plan:**
 
-- **3.0 (new) Redeploy the backend** and apply migrations `0016`–`0019` before anything in
-  Stage 3. Production has no running API, so admin and `/order` cannot work.
+- ◐ **3.0 (new) Redeploy the backend** and apply migrations `0016`–`0019` before anything
+  in Stage 3. Backend redeployed 20 Oct (see below); migrations still pending.
 - **2.1** is probably answered already (`canadianplans.com`); the owner needs to confirm it.
   3.1 is still open.
 - **3.6** also covers the workspace's DB name ("Northern Arrival Mobile").
 - **3.7** must not keep the Sanity smoke-test offer published in `production`.
 - Stage 3–4 items: none could be ticked; every 23 September gap was confirmed or could not
   be checked.
+
+### Railway fixes (20 October 2026, after the owner upgraded the Railway plan)
+
+- **Cause of the outage:** the Railway service had fallen back to the Railpack builder.
+  Railway no longer reads the repo's `railway.json` (config-as-code is deprecated in
+  favour of `.railway/railway.ts`), so Railpack found no start command and every build
+  since the plan lapsed failed (`No start command detected`).
+- **Fixed on the service itself:** builder `DOCKERFILE` with `apps/backend/Dockerfile`,
+  healthcheck `/api/v1/health` (60 s), restart `ON_FAILURE` ×3. These are the values
+  `railway.json` intended. A redeploy reuses the old deployment's build settings, so a
+  fresh deployment of `main` was needed.
+- **Backend running `6a76a1d`:** deployment `b2ddb473` reached `SUCCESS`, and
+  `/api/v1/health` returns `{"ok":true}`. _(verified)_
+- **Scheduler:** `ENABLE_SCHEDULER` and the outbox/catalogue scheduler identities are
+  already configured; the server starts both tasks. The optional synthetic check is not
+  configured (`SYNTHETIC_CHECK_SELECTOR` unset, task 4.3). _(verified from logs and
+  `scheduler.ts`)_
+- **Catalogue sync fails with `provider_unavailable`:** `MACHINE_REGISTRY_JSON` has no
+  Sanity integration for site-1 (`registry.sanityForWorkspace` returns nothing), so 0 offers
+  sync. Adding one needs a Sanity read token plus the site-1 revalidate URL and secret from
+  Vercel. Side effect: the Sanity smoke-test offer has not synced. _(verified from
+  `catalogue_sync_state` and `catalogue/service.ts`)_
+- **`QUOTE_WITHDRAWAL_POLICY=honour_until_expiry`** set on the backend (OPEN_INPUTS #14).
+- **Still open, outside Railway:** migrations `0016`–`0019` (Supabase), the Railway
+  config file migration to `.railway/railway.ts` (repo change), a stale empty staged
+  Railway patch from 17 Sep (`03e15f7e`, left untouched).
 
 ## Stage 2 — Business decisions only you can make (You)
 
@@ -93,9 +119,10 @@ Depends on Stage 1 findings and the Stage 2 answers.
   `EMAIL_PROVIDER=resend`, sender address from 2.8. Send a test acknowledgement.
 - ☐ **3.3 Turn on checkout** _(Both)_ — set `QUOTE_WITHDRAWAL_POLICY=honour_until_expiry`
   on Railway (decided 21 Sep, OPEN_INPUTS #14) and redeploy.
-- ☐ **3.4 Turn on the scheduler** _(Both)_ — `ENABLE_SCHEDULER=1` on the backend and the
+- ◐ **3.4 Turn on the scheduler** _(Both)_ — `ENABLE_SCHEDULER=1` on the backend and the
   machine registry entries for `outbox:run` / `reconcile:run` for site-1. Without it, no
-  catalogue sync and no customer emails.
+  catalogue sync and no customer emails. _20 Oct: scheduler runs; catalogue sync still
+  needs a Sanity integration in the registry (`provider_unavailable`)._
 - ☐ **3.5 site-1 service credential** _(You, needs MFA)_ — create in admin → Settings,
   Claude sets `SITE_1_SERVICE_CREDENTIAL` on Vercel site-1 and redeploys.
 - ☐ **3.6 Site name** _(Claude)_ — replace `SITE_1_NAME_PLACEHOLDER` with "Canadian Plans".
