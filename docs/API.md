@@ -177,9 +177,26 @@ acknowledges the authenticated, scoped context.
 - `403`: `scope_denied`, `caller_forbidden`
 - `429`: `rate_limited` (with `Retry-After`)
 
+### `POST /api/v1/website/region-waitlist`
+
+Website credential with `leads:write`. Leaves an email for a province we do not
+serve yet (ADR 0005, D5). Body: `{ province, email, interest?, consentVersion }`
+where `province` is a two-letter province code (never `CA`) and `interest` is
+`sim`, `mobile` or `internet`. The same email (any letter case) for the same
+province is stored once. The answer is identical for a new and a repeated email,
+so the form cannot be used to find out which addresses are listed. The audit entry
+records the province, interest and consent version, never the email.
+
+- `201`: `{ requestId }`
+- `400`: `validation_error`
+- `401`: `missing_credential`, `invalid_credential`, `credential_revoked`
+- `403`: `scope_denied`, `caller_forbidden`
+- `429`: `rate_limited` (with `Retry-After`)
+
 ### `GET /api/v1/website/offers`
 
-Website credential with `quotes:create`. Returns the quotable catalogue for the
+Website credential with `quotes:create`. Optional `?province=SK` returns only the
+offers sold in that province plus national ones. Returns the quotable catalogue for the
 credential's own workspace: each entry pairs the backend `productId` a quote must
 reference with the product's current immutable offer version
 (`offerVersionId`, `lastSyncedAt`) and the validated commercial snapshot

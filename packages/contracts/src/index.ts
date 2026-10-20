@@ -217,6 +217,13 @@ export {
 } from './quotes';
 
 export {
+  joinRegionWaitlistRequestSchema,
+  joinRegionWaitlistResponseSchema,
+  type JoinRegionWaitlistRequest,
+  type JoinRegionWaitlistResponse,
+} from './region-waitlist';
+
+export {
   listWebsiteOffersQuerySchema,
   listWebsiteOffersResponseSchema,
   websiteOfferSchema,

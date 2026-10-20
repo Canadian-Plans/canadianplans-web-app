@@ -24,6 +24,8 @@ import {
   createUploadIntentResponseSchema,
   deleteOrderReminderResponseSchema,
   finalizeUploadRequestSchema,
+  joinRegionWaitlistRequestSchema,
+  joinRegionWaitlistResponseSchema,
   finalizeUploadResponseSchema,
   getWorkspaceOrderResponseSchema,
   listAssignableMembersResponseSchema,
@@ -190,6 +192,12 @@ const cases: ReadonlyArray<readonly [string, z.ZodType, unknown]> = [
       requestId: UUID_C,
     },
   ],
+  [
+    'joinRegionWaitlistRequest',
+    joinRegionWaitlistRequestSchema,
+    { province: 'ON', email: 'a@b.co', interest: 'internet', consentVersion: 'terms-2026-09' },
+  ],
+  ['joinRegionWaitlistResponse', joinRegionWaitlistResponseSchema, { requestId: UUID_C }],
   ['updateLeadRequest', updateLeadRequestSchema, { contact: { fullName: 'A B' } }],
   [
     'updateLeadResponse',

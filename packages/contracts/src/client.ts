@@ -166,6 +166,12 @@ import {
   type DeleteCustomerDataResponse,
 } from './deletion';
 import {
+  joinRegionWaitlistRequestSchema,
+  joinRegionWaitlistResponseSchema,
+  type JoinRegionWaitlistRequest,
+  type JoinRegionWaitlistResponse,
+} from './region-waitlist';
+import {
   listWebsiteOffersQuerySchema,
   listWebsiteOffersResponseSchema,
   type ListWebsiteOffersQuery,
@@ -250,6 +256,10 @@ export interface BackendClient {
   offers: {
     /** The published offers; with a province, only those sold there plus national ones. */
     list(query?: ListWebsiteOffersQuery): Promise<ListWebsiteOffersResponse>;
+  };
+  regionWaitlist: {
+    /** Leaves an email for a province we do not serve yet. Safe to repeat. */
+    join(body: JoinRegionWaitlistRequest): Promise<JoinRegionWaitlistResponse>;
   };
   orders: {
     submit(
@@ -465,6 +475,16 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           body: updateLeadRequestSchema.parse(body),
           headers: { 'x-draft-grant': opts.draftGrant },
           responseSchema: updateLeadResponseSchema,
+        }),
+    },
+
+    regionWaitlist: {
+      join: (body) =>
+        call({
+          method: 'POST',
+          path: '/api/v1/website/region-waitlist',
+          body: joinRegionWaitlistRequestSchema.parse(body),
+          responseSchema: joinRegionWaitlistResponseSchema,
         }),
     },
 

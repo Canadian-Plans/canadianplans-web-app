@@ -58,6 +58,26 @@ describe('createBackendClient transport', () => {
     expect(calls).toHaveLength(2);
   });
 
+  it('joins the region wish list and refuses the national marker as a province', async () => {
+    const { client, calls } = harness(201, { requestId: UUID });
+    await client.regionWaitlist.join({
+      province: 'ON',
+      email: 'a@b.co',
+      consentVersion: 'terms-2026-09',
+    });
+    expect(calls[0]?.method).toBe('POST');
+    expect(calls[0]?.url).toBe('https://api.example.test/api/v1/website/region-waitlist');
+    expect(() =>
+      client.regionWaitlist.join({
+        // @ts-expect-error a wish list belongs to a province, never the national marker
+        province: 'CA',
+        email: 'a@b.co',
+        consentVersion: 'v',
+      }),
+    ).toThrow();
+    expect(calls).toHaveLength(1);
+  });
+
   it('serialises a JSON body with content-type on writes', async () => {
     const { client, calls } = harness(201, {
       lead: {

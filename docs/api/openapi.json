@@ -100,6 +100,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -277,6 +278,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -460,6 +462,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -609,6 +612,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -787,6 +791,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -973,6 +978,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -1155,6 +1161,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -1337,6 +1344,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -1598,6 +1606,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -1847,6 +1856,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -2056,6 +2066,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -2261,6 +2272,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -2411,6 +2423,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -2824,6 +2837,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -2997,6 +3011,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -3164,6 +3179,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -3438,9 +3454,41 @@
                                   "minLength": 1,
                                   "maxLength": 200
                                 },
-                                "productType": { "type": "string", "const": "sim" },
+                                "productType": {
+                                  "type": "string",
+                                  "enum": ["sim", "mobile", "internet"]
+                                },
+                                "regions": {
+                                  "default": ["CA"],
+                                  "minItems": 1,
+                                  "maxItems": 14,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "enum": [
+                                      "AB",
+                                      "BC",
+                                      "MB",
+                                      "NB",
+                                      "NL",
+                                      "NS",
+                                      "NT",
+                                      "NU",
+                                      "ON",
+                                      "PE",
+                                      "QC",
+                                      "SK",
+                                      "YT",
+                                      "CA"
+                                    ]
+                                  }
+                                },
                                 "offerName": { "type": "string", "minLength": 1, "maxLength": 200 },
                                 "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+                                "billingPeriod": {
+                                  "type": "string",
+                                  "enum": ["month", "30_days", "90_days"]
+                                },
                                 "recurringChargeAmountMinor": {
                                   "type": "integer",
                                   "minimum": 0,
@@ -3513,6 +3561,63 @@
                                   "minLength": 1,
                                   "maxLength": 64
                                 },
+                                "presentation": {
+                                  "type": "object",
+                                  "properties": {
+                                    "bestFor": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 200
+                                    },
+                                    "tag": { "type": "string", "minLength": 1, "maxLength": 40 },
+                                    "popular": { "type": "boolean" },
+                                    "audiences": {
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": { "type": "string", "pattern": "^[a-z][a-z-]*$" }
+                                    },
+                                    "features": {
+                                      "maxItems": 16,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 200
+                                      }
+                                    },
+                                    "note": { "type": "string", "minLength": 1, "maxLength": 400 }
+                                  },
+                                  "required": ["features"],
+                                  "additionalProperties": false
+                                },
+                                "promotion": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 64,
+                                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                                    },
+                                    "headline": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 120
+                                    },
+                                    "terms": {
+                                      "minItems": 1,
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 300
+                                      }
+                                    }
+                                  },
+                                  "required": ["id", "headline", "terms"],
+                                  "additionalProperties": false
+                                },
                                 "specs": {
                                   "type": "object",
                                   "properties": {
@@ -3538,6 +3643,7 @@
                                 "productKey",
                                 "productTitle",
                                 "productType",
+                                "regions",
                                 "offerName",
                                 "currency",
                                 "recurringChargeAmountMinor",
@@ -4281,6 +4387,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -4509,9 +4616,41 @@
                                   "minLength": 1,
                                   "maxLength": 200
                                 },
-                                "productType": { "type": "string", "const": "sim" },
+                                "productType": {
+                                  "type": "string",
+                                  "enum": ["sim", "mobile", "internet"]
+                                },
+                                "regions": {
+                                  "default": ["CA"],
+                                  "minItems": 1,
+                                  "maxItems": 14,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "enum": [
+                                      "AB",
+                                      "BC",
+                                      "MB",
+                                      "NB",
+                                      "NL",
+                                      "NS",
+                                      "NT",
+                                      "NU",
+                                      "ON",
+                                      "PE",
+                                      "QC",
+                                      "SK",
+                                      "YT",
+                                      "CA"
+                                    ]
+                                  }
+                                },
                                 "offerName": { "type": "string", "minLength": 1, "maxLength": 200 },
                                 "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+                                "billingPeriod": {
+                                  "type": "string",
+                                  "enum": ["month", "30_days", "90_days"]
+                                },
                                 "recurringChargeAmountMinor": {
                                   "type": "integer",
                                   "minimum": 0,
@@ -4584,6 +4723,63 @@
                                   "minLength": 1,
                                   "maxLength": 64
                                 },
+                                "presentation": {
+                                  "type": "object",
+                                  "properties": {
+                                    "bestFor": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 200
+                                    },
+                                    "tag": { "type": "string", "minLength": 1, "maxLength": 40 },
+                                    "popular": { "type": "boolean" },
+                                    "audiences": {
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": { "type": "string", "pattern": "^[a-z][a-z-]*$" }
+                                    },
+                                    "features": {
+                                      "maxItems": 16,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 200
+                                      }
+                                    },
+                                    "note": { "type": "string", "minLength": 1, "maxLength": 400 }
+                                  },
+                                  "required": ["features"],
+                                  "additionalProperties": false
+                                },
+                                "promotion": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 64,
+                                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                                    },
+                                    "headline": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 120
+                                    },
+                                    "terms": {
+                                      "minItems": 1,
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 300
+                                      }
+                                    }
+                                  },
+                                  "required": ["id", "headline", "terms"],
+                                  "additionalProperties": false
+                                },
                                 "specs": {
                                   "type": "object",
                                   "properties": {
@@ -4609,6 +4805,7 @@
                                 "productKey",
                                 "productTitle",
                                 "productType",
+                                "regions",
                                 "offerName",
                                 "currency",
                                 "recurringChargeAmountMinor",
@@ -5352,6 +5549,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -5677,9 +5875,41 @@
                                   "minLength": 1,
                                   "maxLength": 200
                                 },
-                                "productType": { "type": "string", "const": "sim" },
+                                "productType": {
+                                  "type": "string",
+                                  "enum": ["sim", "mobile", "internet"]
+                                },
+                                "regions": {
+                                  "default": ["CA"],
+                                  "minItems": 1,
+                                  "maxItems": 14,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "enum": [
+                                      "AB",
+                                      "BC",
+                                      "MB",
+                                      "NB",
+                                      "NL",
+                                      "NS",
+                                      "NT",
+                                      "NU",
+                                      "ON",
+                                      "PE",
+                                      "QC",
+                                      "SK",
+                                      "YT",
+                                      "CA"
+                                    ]
+                                  }
+                                },
                                 "offerName": { "type": "string", "minLength": 1, "maxLength": 200 },
                                 "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+                                "billingPeriod": {
+                                  "type": "string",
+                                  "enum": ["month", "30_days", "90_days"]
+                                },
                                 "recurringChargeAmountMinor": {
                                   "type": "integer",
                                   "minimum": 0,
@@ -5752,6 +5982,63 @@
                                   "minLength": 1,
                                   "maxLength": 64
                                 },
+                                "presentation": {
+                                  "type": "object",
+                                  "properties": {
+                                    "bestFor": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 200
+                                    },
+                                    "tag": { "type": "string", "minLength": 1, "maxLength": 40 },
+                                    "popular": { "type": "boolean" },
+                                    "audiences": {
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": { "type": "string", "pattern": "^[a-z][a-z-]*$" }
+                                    },
+                                    "features": {
+                                      "maxItems": 16,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 200
+                                      }
+                                    },
+                                    "note": { "type": "string", "minLength": 1, "maxLength": 400 }
+                                  },
+                                  "required": ["features"],
+                                  "additionalProperties": false
+                                },
+                                "promotion": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 64,
+                                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                                    },
+                                    "headline": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 120
+                                    },
+                                    "terms": {
+                                      "minItems": 1,
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 300
+                                      }
+                                    }
+                                  },
+                                  "required": ["id", "headline", "terms"],
+                                  "additionalProperties": false
+                                },
                                 "specs": {
                                   "type": "object",
                                   "properties": {
@@ -5777,6 +6064,7 @@
                                 "productKey",
                                 "productTitle",
                                 "productType",
+                                "regions",
                                 "offerName",
                                 "currency",
                                 "recurringChargeAmountMinor",
@@ -6520,6 +6808,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -6778,9 +7067,41 @@
                                   "minLength": 1,
                                   "maxLength": 200
                                 },
-                                "productType": { "type": "string", "const": "sim" },
+                                "productType": {
+                                  "type": "string",
+                                  "enum": ["sim", "mobile", "internet"]
+                                },
+                                "regions": {
+                                  "default": ["CA"],
+                                  "minItems": 1,
+                                  "maxItems": 14,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "enum": [
+                                      "AB",
+                                      "BC",
+                                      "MB",
+                                      "NB",
+                                      "NL",
+                                      "NS",
+                                      "NT",
+                                      "NU",
+                                      "ON",
+                                      "PE",
+                                      "QC",
+                                      "SK",
+                                      "YT",
+                                      "CA"
+                                    ]
+                                  }
+                                },
                                 "offerName": { "type": "string", "minLength": 1, "maxLength": 200 },
                                 "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+                                "billingPeriod": {
+                                  "type": "string",
+                                  "enum": ["month", "30_days", "90_days"]
+                                },
                                 "recurringChargeAmountMinor": {
                                   "type": "integer",
                                   "minimum": 0,
@@ -6853,6 +7174,63 @@
                                   "minLength": 1,
                                   "maxLength": 64
                                 },
+                                "presentation": {
+                                  "type": "object",
+                                  "properties": {
+                                    "bestFor": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 200
+                                    },
+                                    "tag": { "type": "string", "minLength": 1, "maxLength": 40 },
+                                    "popular": { "type": "boolean" },
+                                    "audiences": {
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": { "type": "string", "pattern": "^[a-z][a-z-]*$" }
+                                    },
+                                    "features": {
+                                      "maxItems": 16,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 200
+                                      }
+                                    },
+                                    "note": { "type": "string", "minLength": 1, "maxLength": 400 }
+                                  },
+                                  "required": ["features"],
+                                  "additionalProperties": false
+                                },
+                                "promotion": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 64,
+                                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                                    },
+                                    "headline": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 120
+                                    },
+                                    "terms": {
+                                      "minItems": 1,
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 300
+                                      }
+                                    }
+                                  },
+                                  "required": ["id", "headline", "terms"],
+                                  "additionalProperties": false
+                                },
                                 "specs": {
                                   "type": "object",
                                   "properties": {
@@ -6878,6 +7256,7 @@
                                 "productKey",
                                 "productTitle",
                                 "productType",
+                                "regions",
                                 "offerName",
                                 "currency",
                                 "recurringChargeAmountMinor",
@@ -7621,6 +8000,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -7810,6 +8190,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -7978,6 +8359,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -8164,6 +8546,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -8333,6 +8716,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -8570,6 +8954,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -8847,9 +9232,41 @@
                                   "minLength": 1,
                                   "maxLength": 200
                                 },
-                                "productType": { "type": "string", "const": "sim" },
+                                "productType": {
+                                  "type": "string",
+                                  "enum": ["sim", "mobile", "internet"]
+                                },
+                                "regions": {
+                                  "default": ["CA"],
+                                  "minItems": 1,
+                                  "maxItems": 14,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "enum": [
+                                      "AB",
+                                      "BC",
+                                      "MB",
+                                      "NB",
+                                      "NL",
+                                      "NS",
+                                      "NT",
+                                      "NU",
+                                      "ON",
+                                      "PE",
+                                      "QC",
+                                      "SK",
+                                      "YT",
+                                      "CA"
+                                    ]
+                                  }
+                                },
                                 "offerName": { "type": "string", "minLength": 1, "maxLength": 200 },
                                 "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+                                "billingPeriod": {
+                                  "type": "string",
+                                  "enum": ["month", "30_days", "90_days"]
+                                },
                                 "recurringChargeAmountMinor": {
                                   "type": "integer",
                                   "minimum": 0,
@@ -8922,6 +9339,63 @@
                                   "minLength": 1,
                                   "maxLength": 64
                                 },
+                                "presentation": {
+                                  "type": "object",
+                                  "properties": {
+                                    "bestFor": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 200
+                                    },
+                                    "tag": { "type": "string", "minLength": 1, "maxLength": 40 },
+                                    "popular": { "type": "boolean" },
+                                    "audiences": {
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": { "type": "string", "pattern": "^[a-z][a-z-]*$" }
+                                    },
+                                    "features": {
+                                      "maxItems": 16,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 200
+                                      }
+                                    },
+                                    "note": { "type": "string", "minLength": 1, "maxLength": 400 }
+                                  },
+                                  "required": ["features"],
+                                  "additionalProperties": false
+                                },
+                                "promotion": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 64,
+                                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                                    },
+                                    "headline": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 120
+                                    },
+                                    "terms": {
+                                      "minItems": 1,
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 300
+                                      }
+                                    }
+                                  },
+                                  "required": ["id", "headline", "terms"],
+                                  "additionalProperties": false
+                                },
                                 "specs": {
                                   "type": "object",
                                   "properties": {
@@ -8947,6 +9421,7 @@
                                 "productKey",
                                 "productTitle",
                                 "productType",
+                                "regions",
                                 "offerName",
                                 "currency",
                                 "recurringChargeAmountMinor",
@@ -9690,6 +10165,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -9945,9 +10421,41 @@
                                   "minLength": 1,
                                   "maxLength": 200
                                 },
-                                "productType": { "type": "string", "const": "sim" },
+                                "productType": {
+                                  "type": "string",
+                                  "enum": ["sim", "mobile", "internet"]
+                                },
+                                "regions": {
+                                  "default": ["CA"],
+                                  "minItems": 1,
+                                  "maxItems": 14,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "enum": [
+                                      "AB",
+                                      "BC",
+                                      "MB",
+                                      "NB",
+                                      "NL",
+                                      "NS",
+                                      "NT",
+                                      "NU",
+                                      "ON",
+                                      "PE",
+                                      "QC",
+                                      "SK",
+                                      "YT",
+                                      "CA"
+                                    ]
+                                  }
+                                },
                                 "offerName": { "type": "string", "minLength": 1, "maxLength": 200 },
                                 "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+                                "billingPeriod": {
+                                  "type": "string",
+                                  "enum": ["month", "30_days", "90_days"]
+                                },
                                 "recurringChargeAmountMinor": {
                                   "type": "integer",
                                   "minimum": 0,
@@ -10020,6 +10528,63 @@
                                   "minLength": 1,
                                   "maxLength": 64
                                 },
+                                "presentation": {
+                                  "type": "object",
+                                  "properties": {
+                                    "bestFor": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 200
+                                    },
+                                    "tag": { "type": "string", "minLength": 1, "maxLength": 40 },
+                                    "popular": { "type": "boolean" },
+                                    "audiences": {
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": { "type": "string", "pattern": "^[a-z][a-z-]*$" }
+                                    },
+                                    "features": {
+                                      "maxItems": 16,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 200
+                                      }
+                                    },
+                                    "note": { "type": "string", "minLength": 1, "maxLength": 400 }
+                                  },
+                                  "required": ["features"],
+                                  "additionalProperties": false
+                                },
+                                "promotion": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 64,
+                                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                                    },
+                                    "headline": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 120
+                                    },
+                                    "terms": {
+                                      "minItems": 1,
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 300
+                                      }
+                                    }
+                                  },
+                                  "required": ["id", "headline", "terms"],
+                                  "additionalProperties": false
+                                },
                                 "specs": {
                                   "type": "object",
                                   "properties": {
@@ -10045,6 +10610,7 @@
                                 "productKey",
                                 "productTitle",
                                 "productType",
+                                "regions",
                                 "offerName",
                                 "currency",
                                 "recurringChargeAmountMinor",
@@ -10788,6 +11354,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -11037,9 +11604,41 @@
                                   "minLength": 1,
                                   "maxLength": 200
                                 },
-                                "productType": { "type": "string", "const": "sim" },
+                                "productType": {
+                                  "type": "string",
+                                  "enum": ["sim", "mobile", "internet"]
+                                },
+                                "regions": {
+                                  "default": ["CA"],
+                                  "minItems": 1,
+                                  "maxItems": 14,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "enum": [
+                                      "AB",
+                                      "BC",
+                                      "MB",
+                                      "NB",
+                                      "NL",
+                                      "NS",
+                                      "NT",
+                                      "NU",
+                                      "ON",
+                                      "PE",
+                                      "QC",
+                                      "SK",
+                                      "YT",
+                                      "CA"
+                                    ]
+                                  }
+                                },
                                 "offerName": { "type": "string", "minLength": 1, "maxLength": 200 },
                                 "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+                                "billingPeriod": {
+                                  "type": "string",
+                                  "enum": ["month", "30_days", "90_days"]
+                                },
                                 "recurringChargeAmountMinor": {
                                   "type": "integer",
                                   "minimum": 0,
@@ -11112,6 +11711,63 @@
                                   "minLength": 1,
                                   "maxLength": 64
                                 },
+                                "presentation": {
+                                  "type": "object",
+                                  "properties": {
+                                    "bestFor": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 200
+                                    },
+                                    "tag": { "type": "string", "minLength": 1, "maxLength": 40 },
+                                    "popular": { "type": "boolean" },
+                                    "audiences": {
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": { "type": "string", "pattern": "^[a-z][a-z-]*$" }
+                                    },
+                                    "features": {
+                                      "maxItems": 16,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 200
+                                      }
+                                    },
+                                    "note": { "type": "string", "minLength": 1, "maxLength": 400 }
+                                  },
+                                  "required": ["features"],
+                                  "additionalProperties": false
+                                },
+                                "promotion": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 64,
+                                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                                    },
+                                    "headline": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 120
+                                    },
+                                    "terms": {
+                                      "minItems": 1,
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 300
+                                      }
+                                    }
+                                  },
+                                  "required": ["id", "headline", "terms"],
+                                  "additionalProperties": false
+                                },
                                 "specs": {
                                   "type": "object",
                                   "properties": {
@@ -11137,6 +11793,7 @@
                                 "productKey",
                                 "productTitle",
                                 "productType",
+                                "regions",
                                 "offerName",
                                 "currency",
                                 "recurringChargeAmountMinor",
@@ -11880,6 +12537,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -12060,6 +12718,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -12265,6 +12924,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -12562,6 +13222,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -12869,6 +13530,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -13151,6 +13813,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -13364,6 +14027,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -13514,9 +14178,41 @@
                                 "minLength": 1,
                                 "maxLength": 200
                               },
-                              "productType": { "type": "string", "const": "sim" },
+                              "productType": {
+                                "type": "string",
+                                "enum": ["sim", "mobile", "internet"]
+                              },
+                              "regions": {
+                                "default": ["CA"],
+                                "minItems": 1,
+                                "maxItems": 14,
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "AB",
+                                    "BC",
+                                    "MB",
+                                    "NB",
+                                    "NL",
+                                    "NS",
+                                    "NT",
+                                    "NU",
+                                    "ON",
+                                    "PE",
+                                    "QC",
+                                    "SK",
+                                    "YT",
+                                    "CA"
+                                  ]
+                                }
+                              },
                               "offerName": { "type": "string", "minLength": 1, "maxLength": 200 },
                               "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+                              "billingPeriod": {
+                                "type": "string",
+                                "enum": ["month", "30_days", "90_days"]
+                              },
                               "recurringChargeAmountMinor": {
                                 "type": "integer",
                                 "minimum": 0,
@@ -13581,6 +14277,51 @@
                                 }
                               },
                               "termsVersion": { "type": "string", "minLength": 1, "maxLength": 64 },
+                              "presentation": {
+                                "type": "object",
+                                "properties": {
+                                  "bestFor": { "type": "string", "minLength": 1, "maxLength": 200 },
+                                  "tag": { "type": "string", "minLength": 1, "maxLength": 40 },
+                                  "popular": { "type": "boolean" },
+                                  "audiences": {
+                                    "maxItems": 8,
+                                    "type": "array",
+                                    "items": { "type": "string", "pattern": "^[a-z][a-z-]*$" }
+                                  },
+                                  "features": {
+                                    "maxItems": 16,
+                                    "type": "array",
+                                    "items": { "type": "string", "minLength": 1, "maxLength": 200 }
+                                  },
+                                  "note": { "type": "string", "minLength": 1, "maxLength": 400 }
+                                },
+                                "required": ["features"],
+                                "additionalProperties": false
+                              },
+                              "promotion": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 64,
+                                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                                  },
+                                  "headline": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 120
+                                  },
+                                  "terms": {
+                                    "minItems": 1,
+                                    "maxItems": 8,
+                                    "type": "array",
+                                    "items": { "type": "string", "minLength": 1, "maxLength": 300 }
+                                  }
+                                },
+                                "required": ["id", "headline", "terms"],
+                                "additionalProperties": false
+                              },
                               "specs": {
                                 "type": "object",
                                 "properties": {
@@ -13602,6 +14343,7 @@
                               "productKey",
                               "productTitle",
                               "productType",
+                              "regions",
                               "offerName",
                               "currency",
                               "recurringChargeAmountMinor",
@@ -13680,6 +14422,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -13857,6 +14600,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -14084,6 +14828,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -14200,6 +14945,187 @@
                   },
                   "consentVersion": { "type": "string", "minLength": 1, "maxLength": 64 }
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/website/region-waitlist": {
+      "post": {
+        "operationId": "joinRegionWaitlist",
+        "summary": "Leave an email for a province we do not serve yet.",
+        "tags": ["website"],
+        "security": [{ "websiteCredential": [] }],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "region_not_served",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "documents_incomplete",
+                            "document_override_reason_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "province": {
+                    "type": "string",
+                    "enum": [
+                      "AB",
+                      "BC",
+                      "MB",
+                      "NB",
+                      "NL",
+                      "NS",
+                      "NT",
+                      "NU",
+                      "ON",
+                      "PE",
+                      "QC",
+                      "SK",
+                      "YT"
+                    ]
+                  },
+                  "email": {
+                    "type": "string",
+                    "maxLength": 254,
+                    "format": "email",
+                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  },
+                  "interest": { "type": "string", "enum": ["sim", "mobile", "internet"] },
+                  "consentVersion": { "type": "string", "minLength": 1, "maxLength": 64 }
+                },
+                "required": ["province", "email", "consentVersion"]
               }
             }
           }
@@ -14400,6 +15326,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -14483,6 +15410,24 @@
                     "type": "string",
                     "format": "uuid",
                     "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "province": {
+                    "type": "string",
+                    "enum": [
+                      "AB",
+                      "BC",
+                      "MB",
+                      "NB",
+                      "NL",
+                      "NS",
+                      "NT",
+                      "NU",
+                      "ON",
+                      "PE",
+                      "QC",
+                      "SK",
+                      "YT"
+                    ]
                   },
                   "form": {
                     "type": "object",
@@ -14685,6 +15630,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -14899,6 +15845,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -15146,6 +16093,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -15316,6 +16264,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -15581,6 +16530,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -15840,6 +16790,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -16005,6 +16956,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -16147,6 +17099,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -16322,6 +17275,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -16536,6 +17490,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",
@@ -16712,6 +17667,7 @@
                             "draft_expired",
                             "draft_already_submitted",
                             "offer_unavailable",
+                            "region_not_served",
                             "unpriced_lead_required",
                             "priced_checkout_disabled",
                             "quote_not_found",

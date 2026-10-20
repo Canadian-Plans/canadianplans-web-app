@@ -3,6 +3,7 @@ import { rateLimitHit, resolveWebsiteCredential } from '@canadian-plans/db';
 import {
   commercialOfferSchema,
   createLeadRequestSchema,
+  joinRegionWaitlistRequestSchema,
   createQuoteRequestSchema,
   createUploadIntentRequestSchema,
   finalizeUploadRequestSchema,
@@ -29,6 +30,7 @@ import { loadQuoteWithdrawalPolicy } from '../catalogue/policy.js';
 import { DatabaseCatalogueStore, type CatalogueStore } from '../catalogue/store.js';
 import { DatabaseLeadStore, type LeadStore } from '../leads/store.js';
 import { parseDraftGrantToken } from '../leads/token.js';
+import { DatabaseRegionWaitlistStore, type RegionWaitlistStore } from '../waitlist/store.js';
 import { createTurnstileVerifier } from '../website/turnstile.js';
 import { loadMachineRegistry } from '../machines/registry.js';
 import { OrderService } from '../orders/service.js';
@@ -61,6 +63,7 @@ const endpointRateLimits = loadEndpointRateLimits();
 export interface WebsiteRouteDependencies {
   auth: WebsiteAuthDependencies;
   leads: { store: LeadStore };
+  regionWaitlist?: { store: RegionWaitlistStore };
   quotes?: { service: Pick<CatalogueService, 'createQuote'> };
   orders?: { service: Pick<OrderService, 'submit'> };
   catalogue?: { store: Pick<CatalogueStore, 'listPublishedOffers'> };
@@ -85,6 +88,7 @@ export function createDefaultWebsiteRouteDependencies(): WebsiteRouteDependencie
       botCheck: (req) => verify(req.get('x-turnstile-token')),
     },
     leads: { store: new DatabaseLeadStore() },
+    regionWaitlist: { store: new DatabaseRegionWaitlistStore() },
     quotes: {
       service: new CatalogueService(
         new DatabaseCatalogueStore(),
@@ -449,6 +453,41 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
         }
 
         res.json({ lead: outcome.lead, requestId: req.id });
+      } catch {
+        sendDomainError(res, req.id, 'internal_error', 500);
+      }
+    },
+  );
+
+  router.post(
+    '/region-waitlist',
+    requireScope('leads:write'),
+    requireEndpointRateLimit(dependencies.auth, 'leads', endpointRateLimits.leads),
+    async (req, res) => {
+      const body = joinRegionWaitlistRequestSchema.safeParse(req.body);
+      if (!body.success) {
+        sendDomainError(res, req.id, 'validation_error', 400);
+        return;
+      }
+      const waitlist = dependencies.regionWaitlist;
+      if (!waitlist) {
+        sendDomainError(res, req.id, 'internal_error', 500);
+        return;
+      }
+
+      try {
+        const ctx = websiteContext(req);
+        await waitlist.store.join({
+          workspaceId: ctx.workspaceId,
+          actorId: ctx.credentialId,
+          requestId: req.id,
+          province: body.data.province,
+          email: body.data.email,
+          interest: body.data.interest,
+          consentVersion: body.data.consentVersion,
+        });
+        // Same answer whether or not the email was already listed.
+        res.status(201).json({ requestId: req.id });
       } catch {
         sendDomainError(res, req.id, 'internal_error', 500);
       }
