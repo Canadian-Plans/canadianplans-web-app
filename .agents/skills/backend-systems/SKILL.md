@@ -23,7 +23,7 @@ description: Server-side construction patterns - service structure, business log
 - Every consumer is idempotent (a redelivered message must be harmless): dedupe by message id or natural key.
 - Retries with exponential backoff + jitter, capped attempts, then dead-letter queue — which is monitored (an unmonitored DLQ is a data-loss device).
 - Jobs are resumable and bounded; a job that can run twice concurrently must be safe or locked.
-- Use the existing transactional outbox and bounded Vercel Cron runner. Do not assume an in-process worker survives a response or add a queue service merely because this skill mentions queues.
+- Use the existing transactional outbox and bounded scheduler in the long-lived Railway backend, with authenticated manual job routes for recovery. Do not add a second scheduler or queue service merely because this skill mentions queues.
 
 ## External integrations
 
