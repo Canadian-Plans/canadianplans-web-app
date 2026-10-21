@@ -10,6 +10,7 @@ import {
 import { z } from 'zod';
 
 import { hashesEqual } from './secrets.js';
+import { findUnsatisfiedDocuments } from '../orders/document-prerequisite.js';
 
 /**
  * Tracking persistence (T22). Every read/write runs inside the workspace's RLS
@@ -251,8 +252,12 @@ export class DatabaseTrackingStore implements TrackingStore {
           .orderBy(desc(dispatchRecords.dispatchedAt))
           .limit(1);
 
-        // T17 seam: subtract files already available once document tables exist.
         const checklist = snapshotSchema.safeParse(order.snapshot ?? {}).data?.documentChecklist;
+        const outstanding = await findUnsatisfiedDocuments(tx, {
+          workspaceId: input.workspaceId,
+          orderId: input.orderId,
+          required: checklist ?? [],
+        });
 
         return {
           reference: order.reference,
@@ -260,7 +265,7 @@ export class DatabaseTrackingStore implements TrackingStore {
           paymentState: order.paymentState,
           deliveryState: order.deliveryState,
           trackingReference: dispatch?.trackingReference ?? null,
-          documentsRequired: [...(checklist ?? [])],
+          documentsRequired: [...outstanding],
           updatedAt: order.updatedAt,
         };
       },

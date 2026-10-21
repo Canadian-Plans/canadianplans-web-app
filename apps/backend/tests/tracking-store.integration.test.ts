@@ -5,6 +5,7 @@ import { TEST_RUNTIME_PASSWORD, setTestRuntimePassword } from '@canadian-plans/d
 
 import { codeBindingHash, emailBindingHash } from '../src/tracking/secrets.js';
 import { DatabaseTrackingStore } from '../src/tracking/store.js';
+import { DatabaseDocumentStore } from '../src/documents/store.js';
 
 function disposableDatabaseUrl(): string | undefined {
   const url = process.env.TEST_MIGRATION_DATABASE_URL;
@@ -132,5 +133,65 @@ databaseTest('DatabaseTrackingStore (T22)', () => {
       documentsRequired: ['passport'],
     });
     expect(JSON.stringify(status)).not.toContain(EMAIL);
+  });
+
+  test('reports only outstanding documents using the latest review of linked lead uploads', async () => {
+    const documents = new DatabaseDocumentStore(database);
+    const tracking = new DatabaseTrackingStore(database);
+    const file = await documents.createIntent({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      requestId: crypto.randomUUID(),
+      recordType: 'lead',
+      recordId: LEAD,
+      documentType: 'passport',
+      bucket: 'test-bucket',
+      stagingKey: `staging/${crypto.randomUUID()}`,
+      declaredContentType: 'application/pdf',
+      declaredSizeBytes: 8,
+      expiresAt: new Date(Date.now() + 60_000),
+    });
+    const candidateKey = `candidate/${crypto.randomUUID()}`;
+    await documents.claimForVerification({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      fileId: file.id,
+      candidateKey,
+      now: new Date(),
+    });
+    await documents.attachVerified({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      requestId: crypto.randomUUID(),
+      fileId: file.id,
+      candidateKey,
+      objectKey: candidateKey,
+      detectedMime: 'application/pdf',
+      sizeBytes: 8,
+      checksumSha256: 'a'.repeat(64),
+    });
+    expect(
+      (await tracking.status({ workspaceId: WORKSPACE, orderId: ORDER }))?.documentsRequired,
+    ).toEqual(['passport']);
+    await documents.recordReview({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      requestId: crypto.randomUUID(),
+      fileId: file.id,
+      decision: 'approved',
+    });
+    expect(
+      (await tracking.status({ workspaceId: WORKSPACE, orderId: ORDER }))?.documentsRequired,
+    ).toEqual([]);
+    await documents.recordReview({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      requestId: crypto.randomUUID(),
+      fileId: file.id,
+      decision: 'rejected',
+    });
+    expect(
+      (await tracking.status({ workspaceId: WORKSPACE, orderId: ORDER }))?.documentsRequired,
+    ).toEqual(['passport']);
   });
 });
