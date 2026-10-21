@@ -20,3 +20,9 @@ so the backend depends on an interface, not a vendor.
 Only `apps/backend` and `jobs/` may depend on this package. Browser-safe
 Sanity schema types live in `@canadian-plans/contracts` under the `cms`
 export, not here.
+
+Document PUT signatures bind the validated declared file length. Browser callers
+must send the original `File` as the request body so the browser supplies its
+`Content-Length`; do not manually set that forbidden browser header. Finalization
+checks the private candidate's size and bounds its streamed body independently
+before signature and checksum verification, including for older upload URLs.

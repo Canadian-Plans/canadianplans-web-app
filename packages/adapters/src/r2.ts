@@ -68,6 +68,8 @@ export interface CreateUploadInput {
   stagingKey: string;
   /** Declared type — validated up front but never trusted for storage. */
   declaredContentType: DocumentMediaType;
+  /** Exact body length bound into the upload signature, never greater than maxBytes. */
+  declaredSizeBytes: number;
   /** Hard byte ceiling advertised to the client (10 MB). */
   maxBytes: number;
   expiresInSeconds: number;

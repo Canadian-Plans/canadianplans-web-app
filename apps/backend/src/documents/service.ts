@@ -148,6 +148,7 @@ export class DocumentService {
       workspaceId: input.workspaceId,
       stagingKey: key,
       declaredContentType: input.declaredContentType,
+      declaredSizeBytes: input.declaredSizeBytes,
       maxBytes: this.maxBytes,
       expiresInSeconds: this.intentTtlSeconds,
     });

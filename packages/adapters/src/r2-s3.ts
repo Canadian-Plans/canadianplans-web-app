@@ -108,6 +108,8 @@ interface PresignParams {
   now?: Date;
   /** Extra query params (e.g. response-content-disposition) folded into the signature. */
   query?: Record<string, string>;
+  /** Exact browser-generated body length; omitted for downloads. */
+  contentLength?: number;
 }
 
 /**
@@ -122,12 +124,13 @@ export function presignUrl(config: R2Config, params: PresignParams): string {
   const canonicalUri = `/${encodeRfc3986(config.bucket)}/${encodeKey(params.key)}`;
   const credentialScope = `${dateStamp}/${config.region}/${SERVICE}/aws4_request`;
 
+  const signedHeaders = params.contentLength === undefined ? 'host' : 'content-length;host';
   const queryParams: Record<string, string> = {
     'X-Amz-Algorithm': ALGORITHM,
     'X-Amz-Credential': `${config.accessKeyId}/${credentialScope}`,
     'X-Amz-Date': amzDate,
     'X-Amz-Expires': String(params.expiresInSeconds),
-    'X-Amz-SignedHeaders': 'host',
+    'X-Amz-SignedHeaders': signedHeaders,
     ...(params.query ?? {}),
   };
   const canonicalQuery = Object.keys(queryParams)
@@ -135,13 +138,15 @@ export function presignUrl(config: R2Config, params: PresignParams): string {
     .map((k) => `${encodeRfc3986(k)}=${encodeRfc3986(queryParams[k] ?? '')}`)
     .join('&');
 
-  const canonicalHeaders = `host:${host}\n`;
+  const canonicalHeaders =
+    (params.contentLength === undefined ? '' : `content-length:${params.contentLength}\n`) +
+    `host:${host}\n`;
   const canonicalRequest = [
     params.method,
     canonicalUri,
     canonicalQuery,
     canonicalHeaders,
-    'host',
+    signedHeaders,
     UNSIGNED_PAYLOAD,
   ].join('\n');
 
@@ -218,10 +223,18 @@ export class S3R2DocumentStore implements R2DocumentStore {
   ) {}
 
   async createUpload(input: CreateUploadInput): Promise<PresignedUpload> {
+    if (
+      !Number.isSafeInteger(input.declaredSizeBytes) ||
+      input.declaredSizeBytes < 1 ||
+      input.declaredSizeBytes > input.maxBytes
+    ) {
+      throw new Error('invalid upload size');
+    }
     const url = presignUrl(this.config, {
       method: 'PUT',
       key: this.scopedKey(input.workspaceId, input.stagingKey),
       expiresInSeconds: input.expiresInSeconds,
+      contentLength: input.declaredSizeBytes,
     });
     return {
       stagingKey: input.stagingKey,
@@ -253,14 +266,22 @@ export class S3R2DocumentStore implements R2DocumentStore {
     if (copyResponse.status === 404) return { status: 'rejected', reason: 'staging_missing' };
     if (!copyResponse.ok) throw new Error(`r2 copy failed: ${copyResponse.status}`);
 
-    // Verify the CANDIDATE only.
+    // Only inspect the private candidate: staging can change during finalization.
+    const head = signRequest(this.config, { method: 'HEAD', key: candidateKey, headers: {} });
+    const metadata = await this.send(head.url, { method: 'HEAD', headers: head.headers });
+    if (metadata.status === 404) return { status: 'rejected', reason: 'staging_missing' };
+    if (!metadata.ok) throw new Error(`r2 head failed: ${metadata.status}`);
+    if (Number(metadata.headers.get('content-length')) > input.maxBytes) {
+      return { status: 'rejected', reason: 'too_large' };
+    }
+
+    // Bound the actual stream too: metadata is not a substitute for a byte limit.
     const get = signRequest(this.config, { method: 'GET', key: candidateKey, headers: {} });
     const candidateResponse = await this.send(get.url, { method: 'GET', headers: get.headers });
     if (candidateResponse.status === 404) return { status: 'rejected', reason: 'staging_missing' };
     if (!candidateResponse.ok) throw new Error(`r2 get failed: ${candidateResponse.status}`);
-    const candidate = new Uint8Array(await candidateResponse.arrayBuffer());
-
-    if (candidate.byteLength > input.maxBytes) return { status: 'rejected', reason: 'too_large' };
+    const candidate = await readBoundedBody(candidateResponse, input.maxBytes);
+    if (candidate === undefined) return { status: 'rejected', reason: 'too_large' };
     const detectedMediaType = detectDocumentType(candidate);
     if (!detectedMediaType) return { status: 'rejected', reason: 'unsupported_signature' };
     const checksumSha256 = sha256Hex(candidate);
@@ -315,6 +336,37 @@ export class S3R2DocumentStore implements R2DocumentStore {
       signal: AbortSignal.timeout(this.timeoutMs),
     });
   }
+}
+
+async function readBoundedBody(
+  response: Response,
+  maxBytes: number,
+): Promise<Uint8Array | undefined> {
+  const reader = response.body?.getReader();
+  if (!reader) return new Uint8Array();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (value.byteLength > maxBytes - size) {
+        await reader.cancel();
+        return undefined;
+      }
+      chunks.push(value);
+      size += value.byteLength;
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  const bytes = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return bytes;
 }
 
 /** Constructs the real R2 store from environment configuration. */
