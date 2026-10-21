@@ -351,6 +351,35 @@ describe('staff order API role matrix', () => {
     expect(transitionStore.calls).toEqual([]);
   });
 
+  it.each(['owner', 'orders', 'finance', 'viewer'] as const)(
+    'limits reasoned document overrides to order-managing staff (%s)',
+    async (role) => {
+      store.access = { ...store.access, roles: [role], permissions: [] };
+      const response = await patchOrder(
+        {
+          action: 'transition',
+          toStatus: 'ready_for_delivery',
+          expectedVersion: 1,
+          documentOverrideReason: 'Passport verified through the support ticket',
+        },
+        'aal2',
+      );
+      if (role === 'owner' || role === 'orders') {
+        expect(response.status).toBe(200);
+        expect(transitionStore.calls).toEqual([
+          expect.objectContaining({
+            actorId: ACTOR,
+            workspaceId: WORKSPACE,
+            documentOverride: { reason: 'Passport verified through the support ticket' },
+          }),
+        ]);
+      } else {
+        expect(response.status).toBe(403);
+        expect(transitionStore.calls).toEqual([]);
+      }
+    },
+  );
+
   it('lets the orders role transition and returns the recomputed detail', async () => {
     store.access = { ...store.access, roles: ['orders'], permissions: [] };
     const response = await patchOrder({
