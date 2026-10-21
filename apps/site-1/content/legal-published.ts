@@ -221,7 +221,7 @@ const privacyBody: readonly LegalBlock[] = [
     'Records are stored in an access-controlled database. Access is limited to staff who need it to do their job, and information is transmitted over an encrypted connection. Identity documents are stored privately and are available only through short-lived, permission-checked links.',
   ),
   paragraph(
-    'We delete identity documents 6 months after your order is completed. We keep other order and contact information only as long as needed to provide your service, handle support and meet legal and record-keeping obligations, after which it is deleted or anonymised. Wish-list emails are kept until we write to you about your province or you ask us to remove them.',
+    'We retain identity documents, order and contact information, and wish-list emails until you ask us to delete them. We do not automatically delete this customer information after a fixed period or when an order is completed. To request deletion, contact info@canadianplans.com. We delete or restrict the requested personal information unless we are required by law to retain it. Limited transaction and audit records may be retained for legal and record-keeping purposes. Copies in backups expire through the regular backup schedule; a deletion request is applied before recovered records can be used again.',
   ),
   paragraph(
     'No method of transmission or storage is completely secure. While we take reasonable steps to protect your information, we cannot guarantee absolute security.',
@@ -256,14 +256,14 @@ const privacyBody: readonly LegalBlock[] = [
 export const publishedLegal: Record<LegalSlug, PublishedLegal> = {
   terms: {
     title: 'Terms of Service',
-    version: 1,
-    effectiveDate: '2026-10-20',
+    version: 2,
+    effectiveDate: '2026-10-21',
     body: termsBody,
   },
   privacy: {
     title: 'Privacy Policy',
-    version: 1,
-    effectiveDate: '2026-10-20',
+    version: 2,
+    effectiveDate: '2026-10-21',
     body: privacyBody,
   },
 };

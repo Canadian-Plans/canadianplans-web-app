@@ -1,36 +1,36 @@
-# RETENTION_POLICY.md
+# Customer-data retention and deletion
 
-Owner-approved retention periods by data category. **All values below are
-labelled TEST placeholders** for OPEN_INPUTS #10 (document retention) and #16
-(retention by category); none is a business decision until the owner records it
-in [OPEN_INPUTS.md](OPEN_INPUTS.md). Deletion of live records is the audited
-staff action in [RUNBOOKS/data-deletion.md](RUNBOOKS/data-deletion.md); backup
-expiry and processor deletion are handled by the backup/retention tooling
-(T24), separately from immediate active-system deletion.
+**Owner-confirmed policy, 21 October 2026:** retain customer records and accepted
+identity documents until the customer requests deletion. There is no automatic
+six-month period or deadline triggered by order completion. This replaces the
+previous proposed timed-retention rule (OPEN_INPUTS #10/#16).
 
-| Category                                                                   | TEST placeholder                                                           | Applied by                                                     |
-| -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| Live order + minimal commercial record (`reference`, `snapshot`)           | Keep while the order is active, then indefinitely as the commercial record | Never auto-deleted; REQ 24 keeps the minimal commercial record |
-| Lead contact + form (`leads.full_name/email/phone/country_code/payload`)   | Delete on the audited customer-data deletion request                       | T21 `deleteCustomerData`                                       |
-| Order payload / consent / notes / amendments / change requests / reminders | Delete on the audited customer-data deletion request                       | T21 `deleteCustomerData`                                       |
-| Audit `before`/`after` personal values                                     | Scrubbed on deletion; the audit row (actor, action, time) is kept          | T21 `deleteCustomerData`                                       |
-| Outbox job payloads referencing the order/lead                             | Scrubbed on deletion; the job row is kept                                  | T21 `deleteCustomerData`                                       |
-| Abandoned drafts (never submitted)                                         | TBD — owner input #16                                                      | Not yet automated                                              |
-| File revisions / rejected uploads (R2)                                     | TBD — owner input #16                                                      | T17 seam (not on this branch)                                  |
-| Email records / follow-up schedules                                        | TBD — owner input #16                                                      | T18 seam (not on this branch)                                  |
-| Deletion ledger events                                                     | Append-only; retained per owner input #16                                  | §13 ledger (T4R/T24)                                           |
-| Backups and independent archive                                            | 30 daily + 12 monthly points                                               | T24 backup/retention tooling                                   |
+Customer requests use the audited staff workflow in
+[RUNBOOKS/data-deletion.md](RUNBOOKS/data-deletion.md), subject to applicable legal
+retention obligations. The complete cross-copy deletion implementation is tracked
+by C3; recording this policy does not claim that the existing action already
+removes every document/email copy.
 
-## Notes
+| Category                                                                                             | Retention rule                                                                              | Deletion handling                                                                              |
+| ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Customer contact, order form/consent, saved drafts, notes, amendments, change requests and reminders | Retain until customer requests deletion                                                     | Audited customer-data deletion across every linked active-system copy                          |
+| Accepted identity documents and their revisions                                                      | Retain until customer requests deletion                                                     | Restrict access immediately; durable physical cleanup after deletion-ledger acknowledgement    |
+| Wish-list contacts, email records and follow-up schedules                                            | Retain until customer requests deletion                                                     | Remove linked personal records and stop sending; unsubscribe also stops marketing immediately  |
+| Personal audit before/after values and queued job payloads                                           | Retain until customer requests deletion                                                     | Scrub personal values while retaining minimal operational/audit evidence                       |
+| Minimal commercial records and audit metadata                                                        | Keep only permitted non-personal or legally required remnants                               | Customer deletion must not preserve unnecessary personal copies                                |
+| Minimal deletion/suppression ledger evidence                                                         | Retain to prevent restored backups from reopening deleted data or resuming suppressed sends | Independent recovery ledger; no deleted personal content                                       |
+| Invalid, rejected or unfinished upload objects; access tokens; local preview caches                  | Existing technical expiry/cleanup, distinct from accepted customer records                  | Security and temporary-cache cleanup; never use these timers to delete accepted live documents |
+| Backups and independent archive                                                                      | Existing baseline: 30 daily and 12 monthly recovery points                                  | Separate manifest-aware rotation; replay customer deletions before a restore reopens           |
 
-- **Cross-border processing.** The database and application functions are
-  intended for a Canadian region; the actual regions of the selected email
-  provider and R2 are recorded and reflected in the privacy policy, never
-  promised as Canada-only (REQ 34).
-- **No instant historical erasure.** Immediate active-system deletion does not
-  promise erasure of every historical archive; a restore replays the deletion
-  ledger before reopening (REQ 24, IMPLEMENTATION_PLAN §13).
-- **Staff reasons.** A deletion reason is recorded for the audit and the local
-  ledger intent; staff must not type the customer's personal data into it.
+## Operational boundaries
 
-Replace each `TBD` and confirm the placeholders with the owner before launch.
+- No new timed deletion job is authorized for retained customer records. Order
+  completion and contact about a wish list do not independently authorize deletion.
+- A customer request restricts active access/sending immediately. Cleanup is
+  durable, audited and acknowledged by the independent ledger before completion.
+- Backup expiry and processor deletion are separate from immediate active-system
+  deletion. Do not promise instant removal of every historical backup copy.
+- Document storage remains private. The database/backend currently run in the
+  United States; record actual provider regions accurately in the privacy policy.
+- Staff must not copy the customer's personal data into a deletion reason or audit
+  metadata. Record the request and reason without recreating the deleted content.

@@ -132,7 +132,7 @@ tools. **verified** = checked directly today · **read** = from repo code/docs �
   deploys the new code, the `CATALOGUE_ALLOW_OPEN_INPUTS` decision, and Vercel Pro.
 - **Legal text and placeholders (21 Oct):** the plan catalogue no longer has `TEST-`
   placeholders (billing party, provider and pre-arrival eligibility came from Canada Wide and
-  canadaesim; the terms version is `terms-2026-10-v1`). `/terms` and `/privacy` now publish real
+  canadaesim; the terms version is `terms-2026-10-v2`). `/terms` and `/privacy` now publish real
   text from the repo with the owner's business details, so `CATALOGUE_ALLOW_OPEN_INPUTS` is not
   needed. Site-wide placeholder phone, address and emails were replaced with the real ones.
   Still to check: the assumptions listed in `docs/LAUNCH_PLANS.md`, a lawyer's review, and
@@ -165,7 +165,10 @@ These block the first order. Each is a row in `docs/OPEN_INPUTS.md`; answer ther
   each fee, taxes.
 - ☐ **2.7 Courier** (#9) — who ships SIMs, and how you book them.
 - ☐ **2.8 Sender email** (#11) — e.g. `orders@<domain>`.
-- ☐ **2.9 Retention periods** (#10, #16) — needed so the privacy policy is truthful.
+- ☑ **2.9 Retention policy** (#10, #16) — owner confirmed request-only deletion of
+  retained customer records and identity documents on 21 Oct 2026; no fixed period.
+  Version 2 legal text and `RETENTION_POLICY.md` record the decision. The complete
+  customer-request deletion implementation is tracked by C3.
 - ◐ **2.10 Terms and privacy text** (#24) — your own or a lawyer's; Claude can draft a
   first version for you to review, but it is your legal responsibility. _20 Oct: drafts
   adapted from the Canada Wide texts are in `docs/legal/` (`terms-v1-draft.md`,

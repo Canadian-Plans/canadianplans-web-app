@@ -133,7 +133,7 @@ describe('site-1 catalogue contents', () => {
 describe('owner decisions', () => {
   it('leaves no placeholder for the owner to fill, and uses the published terms version', () => {
     expect(findOpenInputs(site1CommercialOffers)).toEqual([]);
-    expect(site1CommercialOffers.every((offer) => offer.termsVersion === 'terms-2026-10-v1')).toBe(
+    expect(site1CommercialOffers.every((offer) => offer.termsVersion === 'terms-2026-10-v2')).toBe(
       true,
     );
   });

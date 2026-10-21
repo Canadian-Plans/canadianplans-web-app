@@ -110,7 +110,7 @@ export async function getLegalPage(slug: LegalSlug): Promise<LegalPage> {
     });
     const doc: unknown = await client.fetch(LEGAL_PAGE_QUERY, { slug });
     const parsed = parseLegalDoc(doc);
-    if (!parsed) return repoLegalPage(slug);
+    if (!parsed || parsed.version < publishedLegal[slug].version) return repoLegalPage(slug);
     return { ...parsed, source: 'sanity' };
   } catch {
     return repoLegalPage(slug);

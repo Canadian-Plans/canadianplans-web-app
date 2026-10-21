@@ -14,11 +14,10 @@ export const siteConfig = {
   legal: {
     /**
      * Disclosure/consent version recorded when a draft lead is saved (REQ 17).
-     * TEST placeholder: real terms/privacy content and its versioning land with
-     * T21, and the accepted *terms* version for an order always comes from the
-     * server-issued quote, never from here.
+     * Identifies the current published privacy policy. The accepted terms
+     * version for an order always comes from the server-issued quote.
      */
-    consentVersion: 'TEST-disclosure-v1',
+    consentVersion: 'privacy-2026-10-v2',
     /**
      * Version of the credit-check consent a mobile customer accepts, recorded with
      * the order (invariant 11). TEST placeholder until the owner approves the text.
@@ -28,6 +27,6 @@ export const siteConfig = {
      * Version of the notice shown with the region wish list, recorded with the
      * address (ADR 0005, D5). TEST placeholder until the owner approves the text.
      */
-    waitlistConsentVersion: 'TEST-waitlist-v1',
+    waitlistConsentVersion: 'privacy-2026-10-v2',
   },
 };
