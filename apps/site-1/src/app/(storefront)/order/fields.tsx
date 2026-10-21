@@ -1,5 +1,5 @@
 import { FormField, Input, NativeSelect } from '@canadian-plans/ui';
-import { provinceNames } from '@canadian-plans/contracts';
+import { provinceCodeSchema, provinceNames, type ProvinceCode } from '@canadian-plans/contracts';
 
 import {
   KEEP_NUMBER_OPTIONS,
@@ -241,19 +241,31 @@ export function ArrivalFields({ details, errors, onChange }: FieldsProps<Arrival
   );
 }
 
-/** Internet and TV: the plan fixes the province, so it is shown, not asked. */
-export function InternetFields({ details, errors, onChange }: FieldsProps<InternetDetails>) {
+/** Internet and TV: offer only the provinces where this plan is sold. */
+export function InternetFields({
+  details,
+  errors,
+  onChange,
+  provinces,
+}: FieldsProps<InternetDetails> & { provinces: readonly ProvinceCode[] }) {
   return (
     <>
-      <p id={FIELD_IDS.province} tabIndex={-1} className="text-sm">
-        {f.province.label}:{' '}
-        <strong>{details.province ? provinceNames[details.province] : '—'}</strong>
-        {errors.province ? (
-          <span role="alert" className="block text-destructive">
-            {errors.province}
-          </span>
-        ) : null}
-      </p>
+      <FormField id={FIELD_IDS.province} label={f.province.label} required error={errors.province}>
+        <NativeSelect
+          value={details.province}
+          onChange={(event) => {
+            const parsed = provinceCodeSchema.safeParse(event.target.value);
+            onChange({ province: parsed.success ? parsed.data : '' });
+          }}
+        >
+          <option value="">{f.province.placeholder}</option>
+          {provinces.map((province) => (
+            <option key={province} value={province}>
+              {provinceNames[province]}
+            </option>
+          ))}
+        </NativeSelect>
+      </FormField>
       <ContactFields
         details={details}
         errors={errors}

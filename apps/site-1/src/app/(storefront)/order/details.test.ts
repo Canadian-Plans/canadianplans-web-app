@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildOrderForm,
   emptyDetails,
+  initialDetails,
   parseOrderDetails,
   type InternetDetails,
   type MobileDetails,
@@ -10,6 +11,26 @@ import {
 
 /** Fixed clock so the age rule never depends on the day the tests run. */
 const NOW = new Date('2026-10-20T12:00:00.000Z');
+
+describe('internet province selection', () => {
+  it('keeps the chosen province for multi-province and national offers', () => {
+    expect(initialDetails({ productType: 'internet', regions: ['ON', 'BC'] }, 'BC')).toMatchObject({
+      province: 'BC',
+    });
+    expect(initialDetails({ productType: 'internet', regions: ['CA'] }, 'SK')).toMatchObject({
+      province: 'SK',
+    });
+  });
+
+  it('ignores an unsupported province and defaults only a single-province offer', () => {
+    expect(initialDetails({ productType: 'internet', regions: ['ON', 'BC'] }, 'SK')).toMatchObject({
+      province: '',
+    });
+    expect(initialDetails({ productType: 'internet', regions: ['ON'] }, 'BC')).toMatchObject({
+      province: 'ON',
+    });
+  });
+});
 
 const internet: InternetDetails = {
   category: 'internet',

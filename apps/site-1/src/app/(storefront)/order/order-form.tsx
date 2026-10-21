@@ -101,7 +101,7 @@ export function OrderForm({
 }: OrderFormProps) {
   const [stepIndex, setStepIndexState] = useState(selected ? 1 : 0);
   const [details, setDetails] = useState<OrderDetailsInput>(() =>
-    initialDetails(selected?.commercial ?? { productType: 'sim', regions: ['CA'] }),
+    initialDetails(selected?.commercial ?? { productType: 'sim', regions: ['CA'] }, province),
   );
   const [fieldErrors, setFieldErrors] = useState<OrderFieldErrors>({});
   const [acknowledged, setAcknowledged] = useState(false);
@@ -509,7 +509,14 @@ export function OrderForm({
               <ArrivalFields details={details} errors={fieldErrors} onChange={patchArrival} />
             ) : null}
             {details.category === 'internet' ? (
-              <InternetFields details={details} errors={fieldErrors} onChange={patchInternet} />
+              <InternetFields
+                details={details}
+                errors={fieldErrors}
+                onChange={patchInternet}
+                provinces={provinceCodeSchema.options.filter(
+                  (code) => selected && isOfferSoldIn(selected.commercial.regions, code),
+                )}
+              />
             ) : null}
             {details.category === 'mobile' ? (
               <MobileFields details={details} errors={fieldErrors} onChange={patchMobile} />

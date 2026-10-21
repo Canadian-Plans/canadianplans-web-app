@@ -2,6 +2,7 @@ import {
   provinceCodeSchema,
   provinceFromPostalCode,
   provinceNames,
+  isOfferSoldIn,
   type ProvinceCode,
   type WebsiteOffer,
 } from '@canadian-plans/contracts';
@@ -111,14 +112,19 @@ export function emptyDetails(category: OrderCategory): OrderDetailsInput {
 }
 
 /**
- * The empty form for a plan. An internet plan is sold in one province, so the
- * province comes from the plan rather than from a question.
+ * Keep a valid province chosen in the plan picker. A single-province offer can
+ * supply its own default; wider offers need the customer's choice.
  */
 export function initialDetails(
   offer: Pick<WebsiteOffer['commercial'], 'productType' | 'regions'>,
+  selectedProvince?: ProvinceCode,
 ): OrderDetailsInput {
   const empty = emptyDetails(offer.productType);
-  if (empty.category !== 'internet' || offer.regions.length !== 1) return empty;
+  if (empty.category !== 'internet') return empty;
+  if (selectedProvince && isOfferSoldIn(offer.regions, selectedProvince)) {
+    return { ...empty, province: selectedProvince };
+  }
+  if (offer.regions.length !== 1) return empty;
   const province = provinceCodeSchema.safeParse(offer.regions[0]);
   return province.success ? { ...empty, province: province.data } : empty;
 }
