@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 /**
  * REQ 37 / §16 gate 12 — security response headers on the storefront.
@@ -30,6 +30,8 @@ test('storefront routes carry the hardened security headers', async ({ request }
   expect(csp).toContain("object-src 'none'");
   expect(csp).toContain("frame-ancestors 'none'");
   expect(csp).toContain("base-uri 'self'");
+  expect(csp).toContain('https://challenges.cloudflare.com');
+  expect(csp).toContain('frame-src https://challenges.cloudflare.com');
   // Production must not permit eval on the storefront surface.
   expect(csp).not.toContain("'unsafe-eval'");
 });

@@ -1,10 +1,11 @@
 'use server';
 
-import { joinRegionWaitlistRequestSchema } from '@canadian-plans/contracts';
+import { joinRegionWaitlistRequestSchema, websiteBotTokenSchema } from '@canadian-plans/contracts';
 
 import { getBackendClient } from '@/lib/backendClient';
 import { siteConfig } from '@/site.config';
 import type { ActionResult } from './types';
+import { verificationContent } from '@content/verification';
 
 /**
  * Leaves an email on the wish list for a province with no internet or TV plans
@@ -16,6 +17,7 @@ import type { ActionResult } from './types';
 export async function joinWaitlist(input: {
   province: string;
   email: string;
+  turnstileToken?: string;
 }): Promise<ActionResult<{ joined: true }>> {
   const parsed = joinRegionWaitlistRequestSchema.safeParse({
     province: input.province,
@@ -31,8 +33,12 @@ export async function joinWaitlist(input: {
       fieldErrors: { email: 'Enter a valid email address.' },
     };
   }
+  if (!websiteBotTokenSchema.safeParse(input.turnstileToken).success)
+    return { ok: false, code: 'verification_failed', message: verificationContent.failed };
   try {
-    await getBackendClient().regionWaitlist.join(parsed.data);
+    await getBackendClient().regionWaitlist.join(parsed.data, {
+      turnstileToken: input.turnstileToken,
+    });
     return { ok: true, data: { joined: true } };
   } catch {
     return {

@@ -18,15 +18,22 @@ describe('joinWaitlist', () => {
   it('sends the trimmed email with the server-side consent version and the internet interest', async () => {
     join.mockResolvedValue({ requestId: 'x' });
 
-    const result = await joinWaitlist({ province: 'NS', email: '  pat@example.test ' });
+    const result = await joinWaitlist({
+      province: 'NS',
+      email: '  pat@example.test ',
+      turnstileToken: 'synthetic-proof',
+    });
 
     expect(result).toEqual({ ok: true, data: { joined: true } });
-    expect(join).toHaveBeenCalledWith({
-      province: 'NS',
-      email: 'pat@example.test',
-      interest: 'internet',
-      consentVersion: 'privacy-2026-10-v2',
-    });
+    expect(join).toHaveBeenCalledWith(
+      {
+        province: 'NS',
+        email: 'pat@example.test',
+        interest: 'internet',
+        consentVersion: 'privacy-2026-10-v2',
+      },
+      { turnstileToken: 'synthetic-proof' },
+    );
   });
 
   it.each([
@@ -42,7 +49,11 @@ describe('joinWaitlist', () => {
   it('tells the visitor to try again when the backend fails, without echoing the address', async () => {
     join.mockRejectedValue(new BackendError('internal_error', 500, 'unavailable'));
 
-    const result = await joinWaitlist({ province: 'NS', email: 'pat@example.test' });
+    const result = await joinWaitlist({
+      province: 'NS',
+      email: 'pat@example.test',
+      turnstileToken: 'synthetic-proof',
+    });
 
     expect(result.ok).toBe(false);
     expect(JSON.stringify(result)).not.toContain('pat@example.test');

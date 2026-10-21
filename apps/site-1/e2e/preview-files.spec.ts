@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import { preArrivalOrderCopy as copy } from '../content/pre-arrival-order';
 
 async function openPreview(page: Page) {

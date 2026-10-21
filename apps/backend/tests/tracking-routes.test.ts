@@ -161,6 +161,7 @@ let nowMs: number;
 let originalSecret: string | undefined;
 let originalLatency: string | undefined;
 let denyRateLimit: boolean;
+let botChecks: number;
 
 function request(
   method: string,
@@ -185,6 +186,7 @@ beforeEach(async () => {
   process.env['TRACKING_HASH_SECRET'] = SECRET;
   process.env['TRACKING_OTP_MIN_LATENCY_MS'] = '200';
   denyRateLimit = false;
+  botChecks = 0;
   store = new FakeTrackingStore();
   notifier = store;
   nowMs = Date.parse('2026-09-20T12:00:00.000Z');
@@ -203,7 +205,10 @@ beforeEach(async () => {
           denyRateLimit
             ? { allowed: false, retryAfterSeconds: 60 }
             : { allowed: true, retryAfterSeconds: 0 },
-        botCheck: async () => true,
+        botCheck: async () => {
+          botChecks += 1;
+          return true;
+        },
       },
       leads: { store: staffOnly.leadStore },
       tracking: { service },
@@ -248,6 +253,17 @@ describe('POST /api/v1/website/tracking/otp', () => {
     // The code is never echoed in the response.
     const text = JSON.stringify(knownBody);
     expect(text).not.toContain(notifier.sent[0]?.code ?? 'no-code');
+  });
+
+  it('verifies a tracking request exactly once through the actual app routers', async () => {
+    const response = await request(
+      'POST',
+      '/api/v1/website/tracking/otp',
+      {},
+      { email: EMAIL, orderReference: REFERENCE },
+    );
+    expect(response.status).toBe(200);
+    expect(botChecks).toBe(1);
   });
 
   it('requires the website credential', async () => {

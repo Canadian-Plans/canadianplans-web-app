@@ -13,6 +13,7 @@ import {
   Input,
 } from '@canadian-plans/ui';
 
+import { useHumanChallenge } from '@/components/shared/human-challenge';
 import { loadTrackingStatus, requestTrackingCode, verifyTrackingCode } from './actions';
 
 type Phase = 'identify' | 'verify' | 'status';
@@ -38,6 +39,7 @@ function docLabel(key: string): string {
 }
 
 export function TrackClient() {
+  const human = useHumanChallenge();
   const [phase, setPhase] = useState<Phase>('identify');
   const [email, setEmail] = useState('');
   const [reference, setReference] = useState('');
@@ -62,7 +64,9 @@ export function TrackClient() {
     event.preventDefault();
     setBusy(true);
     setMessage(undefined);
-    const result = await requestTrackingCode({ email, orderReference: reference });
+    const result = await human.run('tracking-request', (turnstileToken) =>
+      requestTrackingCode({ email, orderReference: reference, turnstileToken }),
+    );
     setBusy(false);
     if (!result.ok) {
       setMessage(result.message);
@@ -78,7 +82,9 @@ export function TrackClient() {
     event.preventDefault();
     setBusy(true);
     setMessage(undefined);
-    const result = await verifyTrackingCode({ email, orderReference: reference, code });
+    const result = await human.run('tracking-verify', (turnstileToken) =>
+      verifyTrackingCode({ email, orderReference: reference, code, turnstileToken }),
+    );
     setBusy(false);
     if (!result.ok) {
       setMessage(result.message);
@@ -150,6 +156,7 @@ export function TrackClient() {
           <CardDescription>We sent a six-digit code to {email}.</CardDescription>
         </CardHeader>
         <CardContent>
+          {human.challenge}
           <form className="space-y-4" onSubmit={handleVerify} noValidate>
             <FormField id="track-code" label="Six-digit code" required>
               <Input
@@ -190,6 +197,7 @@ export function TrackClient() {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {human.challenge}
         <form className="space-y-4" onSubmit={handleIdentify} noValidate>
           <FormField id="track-reference" label="Order reference" required>
             <Input value={reference} onChange={(event) => setReference(event.target.value)} />

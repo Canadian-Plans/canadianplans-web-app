@@ -1,3 +1,4 @@
+import { websiteBotActions, type WebsiteBotAction } from '@canadian-plans/contracts';
 import { Router, type Request } from 'express';
 import { rateLimitHit, resolveWebsiteCredential } from '@canadian-plans/db';
 import {
@@ -53,6 +54,8 @@ import {
   requireEndpointRateLimit,
   requireScope,
   requireWebsiteCredential,
+  requireHumanProof,
+  websiteVisitorKey,
   websiteContext,
   type WebsiteAuthDependencies,
 } from '../website/session.js';
@@ -74,17 +77,25 @@ export interface WebsiteRouteDependencies {
 }
 
 export function createDefaultWebsiteRouteDependencies(): WebsiteRouteDependencies {
-  const verify = createTurnstileVerifier({
-    secret: process.env.TURNSTILE_SECRET_KEY,
-    hostname: process.env.TURNSTILE_HOSTNAME,
-    action: 'lead-submit',
-  });
   const registry = loadMachineRegistry();
+  const verifiers = new Map(
+    websiteBotActions.map((action) => [
+      action,
+      createTurnstileVerifier({
+        secret: process.env.TURNSTILE_SECRET_KEY,
+        hostnames: (process.env.TURNSTILE_HOSTNAMES ?? process.env.TURNSTILE_HOSTNAME ?? '')
+          .split(',')
+          .map((host) => host.trim())
+          .filter(Boolean),
+        action,
+      }),
+    ]),
+  );
   return {
     auth: {
       resolveCredential: resolveWebsiteCredential,
       rateLimit: rateLimitHit,
-      botCheck: (req) => verify(req.get('x-turnstile-token')),
+      botCheck: (req, action) => verifiers.get(action)?.(req.get('x-turnstile-token')) ?? false,
     },
     leads: { store: new DatabaseLeadStore() },
     regionWaitlist: { store: new DatabaseRegionWaitlistStore() },
@@ -122,6 +133,7 @@ export function createQuoteRouter(dependencies: WebsiteRouteDependencies): Route
   if (!quoteDependencies) return router;
   router.post(
     '/quotes',
+    requireHumanProof(dependencies.auth, 'quote-create'),
     requireWebsiteCredential(dependencies.auth),
     requireScope('quotes:create'),
     requireEndpointRateLimit(dependencies.auth, 'quotes', endpointRateLimits.quotes),
@@ -199,6 +211,7 @@ export function createOrderRouter(dependencies: WebsiteRouteDependencies): Route
   if (!orderDependencies) return router;
   router.post(
     '/orders',
+    requireHumanProof(dependencies.auth, 'order-submit'),
     requireWebsiteCredential(dependencies.auth),
     requireScope('orders:create'),
     requireEndpointRateLimit(dependencies.auth, 'orders', endpointRateLimits.orders),
@@ -325,7 +338,11 @@ function requireDraftGrant(req: Request): string | undefined {
  */
 export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Router {
   const router = Router();
-  router.use(requireWebsiteCredential(dependencies.auth));
+  const authenticate = requireWebsiteCredential(dependencies.auth);
+  const admit = (action: WebsiteBotAction) => [
+    requireHumanProof(dependencies.auth, action),
+    authenticate,
+  ];
 
   /**
    * Public catalogue read for the storefront. It reuses the `quotes:create`
@@ -333,7 +350,7 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
    * quote. Only the credential's own workspace is read, and each row's content
    * is validated before exposure so an unvalidated snapshot is never returned.
    */
-  router.get('/offers', requireScope('quotes:create'), async (req, res) => {
+  router.get('/offers', authenticate, requireScope('quotes:create'), async (req, res) => {
     const catalogue = dependencies.catalogue;
     if (!catalogue) {
       sendDomainError(res, req.id, 'internal_error', 500);
@@ -372,6 +389,7 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
 
   router.post(
     '/leads',
+    ...admit('lead-save'),
     requireScope('leads:write'),
     requireEndpointRateLimit(dependencies.auth, 'leads', endpointRateLimits.leads),
     async (req, res) => {
@@ -406,6 +424,7 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
 
   router.patch(
     '/leads/:leadId',
+    ...admit('lead-save'),
     requireScope('leads:write'),
     requireEndpointRateLimit(dependencies.auth, 'leads', endpointRateLimits.leads),
     async (req, res) => {
@@ -459,6 +478,7 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
 
   router.post(
     '/region-waitlist',
+    ...admit('waitlist-join'),
     requireScope('leads:write'),
     requireEndpointRateLimit(dependencies.auth, 'leads', endpointRateLimits.leads),
     async (req, res) => {
@@ -497,133 +517,144 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
   // lead the customer owns. Uploads attach to that lead (invariant 2/8).
   const documents = dependencies.documents;
 
-  router.post('/uploads/intents', requireScope('uploads:customer'), async (req, res) => {
-    if (!documents) {
-      sendDomainError(res, req.id, 'feature_not_ready', 409);
-      return;
-    }
-    const body = createUploadIntentRequestSchema.safeParse(req.body);
-    const grantToken = requireDraftGrant(req);
-    if (!body.success) {
-      sendDomainError(res, req.id, 'validation_error', 400);
-      return;
-    }
-    if (!grantToken) {
-      sendDomainError(res, req.id, 'draft_not_found', 401);
-      return;
-    }
-    try {
-      const ctx = websiteContext(req);
-      const leadId = await documents.grants.verifyLead({
-        workspaceId: ctx.workspaceId,
-        actorId: ctx.credentialId,
-        grantToken,
-        now: new Date(),
-      });
-      // Customer uploads only ever attach to their own lead. `parentType` must be
-      // 'lead' and `parentId` must match the grant's lead.
-      if (!leadId || body.data.parentType !== 'lead' || body.data.parentId !== leadId) {
+  router.post(
+    '/uploads/intents',
+    ...admit('upload-intent'),
+    requireScope('uploads:customer'),
+    async (req, res) => {
+      if (!documents) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const body = createUploadIntentRequestSchema.safeParse(req.body);
+      const grantToken = requireDraftGrant(req);
+      if (!body.success) {
+        sendDomainError(res, req.id, 'validation_error', 400);
+        return;
+      }
+      if (!grantToken) {
         sendDomainError(res, req.id, 'draft_not_found', 401);
         return;
       }
-      const outcome = await documents.service.createIntent({
-        workspaceId: ctx.workspaceId,
-        actorId: ctx.credentialId,
-        requestId: req.id,
-        recordType: 'lead',
-        recordId: leadId,
-        documentType: body.data.documentType,
-        declaredContentType: body.data.contentType,
-        declaredSizeBytes: body.data.sizeBytes,
-      });
-      if (outcome.status === 'created') {
-        res.status(201).json({
-          uploadId: outcome.uploadId,
-          url: outcome.url,
-          method: 'PUT',
-          headers: outcome.headers,
-          expiresAt: outcome.expiresAt.toISOString(),
-          requestId: req.id,
+      try {
+        const ctx = websiteContext(req);
+        const leadId = await documents.grants.verifyLead({
+          workspaceId: ctx.workspaceId,
+          actorId: ctx.credentialId,
+          grantToken,
+          now: new Date(),
         });
-        return;
-      }
-      if (outcome.status === 'parent_not_found') {
-        sendDomainError(res, req.id, 'draft_not_found', 401);
-        return;
-      }
-      if (outcome.status === 'too_large') {
-        sendDomainError(res, req.id, 'document_too_large', 413);
-        return;
-      }
-      sendDomainError(res, req.id, 'checklist_mismatch', 409);
-    } catch {
-      sendDomainError(res, req.id, 'internal_error', 500);
-    }
-  });
-
-  router.post('/uploads/:uploadId/finalize', requireScope('uploads:customer'), async (req, res) => {
-    if (!documents) {
-      sendDomainError(res, req.id, 'feature_not_ready', 409);
-      return;
-    }
-    const uploadId = z.uuid().safeParse(req.params['uploadId']);
-    const body = finalizeUploadRequestSchema.safeParse(req.body);
-    const grantToken = requireDraftGrant(req);
-    if (!uploadId.success || !body.success) {
-      sendDomainError(res, req.id, 'validation_error', 400);
-      return;
-    }
-    if (!grantToken) {
-      sendDomainError(res, req.id, 'draft_not_found', 401);
-      return;
-    }
-    try {
-      const ctx = websiteContext(req);
-      const leadId = await documents.grants.verifyLead({
-        workspaceId: ctx.workspaceId,
-        actorId: ctx.credentialId,
-        grantToken,
-        now: new Date(),
-      });
-      if (!leadId) {
-        sendDomainError(res, req.id, 'draft_not_found', 401);
-        return;
-      }
-      const outcome = await documents.service.finalize({
-        workspaceId: ctx.workspaceId,
-        actorId: ctx.credentialId,
-        requestId: req.id,
-        fileId: uploadId.data,
-        checksumSha256: body.data.checksumSha256,
-        ownedLeadId: leadId,
-      });
-      switch (outcome.status) {
-        case 'available':
-          res.json({ file: toFileSummary(outcome.file), requestId: req.id });
+        // Customer uploads only ever attach to their own lead. `parentType` must be
+        // 'lead' and `parentId` must match the grant's lead.
+        if (!leadId || body.data.parentType !== 'lead' || body.data.parentId !== leadId) {
+          sendDomainError(res, req.id, 'draft_not_found', 401);
           return;
-        case 'rejected':
-          sendDomainError(res, req.id, 'document_verification_failed', 422, {
-            reason: outcome.reason,
+        }
+        const outcome = await documents.service.createIntent({
+          workspaceId: ctx.workspaceId,
+          actorId: ctx.credentialId,
+          requestId: req.id,
+          recordType: 'lead',
+          recordId: leadId,
+          documentType: body.data.documentType,
+          declaredContentType: body.data.contentType,
+          declaredSizeBytes: body.data.sizeBytes,
+        });
+        if (outcome.status === 'created') {
+          res.status(201).json({
+            uploadId: outcome.uploadId,
+            url: outcome.url,
+            method: 'PUT',
+            headers: outcome.headers,
+            expiresAt: outcome.expiresAt.toISOString(),
+            requestId: req.id,
           });
           return;
-        case 'in_progress':
-          res.setHeader('retry-after', '2');
-          sendDomainError(res, req.id, 'verification_in_progress', 409, { retryable: true });
+        }
+        if (outcome.status === 'parent_not_found') {
+          sendDomainError(res, req.id, 'draft_not_found', 401);
           return;
-        case 'expired':
-          sendDomainError(res, req.id, 'upload_expired', 410);
+        }
+        if (outcome.status === 'too_large') {
+          sendDomainError(res, req.id, 'document_too_large', 413);
           return;
-        case 'not_found':
-          sendDomainError(res, req.id, 'upload_not_found', 404);
-          return;
+        }
+        sendDomainError(res, req.id, 'checklist_mismatch', 409);
+      } catch {
+        sendDomainError(res, req.id, 'internal_error', 500);
       }
-    } catch {
-      sendDomainError(res, req.id, 'internal_error', 500);
-    }
-  });
+    },
+  );
+
+  router.post(
+    '/uploads/:uploadId/finalize',
+    ...admit('upload-finalize'),
+    requireScope('uploads:customer'),
+    async (req, res) => {
+      if (!documents) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const uploadId = z.uuid().safeParse(req.params['uploadId']);
+      const body = finalizeUploadRequestSchema.safeParse(req.body);
+      const grantToken = requireDraftGrant(req);
+      if (!uploadId.success || !body.success) {
+        sendDomainError(res, req.id, 'validation_error', 400);
+        return;
+      }
+      if (!grantToken) {
+        sendDomainError(res, req.id, 'draft_not_found', 401);
+        return;
+      }
+      try {
+        const ctx = websiteContext(req);
+        const leadId = await documents.grants.verifyLead({
+          workspaceId: ctx.workspaceId,
+          actorId: ctx.credentialId,
+          grantToken,
+          now: new Date(),
+        });
+        if (!leadId) {
+          sendDomainError(res, req.id, 'draft_not_found', 401);
+          return;
+        }
+        const outcome = await documents.service.finalize({
+          workspaceId: ctx.workspaceId,
+          actorId: ctx.credentialId,
+          requestId: req.id,
+          fileId: uploadId.data,
+          checksumSha256: body.data.checksumSha256,
+          ownedLeadId: leadId,
+        });
+        switch (outcome.status) {
+          case 'available':
+            res.json({ file: toFileSummary(outcome.file), requestId: req.id });
+            return;
+          case 'rejected':
+            sendDomainError(res, req.id, 'document_verification_failed', 422, {
+              reason: outcome.reason,
+            });
+            return;
+          case 'in_progress':
+            res.setHeader('retry-after', '2');
+            sendDomainError(res, req.id, 'verification_in_progress', 409, { retryable: true });
+            return;
+          case 'expired':
+            sendDomainError(res, req.id, 'upload_expired', 410);
+            return;
+          case 'not_found':
+            sendDomainError(res, req.id, 'upload_not_found', 404);
+            return;
+        }
+      } catch {
+        sendDomainError(res, req.id, 'internal_error', 500);
+      }
+    },
+  );
 
   router.post(
     '/files/:fileId/download-link',
+    ...admit('file-download'),
     requireScope('uploads:customer'),
     async (req, res) => {
       if (!documents) {
@@ -713,6 +744,7 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
 
   router.post(
     '/tracking/otp',
+    requireHumanProof(dependencies.auth, 'tracking-request'),
     requireWebsiteCredential(dependencies.auth),
     requireScope('tracking:otp'),
     requireEndpointRateLimit(dependencies.auth, 'tracking', endpointRateLimits.tracking),
@@ -727,7 +759,7 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
         const ctx = websiteContext(req);
         if (tracking.service.configured) {
           const secret = loadTrackingSecret();
-          const ipKey = req.ip ?? req.socket.remoteAddress ?? 'unknown';
+          const ipKey = websiteVisitorKey(req);
           const emailLimit = secret
             ? await dependencies.auth.rateLimit({
                 bucketKey: emailRateBucket(
@@ -764,6 +796,7 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
 
   router.post(
     '/tracking/verify',
+    requireHumanProof(dependencies.auth, 'tracking-verify'),
     requireWebsiteCredential(dependencies.auth),
     requireScope('tracking:otp'),
     requireEndpointRateLimit(dependencies.auth, 'tracking', endpointRateLimits.tracking),
@@ -780,7 +813,7 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
       try {
         const ctx = websiteContext(req);
         const secret = loadTrackingSecret();
-        const ipKey = req.ip ?? req.socket.remoteAddress ?? 'unknown';
+        const ipKey = websiteVisitorKey(req);
         // Code guessing is rate-limited by email and by IP, independent of the
         // five-attempt cap on each individual challenge.
         const emailLimit = secret

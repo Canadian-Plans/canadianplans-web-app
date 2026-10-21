@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useHumanChallenge } from '@/components/shared/human-challenge';
 import { OrderConfirmation } from '@/components/shared/order-confirmation';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import {
@@ -99,6 +100,7 @@ export function OrderForm({
   consentVersion,
   hasDraft,
 }: OrderFormProps) {
+  const human = useHumanChallenge();
   const [stepIndex, setStepIndexState] = useState(selected ? 1 : 0);
   const [details, setDetails] = useState<OrderDetailsInput>(() =>
     initialDetails(selected?.commercial ?? { productType: 'sim', regions: ['CA'] }, province),
@@ -201,13 +203,28 @@ export function OrderForm({
       return;
     }
     setBusy(true);
-    const result = await saveDetails({
-      details,
-      documentKeys,
-      productId: selected.productId,
-      attribution,
-      consentVersion,
-    });
+    let result = await human.run('lead-save', (turnstileToken) =>
+      saveDetails({
+        turnstileToken,
+        details,
+        documentKeys,
+        productId: selected.productId,
+        attribution,
+        consentVersion,
+      }),
+    );
+    if (!result.ok && result.code === 'retry_fresh_draft') {
+      result = await human.run('lead-save', (turnstileToken) =>
+        saveDetails({
+          details,
+          documentKeys,
+          productId: selected.productId,
+          attribution,
+          consentVersion,
+          turnstileToken,
+        }),
+      );
+    }
     setBusy(false);
     if (!result.ok) {
       applyFailure(result);
@@ -228,7 +245,9 @@ export function OrderForm({
       return;
     }
     setBusy(true);
-    const result = await saveDocuments({ details, documentKeys, acknowledged: true });
+    const result = await human.run('lead-save', (turnstileToken) =>
+      saveDocuments({ details, documentKeys, acknowledged: true, turnstileToken }),
+    );
     setBusy(false);
     if (!result.ok) {
       applyFailure(result);
@@ -241,7 +260,9 @@ export function OrderForm({
     setBusy(true);
     setQuoteFailed(undefined);
     setOrderError(undefined);
-    const result = await requestQuote();
+    const result = await human.run('quote-create', (turnstileToken) =>
+      requestQuote({ turnstileToken }),
+    );
     setBusy(false);
     goToStep(3);
     if (result.ok) {
@@ -260,13 +281,18 @@ export function OrderForm({
     if (!quote) return;
     setBusy(true);
     setOrderError(undefined);
-    const result = await submitOrder({
-      quoteId: quote.id,
-      termsVersion: quote.termsVersion,
-      marketingOptIn,
-      details,
-      documentKeys,
-    });
+    const attempt = (turnstileToken: string) =>
+      submitOrder({
+        turnstileToken,
+        quoteId: quote.id,
+        termsVersion: quote.termsVersion,
+        marketingOptIn,
+        details,
+        documentKeys,
+      });
+    let result = await human.run('order-submit', attempt);
+    if (!result.ok && result.code === 'transport_retry')
+      result = await human.run('order-submit', attempt);
     setBusy(false);
     if (result.ok) {
       // The only path to the confirmation step: a server-issued reference.
@@ -300,7 +326,9 @@ export function OrderForm({
 
   async function handleCallback(): Promise<void> {
     setBusy(true);
-    const result = await requestCallback({ details, documentKeys });
+    const result = await human.run('lead-save', (turnstileToken) =>
+      requestCallback({ details, documentKeys, turnstileToken }),
+    );
     setBusy(false);
     if (result.ok) {
       setCallbackRequested(true);
@@ -688,7 +716,7 @@ export function OrderForm({
         {orderError ? (
           <div role="alert" className="space-y-2">
             <p>{orderError.message}</p>
-            {orderError.code === 'not_saved' ? (
+            {orderError.code === 'not_saved' || orderError.code === 'transport_retry' ? (
               <Button type="button" onClick={performSubmit} disabled={busy}>
                 {busy ? 'Trying again…' : 'Try again'}
               </Button>
@@ -717,6 +745,7 @@ export function OrderForm({
 
   return (
     <div className="space-y-8">
+      {human.challenge}
       <Stepper steps={STEPS} currentStepId={STEPS[stepIndex]?.id ?? 'plan'} />
       {showSummary && stepIndex !== 4 ? (
         <div

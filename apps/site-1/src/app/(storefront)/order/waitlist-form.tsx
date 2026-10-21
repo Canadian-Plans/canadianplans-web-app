@@ -7,6 +7,7 @@ import { Button, FormField, Input } from '@canadian-plans/ui';
 import { orderFormContent } from '@content/order-forms';
 
 import { joinWaitlist } from './waitlist';
+import { useHumanChallenge } from '@/components/shared/human-challenge';
 
 const copy = orderFormContent.waitlist;
 
@@ -15,6 +16,7 @@ const copy = orderFormContent.waitlist;
  * else, so leaving a wish costs the visitor ten seconds.
  */
 export function WaitlistForm({ province }: { province: ProvinceCode }) {
+  const human = useHumanChallenge();
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | undefined>(undefined);
   const [done, setDone] = useState(false);
@@ -25,7 +27,9 @@ export function WaitlistForm({ province }: { province: ProvinceCode }) {
     if (busy) return;
     setBusy(true);
     setError(undefined);
-    const result = await joinWaitlist({ province, email });
+    const result = await human.run('waitlist-join', (turnstileToken) =>
+      joinWaitlist({ province, email, turnstileToken }),
+    );
     setBusy(false);
     if (result.ok) {
       setDone(true);
@@ -60,6 +64,7 @@ export function WaitlistForm({ province }: { province: ProvinceCode }) {
         />
       </FormField>
       <p className="text-sm">{copy.notice}</p>
+      {human.challenge}
       <Button type="submit" disabled={busy}>
         {copy.submit}
       </Button>

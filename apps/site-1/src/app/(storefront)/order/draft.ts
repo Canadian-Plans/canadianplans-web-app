@@ -59,5 +59,11 @@ export async function writeOrderDraft(draft: OrderDraft): Promise<void> {
 
 export async function clearOrderDraft(): Promise<void> {
   const store = await cookies();
-  store.delete(DRAFT_COOKIE);
+  store.set(DRAFT_COOKIE, '', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/order',
+    maxAge: 0,
+  });
 }

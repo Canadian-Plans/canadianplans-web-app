@@ -17,13 +17,17 @@ Read-only provider observation on 2026-09-14 found no Vercel projects in the
 Canadian Plans team and one Supabase project in `us-west-2`. Do not use that
 project as evidence of Canadian staging compliance (required: `ca-central-1`).
 
-The default website-write route validates `X-Turnstile-Token` through Cloudflare
-Siteverify before database work. It denies missing configuration, invalid tokens,
-hostname/action mismatches and provider failures. The storefront must forward a
-fresh widget token with action `lead-submit`; deployed widget verification remains
-pending. Tests inject explicit admission or mock the provider response.
-The backend does not trust caller-controlled `X-Forwarded-For`; any deployment
-proxy trust policy must be narrowly verified before enabling public traffic.
+Protected website writes validate a fresh `X-Turnstile-Token` with their fixed
+route action before database work. Missing configuration, invalid/reused tokens,
+hostname/action mismatches and provider errors fail closed. Machine catalogue
+and granted tracking-status reads still require credentials, scopes and limits,
+but no browser challenge. Live provider/hostname verification remains a deployment
+check; CI emulates the external script and enforces one-use action-bound proofs.
+The backend never trusts arbitrary `X-Forwarded-For`. The Vercel storefront reads
+its proxy-set `x-real-ip` only inside the Vercel runtime and sends a keyed visitor
+digest over the authenticated service connection. Other hosts or missing ingress
+metadata use the backend network identity; confirm the proxy-derived IP is the
+visitor's address if another proxy sits in front of Vercel.
 
 ## Runtime
 
@@ -80,20 +84,42 @@ The application has no privileged Supabase key variable. Staff invitations use a
 
 ## Cloudflare Turnstile
 
-- `TURNSTILE_SECRET_KEY` — backend-only Siteverify secret; public test secrets are rejected
-- `TURNSTILE_HOSTNAME` — exact allowed storefront hostname returned by Siteverify, without scheme or path
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY` — storefront public widget key, compiled at build time. Missing key prevents protected form submission; it never bypasses verification.
+- `TURNSTILE_SECRET_KEY` — backend-only Siteverify secret; public test secrets are rejected.
+- `TURNSTILE_HOSTNAMES` — backend-only comma-separated exact permitted hostnames (for example `canadianplans.com,www.canadianplans.com`), maximum 20. No scheme, path, port or wildcard. Configure corresponding hostnames on the provider widget.
+- `TURNSTILE_HOSTNAME` — legacy single-host fallback when `TURNSTILE_HOSTNAMES` is unset.
 
-The verifier has a five-second network timeout and does not cache successful tokens.
-It never takes the allowed hostname from the request. Do not place live Turnstile
-credentials in previews. The current credential proof endpoint uses `lead-submit`;
-future public actions must bind their own expected action explicitly.
+Use separate preview keys and a preview backend; never copy production secrets
+into previews. Provider verification is bounded to five seconds and is never
+cached. Human proofs are consumed once on matched routes, not by a catch-all
+router. The widget requests a new token for every protected request, including
+upload intent/finalization and a retry after a transport failure. Cancellation,
+provider errors and expiry keep entered form values and allow a fresh attempt.
+
+| Operation                                            | Required provider action               |
+| ---------------------------------------------------- | -------------------------------------- |
+| Create/update lead, save documents, callback request | `lead-save`                            |
+| Province wish list                                   | `waitlist-join`                        |
+| Create quote                                         | `quote-create`                         |
+| Submit order                                         | `order-submit`                         |
+| Upload intent / finalize                             | `upload-intent` / `upload-finalize`    |
+| Customer download-link issuance                      | `file-download`                        |
+| Tracking code request / verification                 | `tracking-request` / `tracking-verify` |
+
+The browser never chooses the backend's expected action. Transport recovery
+obtains a fresh proof while retaining the same order idempotency key. Starting a
+new purchase after a finished draft also obtains a fresh proof before creating
+a new lead/key. SSR offers and authenticated tracking-status GETs require no
+challenge. Hostname/provider configuration and a live verification on each
+published domain must be checked before release; local emulation is not evidence
+of live Cloudflare configuration.
 
 ## Per-endpoint rate limits (REQ 37)
 
 The public write surface carries a tighter per-endpoint budget on top of the
-coarse per-IP/per-credential ceiling in `requireWebsiteCredential`. Each budget
-is keyed by `(endpoint, workspace, IP)` and durable (the `rateLimitHit` SQL
-function). Defaults (per 60s): `leads` 30, `quotes` 30, `orders` 10, `tracking` 20. Override per deployment; invalid/absent values fall back to the default:
+coarse network-bootstrap/per-visitor/per-credential ceilings in `requireWebsiteCredential`. Each budget
+is keyed by `(endpoint, workspace, authenticated visitor)` and durable (the `rateLimitHit` SQL
+function). The bootstrap network budget is 1,200/minute; valid callers also have a 300/minute credential ceiling and a 120/minute visitor ceiling. Defaults (per 60s): `leads` 30, `quotes` 30, `orders` 10, `tracking` 20. Override per deployment; invalid/absent values fall back to the default:
 
 - `RATE_LIMIT_LEADS_MAX` / `RATE_LIMIT_LEADS_WINDOW`
 - `RATE_LIMIT_QUOTES_MAX` / `RATE_LIMIT_QUOTES_WINDOW`
@@ -101,7 +127,7 @@ function). Defaults (per 60s): `leads` 30, `quotes` 30, `orders` 10, `tracking` 
 - `RATE_LIMIT_TRACKING_MAX` / `RATE_LIMIT_TRACKING_WINDOW`
 
 `WINDOW` is in seconds; both must be positive integers. `tracking` layers on top
-of the existing per-email/per-IP OTP limits, which are unchanged.
+of the existing per-email/per-visitor OTP limits, which are unchanged.
 
 ## Sanity
 

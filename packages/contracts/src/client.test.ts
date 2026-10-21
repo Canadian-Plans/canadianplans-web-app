@@ -174,3 +174,45 @@ function _typeContracts(c: BackendClient): void {
   // @ts-expect-error `teleport` is not a valid transition action
   void c.staff.patchOrder('w', 'o', { action: 'teleport', expectedVersion: 0 });
 }
+
+describe('website proof transport', () => {
+  it('forwards a fresh proof per call in a fixed header, without putting it in the body', async () => {
+    const { client, calls } = harness(200, { status: 'challenge_sent', requestId: UUID });
+    for (const turnstileToken of ['proof-first', 'proof-second']) {
+      await client.tracking.otp(
+        { email: 'test@example.test', orderReference: 'CP-TEST' },
+        { turnstileToken },
+      );
+    }
+    expect(calls.map((entry) => entry.headers.get('x-turnstile-token'))).toEqual([
+      'proof-first',
+      'proof-second',
+    ]);
+    expect(calls.every((entry) => !entry.body?.includes('proof-'))).toBe(true);
+    expect(() =>
+      client.tracking.otp(
+        { email: 'test@example.test', orderReference: 'CP-TEST' },
+        { turnstileToken: 'x'.repeat(2049) },
+      ),
+    ).toThrow();
+    expect(calls).toHaveLength(2);
+  });
+  it('adds only a validated server-owned visitor assertion', async () => {
+    const requests: Headers[] = [];
+    let assertion = 'a'.repeat(64);
+    const client = createBackendClient({
+      baseUrl: 'https://api.example.test',
+      credential: 'synthetic',
+      websiteVisitorId: async () => assertion,
+      fetch: async (_url, options) => {
+        requests.push(new Headers(options?.headers));
+        return Response.json({ ok: true, requestId: UUID });
+      },
+    });
+    await client.health();
+    expect(requests[0]?.get('x-website-visitor-id')).toBe(assertion);
+    assertion = 'untrusted-header';
+    await expect(client.health()).rejects.toThrow('Invalid website visitor assertion');
+    expect(requests).toHaveLength(1);
+  });
+});

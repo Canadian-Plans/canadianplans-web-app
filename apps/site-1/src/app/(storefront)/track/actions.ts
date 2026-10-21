@@ -1,8 +1,13 @@
 'use server';
 
-import { BackendError, type TrackingStatusResponse } from '@canadian-plans/contracts';
+import {
+  BackendError,
+  websiteBotTokenSchema,
+  type TrackingStatusResponse,
+} from '@canadian-plans/contracts';
 import { z } from 'zod';
 
+import { verificationContent } from '@content/verification';
 import { getBackendClient } from '@/lib/backendClient';
 import { readTrackingGrant, writeTrackingGrant } from './grant';
 
@@ -25,6 +30,7 @@ const verifySchema = identifySchema.extend({ code: z.string().regex(/^\d{6}$/) }
 export async function requestTrackingCode(input: {
   email: string;
   orderReference: string;
+  turnstileToken?: string;
 }): Promise<TrackActionResult<{ sent: true }>> {
   const parsed = identifySchema.safeParse(input);
   if (!parsed.success) {
@@ -34,9 +40,13 @@ export async function requestTrackingCode(input: {
       message: 'Enter a valid email and order reference.',
     };
   }
+  if (!websiteBotTokenSchema.safeParse(input.turnstileToken).success)
+    return { ok: false, code: 'verification_failed', message: verificationContent.failed };
   try {
-    await getBackendClient().tracking.otp(parsed.data);
-  } catch {
+    await getBackendClient().tracking.otp(parsed.data, { turnstileToken: input.turnstileToken });
+  } catch (error) {
+    if (error instanceof BackendError && error.code === 'caller_forbidden')
+      return { ok: false, code: 'verification_failed', message: verificationContent.failed };
     // Neutral: the response must not reveal whether the order exists.
   }
   return { ok: true, data: { sent: true } };
@@ -46,13 +56,18 @@ export async function verifyTrackingCode(input: {
   email: string;
   orderReference: string;
   code: string;
+  turnstileToken?: string;
 }): Promise<TrackActionResult<{ verified: true }>> {
   const parsed = verifySchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, code: 'validation_error', message: 'Enter the six-digit code.' };
   }
+  if (!websiteBotTokenSchema.safeParse(input.turnstileToken).success)
+    return { ok: false, code: 'verification_failed', message: verificationContent.failed };
   try {
-    const result = await getBackendClient().tracking.verify(parsed.data);
+    const result = await getBackendClient().tracking.verify(parsed.data, {
+      turnstileToken: input.turnstileToken,
+    });
     await writeTrackingGrant(result.grant);
     return { ok: true, data: { verified: true } };
   } catch (error) {

@@ -14132,6 +14132,13 @@
         "security": [{ "websiteCredential": [] }],
         "parameters": [
           {
+            "name": "X-Website-Visitor-Id",
+            "in": "header",
+            "required": false,
+            "description": "Server-owned keyed visitor digest from the authenticated website; never raw browser forwarding headers.",
+            "schema": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          },
+          {
             "name": "province",
             "in": "query",
             "required": false,
@@ -14508,7 +14515,22 @@
         "summary": "Create a lead draft with attribution.",
         "tags": ["website"],
         "security": [{ "websiteCredential": [] }],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Website-Visitor-Id",
+            "in": "header",
+            "required": false,
+            "description": "Server-owned keyed visitor digest from the authenticated website; never raw browser forwarding headers.",
+            "schema": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          },
+          {
+            "name": "X-Turnstile-Token",
+            "in": "header",
+            "required": true,
+            "description": "Fresh single-use challenge token bound to this route action. Obtain a new token before each request or retry.",
+            "schema": { "type": "string", "minLength": 1, "maxLength": 2048 }
+          }
+        ],
         "responses": {
           "201": {
             "description": "Success.",
@@ -14748,6 +14770,20 @@
             "required": true,
             "description": "Scoped grant token that authorises resuming this draft.",
             "schema": { "type": "string" }
+          },
+          {
+            "name": "X-Website-Visitor-Id",
+            "in": "header",
+            "required": false,
+            "description": "Server-owned keyed visitor digest from the authenticated website; never raw browser forwarding headers.",
+            "schema": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          },
+          {
+            "name": "X-Turnstile-Token",
+            "in": "header",
+            "required": true,
+            "description": "Fresh single-use challenge token bound to this route action. Obtain a new token before each request or retry.",
+            "schema": { "type": "string", "minLength": 1, "maxLength": 2048 }
           }
         ],
         "responses": {
@@ -14967,7 +15003,22 @@
         "summary": "Leave an email for a province we do not serve yet.",
         "tags": ["website"],
         "security": [{ "websiteCredential": [] }],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Website-Visitor-Id",
+            "in": "header",
+            "required": false,
+            "description": "Server-owned keyed visitor digest from the authenticated website; never raw browser forwarding headers.",
+            "schema": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          },
+          {
+            "name": "X-Turnstile-Token",
+            "in": "header",
+            "required": true,
+            "description": "Fresh single-use challenge token bound to this route action. Obtain a new token before each request or retry.",
+            "schema": { "type": "string", "minLength": 1, "maxLength": 2048 }
+          }
+        ],
         "responses": {
           "201": {
             "description": "Success.",
@@ -15155,6 +15206,20 @@
             "required": true,
             "description": "Scoped grant token that authorises resuming this draft.",
             "schema": { "type": "string" }
+          },
+          {
+            "name": "X-Website-Visitor-Id",
+            "in": "header",
+            "required": false,
+            "description": "Server-owned keyed visitor digest from the authenticated website; never raw browser forwarding headers.",
+            "schema": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          },
+          {
+            "name": "X-Turnstile-Token",
+            "in": "header",
+            "required": true,
+            "description": "Fresh single-use challenge token bound to this route action. Obtain a new token before each request or retry.",
+            "schema": { "type": "string", "minLength": 1, "maxLength": 2048 }
           }
         ],
         "responses": {
@@ -15483,6 +15548,20 @@
             "required": true,
             "description": "Scoped idempotency key. A retry with the same key returns the existing order.",
             "schema": { "type": "string" }
+          },
+          {
+            "name": "X-Website-Visitor-Id",
+            "in": "header",
+            "required": false,
+            "description": "Server-owned keyed visitor digest from the authenticated website; never raw browser forwarding headers.",
+            "schema": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          },
+          {
+            "name": "X-Turnstile-Token",
+            "in": "header",
+            "required": true,
+            "description": "Fresh single-use challenge token bound to this route action. Obtain a new token before each request or retry.",
+            "schema": { "type": "string", "minLength": 1, "maxLength": 2048 }
           }
         ],
         "responses": {
@@ -15771,6 +15850,20 @@
             "required": true,
             "description": "Scoped grant token that authorises resuming this draft.",
             "schema": { "type": "string" }
+          },
+          {
+            "name": "X-Website-Visitor-Id",
+            "in": "header",
+            "required": false,
+            "description": "Server-owned keyed visitor digest from the authenticated website; never raw browser forwarding headers.",
+            "schema": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          },
+          {
+            "name": "X-Turnstile-Token",
+            "in": "header",
+            "required": true,
+            "description": "Fresh single-use challenge token bound to this route action. Obtain a new token before each request or retry.",
+            "schema": { "type": "string", "minLength": 1, "maxLength": 2048 }
           }
         ],
         "responses": {
@@ -15977,6 +16070,20 @@
             "required": true,
             "description": "Scoped grant token that authorises resuming this draft.",
             "schema": { "type": "string" }
+          },
+          {
+            "name": "X-Website-Visitor-Id",
+            "in": "header",
+            "required": false,
+            "description": "Server-owned keyed visitor digest from the authenticated website; never raw browser forwarding headers.",
+            "schema": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          },
+          {
+            "name": "X-Turnstile-Token",
+            "in": "header",
+            "required": true,
+            "description": "Fresh single-use challenge token bound to this route action. Obtain a new token before each request or retry.",
+            "schema": { "type": "string", "minLength": 1, "maxLength": 2048 }
           }
         ],
         "responses": {
@@ -16201,6 +16308,20 @@
             "required": true,
             "description": "Scoped grant token that authorises resuming this draft.",
             "schema": { "type": "string" }
+          },
+          {
+            "name": "X-Website-Visitor-Id",
+            "in": "header",
+            "required": false,
+            "description": "Server-owned keyed visitor digest from the authenticated website; never raw browser forwarding headers.",
+            "schema": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          },
+          {
+            "name": "X-Turnstile-Token",
+            "in": "header",
+            "required": true,
+            "description": "Fresh single-use challenge token bound to this route action. Obtain a new token before each request or retry.",
+            "schema": { "type": "string", "minLength": 1, "maxLength": 2048 }
           }
         ],
         "responses": {
@@ -17042,7 +17163,22 @@
         "summary": "Request a six-digit order-tracking code (always acknowledged neutrally).",
         "tags": ["website"],
         "security": [{ "websiteCredential": [] }],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Website-Visitor-Id",
+            "in": "header",
+            "required": false,
+            "description": "Server-owned keyed visitor digest from the authenticated website; never raw browser forwarding headers.",
+            "schema": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          },
+          {
+            "name": "X-Turnstile-Token",
+            "in": "header",
+            "required": true,
+            "description": "Fresh single-use challenge token bound to this route action. Obtain a new token before each request or retry.",
+            "schema": { "type": "string", "minLength": 1, "maxLength": 2048 }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success.",
@@ -17205,7 +17341,22 @@
         "summary": "Verify a six-digit code and receive a scoped 30-minute tracking grant.",
         "tags": ["website"],
         "security": [{ "websiteCredential": [] }],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Website-Visitor-Id",
+            "in": "header",
+            "required": false,
+            "description": "Server-owned keyed visitor digest from the authenticated website; never raw browser forwarding headers.",
+            "schema": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          },
+          {
+            "name": "X-Turnstile-Token",
+            "in": "header",
+            "required": true,
+            "description": "Fresh single-use challenge token bound to this route action. Obtain a new token before each request or retry.",
+            "schema": { "type": "string", "minLength": 1, "maxLength": 2048 }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success.",
@@ -17389,6 +17540,13 @@
             "required": true,
             "description": "Scoped customer grant issued after order-tracking OTP verification.",
             "schema": { "type": "string" }
+          },
+          {
+            "name": "X-Website-Visitor-Id",
+            "in": "header",
+            "required": false,
+            "description": "Server-owned keyed visitor digest from the authenticated website; never raw browser forwarding headers.",
+            "schema": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
           }
         ],
         "responses": {

@@ -2,6 +2,7 @@ import 'server-only';
 import { randomUUID } from 'node:crypto';
 import { createBackendClient, type BackendClient } from '@canadian-plans/contracts';
 import { getBackendConfig } from '../backend.config';
+import { websiteVisitorId } from './visitor';
 
 type BackendRequestOptions = Pick<RequestInit, 'method' | 'body' | 'signal'>;
 
@@ -27,12 +28,14 @@ export async function backendFetch(path: string, options: BackendRequestOptions 
     throw new Error('Invalid backend API path.');
   }
   const requestId = randomUUID();
+  const visitor = await websiteVisitorId(config.serviceCredential);
   const response = await fetch(url, {
     ...options,
     headers: {
       Authorization: `Bearer ${config.serviceCredential}`,
       'x-request-id': requestId,
       Accept: 'application/json',
+      ...(visitor ? { 'x-website-visitor-id': visitor } : {}),
       ...(options.body ? { 'Content-Type': 'application/json' } : {}),
     },
     cache: 'no-store',
@@ -61,6 +64,7 @@ export function getBackendClient(): BackendClient {
   return createBackendClient({
     baseUrl: config.backendUrl,
     credential: config.serviceCredential,
+    websiteVisitorId: () => websiteVisitorId(config.serviceCredential),
   });
 }
 

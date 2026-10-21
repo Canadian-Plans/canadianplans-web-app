@@ -97,9 +97,11 @@ describe('GET /api/v1/website/offers', () => {
   let baseUrl: string;
   let store: FakeCatalogueStore;
   let resolution: WebsiteCredentialResolution;
+  let admitHuman: boolean;
 
   beforeEach(async () => {
     store = new FakeCatalogueStore();
+    admitHuman = true;
     resolution = {
       credentialId: CREDENTIAL,
       workspaceId: WORKSPACE,
@@ -109,7 +111,7 @@ describe('GET /api/v1/website/offers', () => {
     const auth: WebsiteAuthDependencies = {
       resolveCredential: async (secretHash) => (secretHash === VALID_HASH ? resolution : undefined),
       rateLimit: async () => ({ allowed: true, retryAfterSeconds: 0 }),
-      botCheck: () => true,
+      botCheck: () => admitHuman,
     };
     const app = express();
     app.use(requestId);
@@ -126,6 +128,12 @@ describe('GET /api/v1/website/offers', () => {
     const address = server.address();
     if (address === null || typeof address === 'string') throw new Error('expected TCP server');
     baseUrl = `http://127.0.0.1:${address.port}`;
+  });
+
+  it('allows authenticated catalogue SSR without a browser challenge', async () => {
+    admitHuman = false;
+    const response = await get({ authorization: `Bearer ${VALID_SECRET}` });
+    expect(response.status).toBe(200);
   });
 
   afterEach(async () => {

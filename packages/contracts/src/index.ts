@@ -449,3 +449,10 @@ export {
   type BackendClient,
   type BackendClientOptions,
 } from './client';
+
+export {
+  websiteBotActions,
+  websiteBotTokenSchema,
+  type WebsiteBotAction,
+  type WebsiteBotProof,
+} from './website-bot';

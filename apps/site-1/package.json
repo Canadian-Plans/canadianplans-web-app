@@ -14,7 +14,7 @@
     "format": "prettier --check . --ignore-path ../../.prettierignore",
     "format:fix": "prettier --write . --ignore-path ../../.prettierignore",
     "test": "vitest run",
-    "test:e2e": "next build && playwright test",
+    "test:e2e": "node scripts/test-e2e.mjs",
     "test:security": "node scripts/verify-client-bundle.mjs",
     "seed:test-offers": "node scripts/seed-test-offers.mjs"
   },

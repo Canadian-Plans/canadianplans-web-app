@@ -52,8 +52,7 @@ CORS (PLATFORM_CONTEXT §4b, invariant 2).
   DEFINER `app.resolve_website_credential` bootstrap function to a workspace,
   scopes and revocation status. A credential may hold only these scopes:
   `leads:write`, `quotes:create`, `orders:create`, `uploads:customer`,
-  `tracking:otp`. Size and edge/bot admission run before any database work; a
-  durable, bounded per-IP and per-credential rate limiter
+  `tracking:otp`. Protected writes require `X-Turnstile-Token` for their route-owned action before database work; authenticated catalogue/tracking-status GETs do not consume a challenge. A fresh proof is required for each write/retry. The server-owned optional `X-Website-Visitor-Id` digest is trusted only after credential verification; raw forwarding headers are ignored. A durable, bounded network-bootstrap, visitor and credential rate limiter
   (`app.rate_limit_hit`, fixed window, no global counter) gates database work.
   Error codes: `missing_credential`, `invalid_credential`, `credential_revoked`,
   `credential_not_found`, `scope_denied`, `caller_forbidden`, `rate_limited`,
@@ -475,7 +474,7 @@ orders — including timing: the response is held to a minimum latency
 (`TRACKING_OTP_MIN_LATENCY_MS`, default 500 ms) so a matched and unmatched
 request take the same time. The code is keyed-hashed (bound to workspace, order
 and normalized email), expires in 10 minutes, is invalidated by a resend and
-permits at most five attempts. Requests are rate-limited per email and per IP.
+permits at most five attempts. Requests are rate-limited per email and authenticated visitor.
 
 A matching request atomically writes the challenge and a `tracking_otp_email`
 outbox job; no provider is called in the request transaction. The queue stores
@@ -490,7 +489,7 @@ must be configured as documented in ENV.md.
 `POST /api/v1/website/tracking/verify` (`tracking:otp` scope) takes
 `{ email, orderReference, code }`; on success it atomically consumes the code
 and returns a 30-minute scoped grant. Verifications are rate-limited per email
-and per IP before any consumption, and every non-verified outcome returns the
+and authenticated visitor before any consumption, and every non-verified outcome returns the
 same generic `tracking_challenge_invalid` (never whether the challenge exists
 or how it ended).
 

@@ -20,6 +20,7 @@ const sentinel = `TEST_ONLY_SITE_CREDENTIAL_${randomUUID()}`;
 const baseEnv = {
   ...process.env,
   SITE_1_SERVICE_CREDENTIAL: sentinel,
+  NEXT_PUBLIC_TURNSTILE_SITE_KEY: 'e2e-public-site-key',
   SITE_1_BACKEND_URL: 'https://backend.example.test',
   NEXT_PUBLIC_SANITY_PROJECT_ID: '',
   NEXT_PUBLIC_SANITY_DATASET: '',

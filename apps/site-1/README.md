@@ -161,8 +161,10 @@ servers:
 
 1. `apps/backend/tests/e2e/harness.ts` — the **real** backend app against a
    disposable Postgres, with a stub published-catalogue provider and an
-   admitting bot check. A live Sanity dataset and a real Cloudflare Turnstile
-   token are not available to CI, so those two seams stand in; everything else
+   stateful action-bound one-use proof verifier. The browser fixture replaces
+   Cloudflare's external script; a synthetic public key is compiled by the test
+   runner, and no live Siteverify/provider call is made. The Sanity stub and
+   provider emulator stand in for unavailable live services; everything else
    (routes, service credential and scopes, RLS, lead/quote/order transactions,
    idempotency, reference generation) is the real code.
 2. the built site-1 server, pointed at the harness with a seeded service
