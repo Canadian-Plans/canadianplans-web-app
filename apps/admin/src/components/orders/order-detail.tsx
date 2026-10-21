@@ -145,11 +145,13 @@ export function OrderDetailView({
             order={order}
             write={write}
           />
-          <OrderDocuments
-            workspaceId={workspaceId ?? ''}
-            accessToken={accessToken ?? ''}
-            orderId={orderId}
-          />
+          {order.customerDataState !== 'restricted' && order.customerDataState !== 'deleted' ? (
+            <OrderDocuments
+              workspaceId={workspaceId ?? ''}
+              accessToken={accessToken ?? ''}
+              orderId={orderId}
+            />
+          ) : null}
           <OrderNotes
             workspaceId={workspaceId ?? ''}
             accessToken={accessToken ?? ''}

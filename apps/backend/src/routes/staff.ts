@@ -7,6 +7,8 @@ import {
   createOrderReminderRequestSchema,
   createServiceCredentialRequestSchema,
   deleteCustomerDataRequestSchema,
+  deletionSubjectTypeSchema,
+  findDeletionSubjectsRequestSchema,
   inviteStaffRequestSchema,
   listWorkspaceLeadsQuerySchema,
   listWorkspaceOrdersQuerySchema,
@@ -230,13 +232,19 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
       return;
     }
     const capabilities = await orderCapabilities(req, workspaceId);
+    const restricted =
+      record.customerDataState === 'restricted' || record.customerDataState === 'deleted';
     const order = orderDetailSchema.parse({
       ...record,
-      allowedTransitions: allowedTransitionsFor(record.fulfilmentStatus, {
-        partnered: record.partnerCode !== null,
-        allowOperationalTransitions: operationalTransitionsEnabled(),
-      }),
-      capabilities,
+      allowedTransitions: restricted
+        ? []
+        : allowedTransitionsFor(record.fulfilmentStatus, {
+            partnered: record.partnerCode !== null,
+            allowOperationalTransitions: operationalTransitionsEnabled(),
+          }),
+      capabilities: restricted
+        ? { ...capabilities, canManageOrders: false, canRecordPayment: false }
+        : capabilities,
     });
     res.status(status).json({ order, requestId: req.id });
   }
@@ -1114,13 +1122,90 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
       res.status(202).json({
         orderId: orderId.data,
         deletionId: outcome.deletionId,
-        ledgerStatus: 'pending_acknowledgement',
+        ledgerStatus: outcome.ledgerStatus,
+        cleanupStatus: outcome.cleanupStatus,
         requestId: req.id,
       });
     } catch {
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
+
+  router.post('/workspaces/:workspaceId/customer-data/search', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const body = findDeletionSubjectsRequestSchema.safeParse(req.body);
+    if (!workspaceId.success || !body.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const { actor, decision } = await decide(req, workspaceId.data, 'record.delete');
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.deletionStore) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const result = await dependencies.deletionStore.findSubjects({
+        workspaceId: workspaceId.data,
+        actorId: actor.actorId,
+        ...body.data,
+      });
+      res.setHeader('cache-control', 'private, no-store');
+      res.json({ ...result, requestId: req.id });
+    } catch {
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.post(
+    '/workspaces/:workspaceId/customer-data/:subjectType/:subjectId/deletion',
+    async (req, res) => {
+      const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+      const subjectId = z.uuid().safeParse(req.params['subjectId']);
+      const subjectType = deletionSubjectTypeSchema.safeParse(req.params['subjectType']);
+      const body = deleteCustomerDataRequestSchema.safeParse(req.body);
+      if (!workspaceId.success || !subjectId.success || !subjectType.success || !body.success) {
+        sendStaffAuthError(res, req.id, 'invalid_request', 400);
+        return;
+      }
+      try {
+        const { actor, decision } = await decide(req, workspaceId.data, 'record.delete');
+        if (!decision.allowed) {
+          sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+          return;
+        }
+        if (!dependencies.deletionStore) {
+          sendDomainError(res, req.id, 'feature_not_ready', 409);
+          return;
+        }
+        const outcome = await dependencies.deletionStore.requestDeletion({
+          workspaceId: workspaceId.data,
+          actorId: actor.actorId,
+          requestId: req.id,
+          subjectType: subjectType.data,
+          subjectId: subjectId.data,
+          reason: body.data.reason,
+        });
+        if (outcome.status === 'not_found') {
+          sendDomainError(res, req.id, 'not_found', 404);
+          return;
+        }
+        res.status(202).json({
+          subjectType: outcome.subjectType,
+          subjectId: outcome.subjectId,
+          deletionId: outcome.deletionId,
+          ledgerStatus: outcome.ledgerStatus,
+          cleanupStatus: outcome.cleanupStatus,
+          requestId: req.id,
+        });
+      } catch {
+        sendStaffAuthError(res, req.id, 'internal_error', 500);
+      }
+    },
+  );
 
   router.post('/workspaces/:workspaceId/invitations', async (req, res) => {
     const workspaceId = z.uuid().safeParse(req.params['workspaceId']);

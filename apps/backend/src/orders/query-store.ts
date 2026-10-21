@@ -97,6 +97,7 @@ export type ChangeRequestPayload = z.infer<typeof changeRequestPayloadSchema>;
 function sourceLabelSql() {
   const attribution = leads.attribution;
   return sql<string>`case
+    when ${leads.customerDataRestrictedAt} is not null then 'redacted'
     when coalesce(${attribution}->>'partnerCode', '') <> '' then
       case when coalesce(${attribution}->>'partnerCodeMatched', 'false') = 'true'
         then 'partner:' || (${attribution}->>'partnerCode')
@@ -120,9 +121,14 @@ function searchCondition(term: string, includeContact: boolean) {
   if (!includeContact) return referenceMatch;
   return or(
     referenceMatch,
-    sql`strpos(lower(coalesce(${leads.fullName}, '')), ${needle}) > 0`,
-    sql`strpos(lower(coalesce(${leads.email}, '')), ${needle}) > 0`,
-    sql`strpos(lower(coalesce(${leads.phone}, '')), ${needle}) > 0`,
+    and(
+      isNull(orders.customerDataRestrictedAt),
+      or(
+        sql`strpos(lower(coalesce(${leads.fullName}, '')), ${needle}) > 0`,
+        sql`strpos(lower(coalesce(${leads.email}, '')), ${needle}) > 0`,
+        sql`strpos(lower(coalesce(${leads.phone}, '')), ${needle}) > 0`,
+      ),
+    ),
   );
 }
 
@@ -220,10 +226,10 @@ export class DatabaseOrderQueryStore implements OrderQueryStore {
             assigneeId: row.order.assigneeId,
             partnerCode: row.partnerCode,
             customer: {
-              fullName: row.fullName,
-              email: row.email,
-              phone: row.phone,
-              countryCode: row.countryCode,
+              fullName: row.order.customerDataRestrictedAt ? null : row.fullName,
+              email: row.order.customerDataRestrictedAt ? null : row.email,
+              phone: row.order.customerDataRestrictedAt ? null : row.phone,
+              countryCode: row.order.customerDataRestrictedAt ? null : row.countryCode,
             },
             source: row.source,
             submittedAt: row.order.submittedAt.toISOString(),
@@ -265,9 +271,12 @@ export class DatabaseOrderQueryStore implements OrderQueryStore {
       if (!row) return undefined;
 
       const snapshot = orderSnapshotSchema.parse(row.order.snapshot);
-      const payload = leadFormSchema.parse(row.order.payload);
+      const restricted = row.order.customerDataRestrictedAt !== null;
+      const payload = restricted ? null : leadFormSchema.parse(row.order.payload);
       const consent =
-        row.order.consent === null ? null : orderConsentSchema.parse(row.order.consent);
+        restricted || row.order.consent === null
+          ? null
+          : orderConsentSchema.parse(row.order.consent);
       const summary = orderSummarySchema.parse({
         id: row.order.id,
         workspaceId: row.order.workspaceId,
@@ -367,15 +376,20 @@ export class DatabaseOrderQueryStore implements OrderQueryStore {
         assigneeId: row.order.assigneeId,
         partnerCode: row.partnerCode,
         customer: {
-          fullName: row.fullName,
-          email: row.email,
-          phone: row.phone,
-          countryCode: row.countryCode,
+          fullName: row.order.customerDataRestrictedAt ? null : row.fullName,
+          email: row.order.customerDataRestrictedAt ? null : row.email,
+          phone: row.order.customerDataRestrictedAt ? null : row.phone,
+          countryCode: row.order.customerDataRestrictedAt ? null : row.countryCode,
         },
         source: row.source,
         submittedAt: row.order.submittedAt.toISOString(),
         snapshot,
         payload,
+        customerDataState: row.order.customerDataDeletedAt
+          ? 'deleted'
+          : restricted
+            ? 'restricted'
+            : 'active',
         consent,
         history: historyRows.map((history) => ({
           at: history.createdAt.toISOString(),
@@ -387,58 +401,66 @@ export class DatabaseOrderQueryStore implements OrderQueryStore {
               : orderFulfilmentStatusSchema.parse(history.fromStatus),
           toStatus: orderFulfilmentStatusSchema.parse(history.toStatus),
           recordVersion: history.orderVersion,
-          ...(history.reason ? { note: history.reason } : {}),
+          ...(!restricted && history.reason ? { note: history.reason } : {}),
         })),
         audit: auditRows.map((audit) => ({
           id: audit.id,
           at: audit.createdAt.toISOString(),
           actorId: audit.actorId,
           action: audit.action,
-          before: jsonRecordOrNull(audit.before),
-          after: jsonRecordOrNull(audit.after),
+          before: restricted ? null : jsonRecordOrNull(audit.before),
+          after: restricted ? null : jsonRecordOrNull(audit.after),
         })),
-        notes: noteRows.map((note) => ({
-          id: note.id,
-          authorId: note.authorId,
-          body: note.body,
-          createdAt: note.createdAt.toISOString(),
-        })),
-        reminders: reminderRows.map((reminder) => ({
-          id: reminder.id,
-          createdBy: reminder.createdBy,
-          remindAt: reminder.remindAt.toISOString(),
-          note: reminder.note,
-          createdAt: reminder.createdAt.toISOString(),
-        })),
-        changeRequests: changeRequestRows.map((changeRequest) => {
-          const stored = changeRequestPayloadSchema.parse(changeRequest.payload);
-          return {
-            id: changeRequest.id,
-            requestedBy: changeRequest.requestedBy,
-            status: orderChangeRequestStatusSchema.parse(changeRequest.status),
-            patch: stored.patch,
-            note: stored.note ?? null,
-            resolvedBy: changeRequest.resolvedBy,
-            resolvedAt: changeRequest.resolvedAt?.toISOString() ?? null,
-            createdAt: changeRequest.createdAt.toISOString(),
-          };
-        }),
-        amendments: amendmentRows.map((amendment) => ({
-          id: amendment.id,
-          actorId: amendment.actorId,
-          reason: amendment.reason,
-          patch: orderChangeRequestPatchSchema.parse(amendment.patch),
-          before: jsonRecord(amendment.before),
-          after: jsonRecord(amendment.after),
-          createdAt: amendment.createdAt.toISOString(),
-        })),
+        notes: restricted
+          ? []
+          : noteRows.map((note) => ({
+              id: note.id,
+              authorId: note.authorId,
+              body: note.body,
+              createdAt: note.createdAt.toISOString(),
+            })),
+        reminders: restricted
+          ? []
+          : reminderRows.map((reminder) => ({
+              id: reminder.id,
+              createdBy: reminder.createdBy,
+              remindAt: reminder.remindAt.toISOString(),
+              note: reminder.note,
+              createdAt: reminder.createdAt.toISOString(),
+            })),
+        changeRequests: restricted
+          ? []
+          : changeRequestRows.map((changeRequest) => {
+              const stored = changeRequestPayloadSchema.parse(changeRequest.payload);
+              return {
+                id: changeRequest.id,
+                requestedBy: changeRequest.requestedBy,
+                status: orderChangeRequestStatusSchema.parse(changeRequest.status),
+                patch: stored.patch,
+                note: stored.note ?? null,
+                resolvedBy: changeRequest.resolvedBy,
+                resolvedAt: changeRequest.resolvedAt?.toISOString() ?? null,
+                createdAt: changeRequest.createdAt.toISOString(),
+              };
+            }),
+        amendments: restricted
+          ? []
+          : amendmentRows.map((amendment) => ({
+              id: amendment.id,
+              actorId: amendment.actorId,
+              reason: amendment.reason,
+              patch: orderChangeRequestPatchSchema.parse(amendment.patch),
+              before: jsonRecord(amendment.before),
+              after: jsonRecord(amendment.after),
+              createdAt: amendment.createdAt.toISOString(),
+            })),
         payments: paymentRows.map((payment) => ({
           id: payment.id,
           actorId: payment.actorId,
           fromState: paymentStateSchema.parse(payment.fromState),
           toState: paymentStateSchema.parse(payment.toState),
-          method: payment.method,
-          reference: payment.paymentReference,
+          method: restricted ? null : payment.method,
+          reference: restricted ? null : payment.paymentReference,
           amount:
             payment.amountMinor === null || payment.currency === null
               ? null
@@ -448,15 +470,16 @@ export class DatabaseOrderQueryStore implements OrderQueryStore {
                 }),
           recordedAt: payment.recordedAt.toISOString(),
         })),
-        dispatch: dispatchRow
-          ? {
-              id: dispatchRow.id,
-              actorId: dispatchRow.actorId,
-              courier: dispatchRow.courier,
-              trackingReference: dispatchRow.trackingReference,
-              dispatchedAt: dispatchRow.dispatchedAt.toISOString(),
-            }
-          : null,
+        dispatch:
+          !restricted && dispatchRow
+            ? {
+                id: dispatchRow.id,
+                actorId: dispatchRow.actorId,
+                courier: dispatchRow.courier,
+                trackingReference: dispatchRow.trackingReference,
+                dispatchedAt: dispatchRow.dispatchedAt.toISOString(),
+              }
+            : null,
       };
     });
   }

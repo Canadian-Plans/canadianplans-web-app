@@ -157,7 +157,7 @@ export function presignUrl(config: R2Config, params: PresignParams): string {
 }
 
 interface SignedRequest {
-  method: 'GET' | 'PUT' | 'HEAD';
+  method: 'GET' | 'PUT' | 'HEAD' | 'DELETE';
   key: string;
   headers: Record<string, string>;
   body?: Uint8Array;
@@ -326,6 +326,27 @@ export class S3R2DocumentStore implements R2DocumentStore {
   }
 
   /** Per-workspace key prefix so a bug cannot address another tenant's object. */
+  async deleteObject(input: {
+    workspaceId: string;
+    bucket: string;
+    objectKey: string;
+  }): Promise<void> {
+    if (input.bucket !== this.config.bucket) throw new Error('r2_cleanup_bucket_mismatch');
+    if (
+      input.objectKey.includes('\\') ||
+      input.objectKey.split('/').some((part) => !part || part === '.' || part === '..')
+    )
+      throw new Error('r2_cleanup_key_invalid');
+    const request = signRequest(this.config, {
+      method: 'DELETE',
+      key: this.scopedKey(input.workspaceId, input.objectKey),
+      headers: {},
+    });
+    const response = await this.send(request.url, { method: 'DELETE', headers: request.headers });
+    if (!response.ok && response.status !== 404) throw new Error('r2_cleanup_failed');
+  }
+
+  /** Per-workspace key prefix so a bug cannot address another tenant's object. */
   private scopedKey(workspaceId: string, key: string): string {
     return documentObjectKey(workspaceId, key);
   }
@@ -371,6 +392,8 @@ async function readBoundedBody(
 }
 
 /** Constructs the real R2 store from environment configuration. */
-export function createR2DocumentStoreFromEnv(): S3R2DocumentStore {
-  return new S3R2DocumentStore(configFromEnv());
+export function createR2DocumentStoreFromEnv(
+  env: NodeJS.ProcessEnv = process.env,
+): S3R2DocumentStore {
+  return new S3R2DocumentStore(configFromEnv(env));
 }

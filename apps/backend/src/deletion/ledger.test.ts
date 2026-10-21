@@ -66,6 +66,9 @@ function intent(overrides: Partial<DeletionIntentRecord> = {}): DeletionIntentRe
     actorId: ACTOR,
     status: 'pending',
     ledgerAckId: null,
+    subjectType: 'order',
+    relatedLeadId: null,
+    createdAt: '2026-10-21T00:00:00.000Z',
     ...overrides,
   };
 }

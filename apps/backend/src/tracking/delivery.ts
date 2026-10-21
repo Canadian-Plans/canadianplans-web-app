@@ -79,6 +79,7 @@ export function createTrackingOtpHandler(options: {
       workspaceId: job.workspaceId,
       actorId: actor.data,
       contactHash,
+      orderId: payload.orderId,
     });
     if (!eligible.eligible) return { status: 'completed', providerId: 'skipped:suppressed' };
     await options.delivery?.prepare({

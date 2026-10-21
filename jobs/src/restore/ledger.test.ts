@@ -38,6 +38,17 @@ function checkpointFor(events: LedgerEventRecord[], now = new Date('2026-09-14T0
 }
 
 describe('reconcileLedger', () => {
+  it('rejects ambiguous deletion relationships before replay', () => {
+    const leadId = '13000000-0000-4000-8000-000000000001';
+    const otherLeadId = '13000000-0000-4000-8000-000000000002';
+    expect(() => baseEvent({ subjectType: 'region_waitlist', relatedLeadId: leadId })).toThrow();
+    expect(() =>
+      baseEvent({ subjectType: 'lead', subjectId: leadId, relatedLeadId: otherLeadId }),
+    ).toThrow();
+    expect(
+      baseEvent({ subjectType: 'lead', subjectId: leadId, relatedLeadId: leadId }).subjectId,
+    ).toBe(leadId);
+  });
   it('reconciles a fresh checkpoint against the exact event set and replays idempotently', async () => {
     const events = [baseEvent()];
     const checkpoint = checkpointFor(events);

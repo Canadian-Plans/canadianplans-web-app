@@ -250,3 +250,16 @@ search index. `/studio` is `noindex` (via `next-sanity`) and disallowed in
 - `B2_APPLICATION_KEY`
 - `B2_BUCKET`
 - `B2_ENDPOINT`
+
+### Customer-requested physical document cleanup
+
+The backend's durable cleanup worker requires the configured private `R2_BUCKET`
+and the existing backend-only R2 credentials to permit DELETE inside its workspace
+prefix. It never substitutes fake deletion when configuration is missing. A key
+whose recorded bucket differs from the configured bucket stays pending; migrate
+old-bucket cleanup through an explicitly configured worker instead of marking it
+complete. Apply migration 0023 before the new backend. The backup runner must use
+the protected lease interface, which waits for active cleanup requests before
+starting its snapshot. Independent ledger acknowledgement is required before
+personal database/object erasure; see the deletion and restore runbooks. Live R2
+permission/ledger durability verification belongs to the deployment operator.

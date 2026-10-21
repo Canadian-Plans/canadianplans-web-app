@@ -31,7 +31,13 @@ import {
   partnerInvoiceResponseSchema,
 } from './partners';
 import { createExportRequestSchema, createExportResponseSchema } from './exports';
-import { deleteCustomerDataRequestSchema, deleteCustomerDataResponseSchema } from './deletion';
+import {
+  deleteCustomerDataRequestSchema,
+  deleteCustomerDataResponseSchema,
+  findDeletionSubjectsRequestSchema,
+  findDeletionSubjectsResponseSchema,
+  requestSubjectDeletionResponseSchema,
+} from './deletion';
 import { healthResponseSchema } from './health';
 import { listWorkspaceJobsResponseSchema, retryWorkspaceJobResponseSchema } from './jobs';
 import {
@@ -439,6 +445,29 @@ export const endpoints: readonly EndpointDef[] = [
     successStatus: 202,
     request: deleteCustomerDataRequestSchema,
     response: deleteCustomerDataResponseSchema,
+  },
+
+  {
+    operationId: 'findDeletionSubjects',
+    method: 'POST',
+    path: '/api/v1/staff/workspaces/{workspaceId}/customer-data/search',
+    summary:
+      'Find paginated candidate records for a verified deletion request (Owner/Finance, MFA).',
+    auth: 'staff',
+    successStatus: 200,
+    request: findDeletionSubjectsRequestSchema,
+    response: findDeletionSubjectsResponseSchema,
+  },
+  {
+    operationId: 'requestSubjectDeletion',
+    method: 'POST',
+    path: '/api/v1/staff/workspaces/{workspaceId}/customer-data/{subjectType}/{subjectId}/deletion',
+    summary:
+      'Request deletion for an explicitly selected order, draft or wish-list record (Owner/Finance, MFA).',
+    auth: 'staff',
+    successStatus: 202,
+    request: deleteCustomerDataRequestSchema,
+    response: requestSubjectDeletionResponseSchema,
   },
 
   // Staff — partners

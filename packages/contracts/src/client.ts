@@ -165,6 +165,13 @@ import {
 import {
   deleteCustomerDataRequestSchema,
   deleteCustomerDataResponseSchema,
+  findDeletionSubjectsRequestSchema,
+  findDeletionSubjectsResponseSchema,
+  requestSubjectDeletionResponseSchema,
+  type DeletionSubjectType,
+  type FindDeletionSubjectsRequest,
+  type FindDeletionSubjectsResponse,
+  type RequestSubjectDeletionResponse,
   type DeleteCustomerDataRequest,
   type DeleteCustomerDataResponse,
 } from './deletion';
@@ -391,6 +398,16 @@ export interface BackendClient {
       orderId: string,
       body: DeleteCustomerDataRequest,
     ): Promise<DeleteCustomerDataResponse>;
+    findDeletionSubjects(
+      workspaceId: string,
+      body: FindDeletionSubjectsRequest,
+    ): Promise<FindDeletionSubjectsResponse>;
+    requestSubjectDeletion(
+      workspaceId: string,
+      subjectType: DeletionSubjectType,
+      subjectId: string,
+      body: DeleteCustomerDataRequest,
+    ): Promise<RequestSubjectDeletionResponse>;
     listPartners(workspaceId: string): Promise<ListPartnersResponse>;
     getPartner(workspaceId: string, partnerId: string): Promise<PartnerDetailResponse>;
     changeCommissionState(
@@ -817,6 +834,20 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           method: 'GET',
           path: `/api/v1/staff/workspaces/${encode(workspaceId)}/partners`,
           responseSchema: listPartnersResponseSchema,
+        }),
+      findDeletionSubjects: (workspaceId, body) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/customer-data/search`,
+          body: findDeletionSubjectsRequestSchema.parse(body),
+          responseSchema: findDeletionSubjectsResponseSchema,
+        }),
+      requestSubjectDeletion: (workspaceId, subjectType, subjectId, body) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/customer-data/${encode(subjectType)}/${encode(subjectId)}/deletion`,
+          body: deleteCustomerDataRequestSchema.parse(body),
+          responseSchema: requestSubjectDeletionResponseSchema,
         }),
       getPartner: (workspaceId, partnerId) =>
         call({

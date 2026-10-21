@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, isNull, sql } from 'drizzle-orm';
 import {
   dispatchRecords,
   leads,
@@ -12,6 +12,7 @@ import { z } from 'zod';
 
 import { hashesEqual } from './secrets.js';
 import { findUnsatisfiedDocuments } from '../orders/document-prerequisite.js';
+import { customerSubjectActive, lockCustomerLeadForOrder } from '../deletion/restriction.js';
 
 /**
  * Tracking persistence (T22). Every read/write runs inside the workspace's RLS
@@ -101,6 +102,7 @@ export class DatabaseTrackingStore implements TrackingStore {
           .where(
             and(
               eq(orders.workspaceId, input.workspaceId),
+              isNull(orders.customerDataRestrictedAt),
               eq(orders.reference, input.reference),
               sql`lower(${leads.email}) = ${input.normalizedEmail}`,
             ),
@@ -116,6 +118,12 @@ export class DatabaseTrackingStore implements TrackingStore {
       { workspaceId: input.workspaceId, actorId: input.workspaceId },
       async (tx) => {
         // Serialize resends for one order and recheck the contact after matching.
+        if (!(await lockCustomerLeadForOrder(tx, input.workspaceId, input.orderId))) return;
+        await tx
+          .select({ id: orders.id })
+          .from(orders)
+          .where(and(eq(orders.workspaceId, input.workspaceId), eq(orders.id, input.orderId)))
+          .for('update');
         const [order] = await tx
           .select({ reference: orders.reference, email: leads.email })
           .from(orders)
@@ -123,8 +131,13 @@ export class DatabaseTrackingStore implements TrackingStore {
             leads,
             and(eq(leads.workspaceId, orders.workspaceId), eq(leads.id, orders.leadId)),
           )
-          .where(and(eq(orders.workspaceId, input.workspaceId), eq(orders.id, input.orderId)))
-          .for('update');
+          .where(
+            and(
+              eq(orders.workspaceId, input.workspaceId),
+              isNull(orders.customerDataRestrictedAt),
+              eq(orders.id, input.orderId),
+            ),
+          );
         if (!order || order.email?.trim().toLowerCase() !== input.normalizedEmail) return;
         await tx
           .update(trackingChallenges)
@@ -222,6 +235,8 @@ export class DatabaseTrackingStore implements TrackingStore {
               eq(trackingChallenges.workspaceId, input.workspaceId),
               eq(trackingChallenges.orderId, input.orderId),
               eq(trackingChallenges.id, input.challengeId),
+              isNull(orders.customerDataRestrictedAt),
+              isNull(leads.customerDataRestrictedAt),
               eq(trackingChallenges.status, 'pending'),
             ),
           )
@@ -274,6 +289,8 @@ export class DatabaseTrackingStore implements TrackingStore {
     return this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.workspaceId },
       async (tx) => {
+        if (!(await customerSubjectActive(tx, input.workspaceId, { orderId: input.orderId })))
+          throw new Error('tracking_challenge_inactive');
         const [row] = await tx
           .insert(trackingChallenges)
           .values({
@@ -300,6 +317,8 @@ export class DatabaseTrackingStore implements TrackingStore {
     return this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.workspaceId },
       async (tx) => {
+        if (!(await customerSubjectActive(tx, input.workspaceId, { orderId: input.orderId })))
+          return 'not_found';
         const [challenge] = await tx
           .select({
             id: trackingChallenges.id,
@@ -381,7 +400,13 @@ export class DatabaseTrackingStore implements TrackingStore {
             updatedAt: orders.updatedAt,
           })
           .from(orders)
-          .where(and(eq(orders.workspaceId, input.workspaceId), eq(orders.id, input.orderId)))
+          .where(
+            and(
+              eq(orders.workspaceId, input.workspaceId),
+              isNull(orders.customerDataRestrictedAt),
+              eq(orders.id, input.orderId),
+            ),
+          )
           .limit(1);
         if (!order) return undefined;
 

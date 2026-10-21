@@ -206,7 +206,8 @@ databaseTest('Phase A tenant isolation gate', () => {
     if (server) await new Promise<void>((resolve) => server.close(() => resolve()));
     if (authServer) await new Promise<void>((resolve) => authServer.close(() => resolve()));
     vi.unstubAllEnvs();
-    if (admin) await admin`delete from app.workspaces where id in (${WORKSPACE_A}, ${WORKSPACE_B})`;
+    // The opted-in disposable database owns teardown; cascading deletion must
+    // not bypass the customer-erasure acknowledgement guard.
     if (database) await database.close();
     if (runtimeSql) await runtimeSql.end();
     if (admin) await admin.end();

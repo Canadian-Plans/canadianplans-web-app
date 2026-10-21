@@ -353,6 +353,14 @@ retention state, decrypt and authenticate each event, validate its minimal
 schema, reject duplicate operation IDs with different content, and compare the
 exact key/version set and digest to a fresh authenticated checkpoint. Replay
 events idempotently against restored data before any traffic or job resumes.
+`apps/backend/src/deletion/replay.ts` provides `createDatabaseLedgerReplay` for
+an explicitly bound isolated target. Order events carry `relatedLeadId` so an
+older draft-only backup can be erased even when the order is absent. Unresolved
+legacy scope or inconsistent relationships fail closed. Replay restricts access,
+revokes credentials and performs local erasure before returning; private-object
+work stays durable and must be processed with the target's configured storage.
+This callback does not replace the independently authenticated reader, immutable
+ledger verification or real target adapter wiring required by the restore CLI.
 
 The restore remains closed when the ledger or checkpoint is missing,
 unavailable, expired, stale, malformed, undecryptable, has an invalid

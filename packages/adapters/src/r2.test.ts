@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { InMemoryR2DocumentStore, detectDocumentType, sha256Hex } from './r2.js';
 import { presignUrl, S3R2DocumentStore, type R2Config } from './r2-s3.js';
@@ -15,6 +15,65 @@ const config: R2Config = {
   endpoint: 'https://acct.r2.cloudflarestorage.com',
   region: 'auto',
 };
+
+describe('S3R2DocumentStore customer erasure', () => {
+  it.each([204, 404])('signs a workspace-scoped DELETE and accepts status %s', async (status) => {
+    const request = vi.fn<typeof fetch>(async () => new Response(null, { status }));
+    await new S3R2DocumentStore(config, request).deleteObject({
+      workspaceId: 'w1',
+      bucket: 'docs',
+      objectKey: 'original/a b.pdf',
+    });
+    const [url, init] = request.mock.calls[0]!;
+    expect(String(url)).toBe(
+      'https://acct.r2.cloudflarestorage.com/docs/workspaces/w1/original/a%20b.pdf',
+    );
+    expect(init?.method).toBe('DELETE');
+    expect(new Headers(init?.headers).get('authorization')).toMatch(
+      /^AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE\//,
+    );
+    expect(init?.signal).toBeInstanceOf(AbortSignal);
+  });
+
+  it('keeps provider failure retryable without exposing the response body', async () => {
+    const request: typeof fetch = async () =>
+      new Response('private provider details', { status: 503 });
+    await expect(
+      new S3R2DocumentStore(config, request).deleteObject({
+        workspaceId: 'w1',
+        bucket: 'docs',
+        objectKey: 'original/a',
+      }),
+    ).rejects.toThrow('r2_cleanup_failed');
+  });
+
+  it.each(['../other', 'a/../b', '/other', 'a//b', 'a\\b', ''])(
+    'rejects unsafe object key %s without a provider request',
+    async (objectKey) => {
+      const request = vi.fn<typeof fetch>();
+      await expect(
+        new S3R2DocumentStore(config, request).deleteObject({
+          workspaceId: 'w1',
+          bucket: 'docs',
+          objectKey,
+        }),
+      ).rejects.toThrow('r2_cleanup_key_invalid');
+      expect(request).not.toHaveBeenCalled();
+    },
+  );
+
+  it('refuses a different bucket', async () => {
+    const request = vi.fn<typeof fetch>();
+    await expect(
+      new S3R2DocumentStore(config, request).deleteObject({
+        workspaceId: 'w1',
+        bucket: 'other',
+        objectKey: 'a',
+      }),
+    ).rejects.toThrow('r2_cleanup_bucket_mismatch');
+    expect(request).not.toHaveBeenCalled();
+  });
+});
 
 describe('S3R2DocumentStore upload bounds', () => {
   const input = {

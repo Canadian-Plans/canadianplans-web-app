@@ -7,9 +7,10 @@ previous proposed timed-retention rule (OPEN_INPUTS #10/#16).
 
 Customer requests use the audited staff workflow in
 [RUNBOOKS/data-deletion.md](RUNBOOKS/data-deletion.md), subject to applicable legal
-retention obligations. The complete cross-copy deletion implementation is tracked
-by C3; recording this policy does not claim that the existing action already
-removes every document/email copy.
+retention obligations. The active-system workflow restricts access immediately,
+erases linked database copies after ledger acknowledgement, and completes only
+after durable private-object cleanup. External processor deletion and independent
+ledger/restore evidence remain operational requirements.
 
 | Category                                                                                             | Retention rule                                                                              | Deletion handling                                                                              |
 | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |

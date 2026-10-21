@@ -1,13 +1,15 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNull, sql } from 'drizzle-orm';
 import { deletionIntents, withTenantTx } from '@canadian-plans/db';
 import type { DeletionLedger } from '@canadian-plans/adapters';
 import { JobHandlerError, type JobHandler } from '@canadian-plans/jobs';
 import { z } from 'zod';
+import { deletionSubjectTypeSchema, type DeletionSubjectType } from '@canadian-plans/contracts';
+import { enqueueCustomerCleanup } from './cleanup.js';
 
 /**
  * Deletion-ledger integration (T21, IMPLEMENTATION_PLAN §13). The deletion
  * request commits a restricted local intent; this service publishes the
- * encrypted unique event to the independent ledger after commit, records the
+ * unique event to the configured independent ledger publisher after commit, records the
  * durable acknowledgement locally, and retries idempotently. An unavailable or
  * unconfigured ledger leaves the intent failed/pending and fails the job closed
  * — it is never reported as complete.
@@ -26,6 +28,9 @@ export interface DeletionIntentRecord {
   actorId: string;
   status: string;
   ledgerAckId: string | null;
+  subjectType: DeletionSubjectType;
+  relatedLeadId: string | null;
+  createdAt: string;
 }
 
 export interface DeletionLedgerStore {
@@ -48,11 +53,16 @@ export interface DeletionLedgerStore {
 }
 
 export class DatabaseDeletionLedgerStore implements DeletionLedgerStore {
+  constructor(
+    private readonly database: Pick<import('@canadian-plans/db').DatabaseClient, 'withTenantTx'> = {
+      withTenantTx,
+    },
+  ) {}
   async loadIntent(input: {
     workspaceId: string;
     deletionId: string;
   }): Promise<DeletionIntentRecord | undefined> {
-    return withTenantTx(
+    return this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: LEDGER_MIRROR_ACTOR },
       async (tx) => {
         const [row] = await tx
@@ -63,6 +73,9 @@ export class DatabaseDeletionLedgerStore implements DeletionLedgerStore {
             actorId: deletionIntents.actorId,
             status: deletionIntents.status,
             ledgerAckId: deletionIntents.ledgerAckId,
+            subjectType: deletionIntents.subjectType,
+            relatedLeadId: deletionIntents.relatedLeadId,
+            createdAt: deletionIntents.createdAt,
           })
           .from(deletionIntents)
           .where(
@@ -72,7 +85,13 @@ export class DatabaseDeletionLedgerStore implements DeletionLedgerStore {
             ),
           )
           .limit(1);
-        return row;
+        return row
+          ? {
+              ...row,
+              subjectType: deletionSubjectTypeSchema.parse(row.subjectType),
+              createdAt: row.createdAt.toISOString(),
+            }
+          : undefined;
       },
     );
   }
@@ -83,22 +102,40 @@ export class DatabaseDeletionLedgerStore implements DeletionLedgerStore {
     acknowledgementId: string;
     actorId: string;
   }): Promise<void> {
-    await withTenantTx({ workspaceId: input.workspaceId, actorId: input.actorId }, async (tx) => {
-      await tx
-        .update(deletionIntents)
-        .set({
-          status: 'acknowledged',
-          ledgerAckId: input.acknowledgementId,
-          acknowledgedAt: new Date(),
-          lastErrorCode: null,
-        })
-        .where(
-          and(
-            eq(deletionIntents.workspaceId, input.workspaceId),
-            eq(deletionIntents.id, input.deletionId),
-          ),
-        );
-    });
+    await this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: input.actorId },
+      async (tx) => {
+        const [existing] = await tx
+          .select({ ack: deletionIntents.ledgerAckId })
+          .from(deletionIntents)
+          .where(
+            and(
+              eq(deletionIntents.workspaceId, input.workspaceId),
+              eq(deletionIntents.id, input.deletionId),
+            ),
+          )
+          .limit(1)
+          .for('update');
+        if (!existing) throw new Error('deletion_intent_not_found');
+        if (existing.ack && existing.ack !== input.acknowledgementId)
+          throw new Error('deletion_acknowledgement_mismatch');
+        await tx
+          .update(deletionIntents)
+          .set({
+            status: 'acknowledged',
+            ledgerAckId: input.acknowledgementId,
+            acknowledgedAt: sql`coalesce(${deletionIntents.acknowledgedAt}, now())`,
+            lastErrorCode: null,
+          })
+          .where(
+            and(
+              eq(deletionIntents.workspaceId, input.workspaceId),
+              eq(deletionIntents.id, input.deletionId),
+            ),
+          );
+        await enqueueCustomerCleanup(tx, input.workspaceId, input.deletionId);
+      },
+    );
   }
 
   async markFailed(input: {
@@ -107,17 +144,21 @@ export class DatabaseDeletionLedgerStore implements DeletionLedgerStore {
     errorCode: string;
     actorId: string;
   }): Promise<void> {
-    await withTenantTx({ workspaceId: input.workspaceId, actorId: input.actorId }, async (tx) => {
-      await tx
-        .update(deletionIntents)
-        .set({ status: 'failed', lastErrorCode: input.errorCode })
-        .where(
-          and(
-            eq(deletionIntents.workspaceId, input.workspaceId),
-            eq(deletionIntents.id, input.deletionId),
-          ),
-        );
-    });
+    await this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: input.actorId },
+      async (tx) => {
+        await tx
+          .update(deletionIntents)
+          .set({ status: 'failed', lastErrorCode: input.errorCode })
+          .where(
+            and(
+              eq(deletionIntents.workspaceId, input.workspaceId),
+              eq(deletionIntents.id, input.deletionId),
+              isNull(deletionIntents.ledgerAckId),
+            ),
+          );
+      },
+    );
   }
 }
 
@@ -146,6 +187,12 @@ export class DeletionLedgerService {
     const intent = await this.options.store.loadIntent(input);
     if (!intent) return { status: 'not_found' };
     if (intent.status === 'acknowledged' && intent.ledgerAckId) {
+      await this.options.store.markAcknowledged({
+        workspaceId: input.workspaceId,
+        deletionId: intent.deletionId,
+        acknowledgementId: intent.ledgerAckId,
+        actorId: intent.actorId,
+      });
       return { status: 'acknowledged', acknowledgementId: intent.ledgerAckId };
     }
 
@@ -158,9 +205,11 @@ export class DeletionLedgerService {
         eventId: intent.deletionId,
         workspaceId: intent.workspaceId,
         action: 'delete_customer_data',
-        subjectType: 'order',
+        subjectType: intent.subjectType,
         subjectId: intent.subjectId,
-        occurredAt: (this.options.now?.() ?? new Date()).toISOString(),
+        ...(intent.relatedLeadId ? { relatedLeadId: intent.relatedLeadId } : {}),
+        occurredAt: intent.createdAt,
+        schemaVersion: 1,
       });
       acknowledgementId = ack.acknowledgementId;
     } catch (error) {

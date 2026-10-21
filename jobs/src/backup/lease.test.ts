@@ -22,6 +22,34 @@ describe('InMemoryBackupLease', () => {
 });
 
 describe('PgBackupLease', () => {
+  it('waits for a competing cleanup lease before starting the backup', async () => {
+    const run = vi
+      .fn<RunCommand>()
+      .mockResolvedValueOnce({
+        stdout: new Uint8Array(),
+        stderr: 'ERROR: document_cleanup_active',
+        exitCode: 1,
+      })
+      .mockResolvedValue({ stdout: new Uint8Array(), stderr: '', exitCode: 0 });
+    const pause = vi.fn(async () => {});
+    await new PgBackupLease('postgres://runner@host/db', run, pause).acquire('run-1', 60);
+    expect(run).toHaveBeenCalledTimes(2);
+    expect(pause).toHaveBeenCalledWith(2000);
+  });
+
+  it('does not retry unrelated provider errors or expose raw stderr', async () => {
+    const run = vi.fn<RunCommand>().mockResolvedValue({
+      stdout: new Uint8Array(),
+      stderr: 'private database details',
+      exitCode: 2,
+    });
+    const pause = vi.fn(async () => {});
+    await expect(
+      new PgBackupLease('postgres://runner@host/db', run, pause).acquire('run-1', 60),
+    ).rejects.toThrow('backup_lease_unavailable');
+    expect(run).toHaveBeenCalledTimes(1);
+    expect(pause).not.toHaveBeenCalled();
+  });
   it('upserts a lease row scoped to the run id via psql', async () => {
     const run = vi.fn<RunCommand>(async () => ({
       stdout: new Uint8Array(),

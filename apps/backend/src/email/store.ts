@@ -1,6 +1,7 @@
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, or, sql } from 'drizzle-orm';
 import {
   emailMessages,
+  deletedEmailMessages,
   emailProviderEvents,
   emailSuppressions,
   followUpSchedules,
@@ -9,8 +10,9 @@ import {
   withTenantTx,
   type TenantTransaction,
 } from '@canadian-plans/db';
-import type { EmailEligibilityChecker } from '@canadian-plans/jobs';
+import { JobHandlerError, type EmailEligibilityChecker } from '@canadian-plans/jobs';
 import type { ProviderDeliveryResult } from '@canadian-plans/adapters';
+import { customerSubjectActive } from '../deletion/restriction.js';
 
 export type EmailMessageStatus =
   'queued' | 'sent' | 'delivered' | 'bounced' | 'complained' | 'failed' | 'uncertain';
@@ -108,6 +110,19 @@ export class DatabaseEmailStore implements EmailStore {
     await this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.actorId },
       async (tx) => {
+        if (!(await customerSubjectActive(tx, input.workspaceId, input)))
+          throw new JobHandlerError('customer_data_restricted', false);
+        const [deleted] = await tx
+          .select({ id: deletedEmailMessages.messageId })
+          .from(deletedEmailMessages)
+          .where(
+            and(
+              eq(deletedEmailMessages.workspaceId, input.workspaceId),
+              eq(deletedEmailMessages.messageId, input.messageId),
+            ),
+          )
+          .limit(1);
+        if (deleted) throw new JobHandlerError('customer_data_restricted', false);
         await tx
           .insert(emailMessages)
           .values({ ...input, status: 'queued' })
@@ -162,7 +177,31 @@ export class DatabaseEmailStore implements EmailStore {
             ),
           )
           .for('update');
-        if (!row) throw new Error('email_delivery_missing');
+        if (!row) {
+          const [deleted] = await tx
+            .select({ id: deletedEmailMessages.messageId })
+            .from(deletedEmailMessages)
+            .where(
+              and(
+                eq(deletedEmailMessages.workspaceId, input.workspaceId),
+                eq(deletedEmailMessages.messageId, input.messageId),
+              ),
+            )
+            .limit(1);
+          if (!deleted) throw new Error('email_delivery_missing');
+          if (input.result.status === 'delivered')
+            await tx
+              .update(deletedEmailMessages)
+              .set({ providerId: input.result.providerId })
+              .where(
+                and(
+                  eq(deletedEmailMessages.workspaceId, input.workspaceId),
+                  eq(deletedEmailMessages.messageId, input.messageId),
+                  sql`${deletedEmailMessages.providerId} is null`,
+                ),
+              );
+          return;
+        }
         if (
           input.result.status === 'delivered' &&
           row.providerId &&
@@ -197,10 +236,14 @@ export class DatabaseEmailStore implements EmailStore {
     workspaceId: string;
     actorId: string;
     contactHash: string;
+    orderId?: string;
+    leadId?: string;
   }): Promise<{ eligible: boolean; reason?: string }> {
     return this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.actorId },
       async (tx) => {
+        if (!(await customerSubjectActive(tx, input.workspaceId, input)))
+          return { eligible: false, reason: 'customer_data_restricted' };
         const suppressed = await isSuppressed(tx, input.workspaceId, input.contactHash);
         return suppressed ? { eligible: false, reason: suppressed } : { eligible: true };
       },
@@ -217,6 +260,8 @@ export class DatabaseEmailStore implements EmailStore {
     return this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.actorId },
       async (tx) => {
+        if (!(await customerSubjectActive(tx, input.workspaceId, input)))
+          return { eligible: false, reason: 'customer_data_restricted' };
         const suppressed = await isSuppressed(tx, input.workspaceId, input.contactHash);
         if (suppressed) return { eligible: false, reason: suppressed };
         const [latestConsent] = await tx
@@ -241,6 +286,7 @@ export class DatabaseEmailStore implements EmailStore {
     await this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.actorId },
       async (tx) => {
+        if (!(await customerSubjectActive(tx, input.workspaceId, input))) return;
         await tx
           .insert(emailMessages)
           .values({
@@ -262,6 +308,24 @@ export class DatabaseEmailStore implements EmailStore {
     return this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.actorId },
       async (tx) => {
+        const [deleted] = await tx
+          .select({ id: deletedEmailMessages.messageId })
+          .from(deletedEmailMessages)
+          .where(
+            and(
+              eq(deletedEmailMessages.workspaceId, input.workspaceId),
+              or(
+                input.messageId ? eq(deletedEmailMessages.messageId, input.messageId) : undefined,
+                and(
+                  eq(deletedEmailMessages.provider, input.provider),
+                  eq(deletedEmailMessages.providerAccount, input.providerAccount),
+                  eq(deletedEmailMessages.providerId, input.providerMessageId),
+                ),
+              ),
+            ),
+          )
+          .limit(1);
+        if (deleted) return 'duplicate';
         // Correlate against a send prepared BEFORE the network call. A signed
         // provider event cannot select a tenant/contact or impersonate a job.
         const [message] = await tx
@@ -420,13 +484,14 @@ export class DatabaseEmailStore implements EmailStore {
     await this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.workspaceId },
       async (tx) => {
+        const active = await customerSubjectActive(tx, input.workspaceId, input);
         await tx.insert(marketingConsents).values({
           workspaceId: input.workspaceId,
-          leadId: input.leadId,
-          orderId: input.orderId,
+          leadId: active ? input.leadId : undefined,
+          orderId: active ? input.orderId : undefined,
           contactHash: input.contactHash,
           marketingOptIn: false,
-          version: input.version,
+          version: active ? input.version : 'retained-opt-out',
           capturedAt: input.now,
         });
         // Cancel any still-scheduled marketing follow-ups for this contact's

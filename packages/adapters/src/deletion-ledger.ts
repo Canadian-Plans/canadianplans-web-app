@@ -19,11 +19,17 @@ interface LedgerEventIdentity {
   workspaceId: string;
   /** ISO-8601 UTC timestamp. */
   occurredAt: string;
+  schemaVersion?: 1;
 }
 
 export type DeletionLedgerEvent = LedgerEventIdentity &
   (
-    | { action: 'delete_customer_data'; subjectType: 'order'; subjectId: string }
+    | {
+        action: 'delete_customer_data';
+        subjectType: 'order' | 'lead' | 'region_waitlist';
+        subjectId: string;
+        relatedLeadId?: string;
+      }
     | {
         action: 'suppress_contact';
         subjectType: 'contact';

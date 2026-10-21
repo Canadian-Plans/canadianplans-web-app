@@ -1,75 +1,103 @@
 # Customer-data deletion
 
-Task: T21 (REQ 24 / REQ 34). Purpose: remove or restrict a customer's personal
-data across every copy in the active system while keeping the minimal commercial
-record, and publish a durable deletion event to the independent ledger.
+**Escalation owner:** Takib. Customers' personal records and accepted documents
+remain until they request deletion; there is no automatic six-month deletion.
+`record.delete` requires Owner/Finance permission and a verified `aal2` session.
+A deny override wins. Orders staff may approve missing-document exceptions with
+a reason; that does not grant customer-data deletion permission.
 
-**Escalation owner:** Takib. **Required access:** a staff session with the
-`deletion` permission (Owner/Finance need a verified `aal2` MFA session; a deny
-override always wins).
+## Select the verified request's records
 
-## What the action does
+Verify the requester's identity outside this API. Do not put personal information
+in the recorded reason. All routes below begin with
+`/api/v1/staff/workspaces/{workspaceId}`.
 
-`POST /api/v1/staff/workspaces/{workspaceId}/orders/{orderId}/deletion` with
-`{ "reason": "..." }` runs in one transaction and:
+1. `POST /customer-data/search` with `{ "email": "…", "page": 1 }` returns candidate
+   orders, unconverted drafts and wish-list entries, their IDs and references.
+   Results are private/no-store, with `page` and `hasMore`; advance pages while
+   `hasMore` is true. Search does not delete anything.
+2. Select each verified record explicitly. Sharing an email address does not
+   authorize deletion of another order. Submit
+   `POST /customer-data/{subjectType}/{subjectId}/deletion`, with
+   `{ "reason": "verified customer request" }`. Types are `order`, `lead` and
+   `region_waitlist`. A converted lead resolves to its order and linked draft.
+3. The existing `POST /orders/{orderId}/deletion` route remains supported.
+   `202` reports `deletionId`, `ledgerStatus` and `cleanupStatus`. Repeating the
+   request reuses the same logical intent and reports its current progress.
 
-1. Clears the order `payload` and `consent`; **keeps** `reference` and the
-   commercial `snapshot`.
-2. Clears the lead's `full_name`, `email`, `phone`, `country_code` and `payload`.
-3. Deletes the order's notes, amendments, change requests and reminders
-   (scheduled follow-ups stop immediately).
-4. Nulls the `before`/`after` values on the order's and lead's audit rows, keeping
-   actor, action and time.
-5. Scrubs outbox job payloads that referenced the order or lead; the job rows remain.
-6. Writes an audit row `order.customer_data_deleted` (actor + staff reason, no
-   deleted personal data) and a local **deletion intent** (identifiers + action
-   only), then queues a `deletion_ledger_publish` outbox job.
+## Restrict, acknowledge, erase
 
-The response is `202` with the `deletionId` and `ledgerStatus:
-"pending_acknowledgement"`.
+1. **Restriction transaction:** mark the selected order/draft/wish-list entry,
+   revoke draft grants, consume tracking challenges, stop linked queued work and
+   follow-ups, and deny new documents/download links/sends/operational edits.
+   Staff order reads mask personal details immediately. Keep the underlying
+   personal values until the ledger acknowledgement. Audit `customer_data.restricted`
+   and enqueue `deletion_ledger_publish` atomically.
+2. **Independent acknowledgement:** publish the stable intent ID, timestamp,
+   subject type/ID and explicit related lead ID, without personal content.
+   A successful publisher acknowledgement and `customer_data_cleanup` enqueue
+   commit together. Missing/unavailable ledger leaves access restricted and
+   work pending/failed; it never authorizes erasure or reports completion.
+3. **Database cleanup:** remove contact/form/consent/attribution, document rows,
+   revisions and reviews, notes/corrections/reminders, dispatch details, tracking
+   challenges, linked email/provider events, consent/follow-up records and grants.
+   Scrub linked job payloads/outcomes and personal audit before/after values;
+   null history reasons and payment references/methods. Keep commercial snapshots,
+   reference, payment amount/currency, status/time/actor and minimal audit evidence.
+   Persist every staging/candidate/original/revision key in `deletion_objects`
+   before deleting its source row, and enqueue one cleanup job per object.
+4. **Private object cleanup:** `deletion_object_cleanup` performs an authenticated,
+   workspace-scoped R2 DELETE. It retries provider errors; an already absent key
+   is success. Wait past outstanding upload URL expiry plus a bounded verification
+   margin to prevent a late upload recreating erased bytes. Missing R2 config or
+   a bucket mismatch leaves work pending. An in-memory fake never substitutes
+   for physical cleanup in the provider registry.
+5. **Completion:** set `completed_at` only after local cleanup and every durable
+   object acknowledgement. Only then does `cleanupStatus` become `completed` and
+   the retained order display “deleted”. Ledger acknowledgement alone is not
+   completion. Draft/wish-list requests without objects can finish at local cleanup.
 
-## Ledger protocol (IMPLEMENTATION_PLAN §13)
+Existing provider requests admitted before restriction and already issued short-lived
+signed download URLs cannot be recalled. No new access/sending is admitted after
+restriction. Minimal message/provider identifiers prevent late webhooks/results
+from recreating erased email rows. Keyed suppression/opt-out evidence remains to
+prevent sending from resuming; unrelated records are not erased by contact hash.
+Processor-held messages require the processor's separate deletion procedure.
 
-The deletion is not complete until the independent ledger acknowledges it:
+## Backup and retry safety
 
-1. **Commit intent + restrict** — the transaction above. Access/sending stops now.
-2. **Publish after commit** — the outbox handler posts the encrypted event
-   (logical id = `deletionId`) to the ledger; a retry republishes the same id.
-3. **Acknowledge** — on a durable provider acknowledgement the local intent moves
-   to `acknowledged` and records `ledger_ack_id`.
-4. **Fail closed** — an unavailable or unconfigured ledger leaves the intent
-   `failed`/`pending` and the job failed/retrying; it is never reported complete.
-   Surface these in the admin jobs view.
+The database arbitrates backup acquisition and 45-second object cleanup leases
+through the same protected gate. R2 requests have a ten-second deadline and run
+outside database transactions. Active backups defer durable cleanup work; active
+cleanup defers backup startup. A crash after R2 deletion but before DB completion
+retries the same key safely. Do not force completion, clear markers or remove
+work rows to bypass a provider/ledger failure.
 
-Repeated jobs are idempotent: the ledger object key is the logical event id, so a
-retry overwrites rather than duplicates.
+Migration `0023_customer_deletion_lifecycle` also restricts and queues cleanup for
+older intents. Migration `0021_audit_redaction` remains in force: SQL NULL-only
+redaction, with no replacement/restoration of personal audit values. The new
+migration preserves immutable financial, order and idempotency evidence.
 
-## Verify
+On an isolated restore, bind `createDatabaseLedgerReplay` to the restored database
+as the authenticated ledger reconciler's callback. New order events carry the
+related lead ID so an older draft-only backup is erased too. Ambiguous legacy
+scope fails closed. Database cleanup runs before replay returns; object work
+remains durable and access restricted. Never reopen traffic/jobs before the
+restore runbook's independent checkpoint and provider checks pass.
 
-1. Order detail shows the reference and snapshot; the contact/form fields are gone.
-2. Query `app.deletion_intents` for the order: `status = 'acknowledged'` and
-   `ledger_ack_id` is set once the ledger is reachable.
-3. The order's audit timeline still shows who did what when, with no personal
-   values in `before`/`after`.
+## Verify and operational limits
 
-Migration `0021_audit_redaction` enforces that changed audit values become SQL
-`NULL`; it rejects replacements (including JSON `null`) and restoration after
-redaction. It adds a trigger without backfilling data. Existing code that only
-nulls these fields remains compatible. Apply through the normal migration role;
-production execution belongs to the owner. Roll back application code without
-removing this guard; use a forward migration if a future policy needs to change.
+- Inspect `deletion_intents`: acknowledgement, `local_cleaned_at`, `completed_at`.
+- Inspect pending `deletion_objects` and failed/retrying cleanup jobs.
+- Confirm old tracking/grants/download issuance are denied and staff detail still
+  opens with only the retained commercial record.
+- Verify absence of linked personal rows and physical R2 keys before confirming
+  active-system completion to the customer.
 
-## Safe stopping point
-
-After step 1 (the transaction) the personal data is already restricted; the
-ledger publish is safe to leave pending and retry. Do not re-run the deletion to
-"fix" a pending ledger — it is idempotent, so re-running only re-queues.
-
-## Seams (not yet on this branch)
-
-The T21 spec also lists **file revisions** (T17) and **email records,
-suppressions and follow-up schedules** (T18). Those tables/modules are not
-present on this branch, so they are not scrubbed here. When T17/T18 land, extend
-`deleteCustomerData` to delete the file objects/revisions, remove the email
-records, stop the follow-up schedules and write the contact suppression, and add
-the suppression event to the same ledger intent.
+The HTTP ledger publisher is an integration seam. Its acknowledgement does not
+by itself prove encrypted immutable B2 storage, writer restrictions or fresh
+restore checkpoints. Those external controls and a real isolated provider
+recovery rehearsal remain required launch evidence (N4); the restore CLI stays
+closed without its real reader/target integration. Backups expire under their
+separate rotation policy and replay deletions before reopening; do not promise
+instant removal of every historical backup or processor copy.

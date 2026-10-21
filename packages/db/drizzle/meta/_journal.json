@@ -162,6 +162,13 @@
       "when": 1792587034139,
       "tag": "0022_wet_the_leader",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1792593888583,
+      "tag": "0023_customer_deletion_lifecycle",
+      "breakpoints": true
     }
   ]
 }

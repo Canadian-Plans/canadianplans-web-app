@@ -137,6 +137,8 @@ export interface CopyForExportInput {
  * candidate copy, never the mutable staging object (invariant 8).
  */
 export interface R2DocumentStore {
+  /** Idempotent private deletion; the caller supplies the persisted bucket. */
+  deleteObject(input: { workspaceId: string; bucket: string; objectKey: string }): Promise<void>;
   /** Presigned PUT to the staging object (short expiry). */
   createUpload(input: CreateUploadInput): Promise<PresignedUpload>;
   /**
@@ -161,6 +163,14 @@ export interface R2DocumentStore {
  */
 export class InMemoryR2DocumentStore implements R2DocumentStore {
   private readonly objects = new Map<string, Uint8Array>();
+
+  async deleteObject(input: {
+    workspaceId: string;
+    bucket: string;
+    objectKey: string;
+  }): Promise<void> {
+    this.objects.delete(input.objectKey);
+  }
 
   /** Test seam: simulate the client's direct PUT to the staging object. */
   putStagingObject(stagingKey: string, bytes: Uint8Array): void {

@@ -146,10 +146,24 @@ class MemoryLeadStore implements LeadStore {
 }
 
 class MemoryDeletionStore implements DeletionStore {
+  requestDeletion = vi.fn<DeletionStore['requestDeletion']>(async (input) =>
+    this.result.status === 'not_found'
+      ? this.result
+      : { ...this.result, subjectType: input.subjectType, subjectId: input.subjectId },
+  );
+  findSubjects = vi.fn<DeletionStore['findSubjects']>(async () => ({
+    subjects: [],
+    page: 1,
+    hasMore: false,
+  }));
   readonly calls: DeleteCustomerDataInput[] = [];
   result: DeleteCustomerDataOutcome = {
-    status: 'deleted',
+    status: 'restricted',
     deletionId: '70000000-0000-4000-8000-0000000000d1',
+    subjectType: 'order',
+    subjectId: '60000000-0000-4000-8000-000000000001',
+    ledgerStatus: 'pending_acknowledgement',
+    cleanupStatus: 'pending',
   };
 
   async deleteCustomerData(input: DeleteCustomerDataInput): Promise<DeleteCustomerDataOutcome> {
@@ -346,6 +360,62 @@ describe('protected staff routes', () => {
     expect(response.status).toBe(201);
     expect(inviteStaffResponseSchema.parse(await response.json()).status).toBe('pending');
     expect(store.inviteStaff).toHaveBeenCalledOnce();
+  });
+
+  it('protects private subject discovery with permission and verified MFA', async () => {
+    const url = `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/customer-data/search`;
+    const search = (token: string) =>
+      fetch(url, {
+        method: 'POST',
+        headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+        body: JSON.stringify({ email: 'customer@example.test' }),
+      });
+    expect((await search('aal1-token')).status).toBe(403);
+    expect(deletionStore.findSubjects).not.toHaveBeenCalled();
+    const allowed = await search('aal2-token');
+    expect(allowed.status).toBe(200);
+    expect(allowed.headers.get('cache-control')).toBe('private, no-store');
+    expect(deletionStore.findSubjects).toHaveBeenCalledWith(
+      expect.objectContaining({ email: 'customer@example.test', page: 1, workspaceId: WORKSPACE }),
+    );
+    store.access = { ...store.access, roles: ['orders'] };
+    expect((await search('aal2-token')).status).toBe(403);
+  });
+
+  it('accepts only an explicitly selected subject and a nonblank recorded reason', async () => {
+    const id = '80000000-0000-4000-8000-0000000000d1';
+    const submit = (subject: string, subjectId: string, reason: string, token = 'aal2-token') =>
+      fetch(
+        `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/customer-data/${subject}/${subjectId}/deletion`,
+        {
+          method: 'POST',
+          headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+          body: JSON.stringify({ reason }),
+        },
+      );
+    expect((await submit('lead', id, 'request', 'aal1-token')).status).toBe(403);
+    expect((await submit('lead', id, '   ')).status).toBe(400);
+    expect((await submit('contact', id, 'request')).status).toBe(400);
+    expect((await submit('lead', 'invalid', 'request')).status).toBe(400);
+    expect(deletionStore.requestDeletion).not.toHaveBeenCalled();
+    for (const subject of ['lead', 'order', 'region_waitlist']) {
+      const response = await submit(subject, id, '  verified request  ');
+      expect(response.status).toBe(202);
+      expect(await response.json()).toMatchObject({
+        subjectType: subject,
+        subjectId: id,
+        cleanupStatus: 'pending',
+      });
+      expect(deletionStore.requestDeletion).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          subjectType: subject,
+          subjectId: id,
+          reason: 'verified request',
+        }),
+      );
+    }
+    store.access = { ...store.access, roles: ['viewer'] };
+    expect((await submit('lead', id, 'request')).status).toBe(403);
   });
 
   it('requires verified aal2 for customer-data deletion', async () => {

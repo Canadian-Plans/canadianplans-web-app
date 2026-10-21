@@ -68,7 +68,7 @@ databaseTest('DatabaseRegionWaitlistStore (ADR 0005 D5)', () => {
   });
 
   afterAll(async () => {
-    await admin`delete from app.region_waitlist where workspace_id in (${WORKSPACE}, ${WORKSPACE_B})`;
+    // The opted-in disposable database owns teardown; do not bypass erasure guards.
     await database.close();
     await admin.end();
   });

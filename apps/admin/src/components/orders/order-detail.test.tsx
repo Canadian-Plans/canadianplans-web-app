@@ -221,6 +221,32 @@ async function renderDetail() {
 }
 
 describe('OrderDetailView role-aware actions', () => {
+  it.each(['restricted', 'deleted'] as const)(
+    'renders a %s retained order without a form or document fetch',
+    async (state) => {
+      current = order({
+        customerDataState: state,
+        payload: null,
+        consent: null,
+        customer: { fullName: null, email: null, phone: null, countryCode: null },
+        capabilities: { canManageOrders: false, canRecordPayment: false, canSearchContact: true },
+        allowedTransitions: [],
+      });
+      refreshFromState();
+      await renderDetail();
+      expect(
+        await screen.findByText(
+          state === 'deleted'
+            ? 'Customer data has been deleted. The commercial record is retained.'
+            : 'Customer data is restricted. Ledger acknowledgement and cleanup must finish before deletion is complete.',
+        ),
+      ).toBeTruthy();
+      expect(mocks.listOrderFiles).not.toHaveBeenCalled();
+      expect(screen.queryByText('customer@example.test')).toBeNull();
+      expect(screen.queryByLabelText('Full name')).toBeNull();
+    },
+  );
+
   it('removes a cleared correction and resets visible fields after successful submission', async () => {
     mocks.createOrderChangeRequest.mockResolvedValue({ changeRequest: { id: 'request' } });
     await renderDetail();

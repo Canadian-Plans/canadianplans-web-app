@@ -13,6 +13,8 @@ export const outboxJobTypes = [
   'deletion_ledger_publish',
   'suppression_ledger_publish',
   'tracking_otp_email',
+  'customer_data_cleanup',
+  'deletion_object_cleanup',
 ] as const;
 export type OutboxJobType = (typeof outboxJobTypes)[number];
 
@@ -37,6 +39,8 @@ export interface EmailEligibilityChecker {
     workspaceId: string;
     actorId: string;
     contactHash: string;
+    orderId?: string;
+    leadId?: string;
   }): Promise<{ eligible: boolean; reason?: string }>;
   checkMarketing(input: {
     workspaceId: string;
@@ -114,6 +118,7 @@ export interface OutboxStore {
 
 export type JobHandlerResult =
   | { status: 'completed'; providerId: string; detail?: Record<string, unknown> }
+  | { status: 'retry'; errorCode: string; availableAt: Date }
   | { status: 'uncertain'; errorCode: string };
 /**
  * Handlers receive an abort signal for the runner's per-handler timeout. It is
@@ -218,6 +223,7 @@ function transactionalEmailHandler(
       workspaceId: job.workspaceId,
       actorId: emailActor(job),
       contactHash: parsed.data.contactHash,
+      orderId: parsed.data.orderId,
     });
     if (!check.eligible) {
       // A hard-bounce/complaint/manual suppression blocks even transactional

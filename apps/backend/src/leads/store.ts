@@ -198,6 +198,7 @@ export class DatabaseLeadStore implements LeadStore {
           .where(
             and(
               eq(draftGrants.workspaceId, input.workspaceId),
+              isNull(leads.customerDataRestrictedAt),
               eq(draftGrants.leadId, input.leadId),
               eq(draftGrants.tokenHash, hashDraftGrantToken(input.grantToken)),
             ),
@@ -325,6 +326,7 @@ export class DatabaseLeadStore implements LeadStore {
           .where(
             and(
               eq(draftGrants.workspaceId, input.workspaceId),
+              isNull(leads.customerDataRestrictedAt),
               eq(draftGrants.leadId, input.leadId),
               eq(draftGrants.tokenHash, tokenHash),
             ),
@@ -410,9 +412,11 @@ export class DatabaseLeadStore implements LeadStore {
         const pageSize = input.pageSize ?? 25;
         const offset = (page - 1) * pageSize;
 
-        const conditions = input.status
-          ? and(eq(leads.workspaceId, input.workspaceId), eq(leads.status, input.status))
-          : eq(leads.workspaceId, input.workspaceId);
+        const conditions = and(
+          eq(leads.workspaceId, input.workspaceId),
+          isNull(leads.customerDataRestrictedAt),
+          input.status ? eq(leads.status, input.status) : undefined,
+        );
 
         const rows = await tx
           .select({

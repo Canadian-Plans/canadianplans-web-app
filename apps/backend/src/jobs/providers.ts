@@ -1,5 +1,6 @@
 import {
   createDeletionLedgerFromEnv,
+  createR2DocumentStoreFromEnv,
   FakeAnalyticsSink,
   FakeEmailAdapter,
   InMemoryDeletionLedger,
@@ -29,6 +30,8 @@ import { loadMachineRegistry } from '../machines/registry.js';
 import { createTrackingOtpHandler } from '../tracking/delivery.js';
 import { loadTrackingSecret } from '../tracking/secrets.js';
 import { requireContactHashSecret } from '../email/hash.js';
+import { createCustomerCleanupHandler } from '../deletion/cleanup.js';
+import { createDeletionObjectHandler } from '../deletion/objects.js';
 
 /**
  * The explicit opt-in for the in-memory analytics fake. There is deliberately
@@ -205,6 +208,14 @@ export function createOutboxJobHandlers(
   // deleting customer data must work even when no other provider is configured,
   // and it fails closed when the ledger itself is not configured.
   const handlers = new Map(base);
+  let cleanupR2;
+  try {
+    cleanupR2 = createR2DocumentStoreFromEnv(env);
+  } catch {
+    /* Unconfigured storage keeps physical cleanup pending. */
+  }
+  handlers.set('customer_data_cleanup', createCustomerCleanupHandler());
+  handlers.set('deletion_object_cleanup', createDeletionObjectHandler({ r2: cleanupR2 }));
   handlers.set(
     'tracking_otp_email',
     createTrackingOtpHandler({

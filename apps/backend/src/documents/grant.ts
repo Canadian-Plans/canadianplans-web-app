@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import { draftGrants, leads, withTenantTx } from '@canadian-plans/db';
 
 import { hashDraftGrantToken } from '../leads/token.js';
@@ -47,6 +47,7 @@ export class DatabaseDraftGrantVerifier implements DraftGrantVerifier {
           .where(
             and(
               eq(draftGrants.workspaceId, input.workspaceId),
+              isNull(leads.customerDataRestrictedAt),
               eq(draftGrants.tokenHash, tokenHash),
             ),
           )
