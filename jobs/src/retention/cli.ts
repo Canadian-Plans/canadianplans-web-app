@@ -5,6 +5,7 @@ import { createErrorTrackerFromEnv } from '@canadian-plans/adapters';
 
 import { S3ArchiveRetentionAdmin } from '../backup/archive-store.js';
 import { AgeCliDecryptor } from '../backup/encryptor.js';
+import { nodeRunCommand, runOrThrow } from '../backup/command.js';
 import { runRetention } from './run.js';
 
 /**
@@ -21,6 +22,8 @@ function requiredEnv(name: string): string {
 }
 
 async function main(): Promise<void> {
+  // Fail before listing archive objects if the required executable is absent.
+  await runOrThrow(nodeRunCommand, 'age', ['--version']);
   const admin = new S3ArchiveRetentionAdmin({
     accessKeyId: requiredEnv('B2_ARCHIVE_RETENTION_KEY_ID'),
     secretAccessKey: requiredEnv('B2_ARCHIVE_RETENTION_APPLICATION_KEY'),
@@ -53,6 +56,7 @@ async function main(): Promise<void> {
         keys: report.unreadableManifests,
       }),
     );
+    throw new Error('retention_unreadable_manifests');
   }
 }
 
