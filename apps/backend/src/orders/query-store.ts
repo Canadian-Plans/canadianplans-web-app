@@ -193,6 +193,10 @@ export class DatabaseOrderQueryStore implements OrderQueryStore {
             leads,
             and(eq(leads.workspaceId, orders.workspaceId), eq(leads.id, orders.leadId)),
           )
+          .leftJoin(
+            partners,
+            and(eq(partners.workspaceId, orders.workspaceId), eq(partners.id, orders.partnerId)),
+          )
           .where(where);
 
         const items: OrderListItem[] = rows.map((row) => {
