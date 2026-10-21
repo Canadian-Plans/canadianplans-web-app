@@ -61,7 +61,34 @@ describe('LeadsList', () => {
       expect(mocks.getStaffLeads).toHaveBeenLastCalledWith(
         'staff-token',
         '10000000-0000-4000-8000-000000000001',
-        { status: 'incomplete' },
+        { status: 'incomplete', page: 1, pageSize: 25 },
+      ),
+    );
+  });
+
+  it('loads the next page and resets pagination when the status filter changes', async () => {
+    const response = await mocks.getStaffLeads();
+    mocks.getStaffLeads.mockClear();
+    mocks.getStaffLeads
+      .mockResolvedValueOnce({ ...response, page: { page: 1, pageSize: 25, total: 26 } })
+      .mockResolvedValueOnce({ ...response, page: { page: 2, pageSize: 25, total: 26 } });
+    render(<LeadsList workspaceSlug="site-1" />);
+    await screen.findByText('Synthetic Customer');
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    await waitFor(() =>
+      expect(mocks.getStaffLeads).toHaveBeenLastCalledWith(
+        'staff-token',
+        '10000000-0000-4000-8000-000000000001',
+        { status: undefined, page: 2, pageSize: 25 },
+      ),
+    );
+    await screen.findByText('Page 2 of 2 · 26 lead(s)');
+    fireEvent.click(screen.getByRole('button', { name: 'Incomplete' }));
+    await waitFor(() =>
+      expect(mocks.getStaffLeads).toHaveBeenLastCalledWith(
+        'staff-token',
+        '10000000-0000-4000-8000-000000000001',
+        { status: 'incomplete', page: 1, pageSize: 25 },
       ),
     );
   });
