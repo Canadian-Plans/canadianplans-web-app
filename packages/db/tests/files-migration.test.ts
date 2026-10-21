@@ -3,10 +3,20 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
 const migrationPath = fileURLToPath(
-  new URL('../drizzle/0016_thick_tombstone.sql', import.meta.url),
+  new URL('../drizzle/0018_lowly_dragon_lord.sql', import.meta.url),
 );
 
 describe('T17 additive documents migration', () => {
+  it('checks the documents migration in the active journal', async () => {
+    const journal = await readFile(
+      new URL('../drizzle/meta/_journal.json', import.meta.url),
+      'utf8',
+    );
+    expect(JSON.parse(journal)).toMatchObject({
+      entries: expect.arrayContaining([expect.objectContaining({ tag: '0018_lowly_dragon_lord' })]),
+    });
+  });
+
   it('creates the three document tables', async () => {
     const sql = await readFile(migrationPath, 'utf8');
     for (const table of ['files', 'file_revisions', 'file_review_events']) {
