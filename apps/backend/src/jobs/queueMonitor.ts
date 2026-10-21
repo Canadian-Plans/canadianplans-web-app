@@ -10,11 +10,18 @@ export interface QueueHealthState {
   strugglingSinceMs: number | undefined;
   /** Whether the last observation already triggered an alert, so a repeat tick doesn't re-alert every 60s. */
   alerted: boolean;
+  /**
+   * Lowest failed+uncertain total seen since the last alert. Failed and
+   * uncertain jobs stay until staff resolve them, so a backlog larger than
+   * this means a new failure arrived while an older one was still open.
+   */
+  alertedBacklog: number;
 }
 
 export const INITIAL_QUEUE_HEALTH_STATE: QueueHealthState = {
   strugglingSinceMs: undefined,
   alerted: false,
+  alertedBacklog: 0,
 };
 
 export const QUEUE_STUCK_THRESHOLD_MS = 10 * 60_000;
@@ -26,7 +33,10 @@ export interface QueueHealthObservation {
 
 export interface QueueHealthOutcome {
   nextState: QueueHealthState;
-  /** True exactly once per struggling episode, when the threshold is first crossed. */
+  /**
+   * True when the threshold is first crossed, and again whenever the backlog
+   * grows past what was already alerted (a new failure during the episode).
+   */
   shouldAlert: boolean;
 }
 
@@ -49,10 +59,19 @@ export function trackQueueHealth(
   const strugglingSinceMs = state.strugglingSinceMs ?? nowMs;
   const durationMs = nowMs - strugglingSinceMs;
   if (durationMs < QUEUE_STUCK_THRESHOLD_MS) {
-    return { nextState: { strugglingSinceMs, alerted: false }, shouldAlert: false };
+    return {
+      nextState: { strugglingSinceMs, alerted: false, alertedBacklog: 0 },
+      shouldAlert: false,
+    };
   }
+  const backlog = observation.failed + observation.uncertain;
+  const shouldAlert = !state.alerted || backlog > state.alertedBacklog;
   return {
-    nextState: { strugglingSinceMs, alerted: true },
-    shouldAlert: !state.alerted,
+    nextState: {
+      strugglingSinceMs,
+      alerted: true,
+      alertedBacklog: shouldAlert ? backlog : Math.min(state.alertedBacklog, backlog),
+    },
+    shouldAlert,
   };
 }

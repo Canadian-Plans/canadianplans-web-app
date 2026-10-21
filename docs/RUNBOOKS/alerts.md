@@ -175,12 +175,14 @@ needs.
 ### Failed-job-queue-growth detection
 
 `trackQueueHealth` (`apps/backend/src/jobs/queueMonitor.ts`, unit-tested in
-`apps/backend/tests/queue-monitor.test.ts`) is a small, pure state machine:
-a single tick reporting failed/uncertain outbox jobs is normal (the outbox
-runner's own backoff retries them), so it only alerts once the condition has
-persisted continuously for 10 minutes, and resets the moment a tick reports
-a clean queue again — so it fires once per incident, not once per 60-second
-tick.
+`apps/backend/tests/queue-monitor.test.ts`) is a small, pure state machine
+over the stored failed/uncertain outbox jobs in every authorized workspace.
+Those jobs stay until staff retry or resolve them. It alerts once the backlog
+has persisted continuously for 10 minutes, then stays quiet while the backlog
+is unchanged or shrinking, and alerts again when it grows (a new failure while
+an older one is still open). A clean queue resets it, so it fires per new
+failure, not once per 60-second tick. Resolve stored failures to keep later
+alerts meaningful.
 
 ### Error-rate spike — not yet wired
 

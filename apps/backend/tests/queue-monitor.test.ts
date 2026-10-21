@@ -88,4 +88,30 @@ describe('trackQueueHealth', () => {
     );
     expect(outcome.shouldAlert).toBe(false);
   });
+
+  it('alerts again when a new failure joins an unresolved backlog', () => {
+    const past = T0 + QUEUE_STUCK_THRESHOLD_MS + 1;
+    let state = trackQueueHealth(
+      INITIAL_QUEUE_HEALTH_STATE,
+      { failed: 2, uncertain: 0 },
+      T0,
+    ).nextState;
+    let outcome = trackQueueHealth(state, { failed: 2, uncertain: 0 }, past);
+    expect(outcome.shouldAlert).toBe(true);
+    state = outcome.nextState;
+
+    // A new uncertain send while the two old failures remain open.
+    outcome = trackQueueHealth(state, { failed: 2, uncertain: 1 }, past + 60_000);
+    expect(outcome.shouldAlert).toBe(true);
+    state = outcome.nextState;
+
+    // Staff resolve two jobs; nothing new: stay quiet.
+    outcome = trackQueueHealth(state, { failed: 1, uncertain: 0 }, past + 120_000);
+    expect(outcome.shouldAlert).toBe(false);
+    state = outcome.nextState;
+
+    // A later failure is new even though the total is below the first alert.
+    outcome = trackQueueHealth(state, { failed: 2, uncertain: 0 }, past + 180_000);
+    expect(outcome.shouldAlert).toBe(true);
+  });
 });
