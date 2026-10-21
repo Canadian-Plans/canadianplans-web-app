@@ -1,5 +1,5 @@
-import { and, desc, eq, inArray } from 'drizzle-orm';
-import { type TenantTransaction, fileReviewEvents, files } from '@canadian-plans/db';
+import { and, desc, eq, inArray, or } from 'drizzle-orm';
+import { type TenantTransaction, fileReviewEvents, files, orders } from '@canadian-plans/db';
 import { documentChecklistKeySchema } from '@canadian-plans/contracts';
 import { z } from 'zod';
 
@@ -89,14 +89,23 @@ export async function findUnsatisfiedDocuments(
 ): Promise<readonly string[]> {
   if (input.required.length === 0) return [];
 
+  const [order] = await tx
+    .select({ leadId: orders.leadId })
+    .from(orders)
+    .where(and(eq(orders.workspaceId, input.workspaceId), eq(orders.id, input.orderId)))
+    .limit(1);
+  if (!order) return [...input.required];
+
   const attached = await tx
     .select({ id: files.id, documentType: files.documentType })
     .from(files)
     .where(
       and(
         eq(files.workspaceId, input.workspaceId),
-        eq(files.recordType, 'order'),
-        eq(files.recordId, input.orderId),
+        or(
+          and(eq(files.recordType, 'order'), eq(files.recordId, input.orderId)),
+          and(eq(files.recordType, 'lead'), eq(files.recordId, order.leadId)),
+        ),
         eq(files.status, 'available'),
       ),
     );

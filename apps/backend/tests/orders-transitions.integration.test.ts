@@ -1,4 +1,5 @@
 import postgres from 'postgres';
+import { randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { createDatabaseClient, type DatabaseClient } from '@canadian-plans/db';
 import { applyMigrations } from '@canadian-plans/db/migrations';
@@ -159,6 +160,46 @@ databaseDescribe('order transition store against Postgres', () => {
         request_id: REQUEST,
       },
     ]);
+  });
+
+  test('approved lead uploads satisfy fulfilment, but unrelated and unreviewed documents do not', async () => {
+    const leadId = randomUUID();
+    const unrelatedLead = randomUUID();
+    const orderId = randomUUID();
+    await admin`insert into app.leads (id, workspace_id, status, consent_version)
+      values (${leadId}, ${WORKSPACE}, 'submitted', 'terms-1')`;
+    await admin`insert into app.orders (id, workspace_id, reference, lead_id, status,
+      payment_state, delivery_state, snapshot, payload, submitted_at)
+      values (${orderId}, ${WORKSPACE}, ${`CP-${orderId}`}, ${leadId}, 'in_progress',
+      'not_required', 'none', ${admin.json({ documentChecklist: ['passport'] })}, '{}', now())`;
+    const file = randomUUID();
+    const unrelatedFile = randomUUID();
+    for (const [id, parentId] of [
+      [file, leadId],
+      [unrelatedFile, unrelatedLead],
+    ] as const) {
+      await admin`insert into app.files (id, workspace_id, record_type, record_id, document_type,
+        bucket, staging_key, candidate_key, object_key, declared_content_type, detected_mime,
+        declared_size_bytes, size_bytes, checksum_sha256, status, uploaded_by, expires_at)
+        values (${id}, ${WORKSPACE}, 'lead', ${parentId}, 'passport', 'test-bucket',
+        ${`staging/${id}`}, ${`candidate/${id}`}, ${`candidate/${id}`}, 'application/pdf',
+        'application/pdf', 8, 8, ${'a'.repeat(64)}, 'available', ${ACTOR}, now())`;
+    }
+    await admin`insert into app.file_review_events (workspace_id, file_id, actor_id, decision)
+      values (${WORKSPACE}, ${unrelatedFile}, ${ACTOR}, 'approved')`;
+    const store = new DatabaseOrderTransitionStore(client, true, () => NOW);
+    const transition = {
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      requestId: REQUEST,
+      orderId,
+      expectedVersion: 1,
+      toStatus: 'ready_for_delivery' as const,
+    };
+    expect(await store.transition(transition)).toMatchObject({ status: 'documents_incomplete' });
+    await admin`insert into app.file_review_events (workspace_id, file_id, actor_id, decision)
+      values (${WORKSPACE}, ${file}, ${ACTOR}, 'approved')`;
+    expect(await store.transition(transition)).toMatchObject({ status: 'transitioned' });
   });
 
   test('a stale expected version conflicts without writing any rows', async () => {
