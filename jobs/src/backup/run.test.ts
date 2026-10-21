@@ -1,4 +1,4 @@
-import { sha256Hex } from '@canadian-plans/adapters';
+import { S3R2DocumentStore, sha256Hex } from '@canadian-plans/adapters';
 import { describe, expect, it } from 'vitest';
 
 import { InMemoryArchiveBackend } from './archive-store.js';
@@ -55,7 +55,7 @@ function baseDeps() {
         },
       ]),
       r2Source: new FakeR2SourceReader(
-        new Map([['canadian-plans-site-1/objects/passport.pdf', r2Bytes]]),
+        new Map([['canadian-plans-site-1/workspaces/w1/objects/passport.pdf', r2Bytes]]),
       ),
       sanity: new FakeSanityExporter({
         archive: new TextEncoder().encode('sanity-tarball'),
@@ -69,6 +69,33 @@ function baseDeps() {
 }
 
 describe('runBackup', () => {
+  it('reads the same physical object addressed by the document adapter', async () => {
+    const { deps } = baseDeps();
+    const documentStore = new S3R2DocumentStore({
+      accountId: 'account',
+      accessKeyId: 'key',
+      secretAccessKey: 'secret',
+      endpoint: 'https://account.r2.cloudflarestorage.com',
+      region: 'auto',
+      bucket: 'canadian-plans-site-1',
+    });
+    const download = await documentStore.issueDownload({
+      workspaceId: 'w1',
+      objectKey: 'objects/passport.pdf',
+      fileName: 'document.pdf',
+      contentType: 'application/pdf',
+      expiresInSeconds: 60,
+    });
+    const read = deps.r2Source.getObject.bind(deps.r2Source);
+    let calls = 0;
+    deps.r2Source.getObject = async (bucket, key) => {
+      expect(new URL(download.url).pathname).toBe(`/${bucket}/${key}`);
+      calls += 1;
+      return read(bucket, key);
+    };
+    await expect(runBackup(deps)).resolves.toMatchObject({ referencedObjectCount: 1 });
+    expect(calls).toBe(1);
+  });
   it('encrypts, uploads and verifies every artifact, then publishes a heartbeat', async () => {
     const { backend, privateKeyBase64, deps } = baseDeps();
     const summary = await runBackup(deps);
@@ -118,7 +145,10 @@ describe('runBackup', () => {
     const { backend, deps } = baseDeps();
     deps.r2Source = new FakeR2SourceReader(
       new Map([
-        ['canadian-plans-site-1/objects/passport.pdf', new TextEncoder().encode('tampered')],
+        [
+          'canadian-plans-site-1/workspaces/w1/objects/passport.pdf',
+          new TextEncoder().encode('tampered'),
+        ],
       ]),
     );
     await expect(runBackup(deps)).rejects.toBeInstanceOf(BackupIncompleteError);

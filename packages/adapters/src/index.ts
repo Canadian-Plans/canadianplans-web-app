@@ -77,6 +77,7 @@ export {
 export {
   InMemoryR2DocumentStore,
   detectDocumentType,
+  documentObjectKey,
   sha256Hex,
   type CopyForExportInput,
   type CreateUploadInput,

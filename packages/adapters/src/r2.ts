@@ -21,6 +21,11 @@ import { createHash } from 'node:crypto';
 /** The only stored document media types (recorded decision: PDF/JPG/PNG). */
 export type DocumentMediaType = 'application/pdf' | 'image/jpeg' | 'image/png';
 
+/** Resolve the logical key stored in the database to its private R2 object. */
+export function documentObjectKey(workspaceId: string, key: string): string {
+  return `workspaces/${workspaceId}/${key}`;
+}
+
 /**
  * Detects one of the three allowed document types from a file's leading bytes.
  * The declared `Content-Type` is never trusted (invariant 8); only the magic

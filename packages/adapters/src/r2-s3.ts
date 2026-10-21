@@ -2,6 +2,7 @@ import { createHash, createHmac } from 'node:crypto';
 
 import {
   detectDocumentType,
+  documentObjectKey,
   sha256Hex,
   type CopyForExportInput,
   type CreateUploadInput,
@@ -326,7 +327,7 @@ export class S3R2DocumentStore implements R2DocumentStore {
 
   /** Per-workspace key prefix so a bug cannot address another tenant's object. */
   private scopedKey(workspaceId: string, key: string): string {
-    return `workspaces/${workspaceId}/${key}`;
+    return documentObjectKey(workspaceId, key);
   }
 
   private send(url: string, init: RequestInit): Promise<Response> {

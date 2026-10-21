@@ -1,4 +1,4 @@
-import { sha256Hex } from '@canadian-plans/adapters';
+import { documentObjectKey, sha256Hex } from '@canadian-plans/adapters';
 
 import type { ArchiveWriter } from './archive-store.js';
 import type { BackupLease } from './lease.js';
@@ -81,7 +81,10 @@ export async function runBackup(deps: BackupRunDependencies): Promise<BackupRunS
     const r2Artifacts = new Map<string, Uint8Array>();
     const problems: string[] = [];
     for (const object of referenced) {
-      const bytes = await deps.r2Source.getObject(object.bucket, object.objectKey);
+      const bytes = await deps.r2Source.getObject(
+        object.bucket,
+        documentObjectKey(object.workspaceId, object.objectKey),
+      );
       const label = `${object.bucket}/${object.objectKey}`;
       if (!bytes) {
         problems.push(label);
