@@ -63,6 +63,45 @@ const config: S3SigningConfig = {
 };
 
 describe('S3ArchiveWriter / S3ArchiveReader / S3ArchiveRetentionAdmin', () => {
+  it.each([S3ArchiveWriter, S3ArchiveReader, S3ArchiveRetentionAdmin])(
+    '%s follows continuation tokens while preserving the requested prefix',
+    async (Store) => {
+      const requests: URL[] = [];
+      const fakeFetch: typeof fetch = async (url) => {
+        requests.push(new URL(String(url)));
+        const next =
+          requests.length === 1
+            ? '<IsTruncated>true</IsTruncated><NextContinuationToken>a&amp;b+==</NextContinuationToken>'
+            : '<IsTruncated>false</IsTruncated>';
+        return new Response(
+          `<ListBucketResult><Contents><Key>run-1/${requests.length}</Key><Size>1</Size></Contents>${next}</ListBucketResult>`,
+        );
+      };
+      expect(await new Store(config, fakeFetch).listObjects('run-1/')).toEqual([
+        { key: 'run-1/1', sizeBytes: 1 },
+        { key: 'run-1/2', sizeBytes: 1 },
+      ]);
+      expect(requests.map((url) => url.searchParams.get('prefix'))).toEqual(['run-1/', 'run-1/']);
+      expect(requests[1]?.searchParams.get('continuation-token')).toBe('a&b+==');
+    },
+  );
+
+  it.each(['', '<NextContinuationToken>repeated</NextContinuationToken>'])(
+    'fails closed for missing or repeated continuation tokens',
+    async (continuation) => {
+      let requests = 0;
+      const fakeFetch: typeof fetch = async () => {
+        requests += 1;
+        return new Response(
+          `<ListBucketResult><IsTruncated>true</IsTruncated>${continuation}</ListBucketResult>`,
+        );
+      };
+      await expect(new S3ArchiveReader(config, fakeFetch).listObjects('')).rejects.toThrow(
+        'archive_list_invalid_continuation',
+      );
+      expect(requests).toBeLessThanOrEqual(2);
+    },
+  );
   it('writer PUTs the object and lists via ListObjectsV2 XML parsing', async () => {
     const requests: { method: string; url: string }[] = [];
     const fakeFetch: typeof fetch = async (url, init) => {

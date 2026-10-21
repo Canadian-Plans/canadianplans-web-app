@@ -58,6 +58,46 @@ function parseListObjectsV2(xml: string): ArchiveObjectMeta[] {
   return results;
 }
 
+function xmlValue(xml: string, tag: string): string | undefined {
+  const value = new RegExp(`<${tag}>([\\s\\S]*?)<\\/${tag}>`).exec(xml)?.[1];
+  return value?.replace(/&(amp|lt|gt|quot|apos);/g, (_match, entity: string) => {
+    const entities: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" };
+    return entities[entity] ?? '';
+  });
+}
+
+async function listArchiveObjects(
+  config: S3SigningConfig,
+  prefix: string,
+  fetchImpl: typeof fetch,
+  timeoutMs: number,
+): Promise<ArchiveObjectMeta[]> {
+  const objects: ArchiveObjectMeta[] = [];
+  const seenTokens = new Set<string>();
+  let token: string | undefined;
+  do {
+    const response = await s3Send(
+      config,
+      {
+        method: 'GET',
+        key: '',
+        headers: {},
+        query: { 'list-type': '2', prefix, ...(token ? { 'continuation-token': token } : {}) },
+      },
+      fetchImpl,
+      timeoutMs,
+    );
+    if (!response.ok) throw new Error(`archive_list_failed:${response.status}`);
+    const xml = await response.text();
+    objects.push(...parseListObjectsV2(xml));
+    if (xmlValue(xml, 'IsTruncated') !== 'true') break;
+    token = xmlValue(xml, 'NextContinuationToken');
+    if (!token || seenTokens.has(token)) throw new Error('archive_list_invalid_continuation');
+    seenTokens.add(token);
+  } while (token);
+  return objects;
+}
+
 /** Writer credential: list + put only. Real B2 key must omit readFiles/deleteFiles. */
 export class S3ArchiveWriter implements ArchiveWriter {
   constructor(
@@ -78,14 +118,7 @@ export class S3ArchiveWriter implements ArchiveWriter {
   }
 
   async listObjects(prefix: string): Promise<ArchiveObjectMeta[]> {
-    const response = await s3Send(
-      this.config,
-      { method: 'GET', key: '', headers: {}, query: { 'list-type': '2', prefix } },
-      this.fetchImpl,
-      this.timeoutMs,
-    );
-    if (!response.ok) throw new Error(`archive_list_failed:${response.status}`);
-    return parseListObjectsV2(await response.text());
+    return listArchiveObjects(this.config, prefix, this.fetchImpl, this.timeoutMs);
   }
 }
 
@@ -98,14 +131,7 @@ export class S3ArchiveReader implements ArchiveReader {
   ) {}
 
   async listObjects(prefix: string): Promise<ArchiveObjectMeta[]> {
-    const response = await s3Send(
-      this.config,
-      { method: 'GET', key: '', headers: {}, query: { 'list-type': '2', prefix } },
-      this.fetchImpl,
-      this.timeoutMs,
-    );
-    if (!response.ok) throw new Error(`archive_list_failed:${response.status}`);
-    return parseListObjectsV2(await response.text());
+    return listArchiveObjects(this.config, prefix, this.fetchImpl, this.timeoutMs);
   }
 
   async getObject(key: string): Promise<Uint8Array | undefined> {
