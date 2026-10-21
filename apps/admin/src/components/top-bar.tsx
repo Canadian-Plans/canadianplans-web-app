@@ -24,7 +24,7 @@ export function TopBar({
       <div className="h-6 w-px bg-border" aria-hidden="true" />
       <WorkspaceSwitcher
         currentWorkspace={workspace}
-        currentSection={section}
+        currentSection={section === 'reports' ? 'reports/sources' : section}
         workspaces={workspaces}
       />
       <Button variant="ghost" className="ml-auto" onClick={() => void onSignOut()}>
