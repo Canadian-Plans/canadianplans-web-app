@@ -32,6 +32,7 @@ test('storefront routes carry the hardened security headers', async ({ request }
   expect(csp).toContain("base-uri 'self'");
   expect(csp).toContain('https://challenges.cloudflare.com');
   expect(csp).toContain('frame-src https://challenges.cloudflare.com');
+  expect(csp).toContain("font-src 'self' data:;");
   // Production must not permit eval on the storefront surface.
   expect(csp).not.toContain("'unsafe-eval'");
 });
@@ -45,6 +46,7 @@ test('embedded Studio gets its own relaxed CSP and same-origin framing', async (
   expect(csp).toContain("'unsafe-eval'");
   expect(csp).toContain('wss://*.api.sanity.io');
   expect(csp).toContain("frame-ancestors 'self'");
+  expect(csp).toContain("font-src 'self' data: https://design-system-static.sanity.io");
   expect(headers['x-frame-options']).toBe('SAMEORIGIN');
   // Transport hardening is still present on Studio.
   expect(headers['strict-transport-security']).toBe(SECURITY_HEADERS['strict-transport-security']);

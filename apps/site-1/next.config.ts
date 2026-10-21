@@ -36,6 +36,8 @@ const SANITY_CONNECT = [
 const SANITY_IMG = ['https://cdn.sanity.io'];
 // The Studio loads its realtime/presentation bridge from the Sanity CDN.
 const SANITY_STUDIO_SCRIPT = ['https://core.sanity-cdn.com'];
+// Sanity Studio 6 (@sanity/ui 5) loads its Inter font from this origin.
+const SANITY_STUDIO_FONT = ['https://design-system-static.sanity.io'];
 
 function dedupe(values: (string | undefined)[]): string[] {
   return [...new Set(values.filter((value): value is string => Boolean(value)))];
@@ -60,7 +62,7 @@ function buildCsp(scope: 'storefront' | 'studio'): string {
     'form-action': ["'self'"],
     'frame-src': scope === 'storefront' ? ['https://challenges.cloudflare.com'] : ["'self'"],
     'img-src': dedupe(["'self'", 'data:', 'blob:', 'https:', ...SANITY_IMG]),
-    'font-src': ["'self'", 'data:'],
+    'font-src': ["'self'", 'data:', ...(scope === 'studio' ? SANITY_STUDIO_FONT : [])],
     'style-src': ["'self'", "'unsafe-inline'"],
     'script-src': dedupe([
       "'self'",
