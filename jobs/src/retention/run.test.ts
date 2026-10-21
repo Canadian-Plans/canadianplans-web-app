@@ -141,6 +141,55 @@ describe('runRetention', () => {
     expect(await backend.asReader().getObject('run-34/data.sql.enc')).toBeDefined();
   });
 
+  it('deletes an abandoned attempt without a manifest once it is past the grace period', async () => {
+    let clock = new Date('2026-09-10T06:17:00.000Z');
+    const backend = new InMemoryArchiveBackend(() => clock);
+    const { publicKeyBase64, privateKeyBase64 } = generateTestRecipientKeyPair();
+    const encryptor: Encryptor = new TestEnvelopeEncryptor(publicKeyBase64);
+    const decryptor: Decryptor = new TestEnvelopeDecryptor(privateKeyBase64);
+    const writer = backend.asWriter();
+    await seedRun(writer, encryptor, 'run-complete', clock);
+    // A failed attempt uploaded one artifact and stopped before its manifest.
+    await writer.putObject('run-failed/data.sql.enc', new Uint8Array([1]));
+    clock = new Date('2026-09-10T06:30:00.000Z');
+    // A later attempt is still uploading when retention starts.
+    await writer.putObject('run-uploading/data.sql.enc', new Uint8Array([2]));
+
+    const report = await runRetention({
+      admin: backend.asRetentionAdmin(),
+      decryptor,
+      now: () => new Date('2026-09-11T06:20:00.000Z'),
+      dryRun: false,
+    });
+
+    expect(report.unreadableManifests).toEqual([]);
+    expect(report.abandonedRunIds).toEqual(['run-failed']);
+    expect(report.pendingRunIds).toEqual(['run-uploading']);
+    expect(report.deleted).toEqual(['run-failed/data.sql.enc']);
+    expect(await backend.asReader().getObject('run-uploading/data.sql.enc')).toBeDefined();
+    expect(await backend.asReader().getObject('run-complete/manifest.json.enc')).toBeDefined();
+  });
+
+  it('fails visibly instead of deleting a manifest-less attempt of unknown age', async () => {
+    const backend = new InMemoryArchiveBackend();
+    const { privateKeyBase64 } = generateTestRecipientKeyPair();
+    const admin = backend.asRetentionAdmin();
+    await backend.asWriter().putObject('run-unknown/data.sql.enc', new Uint8Array([1]));
+    const report = await runRetention({
+      admin: {
+        ...admin,
+        listObjects: async (prefix) =>
+          (await admin.listObjects(prefix)).map(({ key, sizeBytes }) => ({ key, sizeBytes })),
+      },
+      decryptor: new TestEnvelopeDecryptor(privateKeyBase64),
+      now: () => new Date('2030-01-01T00:00:00.000Z'),
+      graceSeconds: 0,
+      dryRun: false,
+    });
+    expect(report.unreadableManifests).toEqual(['run-unknown/manifest.json.enc']);
+    expect(report.deleted).toEqual([]);
+  });
+
   it('never deletes the heartbeat object', async () => {
     const backend = new InMemoryArchiveBackend();
     const { publicKeyBase64, privateKeyBase64 } = generateTestRecipientKeyPair();

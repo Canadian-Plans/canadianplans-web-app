@@ -47,6 +47,8 @@ async function main(): Promise<void> {
       candidateDeletionCount: report.candidateDeletions.length,
       deletedCount: report.deleted.length,
       unreadableManifestCount: report.unreadableManifests.length,
+      abandonedRunCount: report.abandonedRunIds.length,
+      pendingRunCount: report.pendingRunIds.length,
     }),
   );
   if (report.unreadableManifests.length > 0) {

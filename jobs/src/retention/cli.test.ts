@@ -33,6 +33,8 @@ beforeEach(() => {
     candidateDeletions: [],
     deleted: [],
     unreadableManifests: [],
+    abandonedRunIds: [],
+    pendingRunIds: [],
   });
   for (const key of [
     'B2_ARCHIVE_RETENTION_KEY_ID',

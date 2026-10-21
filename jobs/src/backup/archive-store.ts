@@ -14,6 +14,8 @@ export interface ArchiveObjectMeta {
   key: string;
   sizeBytes: number;
   versionId?: string;
+  /** Provider upload time; absent when the listing does not report it. */
+  lastModified?: Date;
 }
 
 export interface ArchiveWriter {
@@ -53,7 +55,14 @@ function parseListObjectsV2(xml: string): ArchiveObjectMeta[] {
     const block = match[1] ?? '';
     const key = /<Key>([\s\S]*?)<\/Key>/.exec(block)?.[1];
     const size = /<Size>(\d+)<\/Size>/.exec(block)?.[1];
-    if (key) results.push({ key, sizeBytes: size ? Number(size) : 0 });
+    const modified = /<LastModified>([\s\S]*?)<\/LastModified>/.exec(block)?.[1];
+    const lastModified = modified ? new Date(modified) : undefined;
+    if (key)
+      results.push({
+        key,
+        sizeBytes: size ? Number(size) : 0,
+        ...(lastModified && Number.isFinite(lastModified.getTime()) ? { lastModified } : {}),
+      });
   }
   return results;
 }
@@ -201,6 +210,7 @@ export class ArchiveCredentialDeniedError extends Error {
 interface StoredObject {
   body: Uint8Array;
   versionId: string;
+  lastModified: Date;
 }
 
 /**
@@ -215,6 +225,8 @@ export class InMemoryArchiveBackend {
   private readonly objects = new Map<string, StoredObject>();
   private versionCounter = 0;
 
+  constructor(private readonly now: () => Date = () => new Date()) {}
+
   scoped(capabilities: readonly Capability[]): ArchiveWriter & ArchiveRetentionAdmin {
     const allowed = new Set(capabilities);
     const require = (capability: Capability): void => {
@@ -224,7 +236,7 @@ export class InMemoryArchiveBackend {
       putObject: async (key, body) => {
         require('put');
         const versionId = `v${++this.versionCounter}`;
-        this.objects.set(key, { body: structuredClone(body), versionId });
+        this.objects.set(key, { body: structuredClone(body), versionId, lastModified: this.now() });
         return { versionId };
       },
       listObjects: async (prefix) => {
@@ -235,6 +247,7 @@ export class InMemoryArchiveBackend {
             key,
             sizeBytes: value.body.byteLength,
             versionId: value.versionId,
+            lastModified: value.lastModified,
           }));
       },
       getObject: async (key) => {

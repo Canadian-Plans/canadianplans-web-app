@@ -110,7 +110,7 @@ describe('S3ArchiveWriter / S3ArchiveReader / S3ArchiveRetentionAdmin', () => {
       if (method === 'PUT') {
         return new Response(null, { status: 200, headers: { 'x-amz-version-id': 'v1' } });
       }
-      const xml = `<?xml version="1.0"?><ListBucketResult><Contents><Key>run-1/data.sql.age</Key><Size>42</Size></Contents></ListBucketResult>`;
+      const xml = `<?xml version="1.0"?><ListBucketResult><Contents><Key>run-1/data.sql.age</Key><LastModified>2026-10-21T06:17:03.000Z</LastModified><Size>42</Size></Contents></ListBucketResult>`;
       return new Response(xml, { status: 200 });
     };
 
@@ -118,7 +118,13 @@ describe('S3ArchiveWriter / S3ArchiveReader / S3ArchiveRetentionAdmin', () => {
     const put = await writer.putObject('run-1/data.sql.age', new Uint8Array([1, 2]));
     expect(put.versionId).toBe('v1');
     const listed = await writer.listObjects('run-1/');
-    expect(listed).toEqual([{ key: 'run-1/data.sql.age', sizeBytes: 42 }]);
+    expect(listed).toEqual([
+      {
+        key: 'run-1/data.sql.age',
+        sizeBytes: 42,
+        lastModified: new Date('2026-10-21T06:17:03.000Z'),
+      },
+    ]);
     expect(requests.map((r) => r.method)).toEqual(['PUT', 'GET']);
   });
 

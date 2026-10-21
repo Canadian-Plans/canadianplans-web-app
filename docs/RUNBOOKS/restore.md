@@ -176,6 +176,13 @@ explicit `BACKUP_RUN_ID` must identify a fresh prefix: the runner rejects any
 prefix already containing artifacts, including an incomplete prior attempt.
 Retry with a new ID; never reuse a successful restore point's prefix.
 
+The manifest is uploaded last. Weekly retention deletes an attempt prefix that has
+no manifest once its newest object is older than the grace period (24 hours): such
+an attempt failed part-way and can never be completed. A newer manifest-less prefix
+may still be uploading and is kept. Retention still fails visibly when a manifest
+exists but cannot be decrypted, or when the archive listing gives no upload time
+for a manifest-less prefix.
+
 Build one canonical manifest containing, at minimum, the run ID, source IDs,
 capture timestamps, tool versions, artifact names, byte counts, record/object
 counts, SHA-256 hashes, and exclusions. The manifest itself is sensitive and
