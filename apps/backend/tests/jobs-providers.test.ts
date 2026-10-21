@@ -82,7 +82,7 @@ describe('outbox provider configuration', () => {
     const outcomes: JobOutcome[] = [];
     const claimed = job();
     const store: OutboxStore = {
-      claim: async () => [claimed],
+      claim: async () => (outcomes.length === 0 ? [claimed] : []),
       recordOutcome: async ({ outcome }) => {
         outcomes.push(outcome);
         return 'recorded';

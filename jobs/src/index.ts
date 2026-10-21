@@ -341,7 +341,7 @@ export interface OutboxRunnerOptions {
   maxBackoffMs?: number;
   /** Per-handler abort timeout in milliseconds; `0` disables the bound. */
   handlerTimeoutMs?: number;
-  /** Wall-clock budget after which no further batches are claimed; `0` disables. */
+  /** Wall-clock budget after which no further jobs are claimed; `0` disables. */
   runDeadlineMs?: number;
   now?: () => Date;
   random?: () => number;
@@ -406,22 +406,22 @@ export class OutboxRunner {
       this.runDeadlineMs > 0 ? this.now().getTime() + this.runDeadlineMs : Number.POSITIVE_INFINITY;
 
     for (const workspaceId of workspaceIds) {
-      // Once the run deadline passes, stop claiming new batches. Jobs already
-      // claimed under a lease are still handled and recorded.
-      if (this.now().getTime() >= deadline) break;
-      const claimedAt = this.now();
-      const jobs = await this.options.store.claim({
-        workspaceId,
-        actorId: input.actorId,
-        leaseOwnerId: this.leaseId(),
-        limit: this.batchSize,
-        leaseExpiresAt: new Date(claimedAt.getTime() + this.leaseMs),
-        now: claimedAt,
-        maxAttempts: this.maxAttempts,
-      });
-      summary.claimed += jobs.length;
-
-      for (const job of jobs) {
+      for (let processed = 0; processed < this.batchSize; processed += 1) {
+        // A job's lease starts immediately before its execution, never while
+        // it waits behind other handlers. Keep the existing per-workspace cap.
+        if (this.now().getTime() >= deadline) break;
+        const claimedAt = this.now();
+        const [job] = await this.options.store.claim({
+          workspaceId,
+          actorId: input.actorId,
+          leaseOwnerId: this.leaseId(),
+          limit: 1,
+          leaseExpiresAt: new Date(claimedAt.getTime() + this.leaseMs),
+          now: claimedAt,
+          maxAttempts: this.maxAttempts,
+        });
+        if (!job) break;
+        summary.claimed += 1;
         const outcome = await this.handle(job);
         const recorded = await this.options.store.recordOutcome({
           workspaceId,
