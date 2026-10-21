@@ -68,7 +68,8 @@ export const preArrivalOrderCopy = {
     title: 'Documents & eSIM',
     intro: 'Rogers requires ID to activate a Canadian number. A clear phone photo is fine.',
     privacyTitle: 'Your ID is private',
-    privacy: 'Preview files stay on this device and are never uploaded. Read our ',
+    privacy:
+      'Preview files stay on this device and are never uploaded. Reselect files after 24 hours. Read our ',
     privacyLink: 'Privacy Policy',
     esimTitle: 'Your eSIM',
     imageLabel: 'Image',

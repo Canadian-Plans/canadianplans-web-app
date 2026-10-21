@@ -6,6 +6,12 @@ Home is a Figma design preview; catalogue pages are placeholders. Order, trackin
 flows are present in code. Live operation still requires approved content,
 configuration and the project's launch evidence.
 
+Pre-arrival preview files are local to the browser, with a 24-hour restore window
+from the last file change. Opening preview storage removes expired or undated legacy
+records across all tab keys; fresh records from other tabs survive. Cleanup runs
+when the preview is used, not in the background while the site is closed. This
+technical preview-cache window does not set retention for real customer documents.
+
 Use `pnpm --filter site-1 dev` from the repository root (port 3001). Shared strict
 TypeScript, ESLint, design tokens and UI primitives apply. The site never imports
 DB packages, backend implementation or server-only adapters.
