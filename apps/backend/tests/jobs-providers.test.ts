@@ -38,6 +38,23 @@ function job(overrides: Partial<ClaimedJob> = {}): ClaimedJob {
 }
 
 describe('outbox provider configuration', () => {
+  it('delivers configured email independently of an absent analytics provider', async () => {
+    const handlers = createOutboxJobHandlers(
+      { EMAIL_PROVIDER: 'fake', NODE_ENV: 'test' },
+      alwaysEligible,
+    );
+    expect(await handlers.get('order_acknowledgement_email')?.(job())).toMatchObject({
+      status: 'completed',
+    });
+    await expect(
+      handlers.get('analytics_order_submitted')?.(
+        job({
+          jobType: 'analytics_order_submitted',
+          payload: { orderId: '22222222-2222-4222-8222-222222222222' },
+        }),
+      ),
+    ).rejects.toMatchObject({ code: 'provider_not_configured', retryable: false });
+  });
   it('constructs the fake email adapter only for the explicit EMAIL_PROVIDER=fake opt-in outside production', async () => {
     const handlers = createOutboxJobHandlers(
       { EMAIL_PROVIDER: 'fake', OUTBOX_ADAPTERS: 'fake', NODE_ENV: 'test' },

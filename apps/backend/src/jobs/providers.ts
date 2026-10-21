@@ -11,7 +11,6 @@ import {
   type EmailAdapter,
 } from '@canadian-plans/adapters';
 import {
-  createFailingJobHandlerRegistry,
   createJobHandlerRegistry,
   JobHandlerError,
   type EmailEligibilityChecker,
@@ -164,9 +163,15 @@ export function createOutboxJobHandlers(
     email = unconfiguredEmailAdapter();
   }
 
-  const base = analytics
-    ? createJobHandlerRegistry({ email, analytics, eligibility })
-    : createFailingJobHandlerRegistry('provider_not_configured');
+  const base = createJobHandlerRegistry({
+    email,
+    analytics: analytics ?? {
+      capture: async () => {
+        throw new JobHandlerError('provider_not_configured', false);
+      },
+    },
+    eligibility,
+  });
 
   // The deletion-ledger handler is registered independently of analytics/email:
   // deleting customer data must work even when no other provider is configured,
