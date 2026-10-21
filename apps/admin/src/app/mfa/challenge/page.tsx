@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import {
   Button,
   Card,
@@ -23,19 +23,55 @@ export default function MfaChallengePage() {
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string>();
+  const [factors, setFactors] = useState<readonly { id: string; name: string }[]>([]);
+  const [factorId, setFactorId] = useState('');
+
+  useEffect(() => {
+    if (!configured) return;
+    let active = true;
+    async function load() {
+      try {
+        const result = await getStaffAuth().mfa.listFactors();
+        if (result.error) throw result.error;
+        if (!active) return;
+        const verified = result.data.totp.filter((factor) => factor.status === 'verified');
+        if (!verified.length) {
+          router.replace('/mfa/enroll');
+          return;
+        }
+        setFactors(
+          verified.map((factor, index) => ({
+            id: factor.id,
+            name: factor.friendly_name?.trim() || `Authenticator ${index + 1}`,
+          })),
+        );
+        setFactorId(verified[0]?.id ?? '');
+      } catch {
+        if (active) setMessage('Could not load authenticators. Reload the page to try again.');
+      }
+    }
+    void load();
+    return () => {
+      active = false;
+    };
+  }, [configured, router]);
 
   async function verify(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!configured || busy) return;
+    if (!configured || busy || !factorId) return;
     setBusy(true);
     setMessage(undefined);
     const auth = getStaffAuth();
     try {
-      const factors = await auth.mfa.listFactors();
-      if (factors.error) throw factors.error;
-      const factor = factors.data.totp.find((item) => item.status === 'verified');
+      const currentFactors = await auth.mfa.listFactors();
+      if (currentFactors.error) throw currentFactors.error;
+      const factor = currentFactors.data.totp.find(
+        (item) => item.id === factorId && item.status === 'verified',
+      );
       if (!factor) {
-        router.replace('/mfa/enroll');
+        setMessage(
+          'That authenticator is no longer available. Reload the page and choose another.',
+        );
         return;
       }
       const verified = await auth.mfa.challengeAndVerify({ factorId: factor.id, code });
@@ -65,6 +101,27 @@ export default function MfaChallengePage() {
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <form onSubmit={verify} className="flex flex-col gap-4">
+            {factors.length > 1 ? (
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="totp-factor">Authenticator</Label>
+                <select
+                  id="totp-factor"
+                  value={factorId}
+                  disabled={busy}
+                  className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+                  onChange={(event) => {
+                    setFactorId(event.target.value);
+                    setCode('');
+                  }}
+                >
+                  {factors.map((factor) => (
+                    <option key={factor.id} value={factor.id}>
+                      {factor.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
             <div className="flex flex-col gap-2">
               <Label htmlFor="totp-code">Authenticator code</Label>
               <Input
@@ -80,7 +137,7 @@ export default function MfaChallengePage() {
                 onChange={(event) => setCode(event.target.value)}
               />
             </div>
-            <Button type="submit" disabled={!configured || busy}>
+            <Button type="submit" disabled={!configured || busy || !factorId}>
               {busy ? 'Verifying…' : 'Verify'}
             </Button>
           </form>
