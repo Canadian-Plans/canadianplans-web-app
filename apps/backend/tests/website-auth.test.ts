@@ -200,6 +200,34 @@ describe('public website credential authentication', () => {
     expect(limiter.inputs).toHaveLength(0);
   });
 
+  it('does not ask for the bot check on a read, but still needs the credential', async () => {
+    admitted = false;
+    const read = await fetch(`${baseUrl}/api/v1/website/offers`);
+    // Past admission: refused for the missing credential, not for the bot check.
+    expect(read.status).toBe(401);
+    const authed = await fetch(`${baseUrl}/api/v1/website/offers`, {
+      headers: { authorization: `Bearer ${VALID_SECRET}` },
+    });
+    expect(authed.status).not.toBe(403);
+    expect(limiter.inputs.length).toBeGreaterThan(0);
+  });
+
+  it('still asks for the bot check on every write', async () => {
+    admitted = false;
+    const leadPath = '/api/v1/website/leads';
+    for (const [method, path] of [
+      ['POST', leadPath],
+      ['PATCH', `${leadPath}/00000000-0000-4000-8000-000000000001`],
+    ] as const) {
+      const response = await fetch(`${baseUrl}${path}`, {
+        method,
+        headers: { authorization: `Bearer ${VALID_SECRET}`, 'content-type': 'application/json' },
+        body: '{}',
+      });
+      expect(response.status).toBe(403);
+    }
+  });
+
   it('ignores spoofed forwarding headers when selecting the IP bucket', async () => {
     for (const address of ['203.0.113.1', '203.0.113.2']) {
       expect(
