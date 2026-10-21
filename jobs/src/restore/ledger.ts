@@ -13,18 +13,27 @@ import { z } from 'zod';
  * check."
  */
 
-export const ledgerEventSchema = z
-  .object({
-    eventId: z.string().min(1),
-    workspaceId: z.string().min(1),
-    subjectType: z.literal('order'),
-    subjectId: z.string().min(1),
-    action: z.literal('delete_customer_data'),
-    occurredAt: z.iso.datetime(),
-    schemaVersion: z.literal(1),
-    versionId: z.string().min(1),
-  })
-  .strict();
+const ledgerEventIdentitySchema = z.object({
+  eventId: z.string().min(1),
+  workspaceId: z.string().min(1),
+  subjectId: z.string().min(1),
+  occurredAt: z.iso.datetime(),
+  schemaVersion: z.literal(1),
+  versionId: z.string().min(1),
+});
+export const ledgerEventSchema = z.discriminatedUnion('action', [
+  ledgerEventIdentitySchema
+    .extend({ action: z.literal('delete_customer_data'), subjectType: z.literal('order') })
+    .strict(),
+  ledgerEventIdentitySchema
+    .extend({
+      action: z.literal('suppress_contact'),
+      subjectType: z.literal('contact'),
+      subjectId: z.string().regex(/^[a-f0-9]{64}$/),
+      reason: z.enum(['hard_bounce', 'complaint', 'manual']),
+    })
+    .strict(),
+]);
 export type LedgerEventRecord = z.infer<typeof ledgerEventSchema>;
 
 export interface LedgerCheckpoint {

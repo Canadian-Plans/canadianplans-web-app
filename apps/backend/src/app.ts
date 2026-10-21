@@ -36,6 +36,7 @@ import {
 import {
   createDefaultEmailRouteDependencies,
   createEmailRouter,
+  createResendWebhookRouter,
   type EmailRouteDependencies,
 } from './routes/email.js';
 import {
@@ -117,6 +118,12 @@ export function createApp(options: CreateAppOptions = {}): Express {
     express.raw({ type: 'application/json', limit: '64kb' }),
     createSanityWebhookRouter(options.sanityWebhook ?? createDefaultSanityWebhookDependencies()),
   );
+  const emailDependencies = options.email ?? createDefaultEmailRouteDependencies();
+  app.use(
+    '/api/v1/webhooks/resend',
+    express.raw({ type: 'application/json', limit: '64kb' }),
+    createResendWebhookRouter(emailDependencies),
+  );
   app.use(express.json({ limit: '64kb' }));
   app.get('/api/v1/health', getHealth);
   app.use(
@@ -146,10 +153,7 @@ export function createApp(options: CreateAppOptions = {}): Express {
   app.use('/api/v1', createOrderRouter(websiteDependencies));
   app.use('/api/v1/website', createWebsiteRouter(websiteDependencies));
   app.use('/api/v1/website', createTrackingRouter(websiteDependencies));
-  app.use(
-    '/api/v1/email',
-    createEmailRouter(options.email ?? createDefaultEmailRouteDependencies()),
-  );
+  app.use('/api/v1/email', createEmailRouter(emailDependencies));
   app.use(createInvalidBodyError(errorTracker));
 
   return app;

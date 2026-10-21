@@ -2,7 +2,6 @@ import {
   createDeletionLedgerFromEnv,
   FakeAnalyticsSink,
   FakeEmailAdapter,
-  FakeSuppressionLedgerPublisher,
   InMemoryDeletionLedger,
   ResendEmailAdapter,
   SesEmailAdapter,
@@ -14,6 +13,7 @@ import {
   createJobHandlerRegistry,
   JobHandlerError,
   type EmailEligibilityChecker,
+  type EmailDeliveryRecorder,
   type JobHandlerRegistry,
 } from '@canadian-plans/jobs';
 import { z } from 'zod';
@@ -25,6 +25,7 @@ import {
 } from '../deletion/ledger.js';
 
 import { DatabaseEmailStore } from '../email/store.js';
+import { loadMachineRegistry } from '../machines/registry.js';
 
 /**
  * The explicit opt-in for the in-memory analytics fake. There is deliberately
@@ -124,9 +125,8 @@ function requireEnv(env: NodeJS.ProcessEnv, name: string, provider: string): str
  */
 export function createOutboxJobHandlers(
   env: NodeJS.ProcessEnv = process.env,
-  eligibility: EmailEligibilityChecker = new DatabaseEmailStore(
-    new FakeSuppressionLedgerPublisher(),
-  ),
+  eligibility: EmailEligibilityChecker = new DatabaseEmailStore(),
+  deliveryOverride?: EmailDeliveryRecorder,
 ): JobHandlerRegistry {
   const explicitFake = env.OUTBOX_ADAPTERS === FAKE_OUTBOX_ADAPTERS_VALUE;
   const allowFakes = explicitFake && env.NODE_ENV !== 'production';
@@ -163,6 +163,30 @@ export function createOutboxJobHandlers(
     email = unconfiguredEmailAdapter();
   }
 
+  const registry =
+    emailProvider === 'resend' ? loadMachineRegistry(env.MACHINE_REGISTRY_JSON) : undefined;
+  const delivery: EmailDeliveryRecorder | undefined =
+    deliveryOverride ??
+    (eligibility instanceof DatabaseEmailStore
+      ? {
+          prepare: async (input) => {
+            const provider = emailProvider;
+            if (!provider) throw new JobHandlerError('provider_not_configured', false);
+            const providerAccount =
+              provider === 'resend'
+                ? registry?.resendForWorkspace(input.workspaceId)?.providerAccount
+                : provider;
+            if (
+              !providerAccount ||
+              (provider === 'resend' && providerAccount !== env.RESEND_ACCOUNT_ID)
+            ) {
+              throw new JobHandlerError('email_account_not_configured', false);
+            }
+            await eligibility.prepareDelivery({ ...input, provider, providerAccount });
+          },
+          recordResult: (input) => eligibility.recordDeliveryResult(input),
+        }
+      : undefined);
   const base = createJobHandlerRegistry({
     email,
     analytics: analytics ?? {
@@ -171,6 +195,7 @@ export function createOutboxJobHandlers(
       },
     },
     eligibility,
+    delivery,
   });
 
   // The deletion-ledger handler is registered independently of analytics/email:
@@ -184,5 +209,28 @@ export function createOutboxJobHandlers(
       new DeletionLedgerService({ ledger, store: new DatabaseDeletionLedgerStore() }),
     ),
   );
+  handlers.set('suppression_ledger_publish', async (job) => {
+    const parsed = z
+      .object({
+        contactHash: z.string().regex(/^[a-f0-9]{64}$/),
+        reason: z.enum(['hard_bounce', 'complaint', 'manual']),
+        occurredAt: z.iso.datetime(),
+      })
+      .strict()
+      .safeParse(job.payload);
+    if (job.payloadVersion !== 1 || !parsed.success)
+      throw new JobHandlerError('invalid_job_payload', false);
+    if (!ledger) throw new JobHandlerError('deletion_ledger_not_configured', true);
+    const ack = await ledger.publish({
+      eventId: job.messageId,
+      workspaceId: job.workspaceId,
+      action: 'suppress_contact',
+      subjectType: 'contact',
+      subjectId: parsed.data.contactHash,
+      reason: parsed.data.reason,
+      occurredAt: parsed.data.occurredAt,
+    });
+    return { status: 'completed', providerId: ack.acknowledgementId };
+  });
   return handlers;
 }

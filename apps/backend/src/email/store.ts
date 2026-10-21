@@ -5,11 +5,12 @@ import {
   emailSuppressions,
   followUpSchedules,
   marketingConsents,
+  outboxJobs,
   withTenantTx,
   type TenantTransaction,
 } from '@canadian-plans/db';
 import type { EmailEligibilityChecker } from '@canadian-plans/jobs';
-import type { SuppressionLedgerPublisher } from '@canadian-plans/adapters';
+import type { ProviderDeliveryResult } from '@canadian-plans/adapters';
 
 export type EmailMessageStatus =
   'queued' | 'sent' | 'delivered' | 'bounced' | 'complained' | 'failed' | 'uncertain';
@@ -50,9 +51,13 @@ export interface ProviderEventInput {
   workspaceId: string;
   actorId: string;
   providerEventId: string;
+  provider: string;
+  providerAccount: string;
+  providerMessageId: string;
+  hardBounce: boolean;
   eventType: 'delivered' | 'bounce' | 'complaint' | 'reject';
   messageId?: string;
-  contactHash?: string;
+  contactHash: string;
   receivedAt: Date;
 }
 
@@ -93,24 +98,108 @@ function statusValue(value: string): EmailMessageStatus {
   return known.find((status) => status === value) ?? 'uncertain';
 }
 
-/**
- * DB-backed email store. `ledger` publishes durable suppression changes
- * (IMPLEMENTATION_PLAN.md §13); until the real ledger exists (T4R), this is
- * constructed with `FakeSuppressionLedgerPublisher` everywhere — see the
- * BLOCKERS note in the T18 report.
- */
+/** Tenant-scoped persistence; all external publication happens through the outbox. */
 export class DatabaseEmailStore implements EmailStore {
-  constructor(
-    private readonly ledger: SuppressionLedgerPublisher,
-    private readonly database: EmailDatabase = defaultDatabase,
-  ) {}
+  constructor(private readonly database: EmailDatabase = defaultDatabase) {}
+
+  async prepareDelivery(
+    input: QueueEmailMessageInput & { provider: string; providerAccount: string },
+  ): Promise<void> {
+    await this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: input.actorId },
+      async (tx) => {
+        await tx
+          .insert(emailMessages)
+          .values({ ...input, status: 'queued' })
+          .onConflictDoNothing();
+        const [row] = await tx
+          .select()
+          .from(emailMessages)
+          .where(
+            and(
+              eq(emailMessages.workspaceId, input.workspaceId),
+              eq(emailMessages.messageId, input.messageId),
+            ),
+          )
+          .for('update');
+        if (
+          !row ||
+          row.contactHash !== input.contactHash ||
+          (row.provider !== null &&
+            (row.provider !== input.provider || row.providerAccount !== input.providerAccount))
+        ) {
+          throw new Error('email_delivery_binding_mismatch');
+        }
+        await tx
+          .update(emailMessages)
+          .set({ provider: input.provider, providerAccount: input.providerAccount })
+          .where(
+            and(
+              eq(emailMessages.workspaceId, input.workspaceId),
+              eq(emailMessages.messageId, input.messageId),
+            ),
+          );
+      },
+    );
+  }
+
+  async recordDeliveryResult(input: {
+    workspaceId: string;
+    actorId: string;
+    messageId: string;
+    result: ProviderDeliveryResult;
+  }): Promise<void> {
+    await this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: input.actorId },
+      async (tx) => {
+        const [row] = await tx
+          .select()
+          .from(emailMessages)
+          .where(
+            and(
+              eq(emailMessages.workspaceId, input.workspaceId),
+              eq(emailMessages.messageId, input.messageId),
+            ),
+          )
+          .for('update');
+        if (!row) throw new Error('email_delivery_missing');
+        if (
+          input.result.status === 'delivered' &&
+          row.providerId &&
+          row.providerId !== input.result.providerId
+        ) {
+          throw new Error('email_provider_id_mismatch');
+        }
+        await tx
+          .update(emailMessages)
+          .set({
+            providerId:
+              input.result.status === 'delivered' ? input.result.providerId : row.providerId,
+            status: row.lastEventAt
+              ? row.status
+              : input.result.status === 'delivered'
+                ? 'sent'
+                : 'uncertain',
+            lastErrorCode: input.result.status === 'uncertain' ? input.result.errorCode : null,
+            updatedAt: new Date(),
+          })
+          .where(
+            and(
+              eq(emailMessages.workspaceId, input.workspaceId),
+              eq(emailMessages.messageId, input.messageId),
+            ),
+          );
+      },
+    );
+  }
 
   async checkTransactional(input: {
     workspaceId: string;
+    actorId: string;
     contactHash: string;
   }): Promise<{ eligible: boolean; reason?: string }> {
     return this.database.withTenantTx(
-      { workspaceId: input.workspaceId, actorId: 'system:email' },
+      { workspaceId: input.workspaceId, actorId: input.actorId },
       async (tx) => {
         const suppressed = await isSuppressed(tx, input.workspaceId, input.contactHash);
         return suppressed ? { eligible: false, reason: suppressed } : { eligible: true };
@@ -120,12 +209,13 @@ export class DatabaseEmailStore implements EmailStore {
 
   async checkMarketing(input: {
     workspaceId: string;
+    actorId: string;
     contactHash: string;
     leadId?: string;
     orderId?: string;
   }): Promise<{ eligible: boolean; reason?: string }> {
     return this.database.withTenantTx(
-      { workspaceId: input.workspaceId, actorId: 'system:email' },
+      { workspaceId: input.workspaceId, actorId: input.actorId },
       async (tx) => {
         const suppressed = await isSuppressed(tx, input.workspaceId, input.contactHash);
         if (suppressed) return { eligible: false, reason: suppressed };
@@ -172,76 +262,107 @@ export class DatabaseEmailStore implements EmailStore {
     return this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.actorId },
       async (tx) => {
+        // Correlate against a send prepared BEFORE the network call. A signed
+        // provider event cannot select a tenant/contact or impersonate a job.
+        const [message] = await tx
+          .select()
+          .from(emailMessages)
+          .where(
+            and(
+              eq(emailMessages.workspaceId, input.workspaceId),
+              eq(emailMessages.provider, input.provider),
+              eq(emailMessages.providerAccount, input.providerAccount),
+              input.messageId
+                ? eq(emailMessages.messageId, input.messageId)
+                : eq(emailMessages.providerId, input.providerMessageId),
+            ),
+          )
+          .for('update');
+        if (
+          !message ||
+          message.contactHash !== input.contactHash ||
+          (message.providerId !== null && message.providerId !== input.providerMessageId)
+        )
+          return 'invalid';
         const inserted = await tx
           .insert(emailProviderEvents)
           .values({
             workspaceId: input.workspaceId,
+            provider: input.provider,
+            providerAccount: input.providerAccount,
             providerEventId: input.providerEventId,
             eventType: input.eventType,
-            messageId: input.messageId,
-            contactHash: input.contactHash,
+            messageId: message.messageId,
+            contactHash: message.contactHash,
             receivedAt: input.receivedAt,
           })
           .onConflictDoNothing()
           .returning({ id: emailProviderEvents.id });
         if (inserted.length === 0) return 'duplicate';
-
         const now = new Date();
-        if (input.messageId) {
-          const status: EmailMessageStatus =
-            input.eventType === 'delivered'
-              ? 'delivered'
-              : input.eventType === 'bounce'
+        const nextStatus: EmailMessageStatus =
+          input.eventType === 'delivered'
+            ? 'delivered'
+            : input.eventType === 'bounce'
+              ? input.hardBounce
                 ? 'bounced'
-                : input.eventType === 'complaint'
-                  ? 'complained'
-                  : 'failed';
-          await tx
-            .update(emailMessages)
-            .set({ status, lastEventAt: now, updatedAt: now })
-            .where(
-              and(
-                eq(emailMessages.workspaceId, input.workspaceId),
-                eq(emailMessages.messageId, input.messageId),
-              ),
-            );
-        }
-
-        if (
-          (input.eventType === 'bounce' || input.eventType === 'complaint') &&
-          input.contactHash
-        ) {
+                : 'uncertain'
+              : input.eventType === 'complaint'
+                ? 'complained'
+                : 'failed';
+        // Late delivery or rejection must not erase a permanent bounce/complaint.
+        const rank: Record<string, number> = {
+          queued: 0,
+          sent: 1,
+          uncertain: 1,
+          failed: 2,
+          delivered: 3,
+          bounced: 4,
+          complained: 5,
+        };
+        const status =
+          (rank[message.status] ?? 0) > (rank[nextStatus] ?? 0) ? message.status : nextStatus;
+        await tx
+          .update(emailMessages)
+          .set({ status, providerId: input.providerMessageId, lastEventAt: now, updatedAt: now })
+          .where(
+            and(
+              eq(emailMessages.workspaceId, input.workspaceId),
+              eq(emailMessages.messageId, message.messageId),
+            ),
+          );
+        if ((input.eventType === 'bounce' && input.hardBounce) || input.eventType === 'complaint') {
           const reason: SuppressionReason =
             input.eventType === 'bounce' ? 'hard_bounce' : 'complaint';
           const [row] = await tx
             .insert(emailSuppressions)
             .values({
               workspaceId: input.workspaceId,
-              contactHash: input.contactHash,
+              contactHash: message.contactHash,
               reason,
               sourceEventId: input.providerEventId,
             })
             .onConflictDoNothing()
             .returning({ id: emailSuppressions.id });
-          if (row) {
-            await this.ledger.publish({
+          if (row)
+            await tx.insert(outboxJobs).values({
               workspaceId: input.workspaceId,
-              operationId: `suppress:${input.workspaceId}:${input.contactHash}:${reason}`,
-              operation: 'suppress',
-              contactHash: input.contactHash,
-              reason,
-              occurredAt: now.toISOString(),
+              jobType: 'suppression_ledger_publish',
+              dedupeKey: row.id,
+              payload: {
+                contactHash: message.contactHash,
+                reason,
+                occurredAt: now.toISOString(),
+              },
             });
-          }
         }
-
         await tx
           .update(emailProviderEvents)
           .set({ appliedAt: now })
           .where(
             and(
               eq(emailProviderEvents.workspaceId, input.workspaceId),
-              eq(emailProviderEvents.providerEventId, input.providerEventId),
+              eq(emailProviderEvents.id, inserted[0]!.id),
             ),
           );
         return 'applied';
@@ -297,7 +418,7 @@ export class DatabaseEmailStore implements EmailStore {
     now: Date;
   }): Promise<void> {
     await this.database.withTenantTx(
-      { workspaceId: input.workspaceId, actorId: 'public:unsubscribe' },
+      { workspaceId: input.workspaceId, actorId: input.workspaceId },
       async (tx) => {
         await tx.insert(marketingConsents).values({
           workspaceId: input.workspaceId,

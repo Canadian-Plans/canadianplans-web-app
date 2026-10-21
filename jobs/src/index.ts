@@ -11,6 +11,7 @@ export const outboxJobTypes = [
   'analytics_order_submitted',
   'analytics_lead_saved',
   'deletion_ledger_publish',
+  'suppression_ledger_publish',
 ] as const;
 export type OutboxJobType = (typeof outboxJobTypes)[number];
 
@@ -33,14 +34,41 @@ const emailJobTypeToTemplate: Record<string, EmailTemplate> = {
 export interface EmailEligibilityChecker {
   checkTransactional(input: {
     workspaceId: string;
+    actorId: string;
     contactHash: string;
   }): Promise<{ eligible: boolean; reason?: string }>;
   checkMarketing(input: {
     workspaceId: string;
+    actorId: string;
     contactHash: string;
     leadId?: string;
     orderId?: string;
   }): Promise<{ eligible: boolean; reason?: string }>;
+}
+
+export interface EmailDeliveryRecorder {
+  prepare(input: {
+    workspaceId: string;
+    actorId: string;
+    messageId: string;
+    contactHash: string;
+    template: EmailTemplate;
+    messageClass: 'transactional' | 'marketing';
+    leadId?: string;
+    orderId?: string;
+  }): Promise<void>;
+  recordResult(input: {
+    workspaceId: string;
+    actorId: string;
+    messageId: string;
+    result: import('@canadian-plans/adapters').ProviderDeliveryResult;
+  }): Promise<void>;
+}
+
+function emailActor(job: ClaimedJob): string {
+  const actor = z.uuid().safeParse(job.actorId);
+  if (!actor.success) throw new JobHandlerError('email_actor_missing', false);
+  return actor.data;
 }
 
 export interface ClaimedJob {
@@ -53,6 +81,8 @@ export interface ClaimedJob {
   /** Attempt number after the atomic claim increment. */
   attempts: number;
   leaseOwnerId: string;
+  /** Set by the runner from its verified scheduler identity, never job payload. */
+  actorId?: string;
 }
 
 export type JobOutcome =
@@ -173,6 +203,7 @@ function isStringRecord(value: unknown): value is Record<string, string> {
 function transactionalEmailHandler(
   email: EmailAdapter,
   eligibility: EmailEligibilityChecker,
+  delivery?: EmailDeliveryRecorder,
 ): JobHandler {
   return async (job) => {
     if (job.payloadVersion !== 1) throw new JobHandlerError('unsupported_payload_version', false);
@@ -184,6 +215,7 @@ function transactionalEmailHandler(
     if (!parsed.success || !template) throw new JobHandlerError('invalid_job_payload', false);
     const check = await eligibility.checkTransactional({
       workspaceId: job.workspaceId,
+      actorId: emailActor(job),
       contactHash: parsed.data.contactHash,
     });
     if (!check.eligible) {
@@ -195,6 +227,15 @@ function transactionalEmailHandler(
         providerId: `skipped:${safeErrorCode(check.reason ?? 'suppressed', 'suppressed')}`,
       };
     }
+    await delivery?.prepare({
+      workspaceId: job.workspaceId,
+      actorId: emailActor(job),
+      messageId: job.messageId,
+      template,
+      messageClass: 'transactional',
+      contactHash: parsed.data.contactHash,
+      orderId: parsed.data.orderId,
+    });
     const result = await email.send({
       workspaceId: job.workspaceId,
       messageId: job.messageId,
@@ -206,6 +247,12 @@ function transactionalEmailHandler(
         'variables' in parsed.data && isStringRecord(parsed.data.variables)
           ? parsed.data.variables
           : undefined,
+    });
+    await delivery?.recordResult({
+      workspaceId: job.workspaceId,
+      actorId: emailActor(job),
+      messageId: job.messageId,
+      result,
     });
     return result.status === 'delivered'
       ? { status: 'completed', providerId: result.providerId }
@@ -223,24 +270,48 @@ export function createJobHandlerRegistry(dependencies: {
   email: EmailAdapter;
   analytics: AnalyticsSink;
   eligibility: EmailEligibilityChecker;
+  delivery?: EmailDeliveryRecorder;
 }): JobHandlerRegistry {
   return new Map<string, JobHandler>([
     [
       'order_acknowledgement_email',
-      transactionalEmailHandler(dependencies.email, dependencies.eligibility),
+      transactionalEmailHandler(
+        dependencies.email,
+        dependencies.eligibility,
+        dependencies.delivery,
+      ),
     ],
-    ['order_status_email', transactionalEmailHandler(dependencies.email, dependencies.eligibility)],
+    [
+      'order_status_email',
+      transactionalEmailHandler(
+        dependencies.email,
+        dependencies.eligibility,
+        dependencies.delivery,
+      ),
+    ],
     [
       'order_awaiting_customer_email',
-      transactionalEmailHandler(dependencies.email, dependencies.eligibility),
+      transactionalEmailHandler(
+        dependencies.email,
+        dependencies.eligibility,
+        dependencies.delivery,
+      ),
     ],
     [
       'order_dispatch_email',
-      transactionalEmailHandler(dependencies.email, dependencies.eligibility),
+      transactionalEmailHandler(
+        dependencies.email,
+        dependencies.eligibility,
+        dependencies.delivery,
+      ),
     ],
     [
       'order_activation_email',
-      transactionalEmailHandler(dependencies.email, dependencies.eligibility),
+      transactionalEmailHandler(
+        dependencies.email,
+        dependencies.eligibility,
+        dependencies.delivery,
+      ),
     ],
     [
       'abandoned_form_marketing_email',
@@ -251,6 +322,7 @@ export function createJobHandlerRegistry(dependencies: {
         if (!parsed.success) throw new JobHandlerError('invalid_job_payload', false);
         const check = await dependencies.eligibility.checkMarketing({
           workspaceId: job.workspaceId,
+          actorId: emailActor(job),
           contactHash: parsed.data.contactHash,
           leadId: parsed.data.leadId,
         });
@@ -260,6 +332,15 @@ export function createJobHandlerRegistry(dependencies: {
             providerId: `skipped:${safeErrorCode(check.reason ?? 'ineligible', 'ineligible')}`,
           };
         }
+        await dependencies.delivery?.prepare({
+          workspaceId: job.workspaceId,
+          actorId: emailActor(job),
+          messageId: job.messageId,
+          template: 'abandoned_form_marketing',
+          messageClass: 'marketing',
+          contactHash: parsed.data.contactHash,
+          leadId: parsed.data.leadId,
+        });
         const result = await dependencies.email.send({
           workspaceId: job.workspaceId,
           messageId: job.messageId,
@@ -267,6 +348,12 @@ export function createJobHandlerRegistry(dependencies: {
           toAddress: parsed.data.toAddress,
           leadId: parsed.data.leadId,
           unsubscribeUrl: parsed.data.unsubscribeUrl,
+        });
+        await dependencies.delivery?.recordResult({
+          workspaceId: job.workspaceId,
+          actorId: emailActor(job),
+          messageId: job.messageId,
+          result,
         });
         return result.status === 'delivered'
           ? { status: 'completed', providerId: result.providerId }
@@ -422,7 +509,7 @@ export class OutboxRunner {
         });
         if (!job) break;
         summary.claimed += 1;
-        const outcome = await this.handle(job);
+        const outcome = await this.handle({ ...job, actorId: input.actorId });
         const recorded = await this.options.store.recordOutcome({
           workspaceId,
           actorId: input.actorId,

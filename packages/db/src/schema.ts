@@ -1837,6 +1837,8 @@ export const emailMessages = appSchema
       contactHash: text('contact_hash').notNull(),
       status: text('status').default('queued').notNull(),
       providerId: text('provider_id'),
+      provider: text('provider'),
+      providerAccount: text('provider_account'),
       lastErrorCode: text('last_error_code'),
       lastEventAt: timestamp('last_event_at', { withTimezone: true, mode: 'date' }),
       createdAt: createdAt(),
@@ -1865,6 +1867,16 @@ export const emailMessages = appSchema
         columns: [table.workspaceId, table.orderId],
         foreignColumns: [orders.workspaceId, orders.id],
       }),
+      unique('email_messages_provider_id_unique').on(
+        table.workspaceId,
+        table.provider,
+        table.providerAccount,
+        table.providerId,
+      ),
+      check(
+        'email_messages_provider_pair_check',
+        sql`(${table.provider} is null) = (${table.providerAccount} is null)`,
+      ),
       index('email_messages_workspace_status_idx').on(table.workspaceId, table.status),
       index('email_messages_workspace_contact_hash_idx').on(table.workspaceId, table.contactHash),
       tenantPolicy('email_messages_tenant_policy', table.workspaceId),
@@ -2028,6 +2040,8 @@ export const emailProviderEvents = appSchema
         .notNull()
         .references(() => workspaces.id, { onDelete: 'cascade' }),
       providerEventId: text('provider_event_id').notNull(),
+      provider: text('provider').default('legacy').notNull(),
+      providerAccount: text('provider_account').default('legacy').notNull(),
       eventType: text('event_type').notNull(),
       messageId: uuid('message_id'),
       contactHash: text('contact_hash'),
@@ -2039,6 +2053,8 @@ export const emailProviderEvents = appSchema
       unique('email_provider_events_workspace_id_id_unique').on(table.workspaceId, table.id),
       unique('email_provider_events_workspace_provider_event_unique').on(
         table.workspaceId,
+        table.provider,
+        table.providerAccount,
         table.providerEventId,
       ),
       check(

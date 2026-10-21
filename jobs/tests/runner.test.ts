@@ -19,9 +19,75 @@ const job = (overrides: Partial<ClaimedJob> = {}): ClaimedJob => ({
   messageId: crypto.randomUUID(),
   payloadVersion: 1,
   payload: { orderId: '22222222-2222-4222-8222-222222222222' },
+  actorId: '20000000-0000-4000-8000-000000000781',
   attempts: 1,
   leaseOwnerId: crypto.randomUUID(),
   ...overrides,
+});
+
+describe('email delivery boundary', () => {
+  it('prepares correlation before sending and records the provider result afterwards', async () => {
+    const order: string[] = [];
+    const registry = createJobHandlerRegistry({
+      email: {
+        send: async () => {
+          order.push('send');
+          return { status: 'delivered', providerId: 'resend-id' };
+        },
+      },
+      analytics: new FakeAnalyticsSink(),
+      eligibility: {
+        checkTransactional: async () => ({ eligible: true }),
+        checkMarketing: async () => ({ eligible: true }),
+      },
+      delivery: {
+        prepare: async () => {
+          order.push('prepare');
+        },
+        recordResult: async () => {
+          order.push('record');
+        },
+      },
+    });
+    await registry.get('order_acknowledgement_email')?.(
+      job({
+        jobType: 'order_acknowledgement_email',
+        payload: {
+          orderId: crypto.randomUUID(),
+          reference: 'CP-TEST',
+          toAddress: 'test@example.test',
+          contactHash: 'hash',
+        },
+      }),
+    );
+    expect(order).toEqual(['prepare', 'send', 'record']);
+  });
+  it('rejects email execution without a scheduler actor', async () => {
+    const email = new FakeEmailAdapter();
+    const registry = createJobHandlerRegistry({
+      email,
+      analytics: new FakeAnalyticsSink(),
+      eligibility: {
+        checkTransactional: async () => ({ eligible: true }),
+        checkMarketing: async () => ({ eligible: true }),
+      },
+    });
+    await expect(
+      registry.get('order_acknowledgement_email')?.(
+        job({
+          actorId: undefined,
+          jobType: 'order_acknowledgement_email',
+          payload: {
+            orderId: crypto.randomUUID(),
+            reference: 'CP-TEST',
+            toAddress: 'test@example.test',
+            contactHash: 'hash',
+          },
+        }),
+      ),
+    ).rejects.toMatchObject({ code: 'email_actor_missing' });
+    expect(email.deliveries).toEqual([]);
+  });
 });
 
 describe('outbox runner', () => {

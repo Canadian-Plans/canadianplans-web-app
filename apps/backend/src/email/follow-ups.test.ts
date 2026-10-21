@@ -64,7 +64,7 @@ describe('FollowUpRunner', () => {
     const enqueue = vi.fn(async () => ({ messageId: 'should-not-be-called' }));
 
     const runner = new FollowUpRunner(schedules, state, eligibility, enqueue);
-    const tally = await runner.runDue(workspaceId);
+    const tally = await runner.runDue(workspaceId, '20000000-0000-4000-8000-000000000781');
 
     expect(enqueue).not.toHaveBeenCalled();
     expect(schedules.cancelled).toEqual([item.id]);
@@ -87,7 +87,7 @@ describe('FollowUpRunner', () => {
     const enqueue = vi.fn(async () => ({ messageId: 'msg-1' }));
 
     const runner = new FollowUpRunner(schedules, state, eligibility, enqueue);
-    const tally = await runner.runDue(workspaceId);
+    const tally = await runner.runDue(workspaceId, '20000000-0000-4000-8000-000000000781');
 
     expect(enqueue).toHaveBeenCalledTimes(1);
     expect(schedules.sent).toEqual([item.id]);
@@ -109,7 +109,7 @@ describe('FollowUpRunner', () => {
     const enqueue = vi.fn(async () => ({ messageId: 'msg-1' }));
 
     const runner = new FollowUpRunner(schedules, state, eligibility, enqueue);
-    const tally = await runner.runDue(workspaceId);
+    const tally = await runner.runDue(workspaceId, '20000000-0000-4000-8000-000000000781');
 
     expect(enqueue).not.toHaveBeenCalled();
     expect(schedules.skipped).toEqual([item.id]);
@@ -131,7 +131,7 @@ describe('FollowUpRunner', () => {
     const enqueue = vi.fn(async () => ({ messageId: 'msg-1' }));
 
     const runner = new FollowUpRunner(schedules, state, eligibility, enqueue);
-    await runner.runDue(workspaceId);
+    await runner.runDue(workspaceId, '20000000-0000-4000-8000-000000000781');
 
     expect(enqueue).not.toHaveBeenCalled();
     expect(schedules.cancelled).toEqual([item.id]);

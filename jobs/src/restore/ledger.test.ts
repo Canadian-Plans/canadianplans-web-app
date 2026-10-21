@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   reconcileLedger,
   signCheckpoint,
+  ledgerEventSchema,
   type LedgerEventRecord,
   type LedgerReader,
 } from './ledger.js';
@@ -10,7 +11,7 @@ import {
 const KEY = 'checkpoint-verification-key';
 
 function baseEvent(overrides: Partial<LedgerEventRecord> = {}): LedgerEventRecord {
-  return {
+  return ledgerEventSchema.parse({
     eventId: 'op-1',
     workspaceId: 'w1',
     subjectType: 'order',
@@ -20,7 +21,7 @@ function baseEvent(overrides: Partial<LedgerEventRecord> = {}): LedgerEventRecor
     schemaVersion: 1,
     versionId: 'v1',
     ...overrides,
-  };
+  });
 }
 
 function checkpointFor(events: LedgerEventRecord[], now = new Date('2026-09-14T01:00:00.000Z')) {
@@ -55,6 +56,34 @@ describe('reconcileLedger', () => {
     });
     expect(result).toEqual({ status: 'reconciled', replayedEventIds: ['op-1'] });
     expect(replayed).toEqual(['op-1']);
+  });
+
+  it('includes a suppression event in the same authenticated restore checkpoint', async () => {
+    const suppression: LedgerEventRecord = {
+      eventId: 'suppress-1',
+      workspaceId: 'w1',
+      subjectType: 'contact',
+      subjectId: 'a'.repeat(64),
+      action: 'suppress_contact',
+      reason: 'hard_bounce',
+      occurredAt: '2026-09-14T00:00:00.000Z',
+      schemaVersion: 1,
+      versionId: 'v1',
+    };
+    const replayed: LedgerEventRecord[] = [];
+    const result = await reconcileLedger({
+      reader: {
+        listEvents: async () => [suppression],
+        getFreshCheckpoint: async () => checkpointFor([suppression]),
+      },
+      verificationKey: KEY,
+      now: () => new Date('2026-09-14T01:30:00.000Z'),
+      replay: async (event) => {
+        replayed.push(event);
+      },
+    });
+    expect(result.status).toBe('reconciled');
+    expect(replayed).toEqual([suppression]);
   });
 
   it('fails closed when the ledger has no checkpoint at all', async () => {

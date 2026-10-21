@@ -137,15 +137,22 @@ connecting Sanity later needs no code change.
 
 - `EMAIL_PROVIDER` — backend-only, explicit selection: `fake`, `resend`, or `ses`. There is no implicit default; an unset or unrecognised value fails every email job closed with `provider_not_configured` rather than guessing. `fake` is only honoured outside `NODE_ENV=production`. Set to `fake` in CI and preview deployments; `resend` is the live default (OPEN_INPUTS #23: Resend selected for launch); `ses` remains available but is deferred to a later migration.
 - `EMAIL_CONTACT_HASH_SECRET` — backend-only, at least 16 characters. Keys the HMAC used to match a contact against suppression/consent records without storing the raw address; rotating it invalidates existing unsubscribe links and orphans old suppression matches, so treat it as a durable secret, not a rotate-on-a-whim one.
-- `EMAIL_WEBHOOK_SHARED_SECRET` — backend-only shared secret gating `/api/v1/email/webhook/events`. Interim verification only: provider webhook notifications should move to the provider's supported signed transport (Resend's Svix signature, or SES/SNS) as a follow-up.
+- `EMAIL_WEBHOOK_SHARED_SECRET` — retired; the old normalized endpoint returns 404. Configure native Resend verification through `MACHINE_REGISTRY_JSON` instead.
 - `MARKETING_CONSENT_VERSION` — the consent-version string recorded when a customer unsubscribes via the no-login link; defaults to `"1"` if unset.
 
 ## Resend (current email provider)
 
+- `RESEND_ACCOUNT_ID` — server-owned account label matching the active Resend webhook registry entry for each sending workspace. Sending fails closed if the mapping is absent, ambiguous, or differs from this label.
 - `RESEND_API_KEY`
 - `RESEND_FROM_EMAIL` — must be an address on a domain verified in the Resend account
 - `RESEND_FROM_NAME`
 - `RESEND_REPLY_TO_EMAIL` — optional
+
+Configure Resend's webhook URL as `/api/v1/webhooks/resend/<selector>` and subscribe to `email.delivered`, `email.bounced`, `email.complained`, and `email.failed`. Add a webhook registry entry with `provider: "resend"`, the account label in `providerAccount`, its workspace UUID, a stable machine `actorId` UUID, and the dashboard's `whsec_...` signing secret. The endpoint verifies native `svix-id`, `svix-timestamp`, and `svix-signature` over the original bytes within five minutes. No workspace or account header from the provider is trusted. Use a separate secret for each active registry entry.
+
+Apply migration 0022 before deploying. Create the native provider endpoint and registry mapping through the owner's deployment process; do not route the old shared-secret protocol to it. Newly prepared sends include a logical message tag and a stable idempotency key; events must match that recorded workspace/account/contact and provider ID. Old uncorrelated messages are not guessed into an account: the endpoint returns 503 for reconciliation/retry. Inspect those events during cutover. Resend's idempotency window remains provider-defined; uncertain sends require reconciliation, not indefinite blind retry.
+
+Bounce/complaint suppression commits with a `suppression_ledger_publish` outbox job, using the same `DELETION_LEDGER_*` publisher and authenticated restore checkpoint as deletion events. An unavailable ledger leaves the job pending/failed and visible; it never falls back to an in-memory production publisher. The recovery integration must accept and replay `suppress_contact` events (keyed contact digest and reason) before reopening restored data.
 
 ## AWS SES (deferred)
 
@@ -157,7 +164,7 @@ Not selected for launch (OPEN_INPUTS #23); kept wired for a later migration off 
 - `SES_FROM_EMAIL`
 - `SES_FROM_NAME`
 - `SES_REPLY_TO_EMAIL` — optional
-- `SES_CONFIGURATION_SET_NAME` — optional; required in practice to receive delivery/bounce/complaint events at `/api/v1/email/webhook/events`
+- `SES_CONFIGURATION_SET_NAME` — optional. Native SES/SNS event ingestion is not implemented; the retired normalized webhook cannot be used for SES.
 
 ## Observability and analytics
 

@@ -393,6 +393,19 @@ provider account. A valid delivery is durably deduplicated in the tenant inbox
 and acknowledged `200`; the body is only a document selector, never commercial
 authority.
 
+### `POST /api/v1/webhooks/resend/{selector}`
+
+Native Resend raw-JSON endpoint (64 KiB limit), mounted before JSON parsing. The
+active registry entry determines provider account, workspace and machine actor
+after verifying the Svix signature and five-minute timestamp window. Body tenant
+fields have no authority. Delivery/bounce/complaint/failure events must correlate
+to a prepared send in that account and match its recipient digest; unknown sends
+return 503 for retry/reconciliation. The signed `svix-id` is deduplicated within
+workspace/provider/account. Temporary bounces do not create permanent suppression;
+a later delivery clears temporary-bounce uncertainty but cannot erase a permanent bounce or complaint. Other signed
+event types are acknowledged as ignored. The old `/api/v1/email/webhook/events`
+shared-secret endpoint is retired (404). See ENV.md for the required cutover.
+
 ### `GET /api/v1/staff/workspaces/{workspaceId}/catalogue`
 
 Any staff member with `workspace.read` can view the read-only last sync

@@ -57,7 +57,7 @@ export class FollowUpRunner {
     private readonly now: () => Date = () => new Date(),
   ) {}
 
-  async runDue(workspaceId: string): Promise<Record<FollowUpOutcome, number>> {
+  async runDue(workspaceId: string, actorId: string): Promise<Record<FollowUpOutcome, number>> {
     const tally: Record<FollowUpOutcome, number> = {
       sent: 0,
       skipped_ineligible: 0,
@@ -66,13 +66,13 @@ export class FollowUpRunner {
     };
     const due = await this.schedules.listDue(workspaceId, this.now());
     for (const item of due) {
-      const outcome = await this.runOne(item);
+      const outcome = await this.runOne(item, actorId);
       tally[outcome] += 1;
     }
     return tally;
   }
 
-  private async runOne(item: DueFollowUp): Promise<FollowUpOutcome> {
+  private async runOne(item: DueFollowUp, actorId: string): Promise<FollowUpOutcome> {
     if (item.leadId) {
       const lead = await this.state.leadState(item.workspaceId, item.leadId);
       if (!lead || terminalLeadStatuses.has(lead.status)) {
@@ -90,6 +90,7 @@ export class FollowUpRunner {
 
     const check = await this.eligibility.checkMarketing({
       workspaceId: item.workspaceId,
+      actorId,
       contactHash: item.contactHash,
       leadId: item.leadId,
       orderId: item.orderId,

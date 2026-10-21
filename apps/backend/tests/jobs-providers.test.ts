@@ -31,6 +31,7 @@ function job(overrides: Partial<ClaimedJob> = {}): ClaimedJob {
       toAddress: 'customer@example.com',
       contactHash: 'hash-1',
     },
+    actorId: '20000000-0000-4000-8000-000000000781',
     attempts: 1,
     leaseOwnerId: crypto.randomUUID(),
     ...overrides,
@@ -55,6 +56,29 @@ describe('outbox provider configuration', () => {
       ),
     ).rejects.toMatchObject({ code: 'provider_not_configured', retryable: false });
   });
+  it('keeps suppression publication durable and fails closed without a configured ledger', async () => {
+    const entry = job({
+      jobType: 'suppression_ledger_publish',
+      payload: {
+        contactHash: 'a'.repeat(64),
+        reason: 'complaint',
+        occurredAt: new Date().toISOString(),
+      },
+    });
+    const missing = createOutboxJobHandlers({ NODE_ENV: 'production' }, alwaysEligible);
+    await expect(missing.get('suppression_ledger_publish')?.(entry)).rejects.toMatchObject({
+      code: 'deletion_ledger_not_configured',
+      retryable: true,
+    });
+    const configured = createOutboxJobHandlers(
+      { NODE_ENV: 'test', OUTBOX_ADAPTERS: 'fake' },
+      alwaysEligible,
+    );
+    const first = await configured.get('suppression_ledger_publish')?.(entry);
+    expect(await configured.get('suppression_ledger_publish')?.(entry)).toEqual(first);
+    expect(first?.status).toBe('completed');
+  });
+
   it('constructs the fake email adapter only for the explicit EMAIL_PROVIDER=fake opt-in outside production', async () => {
     const handlers = createOutboxJobHandlers(
       { EMAIL_PROVIDER: 'fake', OUTBOX_ADAPTERS: 'fake', NODE_ENV: 'test' },

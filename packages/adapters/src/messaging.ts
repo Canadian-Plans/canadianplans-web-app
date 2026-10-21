@@ -193,6 +193,7 @@ export class ResendEmailAdapter implements EmailAdapter {
         headers: {
           Authorization: `Bearer ${this.config.apiKey}`,
           'Content-Type': 'application/json',
+          'Idempotency-Key': `${message.workspaceId}/${message.messageId}`,
         },
         body: JSON.stringify({
           from: `${this.config.sender.fromName} <${this.config.sender.fromAddress}>`,
@@ -201,6 +202,7 @@ export class ResendEmailAdapter implements EmailAdapter {
           subject,
           text,
           html,
+          tags: [{ name: 'cp_message_id', value: message.messageId }],
         }),
       });
       if (!response.ok) {
