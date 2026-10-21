@@ -204,6 +204,9 @@ export class DatabaseOutboxStore implements OutboxStore, JobAdminStore {
                   status: 'pending',
                   availableAt: input.outcome.availableAt,
                   lastErrorCode: input.outcome.errorCode,
+                  ...(input.outcome.preserveAttempt
+                    ? { attempts: sql`greatest(0, ${outboxJobs.attempts} - 1)` }
+                    : {}),
                 }
               : input.outcome.status === 'uncertain'
                 ? {

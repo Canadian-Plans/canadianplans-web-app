@@ -169,6 +169,13 @@
       "when": 1792593888583,
       "tag": "0023_customer_deletion_lifecycle",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1792599376759,
+      "tag": "0024_backup_reference_barrier",
+      "breakpoints": true
     }
   ]
 }

@@ -33,6 +33,7 @@ import type { DeletionScope } from './store.js';
 
 type CleanupDatabase = Pick<import('@canadian-plans/db').DatabaseClient, 'withTenantTx'>;
 const payloadSchema = z.object({ deletionId: z.uuid() }).strict();
+type CleanupResult = { status: 'completed' } | { status: 'deferred'; availableAt: Date };
 
 /** Acknowledgement and this enqueue commit together, including crash/retry recovery. */
 export async function enqueueCustomerCleanup(
@@ -90,10 +91,21 @@ export async function completeDeletionIfReady(
 /** No provider calls in this transaction. Every private key survives in durable work before its source row is erased. */
 export class DatabaseCustomerCleanup {
   constructor(private readonly database: CleanupDatabase = { withTenantTx }) {}
-  async run(input: { workspaceId: string; actorId: string; deletionId: string }): Promise<void> {
-    await this.database.withTenantTx(
+  async run(input: {
+    workspaceId: string;
+    actorId: string;
+    deletionId: string;
+  }): Promise<CleanupResult> {
+    return this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.actorId },
-      async (tx) => {
+      async (tx): Promise<CleanupResult> => {
+        // Take the shared backup gate before any row locks. With no active
+        // backup it remains held through metadata erasure and transaction commit.
+        const rows = await tx.execute<{ blocked_until: Date | string | null }>(
+          sql`select app.customer_cleanup_backup_barrier(${input.workspaceId}::uuid) as blocked_until`,
+        );
+        const blocked = rows[0]?.blocked_until;
+        if (blocked) return { status: 'deferred', availableAt: new Date(blocked) };
         const [intent] = await tx
           .select()
           .from(deletionIntents)
@@ -110,7 +122,7 @@ export class DatabaseCustomerCleanup {
           throw new JobHandlerError('deletion_not_acknowledged', true);
         if (intent.localCleanedAt) {
           await completeDeletionIfReady(tx, input.workspaceId, intent.id);
-          return;
+          return { status: 'completed' };
         }
         const subjectType = deletionSubjectTypeSchema.parse(intent.subjectType);
         let leadId =
@@ -163,6 +175,7 @@ export class DatabaseCustomerCleanup {
             ),
           );
         await completeDeletionIfReady(tx, input.workspaceId, intent.id);
+        return { status: 'completed' };
       },
     );
   }
@@ -464,11 +477,18 @@ export function createCustomerCleanupHandler(
     const actor = z.uuid().safeParse(job.actorId);
     if (job.payloadVersion !== 1 || !payload.success || !actor.success)
       throw new JobHandlerError('invalid_job_payload', false);
-    await cleanup.run({
+    const result = await cleanup.run({
       workspaceId: job.workspaceId,
       actorId: actor.data,
       deletionId: payload.data.deletionId,
     });
+    if (result.status === 'deferred')
+      return {
+        status: 'retry',
+        errorCode: 'customer_cleanup_deferred',
+        availableAt: result.availableAt,
+        preserveAttempt: true,
+      };
     return { status: 'completed', providerId: 'customer_data_cleanup_queued' };
   };
 }

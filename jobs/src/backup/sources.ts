@@ -112,8 +112,16 @@ export interface ReferencedObjectManifestSource {
   listReferencedObjects(): Promise<ReferencedObject[]>;
 }
 
-const REFERENCED_OBJECTS_QUERY =
-  "select workspace_id, bucket, object_key, checksum_sha256, size_bytes from app.files where status = 'available' and object_key is not null";
+// Restriction/tombstoning can occur after the dump. Retained verified objects
+// still belong to that snapshot; staging and candidate keys do not.
+const REFERENCED_OBJECTS_QUERY = `
+  select workspace_id, bucket, object_key, checksum_sha256, size_bytes
+  from app.files where object_key is not null
+  union
+  select r.workspace_id, f.bucket, r.object_key, r.checksum_sha256, r.size_bytes
+  from app.file_revisions r join app.files f
+    on f.workspace_id = r.workspace_id and f.id = r.file_id
+`;
 
 /** Runs the read-only query the runbook's restore verification also uses. */
 export class PsqlReferencedObjectManifestSource implements ReferencedObjectManifestSource {

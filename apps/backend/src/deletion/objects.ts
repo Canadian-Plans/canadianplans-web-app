@@ -62,6 +62,7 @@ export function createDeletionObjectHandler(options: {
         status: 'retry',
         errorCode: 'document_cleanup_deferred',
         availableAt: acquired.until,
+        preserveAttempt: true,
       };
     try {
       if (!options.r2) throw new JobHandlerError('document_storage_not_configured', true);

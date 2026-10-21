@@ -125,7 +125,14 @@ only provider-supported changes.
 
 R2 is a source system, not the independently retained archive or deletion
 ledger. Configure an Object Read-only token scoped to the source bucket, then
-record an inventory before downloading:
+record an inventory before downloading. The automated runner holds a backup
+lease from before the database dump through document copy. Its reference query
+includes retained verified file and revision keys even when access is restricted
+or a file is tombstoned. Migration `0024_backup_reference_barrier` prevents local
+customer cleanup from erasing those references during the lease. Staging and
+unverified candidate keys are excluded from the verified reference manifest.
+
+For a manual source inventory:
 
 ```sh
 aws --version
@@ -359,6 +366,9 @@ older draft-only backup can be erased even when the order is absent. Unresolved
 legacy scope or inconsistent relationships fail closed. Replay restricts access,
 revokes credentials and performs local erasure before returning; private-object
 work stays durable and must be processed with the target's configured storage.
+If a restored active backup lease defers local cleanup, replay throws
+`deletion_cleanup_deferred`; keep the target closed and retry after lease expiry
+or completion of the owning backup, without clearing a live lease.
 This callback does not replace the independently authenticated reader, immutable
 ledger verification or real target adapter wiring required by the restore CLI.
 

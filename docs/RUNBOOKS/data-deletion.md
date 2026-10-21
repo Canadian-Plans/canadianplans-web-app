@@ -66,10 +66,19 @@ Processor-held messages require the processor's separate deletion procedure.
 
 ## Backup and retry safety
 
-The database arbitrates backup acquisition and 45-second object cleanup leases
-through the same protected gate. R2 requests have a ten-second deadline and run
+Migration `0024_backup_reference_barrier` makes database cleanup acquire the
+protected backup gate before any row locks. An active backup defers the same
+cleanup job until after its lease expires; otherwise the transaction holds the
+gate until metadata erasure commits. Restriction remains immediate. The backup
+inventory includes retained verified file and revision keys regardless of file
+status, so restriction after the dump cannot hide objects from the archive.
+
+The database also arbitrates backup acquisition and 45-second object cleanup
+leases through that same protected gate. R2 requests have a ten-second deadline and run
 outside database transactions. Active backups defer durable cleanup work; active
-cleanup defers backup startup. A crash after R2 deletion but before DB completion
+cleanup defers backup startup. Waiting for a backup, another cleanup lease or
+upload expiry preserves the failure-attempt budget; actual cleanup errors still
+consume attempts and can require staff retry. A crash after R2 deletion but before DB completion
 retries the same key safely. Do not force completion, clear markers or remove
 work rows to bypass a provider/ledger failure.
 
@@ -81,7 +90,10 @@ migration preserves immutable financial, order and idempotency evidence.
 On an isolated restore, bind `createDatabaseLedgerReplay` to the restored database
 as the authenticated ledger reconciler's callback. New order events carry the
 related lead ID so an older draft-only backup is erased too. Ambiguous legacy
-scope fails closed. Database cleanup runs before replay returns; object work
+scope fails closed. An active backup lease makes replay fail with `deletion_cleanup_deferred`;
+keep the isolated target closed and retry after the lease expires or its owning
+backup finishes. Do not clear a live lease. Database cleanup runs before replay
+returns successfully; object work
 remains durable and access restricted. Never reopen traffic/jobs before the
 restore runbook's independent checkpoint and provider checks pass.
 

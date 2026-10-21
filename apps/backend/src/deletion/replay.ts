@@ -122,10 +122,11 @@ export function createDatabaseLedgerReplay(
     });
     // Erase restored personal records before the reconciliation callback returns.
     // Private-object work remains durable and access stays restricted throughout.
-    await new DatabaseCustomerCleanup(database).run({
+    const cleanup = await new DatabaseCustomerCleanup(database).run({
       workspaceId,
       actorId: RESTORE_ACTOR,
       deletionId: eventId,
     });
+    if (cleanup.status === 'deferred') throw new Error('deletion_cleanup_deferred');
   };
 }

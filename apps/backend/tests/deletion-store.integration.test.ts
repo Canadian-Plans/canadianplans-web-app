@@ -14,10 +14,12 @@ import {
   InMemoryR2DocumentStore,
   sha256Hex,
 } from '@canadian-plans/adapters';
-import { createJobHandlerRegistry, type ClaimedJob } from '@canadian-plans/jobs';
+import { OutboxRunner, createJobHandlerRegistry, type ClaimedJob } from '@canadian-plans/jobs';
+import { DatabaseOutboxStore } from '../src/jobs/store.js';
 import { DatabaseDeletionStore } from '../src/deletion/store.js';
 import { DatabaseDeletionLedgerStore, DeletionLedgerService } from '../src/deletion/ledger.js';
-import { DatabaseCustomerCleanup } from '../src/deletion/cleanup.js';
+import { PsqlReferencedObjectManifestSource } from '@canadian-plans/jobs/backup';
+import { createCustomerCleanupHandler, DatabaseCustomerCleanup } from '../src/deletion/cleanup.js';
 import { createDeletionObjectHandler } from '../src/deletion/objects.js';
 import { createDatabaseLedgerReplay } from '../src/deletion/replay.js';
 import { DatabaseTrackingStore } from '../src/tracking/store.js';
@@ -573,6 +575,226 @@ describe.skipIf(!databaseUrl)('complete customer deletion under runtime RLS', ()
     ).toEqual({ eligible: true });
   });
 
+  test('backup inventory retains verified references after immediate restriction', async () => {
+    const source = new PsqlReferencedObjectManifestSource('test-only', async (_command, args) => {
+      const query = args[args.indexOf('--command') + 1];
+      if (!query) throw new Error('inventory query missing');
+      const rows = await admin.unsafe(query);
+      return {
+        stdout: new TextEncoder().encode(
+          rows
+            .map((row) =>
+              [
+                row.workspace_id,
+                row.bucket,
+                row.object_key,
+                row.checksum_sha256,
+                row.size_bytes,
+              ].join('\t'),
+            )
+            .join('\n'),
+        ),
+        stderr: '',
+        exitCode: 0,
+      };
+    });
+    const before = (await source.listReferencedObjects()).filter((item) =>
+      fixture.keys.includes(item.objectKey),
+    );
+    expect(before).toHaveLength(fixture.fileIds.length);
+    await request();
+    expect(
+      (await source.listReferencedObjects()).filter((item) =>
+        fixture.keys.includes(item.objectKey),
+      ),
+    ).toEqual(expect.arrayContaining(before));
+  });
+
+  test('defers metadata cleanup during backup and resumes the same job after release', async () => {
+    const runId = `metadata-${randomUUID()}`;
+    await admin`insert into app.backup_leases(run_id,expires_at) values(${runId},now()+interval '1 minute')`;
+    try {
+      const deletion = await request();
+      await acknowledge(deletion.deletionId);
+      const handler = createCustomerCleanupHandler(new DatabaseCustomerCleanup(database));
+      const job = {
+        ...objectJob(deletion.deletionId),
+        jobType: 'customer_data_cleanup',
+        payload: { deletionId: deletion.deletionId },
+      };
+      expect(await handler(job)).toMatchObject({
+        status: 'retry',
+        errorCode: 'customer_cleanup_deferred',
+      });
+      expect(
+        await admin`select id from app.files where id in ${admin(fixture.fileIds)}`,
+      ).toHaveLength(fixture.fileIds.length);
+      expect(await objects(deletion.deletionId)).toHaveLength(0);
+      await admin`delete from app.backup_leases where run_id=${runId}`;
+      expect(await handler(job)).toMatchObject({ status: 'completed' });
+      expect(
+        await admin`select id from app.files where id in ${admin(fixture.fileIds)}`,
+      ).toHaveLength(0);
+      expect((await objects(deletion.deletionId)).length).toBeGreaterThan(0);
+    } finally {
+      await admin`delete from app.backup_leases where run_id=${runId}`;
+    }
+  });
+
+  test('backup waiting preserves the last cleanup attempt through the real queue runner', async () => {
+    const workspaceId = randomUUID(),
+      waitId = randomUUID(),
+      runId = `budget-${randomUUID()}`;
+    await admin`insert into app.workspaces(id,slug,name) values(${workspaceId},${workspaceId},'TEST cleanup retry budget')`;
+    await admin`insert into app.region_waitlist(id,workspace_id,province,email,consent_version) values(${waitId},${workspaceId},'SK',${EMAIL},'privacy-2026-10-v2')`;
+    const deletion = await store.requestDeletion({
+      workspaceId,
+      actorId: ACTOR,
+      requestId: REQUEST,
+      subjectType: 'region_waitlist',
+      subjectId: waitId,
+      reason: 'verified customer request',
+    });
+    if (deletion.status !== 'restricted') throw new Error('request missing');
+    await new DeletionLedgerService({
+      ledger: new InMemoryDeletionLedger(),
+      store: new DatabaseDeletionLedgerStore(database),
+    }).publish({ workspaceId, deletionId: deletion.deletionId });
+    // The publisher was exercised above; only its acknowledged cleanup job is due.
+    await admin`update app.outbox_jobs set status='completed',completed_at=now() where workspace_id=${workspaceId} and job_type='deletion_ledger_publish'`;
+    await admin`update app.outbox_jobs set attempts=7 where workspace_id=${workspaceId} and job_type='customer_data_cleanup'`;
+    let now = new Date();
+    const runner = new OutboxRunner({
+      store: new DatabaseOutboxStore(database),
+      handlers: new Map([
+        [
+          'customer_data_cleanup',
+          createCustomerCleanupHandler(new DatabaseCustomerCleanup(database)),
+        ],
+      ]),
+      batchSize: 1,
+      maxAttempts: 8,
+      now: () => now,
+    });
+    const input = { authorizedWorkspaceIds: [workspaceId], actorId: ACTOR };
+    await admin`insert into app.backup_leases(run_id,expires_at) values(${runId},now()+interval '1 minute')`;
+    try {
+      expect(await runner.run(input)).toMatchObject({ claimed: 1, retried: 1 });
+      const [queued] =
+        await admin`select status,attempts,available_at from app.outbox_jobs where workspace_id=${workspaceId} and job_type='customer_data_cleanup'`;
+      expect(queued).toMatchObject({ status: 'pending', attempts: 7 });
+      expect(await runner.run(input)).toMatchObject({ claimed: 0, failed: 0 });
+      expect(
+        (
+          await admin`select status from app.outbox_jobs where workspace_id=${workspaceId} and job_type='customer_data_cleanup'`
+        )[0]?.status,
+      ).toBe('pending');
+      await admin`delete from app.backup_leases where run_id=${runId}`;
+      now = new Date(new Date(queued!.available_at).getTime() + 1);
+      expect(await runner.run(input)).toMatchObject({ claimed: 1, completed: 1 });
+      expect(await admin`select id from app.region_waitlist where id=${waitId}`).toHaveLength(0);
+    } finally {
+      await admin`delete from app.backup_leases where run_id=${runId}`;
+    }
+  });
+
+  test('backup acquisition waits for the metadata cleanup transaction to commit', async () => {
+    const deletion = await request();
+    await acknowledge(deletion.deletionId);
+    let release = () => {};
+    let reached = () => {};
+    const pause = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const ready = new Promise<void>((resolve) => {
+      reached = resolve;
+    });
+    const held: Pick<DatabaseClient, 'withTenantTx'> = {
+      withTenantTx: (context, operation) =>
+        database.withTenantTx(context, async (tx) => {
+          const result = await operation(tx);
+          reached();
+          await pause;
+          return result;
+        }),
+    };
+    const pending = new DatabaseCustomerCleanup(held).run({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      deletionId: deletion.deletionId,
+    });
+    const runId = `cleanup-first-${randomUUID()}`;
+    try {
+      await Promise.race([
+        ready,
+        pending.then(() => {
+          throw new Error('cleanup unexpectedly finished');
+        }),
+      ]);
+      await expect(
+        admin.begin(async (tx) => {
+          await tx`set local lock_timeout = '100ms'`;
+          await tx`insert into app.backup_leases(run_id,expires_at) values(${runId},now()+interval '1 minute')`;
+        }),
+      ).rejects.toMatchObject({ code: '55P03' });
+    } finally {
+      release();
+      await pending;
+    }
+    await admin`insert into app.backup_leases(run_id,expires_at) values(${runId},now()+interval '1 minute')`;
+    await admin`delete from app.backup_leases where run_id=${runId}`;
+  });
+
+  test('metadata backup barrier rejects missing or mismatched tenant context', async () => {
+    await expect(
+      admin`select app.customer_cleanup_backup_barrier(${WORKSPACE}::uuid)`,
+    ).rejects.toMatchObject({ code: '42501' });
+    await expect(
+      database.withTenantTx({ workspaceId: WORKSPACE, actorId: ACTOR }, (tx) =>
+        tx.execute(sql`select app.customer_cleanup_backup_barrier(${FOREIGN}::uuid)`),
+      ),
+    ).rejects.toMatchObject({ cause: { code: '42501', message: 'cleanup_context_missing' } });
+    await expect(
+      database.withTenantTx({ workspaceId: WORKSPACE, actorId: ACTOR }, (tx) =>
+        tx.execute(sql`select * from app.backup_leases`),
+      ),
+    ).rejects.toThrow();
+  });
+
+  test('restore replay remains closed when an active backup defers local erasure', async () => {
+    const runId = `replay-${randomUUID()}`;
+    const event = {
+      eventId: randomUUID(),
+      workspaceId: WORKSPACE,
+      action: 'delete_customer_data',
+      subjectType: 'order',
+      subjectId: fixture.orderId,
+      relatedLeadId: fixture.leadId,
+      occurredAt: new Date().toISOString(),
+      schemaVersion: 1,
+      versionId: 'synthetic-ledger-version',
+    };
+    const replay = createDatabaseLedgerReplay(database);
+    await admin`insert into app.backup_leases(run_id,expires_at) values(${runId},now()+interval '1 minute')`;
+    try {
+      await expect(replay(event)).rejects.toThrow('deletion_cleanup_deferred');
+      expect((await admin`select email from app.leads where id=${fixture.leadId}`)[0]?.email).toBe(
+        EMAIL,
+      );
+      expect(
+        (await new DatabaseOrderQueryStore(database).getOrder(WORKSPACE, ACTOR, fixture.orderId))
+          ?.customer.email,
+      ).toBeNull();
+      await admin`delete from app.backup_leases where run_id=${runId}`;
+      await replay(event);
+      expect(
+        (await admin`select email from app.leads where id=${fixture.leadId}`)[0]?.email,
+      ).toBeNull();
+    } finally {
+      await admin`delete from app.backup_leases where run_id=${runId}`;
+    }
+  });
+
   test('defers the same durable object for an active backup and resumes it after release', async () => {
     const deletion = await request();
     await localCleanup(deletion.deletionId);
@@ -585,6 +807,7 @@ describe.skipIf(!databaseUrl)('complete customer deletion under runtime RLS', ()
       expect(await handler(objectJob(item.id))).toMatchObject({
         status: 'retry',
         errorCode: 'document_cleanup_deferred',
+        preserveAttempt: true,
       });
       expect(fixture.r2.has(item.object_key)).toBe(true);
       expect(

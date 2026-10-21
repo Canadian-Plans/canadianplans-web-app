@@ -92,7 +92,13 @@ export interface ClaimedJob {
 
 export type JobOutcome =
   | { status: 'completed'; providerId: string; detail?: Record<string, unknown> }
-  | { status: 'retry'; errorCode: string; availableAt: Date }
+  | {
+      status: 'retry';
+      errorCode: string;
+      availableAt: Date;
+      /** Nonfailure wait before execution: undo this claim's attempt increment. */
+      preserveAttempt?: true;
+    }
   | { status: 'failed'; errorCode: string }
   | { status: 'uncertain'; errorCode: string };
 
@@ -118,7 +124,7 @@ export interface OutboxStore {
 
 export type JobHandlerResult =
   | { status: 'completed'; providerId: string; detail?: Record<string, unknown> }
-  | { status: 'retry'; errorCode: string; availableAt: Date }
+  | Extract<JobOutcome, { status: 'retry' }>
   | { status: 'uncertain'; errorCode: string };
 /**
  * Handlers receive an abort signal for the runner's per-handler timeout. It is
