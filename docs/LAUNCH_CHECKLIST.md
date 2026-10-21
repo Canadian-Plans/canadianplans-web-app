@@ -197,7 +197,32 @@ Depends on Stage 1 findings and the Stage 2 answers.
 - ☐ **3.1 Point the domain at site-1** _(You buy / Both configure)_ — Vercel domain,
   `NEXT_PUBLIC_SITE_URL`, `ADMIN_ORIGIN`/CORS origins updated.
 - ☐ **3.2 Email sending** _(Both)_ — verify the domain in Resend, SPF/DKIM/DMARC records,
-  `EMAIL_PROVIDER=resend`, sender address from 2.8. Send a test acknowledgement.
+  `EMAIL_PROVIDER=resend`, sender address from 2.8. **Before deploying the
+  `website-improvements` backend** (it sends only through a registered Resend account):
+  1. In the Resend dashboard, add a webhook to
+     `https://<backend>/api/v1/webhooks/resend/<selector>` for `email.delivered`,
+     `email.bounced`, `email.complained` and `email.failed`; copy its `whsec_...` secret.
+  2. Add this entry to the `webhooks` array of Railway's `MACHINE_REGISTRY_JSON`, keeping
+     the existing entries:
+
+     ```json
+     {
+       "selector": "<selector>",
+       "provider": "resend",
+       "providerAccount": "<label>",
+       "workspaceId": "<site-1 workspace UUID>",
+       "actorId": "<new stable UUID>",
+       "verificationSecret": "whsec_..."
+     }
+     ```
+
+  3. Set `RESEND_ACCOUNT_ID=<label>` (the same label) on Railway.
+  4. Apply migrations 0021–0024, then deploy and send a test acknowledgement.
+
+  Without steps 2–3 every customer email fails with `email_account_not_configured`;
+  the retired `EMAIL_WEBHOOK_SHARED_SECRET` endpoint now returns 404. Details:
+  `docs/ENV.md` → Resend.
+
 - ◐ **3.3 Turn on checkout** _(Both)_ — set `QUOTE_WITHDRAWAL_POLICY=honour_until_expiry`
   on Railway (decided 21 Sep, OPEN_INPUTS #14) and redeploy. _20 Oct: set and live
   (deployment `4267deeb`); the no-`checkout_disabled` check waits for real offers (3.7)
