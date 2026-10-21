@@ -119,6 +119,14 @@ project, shared CMS schema types and editor access before editing is operational
 Noindex is not access control. Studio has its own layout, without storefront
 navigation, Tailwind resets or analytics.
 
+Sanity 6's local CLI reads `sanity.cli.ts`, which shares the Studio's public
+project/dataset settings. With those identifiers configured,
+`pnpm --filter site-1 exec sanity schema extract --path schema.json` validates
+and extracts the shared schema without changing the remote project. Keep the
+generated schema outside the checkout when it is only a local verification
+artifact. Provider login, remote provisioning and live editor access are separate
+operational checks.
+
 Umami loads only when both `NEXT_PUBLIC_UMAMI_SCRIPT_URL` and
 `NEXT_PUBLIC_UMAMI_WEBSITE_ID` are nonempty at build time. Automatic tracking is
 disabled until T20 implements sanitized events; the configured script still loads.

@@ -22,7 +22,7 @@ catalog:
   tsx: 4.23.13
   zod: 4.6.4
   drizzle-orm: 0.45.2
-  drizzle-kit: 0.31.10
+  drizzle-kit: 0.31.11
   '@types/node': 26.5.1
   tailwindcss: 4.1.16
   '@tailwindcss/postcss': 4.1.16
@@ -33,4 +33,4 @@ catalog:
   lucide-react: 0.548.0
   clsx: 2.1.1
   tailwind-merge: 3.4.0
-  sanity: 5.29.0
+  sanity: 6.20.0

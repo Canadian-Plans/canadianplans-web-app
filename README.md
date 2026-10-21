@@ -65,3 +65,13 @@ Its security suite runs production builds and browser tests with analytics enabl
 and disabled, including a synthetic-credential bundle scan. The root `test:e2e`
 command includes this suite after admin. Sanity project connection remains T9;
 sites 2 and 3 remain Phase B.
+
+Dependency maintenance keeps Sanity 6.20.0 and tsup 9 on the pinned Node 22.19.0
+runtime. Two overrides are limited to their reviewed callers:
+`@esbuild-kit/core-utils@3.3.2` uses esbuild 0.25.12 for the legacy Drizzle
+transform loader, and `typeid-js@1.2.0` uses UUID 11.1.1 for Sanity CLI type IDs.
+`pnpm test:tooling` exercises their real CJS/ESM APIs, source maps, imports,
+UUID generation and buffer validation. Reassess these pins when their parents
+change; the CLI's skills pin is 1.5.9 to satisfy its declared range on Node 22.
+The dependency audit still reports unpatched upstream `braces` and `sprintf-js`
+advisories; passing application checks does not remove those advisories.

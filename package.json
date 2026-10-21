@@ -9,7 +9,9 @@
   "packageManager": "pnpm@9.15.0",
   "pnpm": {
     "overrides": {
-      "@sanity/cli>skills": "1.5.7",
+      "@sanity/cli>skills": "1.5.9",
+      "@esbuild-kit/core-utils@3.3.2>esbuild": "0.25.12",
+      "typeid-js@1.2.0>uuid": "11.1.1",
       "proxy-addr@<2.0.8": "2.0.8",
       "source-map-js@<1.2.2": "1.2.2",
       "brace-expansion@^1.0.0": "1.1.21",
