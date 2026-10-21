@@ -211,8 +211,10 @@ Depends on Stage 1 findings and the Stage 2 answers.
 - ☐ **4.0 Rotate exposed keys** _(You, Claude guides)_ — Cloudflare, R2 and Backblaze B2
   credentials were stored in plain text outside a password manager. Create new keys,
   update Railway/Vercel/GitHub secrets, revoke the old ones. Do this first.
-- ☐ **4.1 Backups** _(You decide, Claude runs)_ — either upgrade Supabase to Pro (daily
-  backups) or provision the T24 GitHub secrets and run one real backup + restore drill.
+- ☐ **4.1 Backups** _(You provision, Claude verifies)_ — enable managed daily database
+  backups (Supabase Pro baseline) **and** provision the T24 GitHub secrets for the
+  separate encrypted daily DB/Auth, R2 and Sanity archive, independent alerts and a
+  rehearsed restore. Verify both recovery paths before real customer data.
   Today there is **no restorable backup** of production.
 - ☐ **4.2 Error tracking** _(Both)_ — connect Sentry (or chosen tool) so production errors
   reach you.
