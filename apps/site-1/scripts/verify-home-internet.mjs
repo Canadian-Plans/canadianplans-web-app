@@ -169,7 +169,11 @@ try {
     await mainForm.getByLabel('Move-in date (optional)').fill('31/02/2026');
     await mainForm.getByRole('button').click();
     await expect(dialog).toContainText('Enter a valid move-in date');
-    await dialog.getByLabel('Move-in date (optional)').fill('15 / 10 / 2026');
+    const correction = dialog.getByLabel('Move-in date (optional)');
+    await correction.fill('');
+    await correction.pressSequentially('15 / 10 / 2026');
+    await expect(correction).toBeFocused();
+    await expect(correction).toHaveValue('15 / 10 / 2026');
     await dialog.getByRole('button', { name: 'Check availability', exact: true }).click();
     await expect(dialog).toContainText('Great news, internet is available here!');
     await page.keyboard.press('Escape');

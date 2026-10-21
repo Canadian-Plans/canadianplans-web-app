@@ -291,6 +291,7 @@ function AddressFields({ resultOnly = false }: { resultOnly?: boolean }) {
     copy = internetCopy.form;
   const postalError = preview.result?.status === 'invalid' && preview.result.field === 'postalCode';
   const dateError = preview.result?.status === 'invalid' && preview.result.field === 'moveInDate';
+  const [correctingDate, setCorrectingDate] = useState(false);
   return (
     <>
       <div className="cp-internet-field">
@@ -314,14 +315,17 @@ function AddressFields({ resultOnly = false }: { resultOnly?: boolean }) {
           </p>
         ) : null}
       </div>
-      {!resultOnly || dateError ? (
+      {!resultOnly || dateError || correctingDate ? (
         <div className="cp-internet-field">
           <label htmlFor={`${id}-date`}>{copy.dateLabel}</label>
           <input
             id={`${id}-date`}
             name="moveInDate"
             value={preview.moveInDate}
-            onChange={(e) => preview.setMoveInDate(e.target.value)}
+            onChange={(e) => {
+              setCorrectingDate(true);
+              preview.setMoveInDate(e.target.value);
+            }}
             placeholder={copy.datePlaceholder}
             inputMode="numeric"
             maxLength={20}
