@@ -44,6 +44,9 @@ describe('POST /api/v1/quotes', () => {
         },
         leads: {
           store: {
+            readLead: async () => {
+              throw new Error('unused');
+            },
             createLead: async () => {
               throw new Error('unused');
             },

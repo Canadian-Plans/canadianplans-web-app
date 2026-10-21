@@ -12,6 +12,7 @@ import {
   createLeadResponseSchema,
   updateLeadRequestSchema,
   updateLeadResponseSchema,
+  readLeadResponseSchema,
 } from './leads';
 import { submitOrderRequestSchema, submitOrderResponseSchema } from './orders';
 import { createQuoteRequestSchema, createQuoteResponseSchema } from './quotes';
@@ -523,6 +524,16 @@ export const endpoints: readonly EndpointDef[] = [
     successStatus: 200,
     request: updateLeadRequestSchema,
     response: updateLeadResponseSchema,
+    headers: [DRAFT_GRANT],
+  },
+  {
+    operationId: 'readLead',
+    method: 'GET',
+    path: '/api/v1/website/leads/{leadId}',
+    summary: 'Read an unfinished draft with its scoped grant.',
+    auth: 'website',
+    successStatus: 200,
+    response: readLeadResponseSchema,
     headers: [DRAFT_GRANT],
   },
   {

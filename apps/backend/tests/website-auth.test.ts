@@ -59,6 +59,7 @@ class FakeRateLimiter {
 
 /** Records every call so a test can assert what the route handed to the store, without a real database. */
 class FakeLeadStore implements LeadStore {
+  readLead: LeadStore['readLead'] = async () => ({ status: 'grant_invalid' });
   readonly createCalls: CreateLeadInput[] = [];
 
   async createLead(input: CreateLeadInput): Promise<CreateLeadResult> {
@@ -108,6 +109,7 @@ const staffOnly: {
     revokeCredential: async () => ({ status: 'not_found' }),
   },
   leadStore: {
+    readLead: async () => ({ status: 'grant_invalid' }),
     createLead: async () => {
       throw new Error('unused');
     },

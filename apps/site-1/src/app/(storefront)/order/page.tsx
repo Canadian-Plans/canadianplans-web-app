@@ -2,13 +2,19 @@ import { pageMetadata } from '@/lib/page-metadata';
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { Card, CardDescription, CardHeader, CardTitle } from '@canadian-plans/ui';
-import { productTypeSchema, provinceFromName, type WebsiteOffer } from '@canadian-plans/contracts';
+import {
+  productTypeSchema,
+  provinceFromName,
+  type WebsiteOffer,
+  type LeadDraft,
+} from '@canadian-plans/contracts';
 
 import { siteConfig } from '@/site.config';
 import { getBackendClient } from '@/lib/backendClient';
 import { captureRawAttribution, type SearchParams } from '@/lib/attribution';
 import { readOrderDraft } from './draft';
 import { OrderForm } from './order-form';
+import { selectOrderDraft } from './resume';
 
 export const metadata: Metadata = pageMetadata('/order', {
   title: 'Order a plan',
@@ -34,6 +40,17 @@ export default async function OrderPage({ searchParams }: { searchParams: Promis
     origin,
   });
   const draft = await readOrderDraft();
+  let savedDraft: LeadDraft | undefined;
+  if (draft) {
+    try {
+      savedDraft = (
+        await getBackendClient().leads.read(draft.leadId, { draftGrant: draft.draftGrant })
+      ).draft;
+    } catch {
+      // Expired, revoked and submitted drafts never prefill personal details.
+      // Keep the cookie so an uncertain submission can still retry its exact key.
+    }
+  }
 
   let offers: WebsiteOffer[] = [];
   let loadFailed = false;
@@ -49,9 +66,14 @@ export default async function OrderPage({ searchParams }: { searchParams: Promis
   const province = requestedProvince ? provinceFromName(requestedProvince) : undefined;
   const category = productTypeSchema.safeParse(params['category']);
   const requestedPlan = typeof params['plan'] === 'string' ? params['plan'] : undefined;
-  const selected =
-    offers.find((offer) => offer.productId === requestedPlan) ??
-    (draft ? offers.find((offer) => offer.productId === draft.productId) : undefined);
+  const restored = selectOrderDraft({
+    offers,
+    draft: savedDraft,
+    requestedPlan,
+    province,
+    category: category.success ? category.data : undefined,
+  });
+  const selected = restored.selected;
 
   return (
     <div className="space-y-8">
@@ -70,14 +92,14 @@ export default async function OrderPage({ searchParams }: { searchParams: Promis
         </Card>
       ) : (
         <OrderForm
-          key={selected?.productId ?? 'plan-list'}
+          key={`${selected?.productId ?? 'plan-list'}:${restored.province ?? ''}`}
           offers={offers}
           selected={selected}
-          province={province}
+          province={restored.province}
           category={category.success ? category.data : undefined}
           attribution={attribution}
           consentVersion={siteConfig.legal.consentVersion}
-          hasDraft={draft !== undefined}
+          restoredDetails={restored.details}
         />
       )}
     </div>

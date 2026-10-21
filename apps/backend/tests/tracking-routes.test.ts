@@ -118,6 +118,7 @@ const staffOnly: {
   store: StaffStore;
   credentialStore: WebsiteCredentialStore;
   leadStore: {
+    readLead: () => Promise<never>;
     createLead: () => Promise<never>;
     updateLead: () => Promise<never>;
     listLeads: () => Promise<{
@@ -143,6 +144,9 @@ const staffOnly: {
     revokeCredential: async () => ({ status: 'not_found' }),
   },
   leadStore: {
+    readLead: async () => {
+      throw new Error('unused');
+    },
     createLead: async () => {
       throw new Error('unused');
     },

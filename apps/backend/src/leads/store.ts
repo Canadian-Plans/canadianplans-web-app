@@ -3,6 +3,7 @@ import {
   auditEvents,
   draftGrants,
   leads,
+  offerVersions,
   outboxJobs,
   partners,
   productAvailability,
@@ -12,10 +13,12 @@ import {
 import {
   attributionSchema,
   leadContactSchema,
+  leadFormSchema,
   leadStatusSchema,
   type Attribution,
   type LeadContact,
   type LeadForm,
+  type LeadDraft,
   type LeadListItem,
   type LeadStatus,
   type LeadSummary,
@@ -78,10 +81,17 @@ export interface ListLeadsResult {
 }
 
 export interface LeadStore {
+  readLead(
+    input: Pick<UpdateLeadInput, 'workspaceId' | 'actorId' | 'leadId' | 'grantToken'>,
+  ): Promise<ReadLeadOutcome>;
   createLead(input: CreateLeadInput): Promise<CreateLeadResult>;
   updateLead(input: UpdateLeadInput): Promise<UpdateLeadOutcome>;
   listLeads(input: ListLeadsInput): Promise<ListLeadsResult>;
 }
+
+export type ReadLeadOutcome =
+  | { status: 'read'; draft: LeadDraft }
+  | { status: 'grant_invalid' | 'grant_expired' | 'draft_submitted' };
 
 type LeadDatabase = Pick<import('@canadian-plans/db').DatabaseClient, 'withTenantTx'>;
 
@@ -159,6 +169,61 @@ async function resolveOfferVersionId(
 
 export class DatabaseLeadStore implements LeadStore {
   constructor(private readonly database: LeadDatabase = defaultLeadDatabase) {}
+
+  async readLead(
+    input: Pick<UpdateLeadInput, 'workspaceId' | 'actorId' | 'leadId' | 'grantToken'>,
+  ): Promise<ReadLeadOutcome> {
+    return this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: input.actorId },
+      async (tx) => {
+        const [row] = await tx
+          .select({
+            lead: leads,
+            productId: offerVersions.productId,
+            expiresAt: draftGrants.expiresAt,
+            revokedAt: draftGrants.revokedAt,
+          })
+          .from(draftGrants)
+          .innerJoin(
+            leads,
+            and(eq(leads.workspaceId, draftGrants.workspaceId), eq(leads.id, draftGrants.leadId)),
+          )
+          .leftJoin(
+            offerVersions,
+            and(
+              eq(offerVersions.workspaceId, leads.workspaceId),
+              eq(offerVersions.id, leads.selectedOfferVersionId),
+            ),
+          )
+          .where(
+            and(
+              eq(draftGrants.workspaceId, input.workspaceId),
+              eq(draftGrants.leadId, input.leadId),
+              eq(draftGrants.tokenHash, hashDraftGrantToken(input.grantToken)),
+            ),
+          )
+          .limit(1);
+        if (!row) return { status: 'grant_invalid' };
+        if (row.revokedAt || row.expiresAt.getTime() <= Date.now())
+          return { status: 'grant_expired' };
+        if (row.lead.status !== 'incomplete') return { status: 'draft_submitted' };
+        return {
+          status: 'read',
+          draft: {
+            leadId: row.lead.id,
+            productId: row.productId,
+            contact: leadContactSchema.parse({
+              fullName: row.lead.fullName ?? undefined,
+              email: row.lead.email ?? undefined,
+              phone: row.lead.phone ?? undefined,
+              countryCode: row.lead.countryCode ?? undefined,
+            }),
+            form: row.lead.payload === null ? null : leadFormSchema.parse(row.lead.payload),
+          },
+        };
+      },
+    );
+  }
 
   async createLead(input: CreateLeadInput): Promise<CreateLeadResult> {
     return this.database.withTenantTx(

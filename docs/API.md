@@ -178,6 +178,16 @@ and a scoped draft grant for subsequent draft updates and checkout.
 - `403`: `scope_denied`, `caller_forbidden`
 - `429`: `rate_limited` (with `Retry-After`)
 
+### `GET /api/v1/website/leads/{leadId}`
+
+Resume an unfinished draft with the website credential (`leads:write`) and its
+exact `X-Draft-Grant`. Returns `{ draft: { leadId, productId, contact, form },
+requestId }` with `Cache-Control: private, no-store`. Revoked/expired or mismatched
+grants return `401`; submitted drafts return `409 draft_already_submitted`. Reads
+do not consume a bot proof. The storefront restores only supported, validated
+form data and honors explicit plan/category/province navigation. Grants and the
+submission key stay in the httpOnly cookie; consent must be confirmed again.
+
 ### `POST /api/v1/website/region-waitlist`
 
 Website credential with `leads:write`. Leaves an email for a province we do not

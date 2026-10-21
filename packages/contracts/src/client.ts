@@ -24,6 +24,8 @@ import {
   createLeadResponseSchema,
   updateLeadRequestSchema,
   updateLeadResponseSchema,
+  readLeadResponseSchema,
+  type ReadLeadResponse,
   type CreateLeadRequest,
   type CreateLeadResponse,
   type UpdateLeadRequest,
@@ -246,6 +248,7 @@ function assertApiPath(url: URL, origin: string): void {
 export interface BackendClient {
   health(): Promise<HealthResponse>;
   leads: {
+    read(leadId: string, options: { draftGrant: string }): Promise<ReadLeadResponse>;
     create(body: CreateLeadRequest, proof?: WebsiteBotProof): Promise<CreateLeadResponse>;
     update(
       leadId: string,
@@ -484,6 +487,13 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
       call({ method: 'GET', path: '/api/v1/health', responseSchema: healthResponseSchema }),
 
     leads: {
+      read: (leadId, opts) =>
+        call({
+          method: 'GET',
+          path: `/api/v1/website/leads/${encode(leadId)}`,
+          headers: { 'x-draft-grant': opts.draftGrant },
+          responseSchema: readLeadResponseSchema,
+        }),
       create: (body, proof) =>
         call({
           method: 'POST',

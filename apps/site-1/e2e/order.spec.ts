@@ -111,6 +111,73 @@ test('orders a plan end to end and shows the server reference', async ({ page })
   expect(after.references).toContain(reference);
 });
 
+test('restores saved customer details after refresh without replacing the draft key', async ({
+  page,
+  context,
+}) => {
+  await choosePassportPlan(page);
+  await fillDetailsAndContinue(page);
+  await expect(page.getByRole('heading', { name: 'Documents' })).toBeVisible();
+  const before = (await context.cookies()).find((cookie) => cookie.name === 'cp_order_draft');
+  expect(before?.httpOnly).toBe(true);
+  await page.goto('/order');
+  await expect(page.getByRole('heading', { name: 'Your details' })).toBeVisible();
+  await expect(page.getByLabel(/Full name/i)).toHaveValue('Test Customer');
+  await expect(page.getByLabel(/^Email/i)).toHaveValue('customer@example.test');
+  await expect(page.getByLabel(/^Phone/i)).toHaveValue('1712345678');
+  await expect(page.getByLabel(/Country you are in now/i)).toHaveValue('Bangladesh');
+  await expect(page.getByLabel(/Arrival date/i)).toHaveValue('2026-10-01');
+  await expect(page.getByText('We found your saved details and will update them.')).toBeVisible();
+  expect(await page.evaluate(() => document.cookie)).not.toContain('cp_order_draft');
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await acknowledgeDocuments(page);
+  await acceptTermsAndPlaceOrder(page);
+  await referenceText(page);
+  expect((await context.cookies()).find((cookie) => cookie.name === 'cp_order_draft')?.value).toBe(
+    before?.value,
+  );
+  expect((await orders()).count).toBe(1);
+});
+
+test('honors an explicit category or new plan instead of reviving the old plan', async ({
+  page,
+}) => {
+  await choosePassportPlan(page);
+  await fillDetailsAndContinue(page);
+  await expect(page.getByRole('heading', { name: 'Documents' })).toBeVisible();
+  await page.goto('/order?category=mobile');
+  await expect(page.getByRole('heading', { name: 'Your details' })).toHaveCount(0);
+  await expect(page.getByLabel(/Full name/i)).toHaveCount(0);
+  await page.goto('/order?category=sim&plan=missing');
+  await page.getByRole('link', { name: /Select .*E2E Simple Plan/ }).click();
+  await expect(page.getByRole('heading', { name: 'Your details' })).toBeVisible();
+  await expect(page.getByLabel(/Full name/i)).toHaveValue('');
+  await expect(page.getByText('We found your saved details and will update them.')).toHaveCount(0);
+});
+
+test('keeps a selected internet province and restores its saved address', async ({ page }) => {
+  await control('/__e2e__/add-internet-fixture');
+  await page.goto('/order?category=internet&province=SK');
+  await page.getByRole('link', { name: /Select .*Internet/ }).click();
+  await expect(page.locator('#order-province')).toHaveValue('SK');
+  await page.getByLabel(/Full name/i).fill('Internet Customer');
+  await page.getByLabel(/^Email/i).fill('internet@example.test');
+  await page.getByLabel(/^Phone/i).fill('3065550123');
+  await page.getByLabel(/Date of birth/i).fill('1990-05-15');
+  await page.getByLabel(/Street address/i).fill('123 Main Street');
+  await page.getByLabel(/Apartment or unit/i).fill('4B');
+  await page.getByLabel(/^City/i).fill('Saskatoon');
+  await page.getByLabel(/Postal code/i).fill('S7K 0A1');
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Documents' })).toBeVisible();
+  await page.goto('/order');
+  await expect(page.getByRole('heading', { name: 'Your details' })).toBeVisible();
+  await expect(page.locator('#order-province')).toHaveValue('SK');
+  await expect(page.getByLabel(/Street address/i)).toHaveValue('123 Main Street');
+  await expect(page.getByLabel(/Apartment or unit/i)).toHaveValue('4B');
+  await expect(page.getByLabel(/Postal code/i)).toHaveValue('S7K 0A1');
+});
+
 test('serializes document uploads and releases all inputs after verification is cancelled', async ({
   page,
 }) => {

@@ -76,6 +76,7 @@ class MemoryCredentialStore implements WebsiteCredentialStore {
 }
 
 const noopLeadStore: LeadStore = {
+  readLead: async () => ({ status: 'grant_invalid' }),
   createLead: async () => {
     throw new Error('not used in these service-credential tests');
   },

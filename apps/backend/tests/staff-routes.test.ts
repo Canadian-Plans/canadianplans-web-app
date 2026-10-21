@@ -128,6 +128,7 @@ const sampleLead: LeadListItem = {
 };
 
 class MemoryLeadStore implements LeadStore {
+  readLead: LeadStore['readLead'] = async () => ({ status: 'grant_invalid' });
   readonly listLeadsCalls: ListLeadsInput[] = [];
 
   createLead: LeadStore['createLead'] = () => {

@@ -160,6 +160,8 @@ export {
   leadStatusSchema,
   leadSummarySchema,
   rawAttributionSchema,
+  leadDraftSchema,
+  readLeadResponseSchema,
   updateLeadRequestSchema,
   updateLeadResponseSchema,
   type Attribution,
@@ -172,6 +174,8 @@ export {
   type LeadStatus,
   type LeadSummary,
   type RawAttribution,
+  type LeadDraft,
+  type ReadLeadResponse,
   type UpdateLeadRequest,
   type UpdateLeadResponse,
 } from './leads';

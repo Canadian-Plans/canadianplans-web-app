@@ -365,4 +365,58 @@ databaseTest('DatabaseLeadStore (T11)', () => {
     expect(jobs).toHaveLength(1);
     expect(jobs[0]?.payload.leadId).toBe(created.lead.id);
   });
+
+  test('reads only the grant-bound unfinished draft under runtime RLS', async () => {
+    const contact = {
+      fullName: 'Saved customer',
+      email: 'saved@example.test',
+      phone: '1712345678',
+      countryCode: 'BD',
+    };
+    const form = {
+      schemaVersion: 1,
+      payload: { currentCountry: 'Bangladesh', destination: 'Toronto', arrivalDate: '2026-12-01' },
+    };
+    const created = await store.createLead({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      requestId: REQUEST_ID,
+      consentVersion: 'privacy-2026-10-v2',
+      contact,
+      form,
+      productId: PRODUCT_AVAILABLE,
+    });
+    const input = {
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      leadId: created.lead.id,
+      grantToken: created.grant.token,
+    };
+    expect(await store.readLead(input)).toEqual({
+      status: 'read',
+      draft: { leadId: created.lead.id, productId: PRODUCT_AVAILABLE, contact, form },
+    });
+    expect(await store.readLead({ ...input, grantToken: 'cpldg_forged' })).toEqual({
+      status: 'grant_invalid',
+    });
+    expect(await store.readLead({ ...input, workspaceId: WORKSPACE_B })).toEqual({
+      status: 'grant_invalid',
+    });
+    const other = await store.createLead({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      requestId: REQUEST_ID,
+      consentVersion: 'privacy-2026-10-v2',
+    });
+    expect(await store.readLead({ ...input, leadId: other.lead.id })).toEqual({
+      status: 'grant_invalid',
+    });
+    await admin`update app.draft_grants set revoked_at = now() where lead_id = ${created.lead.id}`;
+    expect(await store.readLead(input)).toEqual({ status: 'grant_expired' });
+    await admin`update app.draft_grants set revoked_at = null, expires_at = now() - interval '1 second' where lead_id = ${created.lead.id}`;
+    expect(await store.readLead(input)).toEqual({ status: 'grant_expired' });
+    await admin`update app.draft_grants set expires_at = now() + interval '1 day' where lead_id = ${created.lead.id}`;
+    await admin`update app.leads set status = 'submitted' where id = ${created.lead.id}`;
+    expect(await store.readLead(input)).toEqual({ status: 'draft_submitted' });
+  });
 });

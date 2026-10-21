@@ -63,7 +63,7 @@ export interface OrderFormProps {
   attribution: RawAttribution;
   /** Disclosure version recorded with the saved draft (REQ 17). */
   consentVersion: string;
-  hasDraft: boolean;
+  restoredDetails: OrderDetailsInput | undefined;
 }
 
 function formatMoney(amountMinor: number, currency: string): string {
@@ -98,12 +98,14 @@ export function OrderForm({
   category,
   attribution,
   consentVersion,
-  hasDraft,
+  restoredDetails,
 }: OrderFormProps) {
   const human = useHumanChallenge();
   const [stepIndex, setStepIndexState] = useState(selected ? 1 : 0);
-  const [details, setDetails] = useState<OrderDetailsInput>(() =>
-    initialDetails(selected?.commercial ?? { productType: 'sim', regions: ['CA'] }, province),
+  const [details, setDetails] = useState<OrderDetailsInput>(
+    () =>
+      restoredDetails ??
+      initialDetails(selected?.commercial ?? { productType: 'sim', regions: ['CA'] }, province),
   );
   const [fieldErrors, setFieldErrors] = useState<OrderFieldErrors>({});
   const [acknowledged, setAcknowledged] = useState(false);
@@ -374,7 +376,9 @@ export function OrderForm({
                 {formatMoney(commercial.recurringChargeAmountMinor, commercial.currency)} {period}
               </p>
               <Button asChild>
-                <Link href={`/order?plan=${encodeURIComponent(offer.productId)}`}>
+                <Link
+                  href={`/order?plan=${encodeURIComponent(offer.productId)}${commercial.productType === 'internet' && province ? `&province=${province}` : ''}`}
+                >
                   Select {commercial.offerName}
                 </Link>
               </Button>
@@ -549,7 +553,7 @@ export function OrderForm({
             {details.category === 'mobile' ? (
               <MobileFields details={details} errors={fieldErrors} onChange={patchMobile} />
             ) : null}
-            {hasDraft ? (
+            {restoredDetails ? (
               <p className="text-sm">We found your saved details and will update them.</p>
             ) : null}
             <div className="flex flex-wrap gap-4">

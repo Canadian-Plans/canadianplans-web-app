@@ -41,6 +41,7 @@ class FakeRateLimiter {
 }
 
 class FakeLeadStore implements LeadStore {
+  readLead: LeadStore['readLead'] = async () => ({ status: 'grant_invalid' });
   readonly createCalls: CreateLeadInput[] = [];
   async createLead(input: CreateLeadInput): Promise<CreateLeadResult> {
     this.createCalls.push(input);
@@ -85,6 +86,7 @@ const staffOnly: {
     revokeCredential: async () => ({ status: 'not_found' }),
   },
   leadStore: {
+    readLead: async () => ({ status: 'grant_invalid' }),
     createLead: async () => {
       throw new Error('unused');
     },

@@ -64,6 +64,7 @@ const SECOND_ROW: PublishedOfferRow = {
 };
 
 class FakeLeadStore implements LeadStore {
+  readLead: LeadStore['readLead'] = async () => ({ status: 'grant_invalid' });
   async createLead(): Promise<never> {
     throw new Error('leads are not used by the offers route');
   }

@@ -35,6 +35,19 @@ function harness(status: number, body: unknown) {
 }
 
 describe('createBackendClient transport', () => {
+  it('reads a personal draft using the grant header without a proof or body', async () => {
+    const draft = { leadId: UUID, productId: null, contact: { fullName: 'Saved' }, form: null };
+    const { client, calls } = harness(200, { draft, requestId: UUID });
+    expect(await client.leads.read(UUID, { draftGrant: 'private-grant' })).toEqual({
+      draft,
+      requestId: UUID,
+    });
+    expect(calls[0]?.headers.get('x-draft-grant')).toBe('private-grant');
+    expect(calls[0]?.headers.has('x-turnstile-token')).toBe(false);
+    expect(calls[0]?.body).toBeUndefined();
+    expect(calls[0]?.method).toBe('GET');
+    expect(calls[0]?.url).toBe(`https://api.example.test/api/v1/website/leads/${UUID}`);
+  });
   it('sends a bearer credential, JSON accept and a request id, and validates the response', async () => {
     const { client, calls } = harness(200, { ok: true, requestId: UUID });
     const result = await client.health();

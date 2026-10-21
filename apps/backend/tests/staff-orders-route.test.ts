@@ -54,6 +54,7 @@ const noopCredentialStore: WebsiteCredentialStore = {
 };
 
 const noopLeadStore: LeadStore = {
+  readLead: async () => ({ status: 'grant_invalid' }),
   createLead: () => {
     throw new Error('not used');
   },

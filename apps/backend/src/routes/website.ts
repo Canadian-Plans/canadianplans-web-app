@@ -422,6 +422,42 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
     },
   );
 
+  router.get('/leads/:leadId', authenticate, requireScope('leads:write'), async (req, res) => {
+    res.setHeader('cache-control', 'private, no-store');
+    const leadId = z.uuid().safeParse(req.params['leadId']);
+    const grantToken = requireDraftGrant(req);
+    if (!leadId.success) {
+      sendDomainError(res, req.id, 'validation_error', 400);
+      return;
+    }
+    if (!grantToken) {
+      sendDomainError(res, req.id, 'draft_not_found', 401);
+      return;
+    }
+    try {
+      const ctx = websiteContext(req);
+      const outcome = await dependencies.leads.store.readLead({
+        workspaceId: ctx.workspaceId,
+        actorId: ctx.credentialId,
+        leadId: leadId.data,
+        grantToken,
+      });
+      if (outcome.status !== 'read') {
+        const code =
+          outcome.status === 'grant_expired'
+            ? 'draft_expired'
+            : outcome.status === 'draft_submitted'
+              ? 'draft_already_submitted'
+              : 'draft_not_found';
+        sendDomainError(res, req.id, code, outcome.status === 'draft_submitted' ? 409 : 401);
+        return;
+      }
+      res.json({ draft: outcome.draft, requestId: req.id });
+    } catch {
+      sendDomainError(res, req.id, 'internal_error', 500);
+    }
+  });
+
   router.patch(
     '/leads/:leadId',
     ...admit('lead-save'),
