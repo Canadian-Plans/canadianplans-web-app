@@ -37,6 +37,8 @@ const TEST_TITLES: Record<LegalSlug, string> = { privacy: 'Privacy', terms: 'Ter
 
 const blockSchema = z.object({
   _type: z.string(),
+  style: z.string().optional(),
+  listItem: z.string().optional(),
   children: z.array(z.object({ text: z.string().optional() })).optional(),
 });
 const legalDocSchema = z.object({

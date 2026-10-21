@@ -1,4 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { LegalBody } from '../components/legal-body';
 const clientMocks = vi.hoisted(() => {
   const fetch = vi.fn();
   return { fetch, createClient: vi.fn(() => ({ fetch })) };
@@ -10,6 +13,22 @@ vi.mock('server-only', () => ({}));
 import { parseLegalDoc, testPlaceholder, getLegalPage } from './legal';
 
 describe('parseLegalDoc', () => {
+  it('preserves CMS section headings and bullet lists through parsing and rendering', () => {
+    const doc = parseLegalDoc({
+      title: 'Terms',
+      version: 1,
+      effectiveDate: '2026-10-20',
+      body: [
+        { _type: 'block', style: 'h2', children: [{ text: 'Conditions' }] },
+        { _type: 'block', listItem: 'bullet', children: [{ text: 'A condition' }] },
+      ],
+    });
+    if (!doc) throw new Error('valid legal document rejected');
+    const html = renderToStaticMarkup(createElement(LegalBody, { blocks: doc.body }));
+    expect(html).toContain('<h2');
+    expect(html).toContain('<ul');
+    expect(html).toContain('<li>A condition</li>');
+  });
   it('accepts a complete versioned document', () => {
     const doc = parseLegalDoc({
       title: 'Terms',
