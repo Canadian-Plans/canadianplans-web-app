@@ -35,16 +35,13 @@ stored in both the order and completed idempotency record.
 ## Transition gates
 
 Status changes must use the transition service with `expectedVersion`; never
-write `orders.status` directly. Production dispatch and activation remain
-disabled until OPEN_INPUTS #15/#19 are resolved. Partnered activation remains
-disabled until T19 can commit the activation and commission line together.
-
-T14/T16 may exercise dispatch and activation synthetically outside production by
-setting the TEST-only `ORDER_OPERATIONAL_TRANSITIONS` flag (`1` or `true`). The
-backend loader ignores it whenever `NODE_ENV=production`, so it can never enable
-these transitions on a production deployment. See `docs/ENV.md` and OPEN_INPUTS
-#15 for the prerequisites that must be decided before production dispatch or
-activation is enabled.
+write `orders.status` directly. Dispatch and activation are opt-in in every
+environment, including production: `ORDER_OPERATIONAL_TRANSITIONS` must be exactly
+`1` or `true`. Unsetting it stops those transitions without a deploy. The switch
+does not bypass required document approval or a recorded document override.
+Partnered activation commits its commission line in the same transaction and
+fails closed when commission configuration is incomplete. See
+[dispatch-and-activation.md](dispatch-and-activation.md) and `docs/ENV.md`.
 
 ## Admin order processing (T14)
 
@@ -76,9 +73,9 @@ Exact steps:
      dispatch date with the Dispatched status in one transaction.
    - **Cancel order** requires a reason; the confirm button stays disabled until
      one is entered.
-   - **Activate** returns `feature_not_ready` for partnered orders until
-     activation can commit its commission line, and for every order while the
-     operational-transition gate is off. This is surfaced, not hidden.
+   - **Activate** returns `feature_not_ready` when a partnered order's commission
+     configuration is incomplete, and for every order while the operational
+     transition gate is off. This is surfaced, not hidden.
 5. Notes and reminders are separate records; adding one does not change the
    order's version, so it never blocks a colleague's transition.
 6. A customer's emailed correction is recorded under **Change requests** and

@@ -169,10 +169,12 @@ re-revoking returns the original revocation time.
 
 Storefront endpoint authenticated by a website service credential holding the
 `leads:write` scope. The workspace comes from the credential; any `workspace_id`
-in the body is ignored. Real lead persistence lands in A2; this route currently
-acknowledges the authenticated, scoped context.
+in the body is ignored. Validated contact, form, attribution and product data are
+persisted with the consent version. The response includes the new lead summary
+and a scoped draft grant for subsequent draft updates and checkout.
 
-- `202`: `{ workspaceId, callerType: "website", scopes, requestId }`
+- `201`: `{ lead, draftGrant: { token, expiresAt }, requestId }`
+- `400`: `validation_error`
 - `401`: `missing_credential`, `invalid_credential`, `credential_revoked`
 - `403`: `scope_denied`, `caller_forbidden`
 - `429`: `rate_limited` (with `Retry-After`)
@@ -374,13 +376,13 @@ than reporting completion. See `docs/RUNBOOKS/data-deletion.md`.
 
 ### Dispatch and activation gates
 
-Phase A keeps dispatch and activation disabled in production until OPEN_INPUTS
-#15/#19 are resolved; partnered activation additionally returns
-`409 feature_not_ready` until activation can commit its commission line
-(invariant 10). Tests and staging exercise both behind the TEST-only
-`ORDER_OPERATIONAL_TRANSITIONS` flag, which the backend ignores when
-`NODE_ENV=production`. The admin surfaces `feature_not_ready` rather than hiding
-the action. See `docs/RUNBOOKS/orders.md`.
+Dispatch and activation require `ORDER_OPERATIONAL_TRANSITIONS` to be exactly
+`1` or `true` in every environment, including production; unset returns
+`409 feature_not_ready`. Required documents must still be approved or the
+document prerequisite explicitly overridden with a recorded reason. Partnered
+activation must commit its commission line atomically (invariant 10) and returns
+`feature_not_ready` if its commission configuration is incomplete. See
+`docs/RUNBOOKS/dispatch-and-activation.md` for the current operational procedure.
 
 ### `POST /api/v1/webhooks/sanity`
 
