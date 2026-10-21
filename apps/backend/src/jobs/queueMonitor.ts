@@ -31,9 +31,9 @@ export interface QueueHealthOutcome {
 }
 
 /**
- * `failed`/`uncertain` jobs are retried by the outbox runner's own backoff,
- * so a single tick reporting either is normal, not an incident — this only
- * fires once the condition has persisted continuously for
+ * Observations count persisted failed/uncertain jobs across the scheduler's
+ * authorized workspaces, not failures newly recorded by one run. This only
+ * fires once that backlog has persisted continuously for
  * {@link QUEUE_STUCK_THRESHOLD_MS}, and resets the moment a tick reports a
  * clean queue again.
  */

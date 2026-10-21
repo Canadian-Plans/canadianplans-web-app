@@ -135,6 +135,12 @@ databaseTest('database outbox store', () => {
     `;
     expect(alerts).toHaveLength(1);
     expect(
+      await store.queueHealth({ authorizedWorkspaceIds: [WORKSPACE_A], actorId: ACTOR }),
+    ).toEqual({ failed: 1, uncertain: 0 });
+    expect(
+      await store.queueHealth({ authorizedWorkspaceIds: [WORKSPACE_B], actorId: ACTOR }),
+    ).toEqual({ failed: 0, uncertain: 0 });
+    expect(
       await store.retry({
         workspaceId: WORKSPACE_A,
         actorId: ACTOR,
@@ -144,6 +150,9 @@ databaseTest('database outbox store', () => {
     ).toBe('retried');
     const requeued = await admin`select status, attempts from app.outbox_jobs where id = ${jobId}`;
     expect(requeued[0]).toMatchObject({ status: 'pending', attempts: 0 });
+    expect(
+      await store.queueHealth({ authorizedWorkspaceIds: [WORKSPACE_A], actorId: ACTOR }),
+    ).toEqual({ failed: 0, uncertain: 0 });
   });
 
   test('an expired lease is reclaimed by another owner and the original owner loses it', async () => {

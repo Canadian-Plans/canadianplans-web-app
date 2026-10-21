@@ -6,11 +6,48 @@ import {
   createScheduler,
   SchedulerConfigurationError,
   type SchedulerTask,
+  runOutboxWithQueueMonitor,
 } from '../src/scheduler.js';
+import { INITIAL_QUEUE_HEALTH_STATE, type QueueHealthState } from '../src/jobs/queueMonitor.js';
 
 const WORKSPACE = '10000000-0000-4000-8000-000000000901';
 const ACTOR = '20000000-0000-4000-8000-000000000901';
 const SECRET = 'scheduler-secret-value-000000000901';
+
+it('alerts for a persisted failed queue even when later runs process nothing', async () => {
+  vi.useFakeTimers();
+  try {
+    vi.setSystemTime(0);
+    let state: QueueHealthState = INITIAL_QUEUE_HEALTH_STATE;
+    const jobs = {
+      run: vi.fn(async () => ({ failed: 0, uncertain: 0 })),
+      queueHealth: vi.fn(async () => ({ failed: 1, uncertain: 0 })),
+    };
+    const alerts = { send: vi.fn(async () => {}) };
+    const input = { authorizedWorkspaceIds: [WORKSPACE], actorId: ACTOR };
+    const tick = () =>
+      runOutboxWithQueueMonitor(
+        jobs,
+        alerts,
+        input,
+        (next) => {
+          state = next;
+        },
+        () => state,
+      );
+    await tick();
+    expect(alerts.send).not.toHaveBeenCalled();
+    vi.setSystemTime(10 * 60_000);
+    await tick();
+    expect(alerts.send).toHaveBeenCalledOnce();
+    expect(jobs.queueHealth).toHaveBeenCalledWith(input);
+    expect(alerts.send).toHaveBeenCalledWith(
+      expect.objectContaining({ detail: 'failed:1,uncertain:0' }),
+    );
+  } finally {
+    vi.useRealTimers();
+  }
+});
 
 interface Deferred<T> {
   promise: Promise<T>;

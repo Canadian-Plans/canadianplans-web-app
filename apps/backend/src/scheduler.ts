@@ -304,21 +304,25 @@ export function createDefaultSchedulerDependencies(): BackendSchedulerDependenci
  * closure above) purely for readability — the actual detection logic lives
  * in the pure, unit-tested {@link trackQueueHealth}.
  */
-async function runOutboxWithQueueMonitor(
-  jobs: { run(input: SchedulerRunInput): Promise<{ failed: number; uncertain: number }> },
+export async function runOutboxWithQueueMonitor(
+  jobs: {
+    run(input: SchedulerRunInput): Promise<unknown>;
+    queueHealth(input: SchedulerRunInput): Promise<{ failed: number; uncertain: number }>;
+  },
   alerts: OwnerAlertChannel,
   input: SchedulerRunInput,
   setState: (state: QueueHealthState) => void,
   getState: () => QueueHealthState,
 ): Promise<unknown> {
   const summary = await jobs.run(input);
-  const outcome = trackQueueHealth(getState(), summary, Date.now());
+  const queue = await jobs.queueHealth(input);
+  const outcome = trackQueueHealth(getState(), queue, Date.now());
   setState(outcome.nextState);
   if (outcome.shouldAlert) {
     await alerts
       .send({
         kind: 'job_queue_stuck',
-        detail: `failed:${summary.failed},uncertain:${summary.uncertain}`,
+        detail: `failed:${queue.failed},uncertain:${queue.uncertain}`,
         occurredAt: new Date().toISOString(),
       })
       .catch(() => {
