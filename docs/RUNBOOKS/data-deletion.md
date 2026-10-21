@@ -52,6 +52,13 @@ retry overwrites rather than duplicates.
 3. The order's audit timeline still shows who did what when, with no personal
    values in `before`/`after`.
 
+Migration `0021_audit_redaction` enforces that changed audit values become SQL
+`NULL`; it rejects replacements (including JSON `null`) and restoration after
+redaction. It adds a trigger without backfilling data. Existing code that only
+nulls these fields remains compatible. Apply through the normal migration role;
+production execution belongs to the owner. Roll back application code without
+removing this guard; use a forward migration if a future policy needs to change.
+
 ## Safe stopping point
 
 After step 1 (the transaction) the personal data is already restricted; the
