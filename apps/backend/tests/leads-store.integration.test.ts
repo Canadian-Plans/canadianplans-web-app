@@ -1,5 +1,5 @@
 import postgres from 'postgres';
-import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
 import { createDatabaseClient, type DatabaseClient } from '@canadian-plans/db';
 
 import { DatabaseLeadStore } from '../src/leads/store.js';
@@ -50,7 +50,8 @@ databaseTest('DatabaseLeadStore (T11)', () => {
   beforeAll(async () => {
     if (!migrationUrl) throw new Error('TEST_MIGRATION_DATABASE_URL is required');
 
-    admin = postgres(migrationUrl, { max: 1, prepare: false, ssl: false });
+    // One connection can hold the submission lock while another observes waiters.
+    admin = postgres(migrationUrl, { max: 2, prepare: false, ssl: false });
     await admin.begin(async (tx) => {
       await tx`select pg_advisory_xact_lock(745284914)`;
       await tx.unsafe(`ALTER ROLE app_runtime PASSWORD '${TEST_RUNTIME_PASSWORD}'`);
@@ -305,6 +306,44 @@ databaseTest('DatabaseLeadStore (T11)', () => {
     ]);
     expect(audits.every((event) => event.after.fullName === undefined)).toBe(true);
     expect(audits[1]?.after.changedFields).toEqual(['contact']);
+  });
+
+  test('a save waiting behind submission rejects the committed draft', async () => {
+    const created = await store.createLead({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      requestId: REQUEST_ID,
+      consentVersion: 'terms-2026-09',
+      contact: { fullName: 'Before submission' },
+    });
+    let pending: Promise<unknown> = Promise.resolve();
+    await admin.begin(async (tx) => {
+      const [connection] = await tx<{ pid: number }[]>`select pg_backend_pid() as pid`;
+      if (!connection) throw new Error('missing lock-holder connection');
+      await tx`select id from app.leads where id = ${created.lead.id} for update`;
+      pending = store.updateLead({
+        workspaceId: WORKSPACE,
+        actorId: ACTOR,
+        requestId: REQUEST_ID,
+        leadId: created.lead.id,
+        grantToken: created.grant.token,
+        contact: { fullName: 'Late edit' },
+      });
+      await vi.waitFor(
+        async () => {
+          const [waiting] = await admin<{ count: number }[]>`
+          select count(*)::int as count from pg_stat_activity
+            where datname = current_database() and ${connection.pid} = any(pg_blocking_pids(pid))
+        `;
+          expect(waiting?.count).toBeGreaterThan(0);
+        },
+        { timeout: 5_000 },
+      );
+      await tx`update app.leads set status = 'submitted' where id = ${created.lead.id}`;
+    });
+    expect(await pending).toEqual({ status: 'draft_submitted' });
+    const [row] = await admin`select full_name from app.leads where id = ${created.lead.id}`;
+    expect(row?.full_name).toBe('Before submission');
   });
 
   test('emits exactly one analytics_lead_saved outbox job per lead', async () => {

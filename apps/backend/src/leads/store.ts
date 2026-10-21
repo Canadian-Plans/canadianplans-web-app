@@ -243,7 +243,8 @@ export class DatabaseLeadStore implements LeadStore {
         // Matching on lead_id AND token_hash together means a real grant that
         // simply belongs to a *different* lead is indistinguishable from a
         // forged token — both resolve to zero rows. Joining the lead lets a
-        // submitted draft be rejected before any write, without a second query.
+        // submitted draft be rejected before any write. Lock through the save
+        // so submission and edits cannot act on an earlier incomplete status.
         const [grant] = await tx
           .select({
             id: draftGrants.id,
@@ -263,7 +264,8 @@ export class DatabaseLeadStore implements LeadStore {
               eq(draftGrants.tokenHash, tokenHash),
             ),
           )
-          .limit(1);
+          .limit(1)
+          .for('update');
 
         if (!grant) return { status: 'grant_invalid' };
         if (grant.revokedAt !== null || grant.expiresAt.getTime() <= Date.now()) {
