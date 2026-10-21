@@ -164,6 +164,11 @@ control-plane configuration are not dataset-export contents.
 
 ### Manifest and encryption
 
+Every backup attempt uses a unique timestamp-and-UUID run ID by default. An
+explicit `BACKUP_RUN_ID` must identify a fresh prefix: the runner rejects any
+prefix already containing artifacts, including an incomplete prior attempt.
+Retry with a new ID; never reuse a successful restore point's prefix.
+
 Build one canonical manifest containing, at minimum, the run ID, source IDs,
 capture timestamps, tool versions, artifact names, byte counts, record/object
 counts, SHA-256 hashes, and exclusions. The manifest itself is sensitive and

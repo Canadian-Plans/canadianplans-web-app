@@ -10,7 +10,12 @@ import {
 import { readLatestHeartbeat } from './heartbeat.js';
 import { InMemoryBackupLease } from './lease.js';
 import { verifyManifestArtifacts, backupManifestSchema } from './manifest.js';
-import { BackupIncompleteError, BackupUploadVerificationError, runBackup } from './run.js';
+import {
+  BackupIncompleteError,
+  BackupUploadVerificationError,
+  createBackupRunId,
+  runBackup,
+} from './run.js';
 import {
   FakeR2SourceReader,
   FakeReferencedObjectManifestSource,
@@ -69,6 +74,32 @@ function baseDeps() {
 }
 
 describe('runBackup', () => {
+  it('generates distinct attempt IDs even at the same instant', () => {
+    const now = new Date('2026-10-21T01:00:00.000Z');
+    expect(createBackupRunId(now)).not.toBe(createBackupRunId(now));
+  });
+
+  it('refuses to overwrite a successful run and preserves every artifact and heartbeat', async () => {
+    const { backend, deps, lease } = baseDeps();
+    await runBackup(deps);
+    const reader = backend.asReader();
+    const before = new Map<string, Uint8Array | undefined>();
+    for (const object of await reader.listObjects('')) {
+      before.set(object.key, await reader.getObject(object.key));
+    }
+    await expect(runBackup(deps)).rejects.toThrow('backup_run_id_already_exists');
+    for (const [key, bytes] of before) expect(await reader.getObject(key)).toEqual(bytes);
+    expect(lease.isAnyActive()).toBe(false);
+  });
+
+  it('refuses an ID belonging to an incomplete prior attempt', async () => {
+    const { backend, deps } = baseDeps();
+    const key = `${deps.runId}/data.sql.enc`;
+    await backend.asWriter().putObject(key, new Uint8Array([1]));
+    await expect(runBackup(deps)).rejects.toThrow('backup_run_id_already_exists');
+    expect(await backend.asReader().getObject(key)).toEqual(new Uint8Array([1]));
+    expect((await readLatestHeartbeat(backend.asReader())).status).toBe('missing');
+  });
   it('reads the same physical object addressed by the document adapter', async () => {
     const { deps } = baseDeps();
     const documentStore = new S3R2DocumentStore({
