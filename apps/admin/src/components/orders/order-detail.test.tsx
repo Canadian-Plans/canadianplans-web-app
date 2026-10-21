@@ -221,6 +221,24 @@ async function renderDetail() {
 }
 
 describe('OrderDetailView role-aware actions', () => {
+  it('removes a cleared correction and resets visible fields after successful submission', async () => {
+    mocks.createOrderChangeRequest.mockResolvedValue({ changeRequest: { id: 'request' } });
+    await renderDetail();
+    const name = screen.getByLabelText('Full name');
+    const destination = screen.getByLabelText('Destination');
+    fireEvent.change(name, { target: { value: 'Accidental edit' } });
+    fireEvent.change(name, { target: { value: '' } });
+    expect(isDisabled(screen.getByRole('button', { name: 'Submit change request' }))).toBe(true);
+    fireEvent.change(destination, { target: { value: 'Vancouver' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Submit change request' }));
+    await waitFor(() => expect(mocks.createOrderChangeRequest).toHaveBeenCalledOnce());
+    expect(mocks.createOrderChangeRequest.mock.calls[0]?.[3]?.patch).toEqual({
+      contact: { fullName: undefined },
+      form: { destination: 'Vancouver' },
+    });
+    await waitFor(() => expect(screen.queryByDisplayValue('Vancouver')).toBeNull());
+    expect(name.getAttribute('value')).toBe('');
+  });
   it('renders no processing actions for a viewer', async () => {
     current = order({
       capabilities: { canManageOrders: false, canRecordPayment: false, canSearchContact: false },

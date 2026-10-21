@@ -347,10 +347,11 @@ export function OrderChangeRequests({
                   <Label htmlFor="cr-full-name">Full name</Label>
                   <Input
                     id="cr-full-name"
+                    value={contact.fullName ?? ''}
                     onChange={(event) =>
                       setContact((current) => ({
                         ...current,
-                        ...(event.target.value ? { fullName: event.target.value } : {}),
+                        fullName: event.target.value || undefined,
                       }))
                     }
                   />
@@ -359,11 +360,12 @@ export function OrderChangeRequests({
                   <Label htmlFor="cr-email">Email</Label>
                   <Input
                     id="cr-email"
+                    value={contact.email ?? ''}
                     type="email"
                     onChange={(event) =>
                       setContact((current) => ({
                         ...current,
-                        ...(event.target.value ? { email: event.target.value } : {}),
+                        email: event.target.value || undefined,
                       }))
                     }
                   />
@@ -372,10 +374,11 @@ export function OrderChangeRequests({
                   <Label htmlFor="cr-phone">Phone</Label>
                   <Input
                     id="cr-phone"
+                    value={contact.phone ?? ''}
                     onChange={(event) =>
                       setContact((current) => ({
                         ...current,
-                        ...(event.target.value ? { phone: event.target.value } : {}),
+                        phone: event.target.value || undefined,
                       }))
                     }
                   />
@@ -384,10 +387,11 @@ export function OrderChangeRequests({
                   <Label htmlFor="cr-destination">Destination</Label>
                   <Input
                     id="cr-destination"
+                    value={form.destination ?? ''}
                     onChange={(event) =>
                       setForm((current) => ({
                         ...current,
-                        ...(event.target.value ? { destination: event.target.value } : {}),
+                        destination: event.target.value || undefined,
                       }))
                     }
                   />
@@ -396,10 +400,11 @@ export function OrderChangeRequests({
                   <Label htmlFor="cr-arrival">Arrival date</Label>
                   <Input
                     id="cr-arrival"
+                    value={form.arrivalDate ?? ''}
                     onChange={(event) =>
                       setForm((current) => ({
                         ...current,
-                        ...(event.target.value ? { arrivalDate: event.target.value } : {}),
+                        arrivalDate: event.target.value || undefined,
                       }))
                     }
                   />
