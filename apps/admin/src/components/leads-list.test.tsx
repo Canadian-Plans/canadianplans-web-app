@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { LeadsList } from './leads-list';
@@ -64,5 +64,27 @@ describe('LeadsList', () => {
         { status: 'incomplete' },
       ),
     );
+  });
+
+  it('keeps newer filter results when the initial response arrives late', async () => {
+    const oldResponse = await mocks.getStaffLeads();
+    type Response = Awaited<ReturnType<typeof import('../lib/api').getStaffLeads>>;
+    let resolveStale: (value: Response) => void = () => undefined;
+    const stale = new Promise<Response>((resolve) => {
+      resolveStale = resolve;
+    });
+    mocks.getStaffLeads.mockReset();
+    mocks.getStaffLeads.mockReturnValueOnce(stale).mockResolvedValueOnce({
+      leads: [],
+      page: { page: 1, pageSize: 25, total: 0 },
+    });
+    render(<LeadsList workspaceSlug="site-1" />);
+    await waitFor(() => expect(mocks.getStaffLeads).toHaveBeenCalledOnce());
+    fireEvent.click(screen.getByRole('button', { name: 'Incomplete' }));
+    await screen.findByText('No leads yet.');
+    await act(async () => {
+      resolveStale(oldResponse);
+    });
+    expect(screen.queryByText('Synthetic Customer')).toBeNull();
   });
 });

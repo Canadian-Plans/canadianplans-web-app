@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { SourceReportGroup, SourceReportResponse } from '@canadian-plans/contracts';
 
 import { BackendError, getSourceReport } from '../lib/api';
@@ -33,25 +33,32 @@ export function SourceReport({ workspaceSlug }: { workspaceSlug: string }) {
   const [report, setReport] = useState<SourceReportResponse>();
   const [message, setMessage] = useState<string>();
   const [loading, setLoading] = useState(false);
+  const requestVersion = useRef(0);
 
   const refresh = useCallback(async () => {
     if (!accessToken || !workspaceId) return;
+    const version = ++requestVersion.current;
     setLoading(true);
     setMessage(undefined);
     try {
       const result = await getSourceReport(accessToken, workspaceId, range);
+      if (requestVersion.current !== version) return;
       setReport(result);
     } catch (error) {
+      if (requestVersion.current !== version) return;
       setMessage(
         `Could not load the report. Reason: ${error instanceof BackendError ? error.code : 'internal_error'}.`,
       );
     } finally {
-      setLoading(false);
+      if (requestVersion.current === version) setLoading(false);
     }
   }, [accessToken, workspaceId, range]);
 
   useEffect(() => {
     void refresh();
+    return () => {
+      requestVersion.current += 1;
+    };
   }, [refresh]);
 
   const groups = report?.groups ?? [];

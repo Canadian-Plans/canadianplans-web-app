@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { LeadListItem, LeadStatus } from '@canadian-plans/contracts';
 import { Badge } from '@canadian-plans/ui';
 
@@ -34,27 +34,34 @@ export function LeadsList({ workspaceSlug }: { workspaceSlug: string }) {
   const [leads, setLeads] = useState<LeadListItem[]>([]);
   const [message, setMessage] = useState<string>();
   const [loading, setLoading] = useState(false);
+  const requestVersion = useRef(0);
 
   const refresh = useCallback(async () => {
     if (!accessToken || !workspaceId) return;
+    const version = ++requestVersion.current;
     setLoading(true);
     setMessage(undefined);
     try {
       const result = await getStaffLeads(accessToken, workspaceId, {
         status: statusFilter === 'all' ? undefined : statusFilter,
       });
+      if (requestVersion.current !== version) return;
       setLeads(result.leads);
     } catch (error) {
+      if (requestVersion.current !== version) return;
       setMessage(
         `Could not load leads. Reason: ${error instanceof BackendError ? error.code : 'internal_error'}.`,
       );
     } finally {
-      setLoading(false);
+      if (requestVersion.current === version) setLoading(false);
     }
   }, [accessToken, workspaceId, statusFilter]);
 
   useEffect(() => {
     void refresh();
+    return () => {
+      requestVersion.current += 1;
+    };
   }, [refresh]);
 
   return (
