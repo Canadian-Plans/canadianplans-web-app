@@ -14130,7 +14130,17 @@
         "summary": "List the published offers this website credential may quote.",
         "tags": ["website"],
         "security": [{ "websiteCredential": [] }],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "province",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT"]
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success.",

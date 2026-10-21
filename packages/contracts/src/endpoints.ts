@@ -82,7 +82,7 @@ import {
   joinRegionWaitlistRequestSchema,
   joinRegionWaitlistResponseSchema,
 } from './region-waitlist';
-import { listWebsiteOffersResponseSchema } from './website-offers';
+import { listWebsiteOffersQuerySchema, listWebsiteOffersResponseSchema } from './website-offers';
 import { webhookAckResponseSchema, webhookDeliveryRequestSchema } from './webhooks';
 
 /**
@@ -501,6 +501,7 @@ export const endpoints: readonly EndpointDef[] = [
     summary: 'List the published offers this website credential may quote.',
     auth: 'website',
     successStatus: 200,
+    query: listWebsiteOffersQuerySchema,
     response: listWebsiteOffersResponseSchema,
   },
   {

@@ -70,4 +70,14 @@ describe('OpenAPI generation', () => {
     expect(headerNames).toContain('Idempotency-Key');
     expect(headerNames).toContain('X-Draft-Grant');
   });
+
+  it('documents the optional province filter on published offers', () => {
+    const paths = asObject(doc['paths']);
+    const operation = asObject(asObject(paths['/api/v1/website/offers'])['get']);
+    const parameters = operation['parameters'];
+    if (!Array.isArray(parameters)) throw new Error('expected parameters array');
+    const province = parameters.map(asObject).find((parameter) => parameter['name'] === 'province');
+    expect(province).toMatchObject({ in: 'query', required: false });
+    expect(asObject(asObject(province)['schema'])['enum']).toContain('SK');
+  });
 });
