@@ -33,6 +33,16 @@ const rawOfferSchema = z.object({
     type: z.string(),
   }),
   name: z.string(),
+  regions: commercialOfferSchema.shape.regions.nullish().transform((value) => value ?? undefined),
+  billingPeriod: commercialOfferSchema.shape.billingPeriod
+    .nullish()
+    .transform((value) => value ?? undefined),
+  presentation: commercialOfferSchema.shape.presentation
+    .nullish()
+    .transform((value) => value ?? undefined),
+  promotion: commercialOfferSchema.shape.promotion
+    .nullish()
+    .transform((value) => value ?? undefined),
   currency: z.string(),
   recurringChargeAmountMinor: z.number(),
   oneTimeFees: z
@@ -59,7 +69,7 @@ const rawOfferSchema = z.object({
 const projection = `{
   _id, _rev, name, currency, recurringChargeAmountMinor, oneTimeFees[]{label, amountMinor},
   amountPayableTodayMinor, paymentRequired, documentChecklist, eligibility, availability,
-  billingParty, contractTerms, termsVersion, specs,
+  billingParty, contractTerms, termsVersion, specs, regions, billingPeriod, presentation, promotion,
   "product": product->{productKey, title, type}
 }`;
 
@@ -71,6 +81,10 @@ function toPublishedOffer(raw: z.infer<typeof rawOfferSchema>): PublishedOffer {
       productKey: raw.product.productKey,
       productTitle: raw.product.title,
       productType: raw.product.type,
+      regions: raw.regions,
+      billingPeriod: raw.billingPeriod,
+      presentation: raw.presentation,
+      promotion: raw.promotion,
       offerName: raw.name,
       currency: raw.currency,
       recurringChargeAmountMinor: raw.recurringChargeAmountMinor,
