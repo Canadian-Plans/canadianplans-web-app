@@ -1,4 +1,5 @@
-import type { TrackingNotifier } from './notifier.js';
+import { sealTrackingCode } from './cipher.js';
+import { hashContact, requireContactHashSecret } from '../email/hash.js';
 import {
   codeBindingHash,
   emailBindingHash,
@@ -22,7 +23,7 @@ export type TrackingVerifyOutcome =
 
 export interface TrackingServiceDependencies {
   readonly store: TrackingStore;
-  readonly notifier: TrackingNotifier;
+  readonly contactHashSecret?: () => string;
   /** Absent means tracking is unavailable; request is neutral, verify/status fail closed. */
   readonly secret: string | undefined;
   readonly now?: () => Date;
@@ -59,28 +60,23 @@ export class TrackingService {
     });
     if (!match) return;
 
-    // A resend invalidates any still-pending challenge for this binding.
     const emailHash = emailBindingHash(secret, input.workspaceId, match.orderId, normalizedEmail);
-    await this.dependencies.store.invalidatePending({
-      workspaceId: input.workspaceId,
-      orderId: match.orderId,
-      emailHash,
-    });
-
     const code = generateOtpCode();
     const now = this.now();
-    await this.dependencies.store.createChallenge({
-      workspaceId: input.workspaceId,
-      orderId: match.orderId,
+    const challengeId = crypto.randomUUID();
+    const binding = { workspaceId: input.workspaceId, orderId: match.orderId, challengeId };
+    await this.dependencies.store.createChallengeAndQueue({
+      ...binding,
+      normalizedEmail,
       emailHash,
       codeHash: codeBindingHash(secret, input.workspaceId, match.orderId, normalizedEmail, code),
       expiresAt: new Date(now.getTime() + TRACKING_OTP_TTL_MS),
-    });
-    await this.dependencies.notifier.send({
-      workspaceId: input.workspaceId,
-      email: normalizedEmail,
-      reference: input.orderReference,
-      code,
+      now,
+      sealedCode: sealTrackingCode(secret, binding, code),
+      contactHash: hashContact(
+        normalizedEmail,
+        (this.dependencies.contactHashSecret ?? requireContactHashSecret)(),
+      ),
     });
   }
 

@@ -3,6 +3,7 @@ import {
   dispatchRecords,
   leads,
   orders,
+  outboxJobs,
   trackingChallenges,
   withTenantTx,
   type TenantTransaction,
@@ -32,7 +33,21 @@ export interface TrackingStatusView {
   updatedAt: Date;
 }
 
+export interface QueueTrackingChallengeInput {
+  workspaceId: string;
+  orderId: string;
+  challengeId: string;
+  normalizedEmail: string;
+  emailHash: string;
+  codeHash: string;
+  expiresAt: Date;
+  now: Date;
+  sealedCode: string;
+  contactHash: string;
+}
+
 export interface TrackingStore {
+  createChallengeAndQueue(input: QueueTrackingChallengeInput): Promise<void>;
   matchOrder(input: {
     workspaceId: string;
     reference: string;
@@ -92,6 +107,136 @@ export class DatabaseTrackingStore implements TrackingStore {
           )
           .limit(1);
         return row ? { orderId: row.id } : undefined;
+      },
+    );
+  }
+
+  async createChallengeAndQueue(input: QueueTrackingChallengeInput): Promise<void> {
+    await this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: input.workspaceId },
+      async (tx) => {
+        // Serialize resends for one order and recheck the contact after matching.
+        const [order] = await tx
+          .select({ reference: orders.reference, email: leads.email })
+          .from(orders)
+          .innerJoin(
+            leads,
+            and(eq(leads.workspaceId, orders.workspaceId), eq(leads.id, orders.leadId)),
+          )
+          .where(and(eq(orders.workspaceId, input.workspaceId), eq(orders.id, input.orderId)))
+          .for('update');
+        if (!order || order.email?.trim().toLowerCase() !== input.normalizedEmail) return;
+        await tx
+          .update(trackingChallenges)
+          .set({ status: 'consumed', consumedAt: input.now })
+          .where(
+            and(
+              eq(trackingChallenges.workspaceId, input.workspaceId),
+              eq(trackingChallenges.orderId, input.orderId),
+              eq(trackingChallenges.emailHash, input.emailHash),
+              eq(trackingChallenges.status, 'pending'),
+            ),
+          );
+        await tx
+          .update(outboxJobs)
+          .set({
+            status: 'completed',
+            completedAt: input.now,
+            providerId: 'skipped:superseded',
+            payload: { orderId: input.orderId },
+            updatedAt: input.now,
+          })
+          .where(
+            and(
+              eq(outboxJobs.workspaceId, input.workspaceId),
+              eq(outboxJobs.jobType, 'tracking_otp_email'),
+              eq(outboxJobs.status, 'pending'),
+              sql`${outboxJobs.payload}->>'orderId' = ${input.orderId}`,
+            ),
+          );
+        await tx.insert(trackingChallenges).values({
+          id: input.challengeId,
+          workspaceId: input.workspaceId,
+          orderId: input.orderId,
+          emailHash: input.emailHash,
+          codeHash: input.codeHash,
+          expiresAt: input.expiresAt,
+        });
+        await tx.insert(outboxJobs).values({
+          workspaceId: input.workspaceId,
+          jobType: 'tracking_otp_email',
+          dedupeKey: input.challengeId,
+          payload: {
+            orderId: input.orderId,
+            challengeId: input.challengeId,
+            reference: order.reference,
+            toAddress: input.normalizedEmail,
+            contactHash: input.contactHash,
+            sealedCode: input.sealedCode,
+            expiresAt: input.expiresAt.toISOString(),
+          },
+        });
+      },
+    );
+  }
+
+  async pendingDelivery(input: {
+    workspaceId: string;
+    actorId: string;
+    orderId: string;
+    challengeId: string;
+    now: Date;
+  }): Promise<
+    | {
+        codeHash: string;
+        email: string;
+        reference: string;
+      }
+    | undefined
+  > {
+    return this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: input.actorId },
+      async (tx) => {
+        const [row] = await tx
+          .select({
+            codeHash: trackingChallenges.codeHash,
+            email: leads.email,
+            reference: orders.reference,
+            expiresAt: trackingChallenges.expiresAt,
+            attempts: trackingChallenges.attempts,
+          })
+          .from(trackingChallenges)
+          .innerJoin(
+            orders,
+            and(
+              eq(orders.workspaceId, trackingChallenges.workspaceId),
+              eq(orders.id, trackingChallenges.orderId),
+            ),
+          )
+          .innerJoin(
+            leads,
+            and(eq(leads.workspaceId, orders.workspaceId), eq(leads.id, orders.leadId)),
+          )
+          .where(
+            and(
+              eq(trackingChallenges.workspaceId, input.workspaceId),
+              eq(trackingChallenges.orderId, input.orderId),
+              eq(trackingChallenges.id, input.challengeId),
+              eq(trackingChallenges.status, 'pending'),
+            ),
+          )
+          .limit(1);
+        if (
+          !row?.email ||
+          row.expiresAt.getTime() <= input.now.getTime() ||
+          row.attempts >= MAX_TRACKING_ATTEMPTS
+        )
+          return undefined;
+        return {
+          codeHash: row.codeHash,
+          email: row.email.trim().toLowerCase(),
+          reference: row.reference,
+        };
       },
     );
   }

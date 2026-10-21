@@ -41,7 +41,6 @@ import {
   normalizeEmail,
   verifyTrackingGrant,
 } from '../tracking/secrets.js';
-import { loadTrackingNotifier } from '../tracking/notifier.js';
 import { DatabaseTrackingStore } from '../tracking/store.js';
 import {
   TRACKING_OTP_EMAIL_MAX_REQUESTS,
@@ -104,7 +103,6 @@ export function createDefaultWebsiteRouteDependencies(): WebsiteRouteDependencie
     tracking: {
       service: new TrackingService({
         store: new DatabaseTrackingStore(),
-        notifier: loadTrackingNotifier(),
         secret: loadTrackingSecret(),
       }),
     },

@@ -1,6 +1,16 @@
 import postgres from 'postgres';
+import { z } from 'zod';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { createDatabaseClient, type DatabaseClient } from '@canadian-plans/db';
+import { applyMigrations } from '@canadian-plans/db/migrations';
+import { FakeEmailAdapter } from '@canadian-plans/adapters';
+import { OutboxRunner } from '@canadian-plans/jobs';
+import { DatabaseOutboxStore } from '../src/jobs/store.js';
+import { DatabaseEmailStore } from '../src/email/store.js';
+import { hashContact } from '../src/email/hash.js';
+import { TrackingService } from '../src/tracking/service.js';
+import { openTrackingCode, sealTrackingCode } from '../src/tracking/cipher.js';
+import { createTrackingOtpHandler } from '../src/tracking/delivery.js';
 import { TEST_RUNTIME_PASSWORD, setTestRuntimePassword } from '@canadian-plans/db/test-helpers';
 
 import { codeBindingHash, emailBindingHash } from '../src/tracking/secrets.js';
@@ -30,7 +40,9 @@ databaseTest('DatabaseTrackingStore (T22)', () => {
   let database: DatabaseClient;
 
   beforeAll(async () => {
-    if (!databaseUrl) throw new Error('disposable database URL missing');
+    if (!databaseUrl || !decodeURIComponent(new URL(databaseUrl).pathname).endsWith('_test'))
+      throw new Error('disposable _test database URL missing');
+    await applyMigrations({ connectionString: databaseUrl, ssl: false });
     admin = postgres(databaseUrl, { max: 1, prepare: false, ssl: false });
     await setTestRuntimePassword(admin);
     await admin`
@@ -193,5 +205,198 @@ databaseTest('DatabaseTrackingStore (T22)', () => {
     expect(
       (await tracking.status({ workspaceId: WORKSPACE, orderId: ORDER }))?.documentsRequired,
     ).toEqual(['passport']);
+  });
+  const SECRET = 'tracking-outbox-integration-secret-32-chars';
+  const CONTACT_SECRET = 'tracking-contact-integration-secret';
+  function queueInput(code = '654321') {
+    const binding = { workspaceId: WORKSPACE, orderId: ORDER, challengeId: crypto.randomUUID() };
+    return {
+      ...binding,
+      normalizedEmail: EMAIL,
+      emailHash: emailBindingHash(SECRET, WORKSPACE, ORDER, EMAIL),
+      codeHash: codeBindingHash(SECRET, WORKSPACE, ORDER, EMAIL, code),
+      sealedCode: sealTrackingCode(SECRET, binding, code),
+      contactHash: hashContact(EMAIL, CONTACT_SECRET),
+      now: new Date(),
+      expiresAt: new Date(Date.now() + 600_000),
+    };
+  }
+  function delivery(store: DatabaseTrackingStore, email: FakeEmailAdapter, now?: () => Date) {
+    const emailStore = new DatabaseEmailStore(database);
+    return createTrackingOtpHandler({
+      email,
+      store,
+      eligibility: emailStore,
+      secret: SECRET,
+      contactHashSecret: () => CONTACT_SECRET,
+      now,
+      delivery: {
+        prepare: (input) =>
+          emailStore.prepareDelivery({ ...input, provider: 'fake', providerAccount: 'fake' }),
+        recordResult: (input) => emailStore.recordDeliveryResult(input),
+      },
+    });
+  }
+  test('queues an encrypted code atomically, delivers through the outbox, verifies once, and scrubs the sent payload', async () => {
+    const store = new DatabaseTrackingStore(database);
+    const service = new TrackingService({
+      store,
+      secret: SECRET,
+      contactHashSecret: () => CONTACT_SECRET,
+    });
+    await service.requestCode({
+      workspaceId: WORKSPACE,
+      email: 'wrong@example.test',
+      orderReference: REFERENCE,
+    });
+    expect(
+      await admin`select id from app.outbox_jobs where workspace_id = ${WORKSPACE} and job_type = 'tracking_otp_email'`,
+    ).toHaveLength(0);
+    await service.requestCode({ workspaceId: WORKSPACE, email: EMAIL, orderReference: REFERENCE });
+    const rows = await admin<
+      { id: string; payload: { orderId: string; challengeId: string; sealedCode: string } }[]
+    >`select id, payload from app.outbox_jobs where workspace_id = ${WORKSPACE} and job_type = 'tracking_otp_email'`;
+    expect(rows).toHaveLength(1);
+    const payload = rows[0]!.payload;
+    expect(payload).not.toHaveProperty('code');
+    const code = openTrackingCode(
+      SECRET,
+      { workspaceId: WORKSPACE, ...payload },
+      payload.sealedCode,
+    );
+    expect(code).toMatch(/^\d{6}$/);
+    const email = new FakeEmailAdapter();
+    const runner = new OutboxRunner({
+      store: new DatabaseOutboxStore(database),
+      handlers: new Map([['tracking_otp_email', delivery(store, email)]]),
+    });
+    expect(await runner.run({ authorizedWorkspaceIds: [WORKSPACE], actorId: ACTOR })).toMatchObject(
+      { completed: 1, failed: 0 },
+    );
+    expect(email.deliveries[0]).toMatchObject({
+      template: 'tracking_otp',
+      toAddress: EMAIL,
+      variables: { code },
+    });
+    expect(
+      (await admin`select payload from app.outbox_jobs where id = ${rows[0]!.id}`)[0]!.payload,
+    ).toEqual({ orderId: ORDER, challengeId: payload.challengeId });
+    expect(
+      (
+        await service.verifyCode({
+          workspaceId: WORKSPACE,
+          email: EMAIL,
+          orderReference: REFERENCE,
+          code: code!,
+        })
+      ).status,
+    ).toBe('verified');
+    expect(
+      (
+        await service.verifyCode({
+          workspaceId: WORKSPACE,
+          email: EMAIL,
+          orderReference: REFERENCE,
+          code: code!,
+        })
+      ).status,
+    ).toBe('not_found');
+  });
+  test('serializes concurrent resends so only one pending challenge and email survive', async () => {
+    const store = new DatabaseTrackingStore(database);
+    const first = queueInput('123456'),
+      second = queueInput('654321');
+    await Promise.all([
+      store.createChallengeAndQueue(first),
+      store.createChallengeAndQueue(second),
+    ]);
+    const pending = await admin<
+      { id: string }[]
+    >`select id from app.tracking_challenges where workspace_id = ${WORKSPACE} and order_id = ${ORDER} and status = 'pending'`;
+    expect(pending).toHaveLength(1);
+    expect(
+      await admin`select id from app.outbox_jobs where workspace_id = ${WORKSPACE} and job_type = 'tracking_otp_email' and status = 'pending'`,
+    ).toHaveLength(1);
+    const email = new FakeEmailAdapter();
+    await new OutboxRunner({
+      store: new DatabaseOutboxStore(database),
+      handlers: new Map([['tracking_otp_email', delivery(store, email)]]),
+    }).run({ authorizedWorkspaceIds: [WORKSPACE], actorId: ACTOR });
+    expect(email.deliveries).toHaveLength(1);
+    expect(email.deliveries[0]!.variables?.code).toBe(
+      pending[0]!.id === first.challengeId ? '123456' : '654321',
+    );
+  });
+  test('rolls back challenge invalidation when queue persistence fails', async () => {
+    const store = new DatabaseTrackingStore(database);
+    const previous = queueInput();
+    await store.createChallengeAndQueue(previous);
+    const replacement = queueInput('111111');
+    const failing = new DatabaseTrackingStore({
+      withTenantTx: (context, fn) =>
+        database.withTenantTx(context, async (tx) => {
+          await fn(tx);
+          throw new Error('simulated_commit_failure');
+        }),
+    });
+    await expect(failing.createChallengeAndQueue(replacement)).rejects.toThrow(
+      'simulated_commit_failure',
+    );
+    expect(
+      await admin`select id from app.tracking_challenges where id = ${replacement.challengeId}`,
+    ).toHaveLength(0);
+    expect(
+      await admin`select id from app.outbox_jobs where workspace_id = ${WORKSPACE} and dedupe_key = ${replacement.challengeId}`,
+    ).toHaveLength(0);
+    expect(
+      (
+        await admin`select status from app.tracking_challenges where id = ${previous.challengeId}`
+      )[0]!.status,
+    ).toBe('pending');
+  });
+  test('skips expired, superseded, cross-tenant, changed-recipient and tampered deliveries', async () => {
+    const store = new DatabaseTrackingStore(database);
+    const first = queueInput();
+    await store.createChallengeAndQueue(first);
+    const oldJobs = await new DatabaseOutboxStore(database).claim({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      leaseOwnerId: crypto.randomUUID(),
+      limit: 20,
+      now: new Date(),
+      leaseExpiresAt: new Date(Date.now() + 60000),
+      maxAttempts: 8,
+    });
+    const job = oldJobs.find(
+      (entry) =>
+        z.object({ challengeId: z.string().optional() }).safeParse(entry.payload).data
+          ?.challengeId === first.challengeId,
+    )!;
+    expect(job).toBeDefined();
+    const email = new FakeEmailAdapter();
+    const handle = delivery(store, email);
+    const scoped = { ...job, actorId: ACTOR };
+    expect(
+      await delivery(store, email, () => new Date(first.expiresAt.getTime() + 1))(scoped),
+    ).toMatchObject({ providerId: 'skipped:tracking_challenge_inactive' });
+    expect(
+      await handle({ ...scoped, workspaceId: '14000000-0000-4000-8000-000000000e02' }),
+    ).toMatchObject({ providerId: 'skipped:tracking_challenge_inactive' });
+    expect(
+      await handle({
+        ...scoped,
+        payload: { ...z.record(z.string(), z.unknown()).parse(job.payload), sealedCode: 'bad' },
+      }),
+    ).toMatchObject({ providerId: 'skipped:tracking_challenge_inactive' });
+    await admin`update app.leads set email = 'changed@example.test' where id = ${LEAD}`;
+    expect(await handle(scoped)).toMatchObject({
+      providerId: 'skipped:tracking_challenge_inactive',
+    });
+    await admin`update app.leads set email = ${EMAIL} where id = ${LEAD}`;
+    await store.createChallengeAndQueue(queueInput('999999'));
+    expect(await handle(scoped)).toMatchObject({
+      providerId: 'skipped:tracking_challenge_inactive',
+    });
+    expect(email.deliveries).toHaveLength(0);
   });
 });

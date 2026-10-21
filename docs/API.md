@@ -477,6 +477,16 @@ request take the same time. The code is keyed-hashed (bound to workspace, order
 and normalized email), expires in 10 minutes, is invalidated by a resend and
 permits at most five attempts. Requests are rate-limited per email and per IP.
 
+A matching request atomically writes the challenge and a `tracking_otp_email`
+outbox job; no provider is called in the request transaction. The queue stores
+the code encrypted with an authenticated, challenge-bound key derived from
+`TRACKING_HASH_SECRET`. The worker rechecks expiry, pending status, current
+recipient, code hash and deliverability suppression before sending through the
+selected transactional provider. Resends cancel older pending email jobs. Completed
+or uncertain jobs retain identifiers only; a delayed or expired code requires a
+fresh request. `EMAIL_CONTACT_HASH_SECRET`, the email provider and the scheduler
+must be configured as documented in ENV.md.
+
 `POST /api/v1/website/tracking/verify` (`tracking:otp` scope) takes
 `{ email, orderReference, code }`; on success it atomically consumes the code
 and returns a 30-minute scoped grant. Verifications are rate-limited per email

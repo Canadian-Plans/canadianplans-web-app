@@ -12,6 +12,7 @@ export const outboxJobTypes = [
   'analytics_lead_saved',
   'deletion_ledger_publish',
   'suppression_ledger_publish',
+  'tracking_otp_email',
 ] as const;
 export type OutboxJobType = (typeof outboxJobTypes)[number];
 

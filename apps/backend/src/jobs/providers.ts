@@ -26,6 +26,9 @@ import {
 
 import { DatabaseEmailStore } from '../email/store.js';
 import { loadMachineRegistry } from '../machines/registry.js';
+import { createTrackingOtpHandler } from '../tracking/delivery.js';
+import { loadTrackingSecret } from '../tracking/secrets.js';
+import { requireContactHashSecret } from '../email/hash.js';
 
 /**
  * The explicit opt-in for the in-memory analytics fake. There is deliberately
@@ -202,6 +205,16 @@ export function createOutboxJobHandlers(
   // deleting customer data must work even when no other provider is configured,
   // and it fails closed when the ledger itself is not configured.
   const handlers = new Map(base);
+  handlers.set(
+    'tracking_otp_email',
+    createTrackingOtpHandler({
+      email,
+      eligibility,
+      delivery,
+      secret: loadTrackingSecret(env),
+      contactHashSecret: () => requireContactHashSecret(env),
+    }),
+  );
   const ledger = allowFakes ? new InMemoryDeletionLedger() : createDeletionLedgerFromEnv(env);
   handlers.set(
     'deletion_ledger_publish',

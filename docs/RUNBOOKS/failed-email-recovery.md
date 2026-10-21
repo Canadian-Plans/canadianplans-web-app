@@ -2,7 +2,7 @@
 
 Owner and escalation contact: Takib. Covers diagnosing and resending failed
 transactional customer email (order acknowledgement, status, dispatch,
-activation, awaiting-customer) and the marketing follow-up template. Resend
+activation, awaiting-customer, tracking code) and the marketing follow-up template. Resend
 is the live production provider (`EMAIL_PROVIDER=resend`, `docs/ENV.md`
 "Email (T18)" / "Resend"); AWS SES is wired but deferred (OPEN_INPUTS #23).
 
@@ -143,3 +143,14 @@ Escalate to the owner (Takib) for: any uncertain job where Resend evidence is
 ambiguous, a suspected domain-wide deliverability problem (hard bounces
 across many recipients), rotating the Resend API key, or any request to
 resend a customer email to a different address than the one on the order.
+
+## Missing tracking code
+
+Tracking codes use the same outbox and provider. Check `tracking_otp_email` jobs,
+the scheduler, `TRACKING_HASH_SECRET`, `EMAIL_CONTACT_HASH_SECRET` and the provider
+configuration. A code expires ten minutes after the customer request, and a
+resend supersedes the previous challenge. Ask the customer to request a fresh
+code after resolving a delivery problem; do not resend an expired or consumed
+challenge. `skipped:tracking_challenge_inactive` is expected for expired, replaced
+or already-used challenges. Completed/uncertain OTP job payloads no longer
+contain the address or encrypted code. Never log or copy the code into tickets.
