@@ -359,3 +359,31 @@ test.describe('challenge failure recovery', () => {
     await expect(page.getByRole('heading', { name: 'Documents' })).toBeVisible();
   });
 });
+
+test('reports an unreachable server action as a connection problem, not a failed check', async ({
+  page,
+}) => {
+  await choosePassportPlan(page);
+  let dropped = false;
+  await page.route('**/order**', async (route) => {
+    // Server Actions POST to the page with a `next-action` header.
+    if (
+      !dropped &&
+      route.request().method() === 'POST' &&
+      route.request().headers()['next-action']
+    ) {
+      dropped = true;
+      await route.abort('connectionreset');
+      return;
+    }
+    await route.continue();
+  });
+  await fillDetailsAndContinue(page);
+  await expect(
+    page.getByText("We couldn't reach our servers. Check your connection and try again."),
+  ).toBeVisible();
+  await expect(page.getByText(/could not complete the security check/i)).toHaveCount(0);
+  await expect(page.getByLabel(/Full name/i)).toHaveValue('Test Customer');
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.getByRole('heading', { name: 'Documents' })).toBeVisible();
+});

@@ -57,7 +57,8 @@ function loadTurnstile(): Promise<TurnstileApi> {
 
 export interface VerificationFailure {
   ok: false;
-  code: 'verification_failed';
+  /** `request_failed`: the proof was obtained but the server action itself did not answer. */
+  code: 'verification_failed' | 'request_failed';
   message: string;
   fieldErrors?: never;
 }
@@ -127,10 +128,18 @@ export function useHumanChallenge() {
       action: WebsiteBotAction,
       request: (token: string) => Promise<T>,
     ): Promise<T | VerificationFailure> => {
+      let token: string;
       try {
-        return await request(await getToken(action));
+        token = await getToken(action);
       } catch {
         return { ok: false, code: 'verification_failed', message: copy.failed };
+      }
+      try {
+        return await request(token);
+      } catch {
+        // Not a verification problem: the server action could not be reached.
+        // Retrying is safe; order submission keeps its idempotency key.
+        return { ok: false, code: 'request_failed', message: copy.requestFailed };
       }
     },
     [getToken],

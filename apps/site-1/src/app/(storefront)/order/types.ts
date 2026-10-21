@@ -24,6 +24,7 @@ export type OrderErrorCode =
   | 'terms_changed'
   | 'unavailable'
   | 'verification_failed'
+  | 'request_failed'
   | 'retry_fresh_draft'
   | 'transport_retry';
 
