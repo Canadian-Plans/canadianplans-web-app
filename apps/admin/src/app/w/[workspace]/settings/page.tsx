@@ -23,6 +23,12 @@ export default async function SettingsPage({ params }: { params: Promise<{ works
         <Link className="text-sm font-medium underline" href={`/w/${workspace}/settings/jobs`}>
           View background jobs
         </Link>
+        <Link
+          className="text-sm font-medium underline"
+          href={`/w/${workspace}/settings/customer-data`}
+        >
+          Delete customer data on request
+        </Link>
         <StaffInviteForm workspaceSlug={workspace} />
         <ServiceCredentialsManager workspaceSlug={workspace} />
       </CardContent>

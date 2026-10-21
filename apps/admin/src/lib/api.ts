@@ -14,7 +14,11 @@ import {
   type CatalogueStatusResponse,
   type ChangeCommissionStateRequest,
   type ChangeCommissionStateResponse,
+  type DeleteCustomerDataRequest,
   type DeleteOrderReminderResponse,
+  type DeletionSubjectType,
+  type FindDeletionSubjectsRequest,
+  type FindDeletionSubjectsResponse,
   type ListWorkspaceFilesResponse,
   type ReviewFileRequest,
   type ReviewFileResponse,
@@ -38,6 +42,7 @@ import {
   type PatchWorkspaceOrderResponse,
   type RecordOrderPaymentRequest,
   type RecordOrderPaymentResponse,
+  type RequestSubjectDeletionResponse,
   type ResolveOrderChangeRequestRequest,
   type ResolveOrderChangeRequestResponse,
   type RetryWorkspaceJobResponse,
@@ -155,6 +160,32 @@ export async function retryWorkspaceJob(
   jobId: string,
 ): Promise<RetryWorkspaceJobResponse> {
   return client(accessToken).staff.retryJob(workspaceId, jobId);
+}
+
+// ---- Customer-data deletion (C3). Owner/Finance with verified MFA only; the
+// backend selects records and enforces every restriction. ----
+
+export async function findDeletionSubjects(
+  accessToken: string,
+  workspaceId: string,
+  body: FindDeletionSubjectsRequest,
+): Promise<FindDeletionSubjectsResponse> {
+  return client(accessToken).staff.findDeletionSubjects(workspaceId, body);
+}
+
+export async function requestSubjectDeletion(
+  accessToken: string,
+  workspaceId: string,
+  subjectType: DeletionSubjectType,
+  subjectId: string,
+  body: DeleteCustomerDataRequest,
+): Promise<RequestSubjectDeletionResponse> {
+  return client(accessToken).staff.requestSubjectDeletion(
+    workspaceId,
+    subjectType,
+    subjectId,
+    body,
+  );
 }
 
 // ---- Order processing (T14). Every write is a backend endpoint; the admin

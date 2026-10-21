@@ -9,8 +9,11 @@ a reason; that does not grant customer-data deletion permission.
 ## Select the verified request's records
 
 Verify the requester's identity outside this API. Do not put personal information
-in the recorded reason. All routes below begin with
-`/api/v1/staff/workspaces/{workspaceId}`.
+in the recorded reason. In admin, use **Settings → Delete customer data on request**
+(`/w/{workspace}/settings/customer-data`): it runs the search below, then deletes
+one record at a time after you confirm the identity check and the reason. An
+`mfa_required` answer links to the MFA challenge. The underlying routes, all
+beginning with `/api/v1/staff/workspaces/{workspaceId}`, are:
 
 1. `POST /customer-data/search` with `{ "email": "…", "page": 1 }` returns candidate
    orders, unconverted drafts and wish-list entries, their IDs and references.
