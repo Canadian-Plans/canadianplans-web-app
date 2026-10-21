@@ -25,7 +25,7 @@ describe('joinWaitlist', () => {
       province: 'NS',
       email: 'pat@example.test',
       interest: 'internet',
-      consentVersion: 'TEST-waitlist-v1',
+      consentVersion: 'privacy-2026-10-v2',
     });
   });
 
