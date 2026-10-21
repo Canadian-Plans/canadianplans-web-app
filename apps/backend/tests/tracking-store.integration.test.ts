@@ -4,7 +4,7 @@ import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { createDatabaseClient, type DatabaseClient } from '@canadian-plans/db';
 import { applyMigrations } from '@canadian-plans/db/migrations';
 import { FakeEmailAdapter } from '@canadian-plans/adapters';
-import { OutboxRunner } from '@canadian-plans/jobs';
+import { JobHandlerError, OutboxRunner } from '@canadian-plans/jobs';
 import { DatabaseOutboxStore } from '../src/jobs/store.js';
 import { DatabaseEmailStore } from '../src/email/store.js';
 import { hashContact } from '../src/email/hash.js';
@@ -301,6 +301,47 @@ databaseTest('DatabaseTrackingStore (T22)', () => {
         })
       ).status,
     ).toBe('not_found');
+  });
+  test('scrubs a failed delivery payload and completes a later staff retry without sending', async () => {
+    const store = new DatabaseTrackingStore(database);
+    const input = queueInput();
+    await store.createChallengeAndQueue(input);
+    const outbox = new DatabaseOutboxStore(database);
+    expect(
+      await new OutboxRunner({
+        store: outbox,
+        handlers: new Map([
+          [
+            'tracking_otp_email',
+            async () => {
+              throw new JobHandlerError('provider_rejected', false);
+            },
+          ],
+        ]),
+      }).run({ authorizedWorkspaceIds: [WORKSPACE], actorId: ACTOR }),
+    ).toMatchObject({ failed: 1 });
+    const [job] = await admin<
+      { id: string; status: string; payload: Record<string, unknown> }[]
+    >`select id, status, payload from app.outbox_jobs where workspace_id = ${WORKSPACE} and job_type = 'tracking_otp_email' and dedupe_key = ${input.challengeId}`;
+    expect(job!.status).toBe('failed');
+    expect(Object.keys(job!.payload).sort()).toEqual(['challengeId', 'orderId']);
+
+    expect(
+      await outbox.retry({
+        workspaceId: WORKSPACE,
+        actorId: ACTOR,
+        jobId: job!.id,
+        requestId: crypto.randomUUID(),
+      }),
+    ).toBe('retried');
+    const email = new FakeEmailAdapter();
+    expect(
+      await new OutboxRunner({
+        store: outbox,
+        handlers: new Map([['tracking_otp_email', delivery(store, email)]]),
+      }).run({ authorizedWorkspaceIds: [WORKSPACE], actorId: ACTOR }),
+    ).toMatchObject({ completed: 1, failed: 0 });
+    expect(email.deliveries).toHaveLength(0);
   });
   test('serializes concurrent resends so only one pending challenge and email survive', async () => {
     const store = new DatabaseTrackingStore(database);

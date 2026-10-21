@@ -152,5 +152,7 @@ configuration. A code expires ten minutes after the customer request, and a
 resend supersedes the previous challenge. Ask the customer to request a fresh
 code after resolving a delivery problem; do not resend an expired or consumed
 challenge. `skipped:tracking_challenge_inactive` is expected for expired, replaced
-or already-used challenges. Completed/uncertain OTP job payloads no longer
-contain the address or encrypted code. Never log or copy the code into tickets.
+or already-used challenges. Once an OTP job completes, fails or becomes uncertain,
+its payload no longer contains the address or encrypted code, so retrying a failed
+one completes as `skipped:tracking_challenge_inactive` without sending. Never log or
+copy the code into tickets.

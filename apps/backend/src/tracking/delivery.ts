@@ -22,6 +22,7 @@ const payloadSchema = z
     expiresAt: z.iso.datetime(),
   })
   .strict();
+const scrubbedPayloadSchema = z.object({ orderId: z.uuid(), challengeId: z.uuid() }).strict();
 
 /** Challenge validity and deliverability are rechecked immediately before an outbox send. */
 export function createTrackingOtpHandler(options: {
@@ -36,14 +37,17 @@ export function createTrackingOtpHandler(options: {
   const store = options.store ?? new DatabaseTrackingStore();
   return async (job) => {
     if (job.payloadVersion !== 1) throw new JobHandlerError('unsupported_payload_version', false);
-    const parsed = payloadSchema.safeParse(job.payload);
-    const actor = z.uuid().safeParse(job.actorId);
-    if (!parsed.success || !actor.success) throw new JobHandlerError('invalid_job_payload', false);
-    const payload = parsed.data;
     const skip = () => ({
       status: 'completed' as const,
       providerId: 'skipped:tracking_challenge_inactive',
     });
+    // A finished job keeps only its identifiers; a staff retry of it has no
+    // code left to send, and the customer requests a new one instead.
+    if (scrubbedPayloadSchema.safeParse(job.payload).success) return skip();
+    const parsed = payloadSchema.safeParse(job.payload);
+    const actor = z.uuid().safeParse(job.actorId);
+    if (!parsed.success || !actor.success) throw new JobHandlerError('invalid_job_payload', false);
+    const payload = parsed.data;
     const now = options.now?.() ?? new Date();
     if (new Date(payload.expiresAt).getTime() <= now.getTime()) return skip();
     const secret = options.secret;

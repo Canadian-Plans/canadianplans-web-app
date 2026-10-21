@@ -220,8 +220,8 @@ export class DatabaseOutboxStore implements OutboxStore, JobAdminStore {
                     status: 'failed',
                     lastErrorCode: input.outcome.errorCode,
                   };
-        const terminal =
-          input.outcome.status === 'completed' || input.outcome.status === 'uncertain';
+        // A tracking code's delivery details are needed only until the job ends.
+        const terminal = input.outcome.status !== 'retry';
         const updated = await tx
           .update(outboxJobs)
           .set({
