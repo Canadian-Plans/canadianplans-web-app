@@ -23,7 +23,7 @@
     "@canadian-plans/ui": "workspace:*",
     "@hookform/resolvers": "5.4.3",
     "@sanity/client": "8.6.1",
-    "next": "16.3.5",
+    "next": "16.3.8",
     "next-sanity": "13.3.4",
     "react": "19.3.0",
     "react-dom": "19.3.0",
@@ -49,7 +49,7 @@
     "tailwindcss": "catalog:",
     "tw-animate-css": "catalog:",
     "typescript": "catalog:",
-    "vite": "8.3.0",
+    "vite": "8.3.3",
     "vitest": "catalog:"
   }
 }
