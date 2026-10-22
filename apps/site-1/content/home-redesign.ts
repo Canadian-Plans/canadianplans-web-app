@@ -839,7 +839,7 @@ export const homeRedesignFaq: readonly FaqItemContent[] = [
     id: 'before',
     question: 'Can I get a Canadian number before I arrive?',
     answer:
-      'Yes. With a pre-arrival plan you can order from abroad and get your Canadian number ready before you fly. [Confirm how far ahead people can order.]',
+      'Yes. Order a pre-arrival plan 1 to 3 weeks before your flight, from any country, and your Canadian number is ready before you fly.',
   },
   {
     id: 'keep',
@@ -850,13 +850,13 @@ export const homeRedesignFaq: readonly FaqItemContent[] = [
     id: 'contract',
     question: 'Is there a contract?',
     answer:
-      'No contract on any of our plans. [Confirm any device financing terms if you sell phones.]',
+      'There is no contract with Canadian Plans. Your service agreement is with the provider, and an advisor explains its terms before anything is activated.',
   },
   {
     id: 'install',
     question: 'How fast can I get home internet installed?',
     answer:
-      '[Add your typical install timeline.] We book the install for you and keep you updated.',
+      'Most installs happen within about 3 days of your call with us. We book the install for you and keep you updated.',
   },
 ];
 
