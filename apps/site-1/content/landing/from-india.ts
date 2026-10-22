@@ -57,7 +57,7 @@ export const fromIndiaLanding: LandingPageContent = {
     eyebrow: 'Quick answer',
     title: 'How do I get a Canadian SIM card in India?',
     answer:
-      'Order a Canadian eSIM online from India 1 to 3 weeks before your flight. We confirm on WhatsApp, assign your Canadian number right away and email your eSIM QR code. Install it at home and it switches on when you land. Plans start at $35 a month (CAD, plus tax) and you don’t need a Canadian credit history.',
+      'Order a Canadian eSIM online from India 1 to 3 weeks before your flight. We confirm by phone or email, assign your Canadian number right away and email your eSIM QR code. Install it at home and it switches on when you land. Plans start at $35 a month (CAD, plus tax) and you don’t need a Canadian credit history.',
   },
   facts: {
     label: 'Plan facts for India',
@@ -171,7 +171,7 @@ export const fromIndiaLanding: LandingPageContent = {
         id: 'india-buy',
         question: 'Can I buy a Canadian SIM card in India?',
         answer:
-          'Yes, as an eSIM. Order online from India, confirm on WhatsApp and we email your eSIM QR code. There is nothing to pay online; your plan starts when you land.',
+          'Yes, as an eSIM. Order online from India, confirm by phone or email and we email your eSIM QR code. There is nothing to pay online; your plan starts when you land.',
       },
       {
         id: 'india-phone',

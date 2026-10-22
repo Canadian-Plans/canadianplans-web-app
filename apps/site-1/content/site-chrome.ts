@@ -36,15 +36,15 @@ export const siteChromeWithPromo = (
 /**
  * One footer for every page, as in the final homepage design (16 October 2026):
  * Plans / Help / Company columns and the email sign-up (preview only, nothing is sent).
- * Only real destinations: Careers waits for a careers page, and WhatsApp is the only social link
- * (it goes to Contact until the business number is published).
+ * Only real destinations: Careers waits for a careers page, and there are no social links
+ * until a WhatsApp business number is published (owner decision 22 Oct 2026).
  */
 export const siteFooter: FooterContent = {
   ...footerContent,
   description:
     'Authorized Rogers, Fido & Chatr dealer for pre-arrival plans, and an authorized sales agent for home internet and mobile. We help you pick the right plan and stay your contact afterwards.',
   contactLines: ['+1 778-682-3771', 'info@canadianplans.com', '9981 Whalley Blvd, Surrey, BC'],
-  social: [{ label: 'WhatsApp', short: 'wa', href: '/contact' }],
+  social: [],
   groups: [
     {
       title: 'Plans',

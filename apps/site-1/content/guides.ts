@@ -276,7 +276,7 @@ export const studentIndiaGuide: GuideArticle = {
       items: [
         'Pick your plan on our pre-arrival page.',
         'Add your arrival date and city. An advisor asks for documents only if needed.',
-        'An advisor calls or messages you on WhatsApp to confirm. You don’t pay anything online.',
+        'An advisor calls or emails you to confirm. You don’t pay anything online.',
         'Land, switch on, and you’re online before baggage claim.',
       ],
     },

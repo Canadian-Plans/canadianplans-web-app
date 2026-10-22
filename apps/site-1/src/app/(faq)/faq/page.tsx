@@ -69,7 +69,7 @@ export default function FaqPage() {
                   <strong>{homeRedesign.faq.helpTitle}</strong>
                   <span>{homeRedesign.faq.helpBody}</span>
                   <CpButton asChild>
-                    <a href={faqCopy.destinations.whatsapp}>{faqCopy.controls.advisor}</a>
+                    <a href={faqCopy.destinations.advisor}>{faqCopy.controls.advisor}</a>
                   </CpButton>
                 </div>
               ) : null}

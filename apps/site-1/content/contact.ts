@@ -2,9 +2,8 @@ import type { CpButtonTone } from '@canadian-plans/ui/canadian-plans';
 import { componentAssets } from './components';
 
 export type ContactTopic = 'general' | 'sim' | 'mobile' | 'internet' | 'documents' | 'verification';
-export type ContactPreviewKind = 'whatsapp';
 interface ContactOption {
-  readonly id: 'whatsapp' | 'call' | 'email';
+  readonly id: 'message' | 'call' | 'email';
   readonly label: string;
   readonly title: string;
   readonly description: string;
@@ -16,9 +15,9 @@ interface ContactOption {
 /** Design copy and contact details are preview fixtures, pending business approval. */
 export const contactCopy = {
   previewOnly: true,
-  title: 'Contact Canadian Plans: WhatsApp, Phone, Email & Surrey Office',
+  title: 'Contact Canadian Plans: Phone, Email & Surrey Office',
   description:
-    'Contact Canadian Plans by WhatsApp, phone or email, or visit our Surrey, BC office. Real advisors Monday to Saturday, 9am–9pm Pacific. Track your order without an account.',
+    'Contact Canadian Plans by phone or email, or visit our Surrey, BC office. Real advisors Monday to Saturday, 9am–9pm Pacific. Track your order without an account.',
   skip: 'Skip to main content',
   breadcrumb: {
     label: 'Breadcrumb',
@@ -34,11 +33,11 @@ export const contactCopy = {
   },
   options: [
     {
-      id: 'whatsapp',
-      label: 'WhatsApp',
-      title: 'Fastest reply',
-      description: 'Usually the same day during opening hours.',
-      action: 'Chat on WhatsApp',
+      id: 'message',
+      label: 'Message',
+      title: 'Write to us',
+      description: 'Use the form below. It opens your email app with your message ready.',
+      action: 'Write a message',
       tone: 'mint',
       buttonTone: 'primary',
     },
@@ -46,7 +45,7 @@ export const contactCopy = {
       id: 'call',
       label: 'Call us',
       title: '+1 778-682-3771',
-      description: 'Mon–Sat, 9am–9pm Pacific. International callers: use WhatsApp.',
+      description: 'Mon–Sat, 9am–9pm Pacific. International callers: email us.',
       action: 'Call now',
       tone: 'sky',
       buttonTone: 'outline',
@@ -66,7 +65,7 @@ export const contactCopy = {
     description: 'See where your eSIM, mobile plan or internet install is. No account needed.',
     submit: 'Track order  →',
     href: '/track',
-    help: "Can't find your order number? It's in your confirmation email. Or WhatsApp us and we'll look it up.",
+    help: "Can't find your order number? It's in your confirmation email. Or call or email us and we'll look it up.",
   },
   office: {
     title: 'Our office',
@@ -122,14 +121,6 @@ export const contactCopy = {
       message: 'Enter a message (up to 4,000 characters).',
       order: 'Enter your order number (up to 80 characters).',
     },
-  },
-  preview: {
-    title: 'Contact preview',
-    close: 'Close',
-    descriptions: {
-      whatsapp:
-        'WhatsApp is a UI preview. A verified business number is needed before live chat can open. No chat or message was started.',
-    } satisfies Record<ContactPreviewKind, string>,
   },
   callHref: 'tel:+17786823771',
   emailAddress: 'info@canadianplans.com',

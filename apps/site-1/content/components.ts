@@ -115,7 +115,7 @@ export const chromeContent: ChromeContent = {
   mobileNavigationLabel: 'Menu preview',
   menuLabel: 'Open menu',
   closeLabel: 'Close',
-  contactLabel: 'WhatsApp us',
+  contactLabel: 'Contact us',
   finderLabel: 'Find my plan',
   searchLabel: 'Search plans or cities',
   searchPlaceholder: 'Search plans or cities',

@@ -94,7 +94,7 @@ export const finderCopy = {
   details: 'Plan details',
   getPlan: 'Get this plan →',
   choosePlan: 'Choose this plan',
-  help: 'Not sure? Chat with our team on WhatsApp. We reply in minutes.',
+  help: 'Not sure? Call or email our team and an advisor will help.',
   allPlans: 'See all plans →',
   previewNotice: 'Preview matches only. Current offers and eligibility have not been checked.',
   detailsTitle: 'Plan details preview',

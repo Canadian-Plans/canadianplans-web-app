@@ -11,7 +11,6 @@ import {
   ContactDirections,
   ContactMessageAndHelp,
   ContactOptionAction,
-  ContactPreviewProvider,
   ContactTrackingForm,
 } from '@/components/contact/interactive';
 
@@ -24,7 +23,7 @@ export const metadata: Metadata = pageMetadata('/contact', {
 /** Electric Blue alignment (15 October 2026): site header/footer, breadcrumb; forms unchanged. */
 export default function ContactPage() {
   return (
-    <ContactPreviewProvider>
+    <>
       <SkipLink className="cp-contact-skip" href="#contact-main">
         {contactCopy.skip}
       </SkipLink>
@@ -103,6 +102,6 @@ export default function ContactPage() {
         </div>
       </main>
       <Footer brand="Canadian Plans" content={siteFooter} assets={contactAssets} brandHref="/" />
-    </ContactPreviewProvider>
+    </>
   );
 }

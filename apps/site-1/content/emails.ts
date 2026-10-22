@@ -5,7 +5,7 @@ export const emailCommon = {
   subjectLabel: 'Subject:',
   previewLabel: 'Preview:',
   footer: [
-    'Questions? Reply to this email, WhatsApp us, or call +1 778-682-3771 (Mon–Sat, 9am–9pm Pacific).',
+    'Questions? Reply to this email or call +1 778-682-3771 (Mon–Sat, 9am–9pm Pacific).',
     'Canadian Plans · Authorized dealer · 9981 Whalley Blvd, Surrey, BC',
     'You’re getting this email because you placed an order with us. We will never ask for your password or card number by email.',
   ],
@@ -19,12 +19,12 @@ export const emailCopy = {
     preheader: 'An advisor will contact you the same day. You haven’t been charged.',
     title: (name: string) => `Thanks, ${name}. We got your order.`,
     intro:
-      'An advisor will call or WhatsApp you the same day (Mon–Sat, 9am–9pm Pacific) to check your details. You haven’t been charged anything.',
+      'An advisor will call or email you the same day (Mon–Sat, 9am–9pm Pacific) to check your details. You haven’t been charged anything.',
     caption:
       'Canadian Plans advisor at the Surrey office, headset on, checking a customer order on a laptop',
     stepsTitle: 'What happens next',
     steps: [
-      { number: '1', text: 'We call or WhatsApp you to confirm your plan and documents.' },
+      { number: '1', text: 'We call or email you to confirm your plan and documents.' },
       { number: '2', text: 'We set up your plan with Rogers and assign your Canadian number.' },
       { number: '3', text: 'We email your eSIM QR code. Install it at home before you fly.' },
     ],
@@ -53,7 +53,7 @@ export const emailCopy = {
     ],
     action: 'Show my QR code',
     labels: ['Your number', 'Plan', 'Starts'],
-    help: 'Stuck, or only have your phone? Reply with a screenshot and we’ll walk you through it on WhatsApp.',
+    help: 'Stuck, or only have your phone? Reply with a screenshot or call us and we’ll walk you through it.',
   },
   'install-booked': {
     name: 'Install booked',

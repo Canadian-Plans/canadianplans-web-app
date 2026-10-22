@@ -345,19 +345,7 @@
   outline: var(--cp-border-strong) solid var(--cp-focus-color);
   outline-offset: var(--cp-space-4);
 }
-.cp-contact-preview {
-  padding: var(--cp-space-32);
-  border-radius: var(--cp-radius-24);
-  background: var(--cp-color-white);
-  color: var(--cp-color-ink);
-}
-.cp-contact-preview [data-slot='dialog-description'] {
-  color: var(--cp-color-muted);
-  font-size: var(--cp-text-16);
-  line-height: var(--cp-leading-body);
-}
 @media (prefers-reduced-motion: reduce) {
-  .cp-contact-preview,
   .cp-contact-topic-menu {
     animation: none;
   }

@@ -1,12 +1,7 @@
 'use client';
 
-import { createContext, useContext, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
   FormField,
   Input,
   Select,
@@ -17,7 +12,7 @@ import {
   Textarea,
 } from '@canadian-plans/ui';
 import { CpButton, type CpButtonTone } from '@canadian-plans/ui/canadian-plans';
-import { contactCopy, contactTopics, type ContactPreviewKind } from '@content/contact';
+import { contactCopy, contactTopics } from '@content/contact';
 import {
   contactMessageMailto,
   validateContactMessage,
@@ -25,70 +20,25 @@ import {
   type ContactMessageErrors,
 } from '@/lib/contact-preview';
 
-const PreviewContext = createContext<((kind: ContactPreviewKind) => void) | null>(null);
-function useContactPreview() {
-  const preview = useContext(PreviewContext);
-  if (!preview) throw new Error('Contact preview provider missing');
-  return preview;
-}
-export function ContactPreviewProvider({ children }: { children: ReactNode }) {
-  const [kind, setKind] = useState<ContactPreviewKind | null>(null);
-  const trigger = useRef<HTMLElement | null>(null);
-  function preview(next: ContactPreviewKind) {
-    trigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    setKind(next);
-  }
-  return (
-    <PreviewContext value={preview}>
-      {children}
-      <Dialog
-        open={kind !== null}
-        onOpenChange={(open) => {
-          if (!open) setKind(null);
-        }}
-      >
-        <DialogContent
-          className="cp-design cp-contact-preview"
-          showCloseButton={false}
-          onCloseAutoFocus={(event) => {
-            event.preventDefault();
-            trigger.current?.focus();
-          }}
-        >
-          <DialogTitle>{contactCopy.preview.title}</DialogTitle>
-          <DialogDescription>
-            {kind ? contactCopy.preview.descriptions[kind] : null}
-          </DialogDescription>
-          <DialogClose asChild>
-            <CpButton>{contactCopy.preview.close}</CpButton>
-          </DialogClose>
-        </DialogContent>
-      </Dialog>
-    </PreviewContext>
-  );
-}
+// BUG-15 (owner decision 22 Oct 2026): no WhatsApp until a business number
+// exists, so every contact option is a plain link: the message form, phone or email.
+const optionHrefs = {
+  message: '#message-us',
+  call: contactCopy.callHref,
+  email: `mailto:${contactCopy.emailAddress}`,
+} as const;
 export function ContactOptionAction({
   id,
   label,
   tone,
 }: {
-  id: 'whatsapp' | 'call' | 'email';
+  id: keyof typeof optionHrefs;
   label: string;
   tone: CpButtonTone;
 }) {
-  const preview = useContactPreview();
-  if (id === 'call' || id === 'email') {
-    return (
-      <CpButton asChild tone={tone}>
-        <a href={id === 'call' ? contactCopy.callHref : `mailto:${contactCopy.emailAddress}`}>
-          {label}
-        </a>
-      </CpButton>
-    );
-  }
   return (
-    <CpButton tone={tone} onClick={() => preview(id)}>
-      {label}
+    <CpButton asChild tone={tone}>
+      <a href={optionHrefs[id]}>{label}</a>
     </CpButton>
   );
 }
