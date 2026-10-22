@@ -830,6 +830,7 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
                   secret,
                   ctx.workspaceId,
                   normalizeEmail(body.data.email),
+                  'otp',
                 ),
                 windowSeconds: TRACKING_OTP_EMAIL_WINDOW_SECONDS,
                 maxCount: TRACKING_OTP_EMAIL_MAX_REQUESTS,
@@ -889,7 +890,12 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
         // five-attempt cap on each individual challenge.
         const emailLimit = secret
           ? await dependencies.auth.rateLimit({
-              bucketKey: emailRateBucket(secret, ctx.workspaceId, normalizeEmail(body.data.email)),
+              bucketKey: emailRateBucket(
+                secret,
+                ctx.workspaceId,
+                normalizeEmail(body.data.email),
+                'verify',
+              ),
               windowSeconds: TRACKING_OTP_EMAIL_WINDOW_SECONDS,
               maxCount: TRACKING_OTP_VERIFY_EMAIL_MAX_REQUESTS,
             })

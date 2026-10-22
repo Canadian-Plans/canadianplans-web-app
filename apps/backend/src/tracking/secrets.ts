@@ -39,13 +39,18 @@ export function codeBindingHash(
   return hmac(secret, `code\n${workspaceId}\n${orderId}\n${normalizedEmail}\n${code}`);
 }
 
-/** A per-email rate-limit bucket key that does not put the email into the bucket row. */
+/**
+ * A per-email rate-limit bucket key that does not put the email into the bucket
+ * row. Requesting a code and verifying one count separately: a shared counter
+ * let a few mistyped codes silently block the next code request.
+ */
 export function emailRateBucket(
   secret: string,
   workspaceId: string,
   normalizedEmail: string,
+  purpose: 'otp' | 'verify',
 ): string {
-  return `email:${hmac(secret, `rate\n${workspaceId}\n${normalizedEmail}`)}`;
+  return `email:${purpose}:${hmac(secret, `rate\n${purpose}\n${workspaceId}\n${normalizedEmail}`)}`;
 }
 
 /** A cryptographically random six-digit code. */
