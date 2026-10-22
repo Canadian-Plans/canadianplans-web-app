@@ -77,6 +77,28 @@ describe('SentryHttpErrorTracker', () => {
     ).not.toThrow();
   });
 
+  test('a rejected delivery is logged with its status, never the endpoint or key', async () => {
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const fetchImpl = vi.fn().mockResolvedValue({ ok: false, status: 401 });
+      const tracker = new SentryHttpErrorTracker({
+        dsn: 'https://publickey@o1.ingest.sentry.io/9/',
+        release: 'sha-abc123',
+        fetchImpl,
+      });
+      tracker.captureException(new Error('boom'), { requestId: 'req-1', release: 'sha-abc123' });
+      await vi.waitFor(() => expect(logged).toHaveBeenCalled());
+      const line = String(logged.mock.calls[0]?.[0]);
+      expect(line).toContain('error_tracker_delivery_rejected');
+      expect(line).toContain('401');
+      expect(line).not.toContain('publickey');
+      // The trailing slash in the DSN did not leak into the project path.
+      expect(String(fetchImpl.mock.calls[0]?.[0])).toContain('/api/9/');
+    } finally {
+      logged.mockRestore();
+    }
+  });
+
   test('throws at construction for an invalid DSN', () => {
     expect(() => new SentryHttpErrorTracker({ dsn: 'bad', release: 'v1' })).toThrow();
   });
