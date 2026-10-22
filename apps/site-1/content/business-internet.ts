@@ -71,8 +71,7 @@ export const businessFaq: readonly FaqItemContent[] = [
   {
     id: 'business-faq-static-ip',
     question: 'Can I get a static IP?',
-    answer:
-      'Static IP options depend on the plan. Ask your advisor when you request a quote.',
+    answer: 'Static IP options depend on the plan. Ask your advisor when you request a quote.',
   },
   {
     id: 'business-faq-phones',
