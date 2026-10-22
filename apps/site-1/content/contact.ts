@@ -64,15 +64,9 @@ export const contactCopy = {
   track: {
     title: 'Track your order',
     description: 'See where your eSIM, mobile plan or internet install is. No account needed.',
-    orderLabel: 'Order number',
-    orderPlaceholder: 'CP-2026-10482',
-    emailLabel: 'Email',
-    emailPlaceholder: 'you@example.com',
     submit: 'Track order  →',
+    href: '/track',
     help: "Can't find your order number? It's in your confirmation email. Or WhatsApp us and we'll look it up.",
-    pending: 'Checking…',
-    result:
-      'Tracking preview complete. No live order lookup was performed. Your details have not been saved.',
   },
   office: {
     title: 'Our office',
@@ -100,9 +94,10 @@ export const contactCopy = {
     },
     topic: { label: 'Topic', placeholder: 'Choose a topic', indicator: '▾' },
     message: { label: 'Message', placeholder: 'How can we help?' },
-    submit: 'Send message',
-    pending: 'Sending preview…',
-    result: 'Message preview complete. No message was sent and your details have not been saved.',
+    submit: 'Email this message',
+    subject: 'Website message',
+    result:
+      "Your email app should open with your message ready to send. If it doesn't, email us at info@canadianplans.com.",
   },
   quickHelp: {
     title: 'Quick help',
@@ -119,7 +114,6 @@ export const contactCopy = {
     )[],
   },
   feedback: {
-    retry: 'The preview could not complete. Your inputs are still here; please try again.',
     errors: {
       name: 'Enter your name (up to 200 characters).',
       email: 'Enter a valid email address.',
@@ -138,6 +132,7 @@ export const contactCopy = {
     } satisfies Record<ContactPreviewKind, string>,
   },
   callHref: 'tel:+17786823771',
+  emailAddress: 'info@canadianplans.com',
 } as const;
 
 /** Topic choices are a reversible UI proposal; the Figma dropdown is closed. */

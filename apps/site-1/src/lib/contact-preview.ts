@@ -39,6 +39,24 @@ export function validateContactMessage(input: ContactMessageInput): ContactMessa
   if (!input.message.trim() || input.message.trim().length > 4000) errors.message = copy.message;
   return errors;
 }
+/**
+ * Interim for REL-33 (owner decision 22 Oct 2026): until the site can deliver
+ * messages itself, the message form opens the visitor's email app with a
+ * draft to the support inbox. Nothing is sent to or stored by the site.
+ */
+export function contactMessageMailto(input: ContactMessageInput): string {
+  const topic = contactTopics.find((option) => option.value === input.topic)?.label;
+  const subject = topic ? `${contactCopy.message.subject}: ${topic}` : contactCopy.message.subject;
+  const phone = input.phone.trim();
+  const body = [
+    input.message.trim(),
+    '',
+    `Name: ${input.name.trim()}`,
+    `Email: ${input.email.trim()}`,
+    ...(phone ? [`Phone: ${phone}`] : []),
+  ].join('\n');
+  return `mailto:${contactCopy.emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
 export function validateContactTracking(input: ContactTrackingInput): ContactTrackingErrors {
   const errors: ContactTrackingErrors = {};
   if (!input.order.trim() || input.order.trim().length > 80)
