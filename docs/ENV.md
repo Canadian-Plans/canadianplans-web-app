@@ -67,10 +67,11 @@ Unset (either value) means no ledger is configured: a `deletion_ledger_publish` 
 - `NEXT_PUBLIC_SUPABASE_URL` — admin browser Auth endpoint
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` — admin publishable/legacy anonymous key; the admin client extracts Auth only and never calls Data or Storage APIs
 - `DATABASE_URL` — backend-only Supavisor transaction-mode URL for the restricted `app_runtime` role; never use the migration owner or a service-role key
-- `DATABASE_SSL_MODE` — optional; defaults to `require`, with `disable` allowed only for local disposable PostgreSQL
+- `DATABASE_SSL_MODE` — optional; `require` (default: encrypted, but the server certificate is **not** checked), `verify-full` (encrypted and the server certificate is verified) or `disable` (local disposable PostgreSQL only). Switch Railway to `verify-full` after confirming it connects to the Supabase pooler.
+- `DATABASE_SSL_CA` — optional PEM text of the CA used with `verify-full` (Supabase: Dashboard → Settings → Database → SSL). Needed only if Node does not already trust the pooler's certificate chain.
 - `DATABASE_POOL_MAX` — optional backend-only size of the shared application pool (integer 1–50; default `8`). The long-lived Railway process serves HTTP requests and the in-process scheduler from this one pool, so `1` serialises everything. Keep `DATABASE_POOL_MAX × replicas` below the Supabase pooler's client limit for the project's compute tier.
 - `MIGRATION_DATABASE_URL` — offline/CI migration connection using a separate privileged database role; never exposed to applications or previews
-- `MIGRATION_DATABASE_SSL_MODE` — optional; defaults to `require`, with `disable` allowed only for local disposable PostgreSQL
+- `MIGRATION_DATABASE_SSL_MODE` — optional; same values as `DATABASE_SSL_MODE` (`require` default, `verify-full`, `disable`), with `MIGRATION_DATABASE_SSL_CA` as the optional CA
 - `TEST_MIGRATION_DATABASE_URL` — test-only privileged connection to a disposable database whose name ends in `_test`; never reuse a staging or production migration URL
 - `DB_TEST_ALLOW_DESTRUCTIVE` — explicit integration-test opt-in; must be exactly `1` and is set only alongside `TEST_MIGRATION_DATABASE_URL`
 

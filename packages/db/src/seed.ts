@@ -1,4 +1,5 @@
 import postgres from 'postgres';
+import { postgresSsl, sslModeFromEnv, type SslMode } from './ssl.js';
 
 import { staffPermissionNames, staffRoleNames } from '@canadian-plans/types';
 
@@ -29,7 +30,7 @@ export const CATALOGUE_SEED_IDS = {
 
 export interface SeedDatabaseOptions {
   connectionString: string;
-  ssl?: 'require' | false;
+  ssl?: SslMode;
 }
 
 /** Idempotent synthetic development seed. It never creates Supabase Auth users. */
@@ -37,7 +38,7 @@ export async function seedDatabase(options: SeedDatabaseOptions): Promise<void> 
   const client = postgres(options.connectionString, {
     max: 1,
     prepare: false,
-    ssl: options.ssl ?? 'require',
+    ssl: postgresSsl(options.ssl, process.env.MIGRATION_DATABASE_SSL_CA),
   });
 
   try {
@@ -198,11 +199,8 @@ export async function seedDatabase(options: SeedDatabaseOptions): Promise<void> 
   }
 }
 
-function migrationSsl(): 'require' | false {
-  const mode = process.env.MIGRATION_DATABASE_SSL_MODE ?? 'require';
-  if (mode === 'require') return 'require';
-  if (mode === 'disable') return false;
-  throw new Error('MIGRATION_DATABASE_SSL_MODE must be either "require" or "disable"');
+function migrationSsl(): SslMode {
+  return sslModeFromEnv('MIGRATION_DATABASE_SSL_MODE', process.env.MIGRATION_DATABASE_SSL_MODE);
 }
 
 if (process.argv[1]?.endsWith('seed.ts')) {

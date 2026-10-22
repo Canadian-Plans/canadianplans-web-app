@@ -7,7 +7,8 @@ const postgresMock = vi.hoisted(() =>
 );
 vi.mock('postgres', () => ({ default: postgresMock }));
 
-const { createDatabaseClient, runtimePoolMax } = await import('../src/index.js');
+const { createDatabaseClient, postgresSsl, runtimePoolMax, sslModeFromEnv } =
+  await import('../src/index.js');
 
 afterEach(() => {
   postgresMock.mockClear();
@@ -36,6 +37,32 @@ describe('runtime pool sizing (DATABASE_POOL_MAX)', () => {
     expect(postgresMock).toHaveBeenCalledWith(
       'postgresql://app_runtime:secret@localhost:6543/app',
       expect.objectContaining({ max: 5, prepare: false }),
+    );
+  });
+});
+
+describe('database TLS modes', () => {
+  it('keeps "require" (encrypted, unverified) as the default for every caller', () => {
+    expect(postgresSsl(undefined)).toBe('require');
+    expect(sslModeFromEnv('DATABASE_SSL_MODE', undefined)).toBe('require');
+  });
+
+  it('verify-full checks the server certificate, with an optional CA', () => {
+    expect(postgresSsl('verify-full')).toEqual({ rejectUnauthorized: true });
+    expect(postgresSsl('verify-full', ' PEM ')).toEqual({ rejectUnauthorized: true, ca: 'PEM' });
+    expect(sslModeFromEnv('DATABASE_SSL_MODE', 'verify-full')).toBe('verify-full');
+    expect(sslModeFromEnv('DATABASE_SSL_MODE', 'disable')).toBe(false);
+    expect(() => sslModeFromEnv('DATABASE_SSL_MODE', 'prefer')).toThrow(/verify-full/);
+  });
+
+  it('passes the verifying object to the driver', () => {
+    createDatabaseClient({
+      connectionString: 'postgresql://u:p@localhost:6543/app',
+      ssl: 'verify-full',
+    });
+    expect(postgresMock).toHaveBeenLastCalledWith(
+      'postgresql://u:p@localhost:6543/app',
+      expect.objectContaining({ ssl: expect.objectContaining({ rejectUnauthorized: true }) }),
     );
   });
 });
