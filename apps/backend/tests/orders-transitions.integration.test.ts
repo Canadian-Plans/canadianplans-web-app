@@ -38,6 +38,8 @@ databaseDescribe('order transition store against Postgres', () => {
 
   beforeAll(async () => {
     if (!databaseUrl) throw new Error('disposable database URL missing');
+    // Transition emails hash the lead contact exactly as order submission does.
+    process.env['EMAIL_CONTACT_HASH_SECRET'] = 'transitions-integration-contact-secret';
     await applyMigrations({ connectionString: databaseUrl, ssl: false });
     admin = postgres(databaseUrl, { max: 1, prepare: false, ssl: false });
     await setTestRuntimePassword(admin);
@@ -53,6 +55,11 @@ databaseDescribe('order transition store against Postgres', () => {
         on conflict (id) do nothing
       `;
     }
+    // Only the dispatch fixture has a contact address: the others prove that an
+    // order without one queues no email.
+    await admin`
+      update app.leads set email = 'dispatch@example.test' where id = ${LEAD_DISPATCH}
+    `;
     const orders = [
       { id: ORDER_MAIN, reference: 'CP-TRANSITION-MAIN', lead: LEAD_MAIN, status: 'submitted' },
       {
@@ -91,6 +98,7 @@ databaseDescribe('order transition store against Postgres', () => {
   });
 
   afterAll(async () => {
+    delete process.env['EMAIL_CONTACT_HASH_SECRET'];
     await client?.close();
     await admin.end();
   });
@@ -358,5 +366,49 @@ databaseDescribe('order transition store against Postgres', () => {
     expect(records).toEqual([
       { courier: 'Canada Post', tracking_reference: 'CP-TRACK-1', actor_id: ACTOR },
     ]);
+  });
+
+  test('dispatch and activation queue the customer email in the same transaction; orders without an address queue nothing', async () => {
+    type OutboxRow = { job_type: string; dedupe_key: string; payload: Record<string, unknown> };
+    const jobsFor = (orderId: string) => admin<OutboxRow[]>`
+      select job_type, dedupe_key, payload from app.outbox_jobs
+      where workspace_id = ${WORKSPACE}
+        and job_type like 'order_%_email'
+        and dedupe_key like ${orderId + ':%'}
+      order by dedupe_key
+    `;
+
+    // The dispatch performed by the previous test (version 1 -> 2).
+    const [dispatchJob] = await jobsFor(ORDER_DISPATCH);
+    expect(dispatchJob).toMatchObject({
+      job_type: 'order_dispatch_email',
+      dedupe_key: `${ORDER_DISPATCH}:2`,
+      payload: {
+        orderId: ORDER_DISPATCH,
+        reference: 'CP-TRANSITION-DISPATCH',
+        toAddress: 'dispatch@example.test',
+        variables: { courier: 'Canada Post', trackingReference: 'CP-TRACK-1' },
+      },
+    });
+    expect(typeof dispatchJob?.payload['contactHash']).toBe('string');
+
+    const operational = new DatabaseOrderTransitionStore(client, true, () => NOW);
+    expect(
+      await operational.transition({
+        workspaceId: WORKSPACE,
+        actorId: ACTOR,
+        requestId: REQUEST,
+        orderId: ORDER_DISPATCH,
+        expectedVersion: 2,
+        toStatus: 'activated',
+      }),
+    ).toMatchObject({ status: 'transitioned', orderStatus: 'activated', version: 3 });
+    expect((await jobsFor(ORDER_DISPATCH)).map((job) => [job.job_type, job.dedupe_key])).toEqual([
+      ['order_dispatch_email', `${ORDER_DISPATCH}:2`],
+      ['order_activation_email', `${ORDER_DISPATCH}:3`],
+    ]);
+
+    // ORDER_MAIN's lead has no email: its earlier transitions queued no email.
+    expect(await jobsFor(ORDER_MAIN)).toEqual([]);
   });
 });
