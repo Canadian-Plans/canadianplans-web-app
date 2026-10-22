@@ -37,24 +37,12 @@ jobs:
           node-version: 22.19.0
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Install and verify age (decrypts retained manifests)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y age
-          age --version
-      - name: Write the escrowed recovery private key to a runner-local file
-        # Never a repository file, artifact name, or object metadata — only the
-        # runner's protected secret store and this ephemeral, workspace-scoped
-        # path, which the runner discards at job end.
-        env:
-          RECOVERY_PRIVATE_KEY: ${{ secrets.RECOVERY_PRIVATE_KEY }}
-        run: |
-          umask 077
-          printf '%s' "$RECOVERY_PRIVATE_KEY" > "$RUNNER_TEMP/recovery-private-key.txt"
+      # Retention prunes from the archive listing alone. It never decrypts a
+      # manifest, so the escrowed recovery private key is never present here
+      # (docs/RUNBOOKS/restore.md: daily jobs receive only the public recipient).
       - name: Run retention (defaults to dry-run unless explicitly disabled)
         env:
           RETENTION_DRY_RUN: ${{ github.event.inputs.dry_run == 'false' && 'false' || 'true' }}
-          RECOVERY_PRIVATE_KEY_PATH: ${{ runner.temp }}/recovery-private-key.txt
           B2_ARCHIVE_ENDPOINT: ${{ secrets.B2_ARCHIVE_ENDPOINT }}
           B2_ARCHIVE_REGION: ${{ secrets.B2_ARCHIVE_REGION }}
           B2_ARCHIVE_BUCKET: ${{ secrets.B2_ARCHIVE_BUCKET }}

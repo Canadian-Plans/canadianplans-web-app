@@ -1,16 +1,8 @@
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { afterAll, afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
-const { runCommand, runRetention, captureException } = vi.hoisted(() => ({
-  runCommand: vi.fn(),
+const { runRetention, captureException } = vi.hoisted(() => ({
   runRetention: vi.fn(),
   captureException: vi.fn(),
-}));
-vi.mock('../backup/command.js', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('../backup/command.js')>()),
-  nodeRunCommand: runCommand,
 }));
 vi.mock('./run.js', () => ({ runRetention }));
 vi.mock('@canadian-plans/adapters', async (importOriginal) => ({
@@ -18,14 +10,10 @@ vi.mock('@canadian-plans/adapters', async (importOriginal) => ({
   createErrorTrackerFromEnv: () => ({ captureException }),
 }));
 
-const directory = mkdtempSync(join(tmpdir(), 'cp-retention-'));
-const identityPath = join(directory, 'identity');
-writeFileSync(identityPath, 'TEST ONLY');
 const previousExitCode = process.exitCode;
 beforeEach(() => {
   vi.resetModules();
   vi.clearAllMocks();
-  runCommand.mockResolvedValue({ stdout: new Uint8Array(), stderr: '', exitCode: 0 });
   runRetention.mockResolvedValue({
     dryRun: true,
     totalRuns: 1,
@@ -44,7 +32,6 @@ beforeEach(() => {
   ])
     vi.stubEnv(key, 'test');
   vi.stubEnv('B2_ARCHIVE_ENDPOINT', 'https://archive.example.test');
-  vi.stubEnv('RECOVERY_PRIVATE_KEY_PATH', identityPath);
   vi.stubEnv('RETENTION_DRY_RUN', '');
   vi.spyOn(console, 'info').mockImplementation(() => {});
   vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -56,16 +43,18 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-it('preflights age and preserves the default dry-run', async () => {
+it('runs retention with the default dry-run and never needs the recovery private key', async () => {
+  vi.stubEnv('RECOVERY_PRIVATE_KEY_PATH', '');
   await import('./cli.js');
   await vi.waitFor(() => expect(runRetention).toHaveBeenCalled());
-  expect(runCommand).toHaveBeenCalledWith('age', ['--version'], undefined);
-  expect(runRetention).toHaveBeenCalledWith(expect.objectContaining({ dryRun: true }));
+  const options = runRetention.mock.calls[0]?.[0] as Record<string, unknown>;
+  expect(options).toMatchObject({ dryRun: true });
+  expect(options).not.toHaveProperty('decryptor');
   expect(captureException).not.toHaveBeenCalled();
 });
 
-it('fails before archive retention when age cannot run', async () => {
-  runCommand.mockRejectedValueOnce(new Error('spawn age ENOENT'));
+it('fails before archive retention when a retention credential is missing', async () => {
+  vi.stubEnv('B2_ARCHIVE_RETENTION_APPLICATION_KEY', '');
   await import('./cli.js');
   await vi.waitFor(() => expect(captureException).toHaveBeenCalledOnce());
   expect(runRetention).not.toHaveBeenCalled();
@@ -85,6 +74,3 @@ it('reports unreadable manifests as a failed job', async () => {
   await vi.waitFor(() => expect(captureException).toHaveBeenCalledOnce());
   expect(process.exitCode).toBe(1);
 });
-
-// Only this suite's disposable identity file is removed.
-afterAll(() => rmSync(directory, { recursive: true, force: true }));

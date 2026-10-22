@@ -1,7 +1,5 @@
 import type { ArchiveRetentionAdmin } from '../backup/archive-store.js';
-import type { Decryptor } from '../backup/encryptor.js';
 import { HEARTBEAT_KEY } from '../backup/heartbeat.js';
-import { backupManifestSchema } from '../backup/manifest.js';
 import { defaultRetentionPolicy, selectRetainedRunIds, type RetentionPolicy } from './select.js';
 
 /**
@@ -9,12 +7,14 @@ import { defaultRetentionPolicy, selectRetainedRunIds, type RetentionPolicy } fr
  * dry-run, computes the union of all retained manifest references, and
  * removes only unreferenced encrypted payloads after a grace period." It uses
  * a different credential from the daily writer (`ArchiveRetentionAdmin`, never
- * `ArchiveWriter`) and can never be invoked by the daily backup path.
+ * `ArchiveWriter`) and can never be invoked by the daily backup path. It works
+ * from the archive listing alone (every artifact lives under its run prefix
+ * and the manifest is uploaded last), so it never decrypts anything and never
+ * holds the escrowed recovery private key.
  */
 
 export interface RetentionRunOptions {
   admin: ArchiveRetentionAdmin;
-  decryptor: Decryptor;
   now?: () => Date;
   policy?: RetentionPolicy;
   /** Only objects at least this old (by their run's captured time) are ever deleted. */
@@ -75,8 +75,8 @@ export async function runRetention(options: RetentionRunOptions): Promise<Retent
   const pendingRunIds: string[] = [];
   for (const runId of runIds) {
     const manifestKey = `${runId}/manifest.json.enc`;
-    const ciphertext = await options.admin.getObject(manifestKey);
-    if (!ciphertext) {
+    const manifestObject = allObjects.find((object) => object.key === manifestKey);
+    if (!manifestObject) {
       // The backup writes its manifest last, so a run without one is an
       // attempt that failed part-way (or is still uploading). Every attempt
       // has its own run ID and is never resumed, so once its newest object
@@ -88,17 +88,18 @@ export async function runRetention(options: RetentionRunOptions): Promise<Retent
       else pendingRunIds.push(runId);
       continue;
     }
-    try {
-      const plaintext = await options.decryptor.decrypt(ciphertext);
-      const manifest = backupManifestSchema.parse(JSON.parse(new TextDecoder().decode(plaintext)));
-      const objectKeys = new Set<string>([
-        manifestKey,
-        ...manifest.artifacts.map((artifact) => `${runId}/${artifact.name}.enc`),
-      ]);
-      runs.push({ runId, capturedAt: new Date(manifest.capturedAt), objectKeys });
-    } catch {
+    // The manifest is written last, so its upload time is the run's capture
+    // time for policy purposes, and every object under the run prefix belongs
+    // to that run. A manifest without a known upload time cannot be aged, so
+    // it fails visibly (and is retained) instead of being deleted.
+    if (manifestObject.lastModified === undefined) {
       unreadableManifests.push(manifestKey);
+      continue;
     }
+    const objectKeys = new Set<string>(
+      allObjects.map((object) => object.key).filter((key) => key.startsWith(`${runId}/`)),
+    );
+    runs.push({ runId, capturedAt: manifestObject.lastModified, objectKeys });
   }
 
   const retainedRunIds = selectRetainedRunIds(
