@@ -254,7 +254,11 @@ describe('public website credential authentication', () => {
       proxied = createApp({
         staff: staffOnly,
         website: {
-          auth: { resolveCredential: resolver.resolve, rateLimit: limiter.hit, botCheck: () => true },
+          auth: {
+            resolveCredential: resolver.resolve,
+            rateLimit: limiter.hit,
+            botCheck: () => true,
+          },
           leads: { store: leadStore },
         },
       }).listen(0);
@@ -290,8 +294,13 @@ describe('public website credential authentication', () => {
 
   it('does not let a junk bearer token share the real credential bootstrap bucket', async () => {
     expect(
-      (await post('/api/v1/website/leads', { authorization: `Bearer ${VALID_SECRET}` }, VALID_LEAD_BODY))
-        .status,
+      (
+        await post(
+          '/api/v1/website/leads',
+          { authorization: `Bearer ${VALID_SECRET}` },
+          VALID_LEAD_BODY,
+        )
+      ).status,
     ).toBe(201);
     expect(
       (
