@@ -46,13 +46,19 @@ async function main(): Promise<void> {
   const sanitySiteFilter = process.env.SANITY_SITE_FILTER?.trim() || 'site-1';
   const supabaseProjectRef = requiredEnv('SUPABASE_PROJECT_REF');
 
-  const archiveWriter = new S3ArchiveWriter({
-    accessKeyId: b2AccessKeyId,
-    secretAccessKey: b2SecretAccessKey,
-    endpoint: b2Endpoint,
-    region: b2Region,
-    bucket: b2Bucket,
-  });
+  // A full database dump is one PUT; the 30-second library default would fail
+  // it as the data grows. Bounded well inside the workflow's 30-minute limit.
+  const archiveWriter = new S3ArchiveWriter(
+    {
+      accessKeyId: b2AccessKeyId,
+      secretAccessKey: b2SecretAccessKey,
+      endpoint: b2Endpoint,
+      region: b2Region,
+      bucket: b2Bucket,
+    },
+    fetch,
+    15 * 60_000,
+  );
 
   const summary = await runBackup({
     runId,
@@ -64,7 +70,7 @@ async function main(): Promise<void> {
     referencedObjects: new PsqlReferencedObjectManifestSource(sourceDbUrl, nodeRunCommand),
     // Phase A has exactly one website/bucket; Phase B's per-site buckets need
     // a bucket→credentials map here before website 2/3 onboard (REQ 45).
-    r2Source: new S3R2SourceReader(() => requiredR2Config()),
+    r2Source: new S3R2SourceReader(() => requiredR2Config(), fetch, 10 * 60_000),
     ...(sanityProjectId
       ? {
           sanity: new SanityCliExporter(
