@@ -143,22 +143,24 @@ export const studentIndiaGuide: GuideArticle = {
   category: 'Phones & SIMs',
   description:
     'Which plan to pick, how much data you really need, and how to get your Canadian number before you leave home — in plain words.',
+  // Owner decision (22 Oct 2026, SEC-18): guides are credited to the team, not
+  // to individuals.
   author: {
-    name: 'Ananya R.',
-    label: 'Written by Ananya R.',
-    detail: 'Student · moved Pune → Toronto in 2023',
+    name: 'Canadian Plans',
+    label: 'Written by the Canadian Plans team',
+    detail: 'Plan advisors in Surrey, BC',
     avatar: { src: '/design/guides/0-imgEllipse1.svg', width: 44, height: 44, nodeId: '133:47' },
   },
   reviewer: {
-    name: 'Priya',
-    label: 'Reviewed by Priya',
-    detail: 'Plan advisor, Canadian Plans',
+    name: 'Canadian Plans',
+    label: 'Checked against carrier plan pages',
+    detail: 'October 2026',
     avatar: { src: '/design/guides/0-imgEllipse2.svg', width: 44, height: 44, nodeId: '133:52' },
   },
   updated: '2026-10-05',
   updatedLabel: 'Updated 5 Oct 2026',
   readingLabel: '8 min read · Prices as of October 2026',
-  imageCaption: 'Student from India at airport arrivals, phone in hand (real photo, with consent)',
+  imageCaption: 'Student from India at airport arrivals, phone in hand',
   quickAnswer:
     "Most students from India do well with 75 to 100 GB of data a month. Order 1 to 3 weeks before your flight so your Canadian number is ready for your bank and college forms. Plans start at $35 a month (CAD, plus tax), and you don't need a Canadian credit history.",
   quickMobileLines: [
@@ -274,7 +276,7 @@ export const studentIndiaGuide: GuideArticle = {
       items: [
         'Pick your plan on our pre-arrival page.',
         'Add your arrival date and city. An advisor asks for documents only if needed.',
-        'An advisor calls or messages you on WhatsApp to confirm. You don’t pay anything online.',
+        'An advisor calls or emails you to confirm. You don’t pay anything online.',
         'Land, switch on, and you’re online before baggage claim.',
       ],
     },

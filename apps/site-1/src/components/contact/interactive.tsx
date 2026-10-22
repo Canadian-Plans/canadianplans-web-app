@@ -1,20 +1,7 @@
 'use client';
 
+import { useRef, useState, type FormEvent } from 'react';
 import {
-  createContext,
-  useContext,
-  useRef,
-  useState,
-  useTransition,
-  type FormEvent,
-  type ReactNode,
-} from 'react';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
   FormField,
   Input,
   Select,
@@ -25,84 +12,33 @@ import {
   Textarea,
 } from '@canadian-plans/ui';
 import { CpButton, type CpButtonTone } from '@canadian-plans/ui/canadian-plans';
-import { contactCopy, contactTopics, type ContactPreviewKind } from '@content/contact';
-import { contactPreviewAction } from '@/app/(contact)/actions';
+import { contactCopy, contactTopics } from '@content/contact';
 import {
+  contactMessageMailto,
   validateContactMessage,
-  validateContactTracking,
   type ContactMessageInput,
   type ContactMessageErrors,
-  type ContactTrackingErrors,
 } from '@/lib/contact-preview';
 
-const PreviewContext = createContext<((kind: ContactPreviewKind) => void) | null>(null);
-function useContactPreview() {
-  const preview = useContext(PreviewContext);
-  if (!preview) throw new Error('Contact preview provider missing');
-  return preview;
-}
-function focusMessage() {
-  document.getElementById('message-us')?.scrollIntoView({
-    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
-  });
-  document.getElementById('contact-name')?.focus({ preventScroll: true });
-}
-export function ContactPreviewProvider({ children }: { children: ReactNode }) {
-  const [kind, setKind] = useState<ContactPreviewKind | null>(null);
-  const trigger = useRef<HTMLElement | null>(null);
-  function preview(next: ContactPreviewKind) {
-    trigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    setKind(next);
-  }
-  return (
-    <PreviewContext value={preview}>
-      {children}
-      <Dialog
-        open={kind !== null}
-        onOpenChange={(open) => {
-          if (!open) setKind(null);
-        }}
-      >
-        <DialogContent
-          className="cp-design cp-contact-preview"
-          showCloseButton={false}
-          onCloseAutoFocus={(event) => {
-            event.preventDefault();
-            trigger.current?.focus();
-          }}
-        >
-          <DialogTitle>{contactCopy.preview.title}</DialogTitle>
-          <DialogDescription>
-            {kind ? contactCopy.preview.descriptions[kind] : null}
-          </DialogDescription>
-          <DialogClose asChild>
-            <CpButton>{contactCopy.preview.close}</CpButton>
-          </DialogClose>
-        </DialogContent>
-      </Dialog>
-    </PreviewContext>
-  );
-}
+// BUG-15 (owner decision 22 Oct 2026): no WhatsApp until a business number
+// exists, so every contact option is a plain link: the message form, phone or email.
+const optionHrefs = {
+  message: '#message-us',
+  call: contactCopy.callHref,
+  email: `mailto:${contactCopy.emailAddress}`,
+} as const;
 export function ContactOptionAction({
   id,
   label,
   tone,
 }: {
-  id: 'whatsapp' | 'call' | 'email';
+  id: keyof typeof optionHrefs;
   label: string;
   tone: CpButtonTone;
 }) {
-  const preview = useContactPreview();
-  if (id === 'call') {
-    return (
-      <CpButton asChild tone={tone}>
-        <a href={contactCopy.callHref}>{label}</a>
-      </CpButton>
-    );
-  }
   return (
-    <CpButton tone={tone} onClick={() => (id === 'email' ? focusMessage() : preview(id))}>
-      {label}
+    <CpButton asChild tone={tone}>
+      <a href={optionHrefs[id]}>{label}</a>
     </CpButton>
   );
 }
@@ -119,99 +55,22 @@ export function ContactDirections() {
   );
 }
 
+// REL-33 interim (owner decision 22 Oct 2026): the real lookup lives at /track,
+// so this panel links there instead of running a stub form.
 export function ContactTrackingForm() {
-  const [values, setValues] = useState({ order: '', email: '' });
-  const [errors, setErrors] = useState<ContactTrackingErrors>({});
-  const [feedback, setFeedback] = useState('');
-  const [pending, startTransition] = useTransition();
-  const form = useRef<HTMLFormElement>(null);
-  const inFlight = useRef(false);
-  function update(field: keyof typeof values, value: string) {
-    setValues((old) => ({ ...old, [field]: value }));
-    setErrors((old) => ({ ...old, [field]: undefined }));
-    setFeedback('');
-  }
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (inFlight.current) return;
-    const nextErrors = validateContactTracking(values);
-    setErrors(nextErrors);
-    setFeedback('');
-    const first = Object.keys(nextErrors)[0];
-    if (first) {
-      form.current?.querySelector<HTMLElement>(`#contact-track-${first}`)?.focus();
-      return;
-    }
-    inFlight.current = true;
-    startTransition(async () => {
-      try {
-        const result = await contactPreviewAction({ kind: 'tracking', input: values });
-        setFeedback(
-          result.status === 'preview' ? contactCopy.track.result : contactCopy.feedback.retry,
-        );
-      } catch {
-        setFeedback(contactCopy.feedback.retry);
-      } finally {
-        inFlight.current = false;
-      }
-    });
-  }
   return (
-    <form
-      ref={form}
+    <section
       id="track-order"
       className="cp-contact-tracking cp-contact-panel"
-      method="post"
-      noValidate
-      onSubmit={submit}
       aria-labelledby="contact-track-title"
-      aria-busy={pending}
     >
       <h2 id="contact-track-title">{contactCopy.track.title}</h2>
       <p className="cp-contact-track-description">{contactCopy.track.description}</p>
-      <fieldset className="cp-contact-track-fields" disabled={pending}>
-        <FormField
-          id="contact-track-order"
-          label={contactCopy.track.orderLabel}
-          error={errors.order}
-        >
-          <Input
-            className="cp-contact-input"
-            name="order"
-            value={values.order}
-            onChange={(event) => update('order', event.target.value)}
-            placeholder={contactCopy.track.orderPlaceholder}
-            required
-            maxLength={80}
-            autoComplete="off"
-          />
-        </FormField>
-        <FormField
-          id="contact-track-email"
-          label={contactCopy.track.emailLabel}
-          error={errors.email}
-        >
-          <Input
-            className="cp-contact-input"
-            name="email"
-            type="email"
-            value={values.email}
-            onChange={(event) => update('email', event.target.value)}
-            placeholder={contactCopy.track.emailPlaceholder}
-            required
-            maxLength={254}
-            autoComplete="email"
-          />
-        </FormField>
-      </fieldset>
-      <CpButton type="submit" scale="large" disabled={pending}>
-        {pending ? contactCopy.track.pending : contactCopy.track.submit}
+      <CpButton asChild scale="large">
+        <a href={contactCopy.track.href}>{contactCopy.track.submit}</a>
       </CpButton>
-      <p role="status" className={feedback || pending ? 'cp-contact-feedback' : 'sr-only'}>
-        {pending ? contactCopy.track.pending : feedback}
-      </p>
       <p className="cp-contact-track-help">{contactCopy.track.help}</p>
-    </form>
+    </section>
   );
 }
 
@@ -225,9 +84,7 @@ export function ContactMessageAndHelp() {
   });
   const [errors, setErrors] = useState<ContactMessageErrors>({});
   const [feedback, setFeedback] = useState('');
-  const [pending, startTransition] = useTransition();
   const form = useRef<HTMLFormElement>(null);
-  const inFlight = useRef(false);
   function update(field: keyof ContactMessageInput, value: string) {
     setValues((old) => ({ ...old, [field]: value }));
     setErrors((old) => ({ ...old, [field]: undefined }));
@@ -235,7 +92,6 @@ export function ContactMessageAndHelp() {
   }
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (inFlight.current) return;
     const nextErrors = validateContactMessage(values);
     setErrors(nextErrors);
     setFeedback('');
@@ -244,19 +100,9 @@ export function ContactMessageAndHelp() {
       form.current?.querySelector<HTMLElement>(`#contact-${first}`)?.focus();
       return;
     }
-    inFlight.current = true;
-    startTransition(async () => {
-      try {
-        const result = await contactPreviewAction({ kind: 'message', input: values });
-        setFeedback(
-          result.status === 'preview' ? contactCopy.message.result : contactCopy.feedback.retry,
-        );
-      } catch {
-        setFeedback(contactCopy.feedback.retry);
-      } finally {
-        inFlight.current = false;
-      }
-    });
+    // REL-33 interim: hand the message to the visitor's email app.
+    window.location.assign(contactMessageMailto(values));
+    setFeedback(contactCopy.message.result);
   }
   return (
     <>
@@ -268,10 +114,9 @@ export function ContactMessageAndHelp() {
         noValidate
         onSubmit={submit}
         aria-labelledby="contact-message-title"
-        aria-busy={pending}
       >
         <h2 id="contact-message-title">{contactCopy.message.title}</h2>
-        <fieldset className="cp-contact-message-fields" disabled={pending}>
+        <fieldset className="cp-contact-message-fields">
           <div className="cp-contact-field-row">
             <FormField id="contact-name" label={contactCopy.message.name.label} error={errors.name}>
               <Input
@@ -331,7 +176,6 @@ export function ContactMessageAndHelp() {
               required
               value={values.topic}
               onValueChange={(value) => update('topic', value)}
-              disabled={pending}
             >
               <FormField
                 id="contact-topic"
@@ -368,11 +212,11 @@ export function ContactMessageAndHelp() {
             />
           </FormField>
         </fieldset>
-        <CpButton type="submit" scale="large" disabled={pending}>
-          {pending ? contactCopy.message.pending : contactCopy.message.submit}
+        <CpButton type="submit" scale="large">
+          {contactCopy.message.submit}
         </CpButton>
-        <p role="status" className={feedback || pending ? 'cp-contact-feedback' : 'sr-only'}>
-          {pending ? contactCopy.message.pending : feedback}
+        <p role="status" className={feedback ? 'cp-contact-feedback' : 'sr-only'}>
+          {feedback}
         </p>
       </form>
       <aside
@@ -392,7 +236,6 @@ export function ContactMessageAndHelp() {
               className="cp-contact-help-link"
               key={link.label}
               type="button"
-              disabled={pending}
               onClick={() => {
                 update('topic', link.topic);
                 document.getElementById('message-us')?.scrollIntoView({

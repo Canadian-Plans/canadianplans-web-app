@@ -26,13 +26,14 @@ describe('guide resolution and Article schema', () => {
       '@type': 'Article',
       headline: studentIndiaGuide.title,
       description: studentIndiaGuide.description,
-      author: { name: studentIndiaGuide.author.name },
+      author: { '@type': 'Organization', name: studentIndiaGuide.author.name },
       dateModified: '2026-10-05',
       url: 'https://preview.example/guides/best-sim-for-students-from-india',
     });
     expect(schema.mainEntityOfPage['@id']).toBe(schema.url);
     expect(schema).not.toHaveProperty('datePublished');
     expect(schema).not.toHaveProperty('image');
+    expect(schema).not.toHaveProperty('reviewedBy');
   });
   it('escapes script-breaking copy without changing the parsed Article', () => {
     const article = { ...studentIndiaGuide, title: 'A </script><script>alert(1)</script> guide' };

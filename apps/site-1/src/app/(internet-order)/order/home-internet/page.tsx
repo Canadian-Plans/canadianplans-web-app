@@ -22,6 +22,9 @@ export default async function InternetOrderPage({
 }: {
   searchParams: Promise<{ plan?: string | string[] }>;
 }) {
+  // Owner decision (22 Oct 2026): design previews 404 in production; Vercel
+  // previews and local builds keep them for design checks.
+  if (process.env.VERCEL_ENV === 'production') notFound();
   const plan = selectInternetOrderPlan((await searchParams).plan);
   if (!plan) notFound();
   const summary = internetOrderSummaryFor(plan);

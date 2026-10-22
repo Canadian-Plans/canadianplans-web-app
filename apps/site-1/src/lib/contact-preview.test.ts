@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { contactPreviewAction } from '@/app/(contact)/actions';
 import {
+  contactMessageMailto,
   validateContactMessage,
   validateContactTracking,
   type ContactMessageInput,
@@ -98,5 +99,24 @@ describe('contact preview validation', () => {
       { kind: 'message', input: { name: 42 } },
     ]);
     expect(result).toEqual({ status: 'invalid', previewOnly: true });
+  });
+});
+
+describe('contact message email draft (REL-33 interim)', () => {
+  it('addresses the support inbox with the topic, message and contact details', () => {
+    const href = contactMessageMailto(
+      validMessage({ topic: 'internet', phone: ' +1 604 555 0100 ', message: ' Hi & thanks? ' }),
+    );
+    const url = new URL(href);
+    expect(url.protocol).toBe('mailto:');
+    expect(url.pathname).toBe('info@canadianplans.com');
+    expect(url.searchParams.get('subject')).toBe('Website message: Home internet / installation');
+    expect(url.searchParams.get('body')).toBe(
+      'Hi & thanks?\n\nName: Preview visitor\nEmail: visitor@example.com\nPhone: +1 604 555 0100',
+    );
+  });
+  it('leaves out an empty phone', () => {
+    const body = new URL(contactMessageMailto(validMessage())).searchParams.get('body');
+    expect(body).not.toContain('Phone:');
   });
 });

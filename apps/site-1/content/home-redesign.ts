@@ -306,7 +306,7 @@ export const homeRedesign = {
     audiences: {
       resident: {
         tab: 'I already live in Canada',
-        eyebrow: 'Authorized Rogers, Fido & Chatr dealer',
+        eyebrow: 'Authorized dealer · Surrey, BC',
         title: 'Canadian phone & internet plans, with real prices.',
         description:
           'Bring your own phone, keep your number, and get set up by a real person. Home internet in BC, Alberta, Manitoba and Saskatchewan.',
@@ -322,7 +322,7 @@ export const homeRedesign = {
       },
       newcomer: {
         tab: "I'm moving to Canada",
-        eyebrow: 'Authorized Rogers, Fido & Chatr dealer',
+        eyebrow: 'Authorized dealer · Surrey, BC',
         title: 'Canadian SIM & internet plans for newcomers.',
         description:
           'Get your Canadian phone number before you fly, then set up home internet when you move in.',
@@ -429,7 +429,7 @@ export const homeRedesign = {
     navLabel: 'Service categories',
     info: {
       title: 'Who am I buying from?',
-      body: "Your plan is a real Rogers, Fido or Chatr account in your name. We're the authorized dealer that sets it up and helps you afterwards. Our help costs nothing extra.",
+      body: "Your plan is a real account in your name: with Rogers, Fido or Chatr for pre-arrival SIMs, or with the provider your advisor confirms for home internet and mobile. We're the authorized dealer that sets it up and helps you afterwards. Our help costs nothing extra.",
       action: 'Learn more',
       href: '/about',
     },
@@ -539,7 +539,7 @@ export const homeRedesign = {
         pricePrefix: 'from',
         price: '$50',
         priceSuffix: '/mo',
-        photo: 'PHOTO · Rogers modem in a bright living room',
+        photo: 'PHOTO · home internet modem in a bright living room',
       },
       cards: {
         title: 'What you get',
@@ -644,8 +644,8 @@ export const homeRedesign = {
           },
           {
             id: 'carriers',
-            title: '3 carriers, one advisor',
-            body: 'Rogers, Fido and Chatr compared side by side.',
+            title: 'One advisor, every option',
+            body: 'Your advisor compares the plans side by side with you.',
             icon: 'why-mb-carriers',
           },
           {
@@ -659,7 +659,7 @@ export const homeRedesign = {
       cta: {
         icon: 'cta-mobile',
         title: 'Ready to switch and keep your number?',
-        subtitle: 'Compare Rogers, Fido and Chatr in a few minutes.',
+        subtitle: 'Compare mobile plans in a few minutes.',
         primary: { label: 'Compare mobile plans →', href: '/mobile-plans' },
         secondary: { label: 'Talk to an advisor ›', href: '/contact' },
       },
@@ -831,7 +831,7 @@ export const homeRedesignFaq: readonly FaqItemContent[] = [
     id: 'carrier',
     question: 'Who will my plan actually be with?',
     answer:
-      'Your plan is a real Rogers, Fido or Chatr account in your name. We are an authorized dealer: we help you choose, set everything up and stay your contact afterwards.',
+      'For pre-arrival SIMs, your plan is a real Rogers, Fido or Chatr account in your name. For home internet and mobile, your advisor confirms the provider with you before anything is set up, and the account is in your name. We are an authorized dealer: we help you choose, set everything up and stay your contact afterwards.',
   },
   {
     id: 'cost',
@@ -853,7 +853,7 @@ export const homeRedesignFaq: readonly FaqItemContent[] = [
     id: 'contract',
     question: 'Is there a contract?',
     answer:
-      'There is no contract with Canadian Plans. Your service agreement is with the provider, and an advisor explains its terms before anything is activated.',
+      'No. None of our plans has a contract, including home internet with a 2-year price lock. Your service agreement is with the provider, and an advisor explains its terms before anything is activated.',
   },
   {
     id: 'install',

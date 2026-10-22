@@ -9,9 +9,9 @@ import type { LandingPageContent } from './landing/types';
  */
 export const aboutPage: LandingPageContent = {
   path: '/about',
-  title: 'About Canadian Plans: Authorized Rogers, Fido & Chatr Dealer in Surrey, BC',
+  title: 'About Canadian Plans: Authorized Phone & Internet Dealer in Surrey, BC',
   description:
-    'Canadian Plans is an authorized Rogers, Fido and Chatr dealer in Surrey, BC. We help newcomers get a phone or internet plan in plain English, with no Canadian credit history needed.',
+    'Canadian Plans, in Surrey, BC, is an authorized Rogers, Fido and Chatr dealer for pre-arrival plans, and an authorized sales agent for home internet and mobile. We help newcomers get a phone or internet plan in plain English, with no Canadian credit history needed.',
   mainId: 'about-main',
   skip: landingSkip,
   tone: 'navy',
@@ -23,7 +23,7 @@ export const aboutPage: LandingPageContent = {
     eyebrow: 'About Canadian Plans',
     title: 'Canadian phone and internet plans, explained by humans',
     description:
-      'We are an authorized Rogers, Fido and Chatr dealer in Surrey, BC. We help newcomers get a phone or internet plan in plain English, with no Canadian credit history needed.',
+      'Based in Surrey, BC, we are an authorized Rogers, Fido and Chatr dealer for pre-arrival plans, and an authorized sales agent for home internet and mobile. We help newcomers get a phone or internet plan in plain English, with no Canadian credit history needed.',
     action: { label: 'Talk to an advisor', href: '/contact' },
     photo: 'PHOTO · the Canadian Plans team at the Surrey shop counter',
     highlights: ['Authorized dealer', 'Real people, no bots', 'Nothing to pay today'],
@@ -32,13 +32,13 @@ export const aboutPage: LandingPageContent = {
     eyebrow: 'Our story',
     title: 'We started because a phone plan shouldn’t need a credit history',
     answer:
-      'Too many newcomers were turned away for not having a SIN, a credit score or a local address, or were sold plans they didn’t need. So we became an authorized Rogers, Fido and Chatr dealer for people arriving in Canada: students, workers, permanent residents and visitors.',
+      'Too many newcomers were turned away for not having a SIN, a credit score or a local address, or were sold plans they didn’t need. So we became an authorized dealer for people arriving in Canada: students, workers, permanent residents and visitors.',
   },
   facts: {
     label: 'Canadian Plans at a glance',
     items: [
       { label: 'Location', value: 'Surrey, BC', detail: 'Visit us in person' },
-      { label: 'Carriers', value: '3', detail: 'Rogers, Fido, Chatr' },
+      { label: 'Pre-arrival carriers', value: '3', detail: 'Rogers, Fido, Chatr' },
       { label: 'Hours', value: 'Mon–Sat', detail: '9am–9pm Pacific' },
       { label: 'To order', value: '$0', detail: 'Nothing due today' },
     ],
@@ -72,7 +72,7 @@ export const aboutPage: LandingPageContent = {
         {
           id: 'dealer',
           title: 'Carrier prices, no markup',
-          body: 'Rogers, Fido and Chatr plans at the carriers’ own prices.',
+          body: 'Rogers, Fido and Chatr pre-arrival plans at the carriers’ own prices.',
           icon: 'why-mb-carriers',
         },
       ],
@@ -81,9 +81,9 @@ export const aboutPage: LandingPageContent = {
       kind: 'cards',
       id: 'carriers',
       eyebrow: 'Authorized dealer',
-      title: 'Rogers, Fido and Chatr, under one roof',
+      title: 'Rogers, Fido and Chatr pre-arrival plans, under one roof',
       description:
-        'We are an independent authorized dealer, not the carrier. All three brands run on the Rogers network; we help you pick the one that fits.',
+        'For pre-arrival plans we are an independent authorized dealer, not the carrier. All three brands run on the Rogers network; we help you pick the one that fits.',
       columns: 3,
       items: [
         {
@@ -118,7 +118,7 @@ export const aboutPage: LandingPageContent = {
         id: 'carrier',
         question: 'Is Canadian Plans a phone carrier?',
         answer:
-          'No. We are an independent authorized dealer for Rogers, Fido and Chatr. Your plan and bill come from the carrier you choose.',
+          'No. We are an independent authorized dealer for Rogers, Fido and Chatr pre-arrival plans, and an authorized sales agent for home internet and mobile providers. Your plan and bill come from the provider, not from us.',
       },
       {
         id: 'markup',

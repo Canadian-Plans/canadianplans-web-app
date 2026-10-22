@@ -55,7 +55,7 @@ export const arrivalCopy = {
     includes: [
       '✓ Canadian number before you fly',
       '✓ eSIM by email in minutes',
-      '✓ Activation help on WhatsApp',
+      '✓ Activation help by phone or email',
       '✓ Pay nothing until we confirm',
     ],
     yourPlan: 'Your plan',
@@ -89,7 +89,7 @@ export const arrivalCopy = {
         values: ['✓ Yes, with date', 'Varies', '✓ Yes'],
       },
       {
-        feature: 'Help on WhatsApp in plain English',
+        feature: 'Help by phone or email in plain English',
         values: ['✓ Yes', '✗ No', 'In store only'],
       },
       {

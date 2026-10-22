@@ -35,7 +35,7 @@ export const internetOrderCopy = {
     birthDate: {
       label: 'Date of birth',
       placeholder: 'DD / MM / YYYY',
-      hint: 'Rogers needs this to set up your account.',
+      hint: 'The provider needs this to set up your account.',
     },
     street: { label: 'Street address', placeholder: 'Unit, number and street' },
     city: { label: 'City', placeholder: 'e.g. Surrey' },

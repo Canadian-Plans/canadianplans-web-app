@@ -70,6 +70,11 @@ beforeEach(async () => {
     verifiedEmail: 'viewer@example.test',
     assuranceLevel: 'aal1',
   });
+  verifier.sessions.set('mfa-token', {
+    actorId: ACTOR,
+    verifiedEmail: 'viewer@example.test',
+    assuranceLevel: 'aal2',
+  });
   store = new ConfigurableStaffStore();
   server = createApp({
     staff: {
@@ -101,10 +106,10 @@ afterEach(async () => {
   await new Promise<void>((resolve) => server.close(() => resolve()));
 });
 
-async function requestDownloadLink(): Promise<Response> {
+async function requestDownloadLink(token = 'token'): Promise<Response> {
   return fetch(`${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/files/${FILE_ID}/download-link`, {
     method: 'POST',
-    headers: { authorization: 'Bearer token', 'content-type': 'application/json' },
+    headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
     body: '{}',
   });
 }
@@ -128,7 +133,11 @@ describe('staff document download permission (REQ 23; gate 5)', () => {
       roles: ['viewer'],
       permissions: [{ name: 'document_download', effect: 'allow' }],
     };
-    const response = await requestDownloadLink();
+    // Owner decision (22 Oct 2026): a granted privileged permission needs MFA too.
+    const withoutMfa = await requestDownloadLink();
+    expect(withoutMfa.status).toBe(403);
+    expect(await withoutMfa.json()).toMatchObject({ error: { code: 'mfa_required' } });
+    const response = await requestDownloadLink('mfa-token');
     expect(response.status).toBe(200);
     const body: unknown = await response.json();
     expect(body).toMatchObject({ url: 'memory://signed' });

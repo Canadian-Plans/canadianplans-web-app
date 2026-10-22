@@ -47,18 +47,18 @@ export const faqCopy = {
     image: 'Image',
     expand: '+',
     collapse: '−',
-    advisor: 'WhatsApp us',
+    advisor: 'Contact an advisor',
   },
   final: {
     title: 'Still have a question?',
-    subtitle: 'A real advisor answers by WhatsApp, phone or email. Nothing to pay.',
+    subtitle: 'A real advisor answers by phone or email. Nothing to pay.',
     primary: { label: 'Talk to an advisor →', href: '/contact' },
     secondary: { label: 'Browse all plans ›', href: '/mobile-plans' },
   },
   destinations: {
     plans: '/mobile-plans',
     contact: '/contact#message-us',
-    whatsapp: '/contact#contact-options',
+    advisor: '/contact#contact-options',
     track: '/track',
   },
 } as const;
@@ -126,7 +126,7 @@ export const faqGroups: readonly HelpFaqGroup[] = [
       site(
         'official-carrier',
         'Is Canadian Plans an official carrier?',
-        'No. We are an independent authorized dealer for Rogers, Fido and Chatr. Your plan and bill come from the carrier you choose, at the carrier’s own prices.',
+        'No. We are an independent authorized dealer for Rogers, Fido and Chatr pre-arrival plans, and an authorized sales agent for home internet and mobile providers. Your plan and bill come from the provider, at the provider’s own prices.',
         ['dealer', 'authorized'],
       ),
     ],
@@ -187,7 +187,7 @@ export const faqGroups: readonly HelpFaqGroup[] = [
       site(
         'support',
         'Who do I contact if something goes wrong?',
-        'Contact us by WhatsApp, phone or email, Monday to Saturday, 9am–9pm Pacific time. You will reach the same advisors who confirm every order.',
+        'Contact us by phone or email, Monday to Saturday, 9am–9pm Pacific time. You will reach the same advisors who confirm every order.',
         ['help', 'contact'],
       ),
     ],

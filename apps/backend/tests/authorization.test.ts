@@ -51,9 +51,25 @@ describe('central staff authorization', () => {
     ).resolves.toEqual({ allowed: false, reason: 'permission_denied' });
   });
 
+  it('requires MFA for an individually granted privileged permission, not only for Owner/Finance', async () => {
+    const store = new MemoryAccessStore();
+    store.rows.set(
+      `${ACTOR}:${WORKSPACE_A}`,
+      activeAccess(['orders'], [{ name: 'document_download', effect: 'allow' }]),
+    );
+    const withoutMfa = createAuthorize({ accessStore: store, assuranceLevel: 'aal1' });
+    await expect(
+      withoutMfa({ actorId: ACTOR, workspaceId: WORKSPACE_A, action: 'document.download' }),
+    ).resolves.toEqual({ allowed: false, reason: 'mfa_required' });
+    // Ordinary work stays available without MFA.
+    await expect(
+      withoutMfa({ actorId: ACTOR, workspaceId: WORKSPACE_A, action: 'order.manage' }),
+    ).resolves.toMatchObject({ allowed: true });
+  });
+
   it('lets an explicit allow grant override a role denial and lets an explicit deny override a role allow', async () => {
     const store = new MemoryAccessStore();
-    const authorize = createAuthorize({ accessStore: store, assuranceLevel: 'aal1' });
+    const authorize = createAuthorize({ accessStore: store, assuranceLevel: 'aal2' });
     store.rows.set(
       `${ACTOR}:${WORKSPACE_A}`,
       activeAccess(['orders'], [{ name: 'document_download', effect: 'allow' }]),

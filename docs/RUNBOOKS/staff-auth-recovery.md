@@ -1,8 +1,9 @@
 # Staff Auth and MFA recovery
 
 This runbook covers password or authenticator loss for admin staff. It does not
-create an application bypass: Owner and Finance privileged requests remain
-denied until the backend verifies the current Supabase session at `aal2`.
+create an application bypass: every privileged request (Owner, Finance or an
+individually granted permission) remains denied until the backend verifies the
+current Supabase session at `aal2`.
 
 ## Prevention and normal recovery
 

@@ -146,7 +146,7 @@ export const torontoPearsonLanding: LandingPageContent = {
         id: 'landed',
         question: 'I have already landed. Can I still order?',
         answer:
-          'Yes. Choose a plan and an advisor will call you to confirm. If you need a number right now, message us on WhatsApp and we will tell you the fastest way to get connected.',
+          'Yes. Choose a plan and an advisor will call you to confirm. If you need a number right now, call us and we will tell you the fastest way to get connected.',
       },
       {
         id: 'device',

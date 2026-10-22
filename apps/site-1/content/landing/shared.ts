@@ -33,7 +33,7 @@ export const preArrivalSteps = (title: string): LandingStepsBlock => ({
       marker: '1',
       meta: '1–3 weeks before',
       title: 'Order and get your number',
-      body: 'Pick a plan online in about 2 minutes, from any country. We confirm on WhatsApp and assign your Canadian number, ready for bank and school forms.',
+      body: 'Pick a plan online in about 2 minutes, from any country. We confirm by phone or email and assign your Canadian number, ready for bank and school forms.',
       art: 'step-pa-order',
     },
     {
@@ -65,7 +65,7 @@ export const eSimCheck = {
       label: 'Samsung and Android',
       value: 'Settings → Connections → SIM manager. Look for “Add eSIM”.',
     },
-    { label: 'Not sure?', value: 'Send us your phone model on WhatsApp and we will check it.' },
+    { label: 'Not sure?', value: 'Email us your phone model and we will check it.' },
   ],
 } as const;
 

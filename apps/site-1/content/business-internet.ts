@@ -35,8 +35,8 @@ export const businessCopy = {
     submit: 'Request my quote',
     pending: 'Checking…',
     result:
-      'Preview only: your details look complete, but this form is not connected yet and nothing was sent. Call or WhatsApp us for a real quote.',
-    retry: 'Something went wrong. Please try again, or call or WhatsApp us.',
+      'Preview only: your details look complete, but this form is not connected yet and nothing was sent. Call or email us for a real quote.',
+    retry: 'Something went wrong. Please try again, or call or email us.',
     errors: {
       businessName: 'Enter your business name.',
       name: 'Enter your name.',

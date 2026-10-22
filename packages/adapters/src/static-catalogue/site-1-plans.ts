@@ -129,7 +129,7 @@ const noUpfrontPriceLock: OfferPromotion = {
   terms: [
     'No deposit, no activation fee and no payment on installation day.',
     'Your first bill is issued 15 days after installation.',
-    'Your monthly price is locked for 2 years.',
+    'Your monthly price is locked for 2 years, with no contract.',
     'Trial: if the service is not right for you, contact us within 15 days of installation.',
   ],
 };
@@ -147,6 +147,8 @@ const internetTerms = (province: InternetProvince): readonly string[] => [
   'Availability depends on your exact address; an advisor confirms it before installation.',
   'A WiFi router and modem are included, with no monthly equipment rental fee.',
   'Free professional installation covers standard installation only.',
+  // Owner decision (22 Oct 2026, SEC-16): no plan carries a term contract.
+  'No contract.',
   `Sold in ${provinceLabel[province]}.`,
 ];
 
@@ -357,6 +359,7 @@ const mobileTerms = [
   'Postpaid plan with no connection fee.',
   'Bring your own unlocked, compatible phone. Choose an eSIM or a SIM card.',
   'An identity and credit check is required. An advisor confirms your exact price.',
+  'No contract.',
 ];
 
 interface MobilePlanInput {
@@ -455,6 +458,7 @@ const arrivalTerms = [
   'Prices are in Canadian dollars and exclude applicable taxes.',
   'Bring your own unlocked, eSIM-capable phone.',
   'Nothing is due today.',
+  'No Canadian credit history or credit check is needed.',
 ];
 
 interface ArrivalPlanInput {

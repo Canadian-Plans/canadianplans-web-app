@@ -551,6 +551,21 @@ describe('protected staff routes', () => {
     ]);
   });
 
+  it('shows lead contact details only to roles that work orders or money', async () => {
+    const listAs = async (roles: StaffAccessSnapshot['roles']) => {
+      store.access = { ...store.access, roles };
+      const response = await fetch(`${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/leads`, {
+        headers: { authorization: 'Bearer aal1-token' },
+      });
+      expect(response.status).toBe(200);
+      return listWorkspaceLeadsResponseSchema.parse(await response.json()).leads;
+    };
+    for (const role of ['viewer', 'content', 'partners'] as const) {
+      expect(await listAs([role])).toEqual([{ ...sampleLead, contact: {} }]);
+    }
+    expect(await listAs(['orders'])).toEqual([sampleLead]);
+  });
+
   it('denies a revoked member the leads list', async () => {
     store.access = { ...store.access, status: 'revoked' };
     const response = await fetch(`${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/leads`, {

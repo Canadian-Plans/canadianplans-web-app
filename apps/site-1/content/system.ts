@@ -10,8 +10,8 @@ export const missingCopy = {
   title: 'This page lost its signal.',
   intro:
     'The link may be old, or the page has moved. Try searching, or pick where you want to go below.',
-  help: 'Still stuck? Message us on WhatsApp and we’ll find it for you.',
-  helpButton: 'Chat on WhatsApp',
+  help: 'Still stuck? Call or email us and we’ll find it for you.',
+  helpButton: 'Contact an advisor',
   cards: [
     {
       title: 'Pre-arrival SIM',
@@ -54,8 +54,8 @@ export const searchCopy = {
   filtersLabel: 'Filter search results',
   helpTitle: 'Didn’t find what you need?',
   helpDescription:
-    'Try fewer words, like “eSIM” or “internet Toronto”, or ask an advisor on WhatsApp. We reply in minutes.',
-  helpButton: 'Chat on WhatsApp',
+    'Try fewer words, like “eSIM” or “internet Toronto”, or call or email an advisor.',
+  helpButton: 'Contact an advisor',
   featured: {
     label: 'PLAN · MOST POPULAR WITH STUDENTS',
     title: 'Rogers · 100 GB eSIM',
@@ -175,8 +175,7 @@ export const searchItems: readonly SearchItem[] = [
     label: 'CITY',
     crumb: 'canadianplans.com › internet › vancouver',
     title: 'Home internet in Vancouver',
-    description:
-      'Rogers-network internet for apartments and student housing, installed in about 3 days.',
+    description: 'Home internet for apartments and student housing, installed in about 3 days.',
     href: '/home-internet/vancouver',
     keywords: ['student sim card', 'internet', 'vancouver', 'housing'],
   },
@@ -202,7 +201,7 @@ export const accessibilityCopy = {
   issues:
     'Some older PDF documents from carriers may not be fully accessible. If you need one in another format, ask us and we’ll send the information in a way that works for you.',
   waysTitle: 'Other ways to order',
-  ways: 'You never have to use the website to get a plan. Order by phone, WhatsApp or email, and an advisor will walk you through everything, at your pace.',
+  ways: 'You never have to use the website to get a plan. Order by phone or email, and an advisor will walk you through everything, at your pace.',
   caption: 'Advisor with a headset helping a customer by phone at the Surrey\noffice',
   imageLabel: 'IMAGE',
   contacts: [
@@ -211,12 +210,6 @@ export const accessibilityCopy = {
       description: '+1 778-682-3771',
       icon: 'call',
       href: 'tel:+17786823771',
-    },
-    {
-      title: 'WhatsApp',
-      description: 'Message an advisor',
-      icon: 'whatsapp',
-      href: '/contact#contact-options',
     },
     {
       title: 'Email',
