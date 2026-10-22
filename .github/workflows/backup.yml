@@ -39,16 +39,24 @@ jobs:
           sudo apt-get install -y age
           age --version
       - name: Install Supabase CLI (db dump)
-        # TODO(owner, before first production run): pin this to a verified commit
-        # SHA, matching the checkout/pnpm/setup-node actions above — this
-        # session has no network access to resolve and verify one.
-        uses: supabase/setup-cli@v1
+        # Pinned to a commit like every other action here (invariant 13): this
+        # job holds production read credentials, so a mutable tag or a
+        # "latest" binary must never choose what runs. Bump both deliberately
+        # and re-run the restore rehearsal with the new CLI version.
+        uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
         with:
-          version: latest
+          version: 2.121.0
       - name: Install PostgreSQL client tools (psql, for the referenced-object manifest and lease)
         run: sudo apt-get install -y postgresql-client
+      - name: Record the tool versions this run was taken with (for the manifest)
+        run: |
+          echo "AGE_VERSION=$(age --version 2>&1 | head -n 1)" >> "$GITHUB_ENV"
+          echo "SUPABASE_CLI_VERSION=$(supabase --version 2>&1 | head -n 1)" >> "$GITHUB_ENV"
       - name: Run the independent daily backup
         env:
+          # Real tool versions recorded in every manifest so a restore can match them.
+          AGE_VERSION: ${{ env.AGE_VERSION }}
+          SUPABASE_CLI_VERSION: ${{ env.SUPABASE_CLI_VERSION }}
           # Read/export source credentials (never delete-capable).
           SOURCE_DATABASE_URL: ${{ secrets.BACKUP_SOURCE_DATABASE_URL }}
           BACKUP_LEASE_DATABASE_URL: ${{ secrets.BACKUP_LEASE_DATABASE_URL }}

@@ -68,7 +68,11 @@ async function main(): Promise<void> {
       nodeRunCommand,
     ),
     sourceIds: { supabaseProjectRef, sanityProjectId, sanityDataset },
-    toolVersions: { age: 'pinned-by-runner-image', supabaseCli: 'pinned-by-runner-image' },
+    // Recorded by the workflow from the installed binaries; never a placeholder.
+    toolVersions: {
+      age: process.env.AGE_VERSION?.trim() || 'unknown',
+      supabaseCli: process.env.SUPABASE_CLI_VERSION?.trim() || 'unknown',
+    },
   });
 
   // Never log secrets/document bytes — only counts and identifiers.
