@@ -103,6 +103,8 @@ export class EmailOwnerAlertChannel implements OwnerAlertChannel {
       `${this.config.apiUrl ?? 'https://api.resend.com'}/emails`,
       {
         method: 'POST',
+        redirect: 'error',
+        signal: AbortSignal.timeout(10_000),
         headers: {
           Authorization: `Bearer ${this.config.apiKey}`,
           'Content-Type': 'application/json',
@@ -145,7 +147,13 @@ export class WebhookOwnerAlertChannel implements OwnerAlertChannel {
         .update(body)
         .digest('hex')}`;
     }
-    const response = await this.fetchImpl(this.config.url, { method: 'POST', headers, body });
+    const response = await this.fetchImpl(this.config.url, {
+      method: 'POST',
+      headers,
+      body,
+      redirect: 'error',
+      signal: AbortSignal.timeout(10_000),
+    });
     if (!response.ok) throw new Error(`owner_alert_webhook_http_${response.status}`);
   }
 }

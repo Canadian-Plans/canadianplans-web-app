@@ -31,6 +31,9 @@ describe('Resend send correlation', () => {
     expect(JSON.parse(String(options[0]!.body))).toMatchObject({
       tags: [{ name: 'cp_message_id', value: message.messageId }],
     });
+    // Bounded and never redirected: a hung provider becomes an "uncertain" outcome.
+    expect(options[0]!.signal).toBeInstanceOf(AbortSignal);
+    expect(options[0]!.redirect).toBe('error');
   });
 });
 

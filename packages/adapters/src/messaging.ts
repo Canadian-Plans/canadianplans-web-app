@@ -180,6 +180,8 @@ export class ResendEmailAdapter implements EmailAdapter {
       apiKey: string;
       sender: SenderIdentity;
       apiUrl?: string;
+      /** Upper bound per send; a timeout is an "uncertain" outcome, retried with the same idempotency key. */
+      timeoutMs?: number;
     },
   ) {
     if (!config.apiKey) throw new Error('Resend adapter requires an API key.');
@@ -191,6 +193,8 @@ export class ResendEmailAdapter implements EmailAdapter {
     try {
       const response = await fetch(`${this.config.apiUrl ?? 'https://api.resend.com'}/emails`, {
         method: 'POST',
+        redirect: 'error',
+        signal: AbortSignal.timeout(this.config.timeoutMs ?? 15_000),
         headers: {
           Authorization: `Bearer ${this.config.apiKey}`,
           'Content-Type': 'application/json',

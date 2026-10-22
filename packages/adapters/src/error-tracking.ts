@@ -83,6 +83,8 @@ export class SentryHttpErrorTracker implements ErrorTracker {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(event),
+      redirect: 'error',
+      signal: AbortSignal.timeout(5_000),
     }).catch(() => {
       // Best-effort delivery only; see class doc.
     });
