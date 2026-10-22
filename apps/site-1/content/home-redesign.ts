@@ -278,6 +278,18 @@ export type RedesignAssetKey = keyof typeof redesignAssets;
 
 export type CategoryKey = 'pre-arrival' | 'home-internet' | 'mobile' | 'business';
 
+export interface HomeTestimonial {
+  readonly id: string;
+  readonly photo: string;
+  readonly alt: string;
+  readonly photoHint: string;
+  readonly category: string;
+  readonly tone: 'amber' | 'mint' | 'navy';
+  readonly quote: string;
+  readonly name: string;
+  readonly meta: string;
+}
+
 export const categoryHrefs: Readonly<Record<CategoryKey, string>> = {
   'pre-arrival': '/pre-arrival-sim',
   'home-internet': '/home-internet',
@@ -763,45 +775,8 @@ export const homeRedesign = {
     eyebrow: 'Customer stories',
     title: "People we've helped get connected",
     more: { label: 'Read more reviews', href: '#stories' },
-    /** Placeholders only. Replace with real reviews used with permission; never invent quotes. */
-    items: [
-      {
-        id: 't1',
-        photo: '',
-        alt: 'Customer photo',
-        photoHint: 'PHOTO · customer (with consent)',
-        category: 'Pre-arrival Plan',
-        tone: 'amber',
-        quote:
-          'Real customer quote goes here. One or two sentences about their experience, used with permission.',
-        name: 'Customer name',
-        meta: 'City · Customer since 20XX',
-      },
-      {
-        id: 't2',
-        photo: '',
-        alt: 'Customer photo',
-        photoHint: 'PHOTO · customer at home (with consent)',
-        category: 'Home Internet',
-        tone: 'mint',
-        quote:
-          'Real customer quote goes here. One or two sentences about their experience, used with permission.',
-        name: 'Customer name',
-        meta: 'City · Customer since 20XX',
-      },
-      {
-        id: 't3',
-        photo: '',
-        alt: 'Customer photo',
-        photoHint: 'PHOTO · business owner in store (with consent)',
-        category: 'Business Internet',
-        tone: 'navy',
-        quote:
-          'Real customer quote goes here. One or two sentences about their experience, used with permission.',
-        name: 'Customer name',
-        meta: 'Business name · City',
-      },
-    ],
+    /** Real reviews used with permission only; never invent quotes. Empty hides the section. */
+    items: [] as readonly HomeTestimonial[],
   },
   faq: {
     eyebrow: 'FAQ',

@@ -69,7 +69,6 @@ export const siteFooter: FooterContent = {
       links: [
         { label: 'About us', href: '/about' },
         { label: 'Why buy from a dealer', href: '/about#why-us' },
-        { label: 'Reviews', href: '/#stories' },
       ],
     },
   ],
