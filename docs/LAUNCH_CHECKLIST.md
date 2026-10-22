@@ -163,17 +163,21 @@ These block the first order. Each is a row in `docs/OPEN_INPUTS.md`; answer ther
   all Canada Wide plans (internet and TV by province, national BYOD mobile) and confirmed
   the tables in [LAUNCH_PLANS.md](LAUNCH_PLANS.md) as correct. Pre-arrival stays a separate
   category._
-- ◐ **2.3 Prices** (#4) — monthly charge, one-time fees, amount payable today, per plan.
-  _20 Oct: monthly prices drafted in LAUNCH_PLANS.md; fees and amount due today still open._
-- ◐ **2.4 Upfront payment** (#5) — which plans need payment before fulfilment, and how
+- ☑ **2.3 Prices** (#4) — monthly charge, one-time fees, amount payable today, per plan.
+  _22 Oct: monthly prices as in LAUNCH_PLANS.md; no one-time fees; $0 due today._
+- ☑ **2.4 Upfront payment** (#5) — which plans need payment before fulfilment, and how
   much. Phase A has no card checkout; say how customers will pay you (e-Transfer etc.).
-  _20 Oct: the owner decided no payment on the website for any plan. Open: who bills the
-  customer, and when._
-- ☐ **2.5 Documents per plan** (#6) — passport / visa / address proof / none.
-- ☐ **2.6 Carrier and fees** (#19) — eligibility rules, activation evidence, who collects
-  each fee, taxes.
-- ☐ **2.7 Courier** (#9) — who ships SIMs, and how you book them.
-- ☐ **2.8 Sender email** (#11) — e.g. `orders@<domain>`.
+  _No payment on the website for any plan (20 Oct); the provider bills the customer
+  directly after activation (22 Oct)._
+- ☑ **2.5 Documents per plan** (#6) — passport / visa / address proof / none. _22 Oct:
+  internet none, BYOD mobile government ID, pre-arrival none (catalogue matches)._
+- ☑ **2.6 Carrier and fees** (#19) — eligibility rules, activation evidence, who collects
+  each fee, taxes. _22 Oct: eligibility per plan in the catalogue; evidence = provider
+  confirmation number; the provider collects all fees and taxes._
+- ☑ **2.7 Courier** (#9) — who ships SIMs, and how you book them. _22 Oct: no shipping at
+  launch; handoff recorded as described in `RUNBOOKS/dispatch-and-activation.md`._
+- ☑ **2.8 Sender email** (#11) — e.g. `orders@<domain>`. _22 Oct:
+  `orders@canadianplans.com`, replies to `info@canadianplans.com`; set on Railway in 3.2._
 - ☑ **2.9 Retention policy** (#10, #16) — owner confirmed request-only deletion of
   retained customer records and identity documents on 21 Oct 2026; no fixed period.
   Version 2 legal text and `RETENTION_POLICY.md` record the decision. The complete
@@ -182,8 +186,9 @@ These block the first order. Each is a row in `docs/OPEN_INPUTS.md`; answer ther
   first version for you to review, but it is your legal responsibility. _20 Oct: drafts
   adapted from the Canada Wide texts are in `docs/legal/` (`terms-v1-draft.md`,
   `privacy-v1-draft.md`) with `[OWNER TO CONFIRM]` gaps to fill._
-- ☐ **2.11 Cancellation process** (#20) — what staff do if a customer cancels after paying
-  or after activation.
+- ☑ **2.11 Cancellation process** (#20) — what staff do if a customer cancels after paying
+  or after activation. _22 Oct: free before activation; after activation the customer
+  cancels with the provider. Steps in `RUNBOOKS/orders.md` → Cancellations._
 - ☐ **2.12 Storefront claims** — replace the bracketed placeholders on the site
   (`[PRICE]`, install timelines, marketing claims). Claude will list every one.
 
