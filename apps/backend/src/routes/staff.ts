@@ -420,7 +420,14 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         page: query.data.page,
         pageSize: query.data.pageSize,
       });
-      res.json({ leads: result.leads, page: result.page, requestId: req.id });
+      // Owner decision (22 Oct 2026): only roles that work orders or money
+      // (order.manage / financial.read, as for order contact search) see a
+      // lead's name, email and phone; read-only roles get leads without them.
+      const { canSearchContact } = await orderCapabilities(req, workspaceId.data);
+      const leads = canSearchContact
+        ? result.leads
+        : result.leads.map((lead) => ({ ...lead, contact: {} }));
+      res.json({ leads, page: result.page, requestId: req.id });
     } catch (error) {
       reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
