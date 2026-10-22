@@ -226,7 +226,7 @@ export const preArrivalOrderCopy = {
     contact: '/contact#contact-options',
     terms: '/terms',
     privacy: '/privacy',
-    internet: '/home-internet#address-check',
+    internet: '/home-internet#internet-plans',
   },
 } as const;
 export const defaultPreArrivalPlan = arrivalPlans.find((plan) => plan.id === 'preview-rogers-plus');

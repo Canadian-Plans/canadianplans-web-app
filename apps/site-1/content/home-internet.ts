@@ -533,7 +533,7 @@ export const internetAssets = {
 export const internetChrome: ChromeContent = {
   ...chromeContent,
   promo: 'Moving in soon? Book your install date now and be online on move-in day.',
-  promoLink: { label: 'Check my address', href: '#address-check' },
+  promoLink: { label: 'See plans for my province', href: '#internet-plans' },
   promoMobileLabel: 'Check my address →',
   navigationLabel: 'Main navigation',
   mobileNavigationLabel: 'Canadian Plans menu',
@@ -557,7 +557,7 @@ export const internetFooter: FooterContent = {
         link.label === 'Track order'
           ? '/track'
           : group.title === 'Home Internet'
-            ? '#address-check'
+            ? '#internet-plans'
             : group.title === 'Help'
               ? '#faq'
               : '/pre-arrival-sim',
