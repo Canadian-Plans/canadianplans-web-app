@@ -208,6 +208,7 @@ Not selected for launch (OPEN_INPUTS #23); kept wired for a later migration off 
 - `UMAMI_EVENTS_URL` — backend-only full URL of the Umami collect endpoint server events POST to (for Umami Cloud, `https://cloud.umami.is/api/send`). Never exposed to a browser bundle.
 - `UMAMI_WORKSPACE_WEBSITES` — backend-only JSON array `[{ "workspaceId": "<uuid>", "websiteId": "<umami-site-id>" }]` mapping each workspace to its Umami website id. A workspace with no mapping fails closed (`analytics_site_unmapped`) rather than sending to the wrong site (REQ 35). Unset or malformed means no server sink is configured, so the outbox fails closed.
 - `UMAMI_HOSTNAME` — optional backend-only hostname recorded on server events; omitted when unset.
+- `UMAMI_USER_AGENT` — optional backend-only User-Agent for server events. Defaults to a browser-shaped value because Umami discards events whose agent looks like a bot (Node's default does); never include "bot", "crawler", "spider" or a URL.
 
 Server lead/order conversion events are emitted once from the backend outbox; browser page views and `plan_selected` come from the Umami script. Never enable a server event that the browser also sends, or a submission is counted twice.
 

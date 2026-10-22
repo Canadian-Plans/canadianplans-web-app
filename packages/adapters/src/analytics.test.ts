@@ -49,6 +49,10 @@ describe('UmamiAnalyticsSink', () => {
     });
     // The submitted payload carries no URL, contact data or free text.
     expect(JSON.stringify(body)).not.toMatch(/http|@|fullName|email|phone/i);
+    // A browser-shaped agent, so Umami's bot filter does not discard the event.
+    const agent = new Headers(calls[0]?.init?.headers).get('user-agent') ?? '';
+    expect(agent).toMatch(/^Mozilla\/5\.0/);
+    expect(agent).not.toMatch(/bot|crawler|spider|http/i);
   });
 
   it('fails closed (uncertain, no request) when the workspace is unmapped', async () => {

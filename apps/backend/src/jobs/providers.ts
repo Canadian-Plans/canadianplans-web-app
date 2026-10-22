@@ -80,6 +80,7 @@ export function loadUmamiAnalyticsSink(
   return new UmamiAnalyticsSink({
     endpoint: parsed.data.endpoint,
     hostname: parsed.data.hostname,
+    userAgent: env.UMAMI_USER_AGENT?.trim() || undefined,
     websiteIdForWorkspace: (workspaceId) => byWorkspace.get(workspaceId),
   });
 }
