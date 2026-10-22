@@ -33,6 +33,9 @@ ENV NODE_ENV=production
 # external (`express`, `drizzle-orm`, `zod`, `postgres`, `@supabase/supabase-js`),
 # and `postgres` is a dependency of `packages/db` reached through pnpm's
 # symlinked store, so naive pruning breaks resolution.
-COPY --from=build /repo /repo
+# Owned by and run as the image's unprivileged `node` user (uid 1000): the app
+# never writes to disk at runtime, and PORT 4000 needs no privileges.
+COPY --from=build --chown=node:node /repo /repo
 WORKDIR /repo/apps/backend
+USER node
 CMD ["node", "dist/src/server.js"]
