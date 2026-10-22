@@ -1,5 +1,5 @@
 import type { Server } from 'node:http';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { apiErrorResponseSchema, createLeadResponseSchema } from '@canadian-plans/contracts';
 import type { WebsiteCredentialResolution } from '@canadian-plans/db';
 
@@ -175,6 +175,59 @@ describe('POST /api/v1/website/leads', () => {
     const body = createLeadResponseSchema.parse(await response.json());
     expect(body.lead.id).toBe(LEAD_A);
     expect(body.draftGrant.token).toBe(VALID_GRANT_A);
+  });
+
+  it('answers a dropped database connection with a logged, retryable 503', async () => {
+    leadStore.createLead = async () => {
+      throw Object.assign(new Error('connection refused'), { code: 'ECONNREFUSED' });
+    };
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const response = await request(
+        'POST',
+        '/api/v1/website/leads',
+        {},
+        { consentVersion: 'terms-2026-09' },
+      );
+      expect(response.status).toBe(503);
+      expect(response.headers.get('retry-after')).toBe('2');
+      expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe(
+        'persistence_unavailable',
+      );
+      const records = logged.mock.calls.map(([line]) => JSON.parse(String(line)));
+      expect(records).toContainEqual(
+        expect.objectContaining({
+          event: 'request_error',
+          route: '/api/v1/website/leads',
+          code: 'persistence_unavailable',
+        }),
+      );
+    } finally {
+      logged.mockRestore();
+    }
+  });
+
+  it('logs a non-connection failure and answers a non-retryable 500', async () => {
+    leadStore.createLead = async () => {
+      throw new Error('unexpected bug');
+    };
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const response = await request(
+        'POST',
+        '/api/v1/website/leads',
+        {},
+        { consentVersion: 'terms-2026-09' },
+      );
+      expect(response.status).toBe(500);
+      const records = logged.mock.calls.map(([line]) => JSON.parse(String(line)));
+      expect(records).toContainEqual(
+        expect.objectContaining({ event: 'request_error', code: 'internal_error' }),
+      );
+      expect(JSON.stringify(records)).not.toContain('unexpected bug');
+    } finally {
+      logged.mockRestore();
+    }
   });
 
   it('rejects a malformed productId instead of forwarding it to the store', async () => {
