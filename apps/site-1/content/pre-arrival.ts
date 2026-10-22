@@ -101,7 +101,7 @@ export const arrivalCopy = {
         values: ['None needed', 'None', 'Often, for postpaid'],
       },
     ],
-    note: 'VERIFY before publishing: kiosk and carrier-store claims must be checked against current airport and store offers (YVR, YYZ, YUL, YYC).',
+    note: 'Airport kiosk and carrier-store details are general observations, checked October 2026. Prices and availability vary by location.',
   },
   faq: {
     heading: {
