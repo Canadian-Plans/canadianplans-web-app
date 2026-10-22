@@ -6,7 +6,10 @@ import { StaffSessionProvider, useStaffSession } from './staff-session-provider'
 const mocks = vi.hoisted(() => {
   const state: {
     load: ReturnType<typeof vi.fn<() => Promise<StaffWorkspacesResponse>>>;
-    changed?: (event: string, session: { access_token: string } | null) => void;
+    changed?: (
+      event: string,
+      session: { access_token: string; user?: { id: string } } | null,
+    ) => void;
   } = {
     load: vi.fn<() => Promise<StaffWorkspacesResponse>>(),
   };
@@ -36,6 +39,41 @@ function Status() {
 }
 beforeEach(() => {
   mocks.load.mockReset();
+});
+
+it('swaps only the token when the same user refreshes, without reloading the screen', async () => {
+  mocks.load.mockResolvedValue({
+    workspaces: [],
+    requestId: '70000000-0000-4000-8000-000000000003',
+  });
+  const seen: string[] = [];
+  function Recorder() {
+    const session = useStaffSession();
+    seen.push(session.status);
+    return (
+      <p>
+        {session.status}:{session.accessToken ?? 'none'}
+      </p>
+    );
+  }
+  render(
+    <StaffSessionProvider>
+      <Recorder />
+    </StaffSessionProvider>,
+  );
+  await screen.findByText('signed_out:none');
+  act(() => mocks.changed?.('SIGNED_IN', { access_token: 'old', user: { id: 'u1' } }));
+  await screen.findByText('signed_in:old');
+  seen.length = 0;
+  act(() => mocks.changed?.('TOKEN_REFRESHED', { access_token: 'new', user: { id: 'u1' } }));
+  await screen.findByText('signed_in:new');
+  expect(seen).not.toContain('loading');
+  expect(mocks.load).toHaveBeenCalledTimes(1);
+
+  // A different person still gets a full reload.
+  act(() => mocks.changed?.('SIGNED_IN', { access_token: 'other', user: { id: 'u2' } }));
+  await screen.findByText('signed_in:other');
+  expect(mocks.load).toHaveBeenCalledTimes(2);
 });
 
 it('ignores a workspace response arriving after logout', async () => {

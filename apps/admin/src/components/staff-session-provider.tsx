@@ -34,12 +34,20 @@ export function StaffSessionProvider({ children }: { children: ReactNode }) {
   const [workspaces, setWorkspaces] = useState<readonly StaffWorkspace[]>([]);
   const [reason, setReason] = useState<string>();
   const generation = useRef(0);
+  // The signed-in user, so a token refresh for the same person only swaps the
+  // token instead of reloading (and resetting) every screen.
+  const signedInUser = useRef<string | undefined>(undefined);
+  const statusRef = useRef<SessionStatus>('loading');
+  useEffect(() => {
+    statusRef.current = status;
+  }, [status]);
   const invalidate = useCallback(() => {
     ++generation.current;
   }, []);
 
-  const load = useCallback(async (token: string) => {
+  const load = useCallback(async (token: string, userId?: string) => {
     const requestGeneration = ++generation.current;
+    signedInUser.current = undefined;
     setAccessToken(undefined);
     setWorkspaces([]);
     setStatus('loading');
@@ -49,6 +57,7 @@ export function StaffSessionProvider({ children }: { children: ReactNode }) {
       setAccessToken(token);
       setWorkspaces(result.workspaces);
       setReason(undefined);
+      signedInUser.current = userId;
       setStatus('signed_in');
     } catch (error) {
       if (requestGeneration !== generation.current) return;
@@ -69,14 +78,24 @@ export function StaffSessionProvider({ children }: { children: ReactNode }) {
     const initialGeneration = generation.current;
     void auth.getSession().then(({ data }) => {
       if (!current || initialGeneration !== generation.current) return;
-      if (data.session) void load(data.session.access_token);
+      if (data.session) void load(data.session.access_token, data.session.user?.id);
       else setStatus('signed_out');
     });
     const listener = auth.onAuthStateChange((_event, nextSession) => {
       if (!current) return;
+      const sameUser =
+        nextSession?.user?.id !== undefined &&
+        statusRef.current === 'signed_in' &&
+        nextSession.user.id === signedInUser.current;
+      if (nextSession && sameUser) {
+        // TOKEN_REFRESHED / tab refocus for the same person: keep the screen.
+        setAccessToken(nextSession.access_token);
+        return;
+      }
       ++generation.current;
-      if (nextSession) void load(nextSession.access_token);
+      if (nextSession) void load(nextSession.access_token, nextSession.user?.id);
       else {
+        signedInUser.current = undefined;
         setAccessToken(undefined);
         setWorkspaces([]);
         setReason(undefined);
@@ -91,10 +110,11 @@ export function StaffSessionProvider({ children }: { children: ReactNode }) {
   }, [load, invalidate]);
 
   const refreshWorkspaces = useCallback(async () => {
-    if (accessToken) await load(accessToken);
+    if (accessToken) await load(accessToken, signedInUser.current);
   }, [accessToken, load]);
   const signOut = useCallback(async () => {
     ++generation.current;
+    signedInUser.current = undefined;
     setAccessToken(undefined);
     setWorkspaces([]);
     setReason(undefined);
