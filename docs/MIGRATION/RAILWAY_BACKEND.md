@@ -471,6 +471,10 @@ a URL change and nothing is lost.
 
 A separate commit and a separate review.
 
+_Done 22 October 2026 (SEC-11):_ steps 1, 2 and 5. Step 3 needs no change:
+`--vercel` mode is generic and still used by admin and site-1. Step 4 is
+deferred: the `VERCEL_ENV` fallback is inert on Railway.
+
 1. Delete `apps/backend/vercel.json`, `apps/backend/api/index.ts`,
    `apps/backend/src/vercelHandler.ts` and
    `apps/backend/scripts/write-vercel-handler-dts.mjs`.
