@@ -25,8 +25,6 @@ function originOf(raw: string | undefined): string | undefined {
 const apiOrigin = originOf(process.env.NEXT_PUBLIC_API_BASE_URL);
 const umamiOrigin = originOf(process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL);
 const sentryOrigin = originOf(process.env.NEXT_PUBLIC_SENTRY_DSN);
-// Cloudflare Turnstile, the bot check on forms, loads a script and a challenge frame.
-const TURNSTILE_ORIGIN = 'https://challenges.cloudflare.com';
 
 // Sanity CDN / API hosts used by the storefront queries and the embedded Studio.
 const SANITY_CONNECT = [
@@ -38,6 +36,8 @@ const SANITY_CONNECT = [
 const SANITY_IMG = ['https://cdn.sanity.io'];
 // The Studio loads its realtime/presentation bridge from the Sanity CDN.
 const SANITY_STUDIO_SCRIPT = ['https://core.sanity-cdn.com'];
+// Sanity Studio 6 (@sanity/ui 5) loads its Inter font from this origin.
+const SANITY_STUDIO_FONT = ['https://design-system-static.sanity.io'];
 
 function dedupe(values: (string | undefined)[]): string[] {
   return [...new Set(values.filter((value): value is string => Boolean(value)))];
@@ -60,19 +60,19 @@ function buildCsp(scope: 'storefront' | 'studio'): string {
     'object-src': ["'none'"],
     'frame-ancestors': scope === 'studio' ? ["'self'"] : ["'none'"],
     'form-action': ["'self'"],
+    'frame-src': scope === 'storefront' ? ['https://challenges.cloudflare.com'] : ["'self'"],
     'img-src': dedupe(["'self'", 'data:', 'blob:', 'https:', ...SANITY_IMG]),
-    'font-src': ["'self'", 'data:'],
+    'font-src': ["'self'", 'data:', ...(scope === 'studio' ? SANITY_STUDIO_FONT : [])],
     'style-src': ["'self'", "'unsafe-inline'"],
     'script-src': dedupe([
       "'self'",
       "'unsafe-inline'",
       umamiOrigin,
-      ...(scope === 'storefront' ? [TURNSTILE_ORIGIN] : []),
+      ...(scope === 'storefront' ? ['https://challenges.cloudflare.com'] : []),
       ...(scope === 'studio' ? SANITY_STUDIO_SCRIPT : []),
       ...scriptExtra,
     ]),
     'connect-src': connect,
-    'frame-src': scope === 'storefront' ? [TURNSTILE_ORIGIN] : ["'self'"],
     'worker-src': ["'self'", 'blob:'],
     'manifest-src': ["'self'"],
   };

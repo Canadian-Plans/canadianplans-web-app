@@ -1,4 +1,4 @@
-import { and, eq, gte, lte, sql } from 'drizzle-orm';
+import { and, eq, isNull, gte, lte, sql } from 'drizzle-orm';
 import { leads, orders, partners, withTenantTx, type TenantTransaction } from '@canadian-plans/db';
 import type { SourceReportDimension, SourceReportGroup } from '@canadian-plans/contracts';
 
@@ -55,6 +55,7 @@ export class DatabaseReportStore implements ReportStore {
         .where(
           and(
             eq(leads.workspaceId, workspaceId),
+            isNull(leads.customerDataRestrictedAt),
             from ? gte(leads.createdAt, from) : undefined,
             to ? lte(leads.createdAt, to) : undefined,
           ),
@@ -65,6 +66,7 @@ export class DatabaseReportStore implements ReportStore {
         .where(
           and(
             eq(orders.workspaceId, workspaceId),
+            isNull(orders.customerDataRestrictedAt),
             from ? gte(orders.submittedAt, from) : undefined,
             to ? lte(orders.submittedAt, to) : undefined,
           ),
@@ -96,6 +98,7 @@ export class DatabaseReportStore implements ReportStore {
       .where(
         and(
           eq(leads.workspaceId, workspaceId),
+          isNull(leads.customerDataRestrictedAt),
           window.from ? gte(leads.createdAt, window.from) : undefined,
           window.to ? lte(leads.createdAt, window.to) : undefined,
         ),
@@ -110,6 +113,7 @@ export class DatabaseReportStore implements ReportStore {
       .where(
         and(
           eq(orders.workspaceId, workspaceId),
+          isNull(orders.customerDataRestrictedAt),
           window.from ? gte(orders.submittedAt, window.from) : undefined,
           window.to ? lte(orders.submittedAt, window.to) : undefined,
         ),
@@ -134,6 +138,7 @@ export class DatabaseReportStore implements ReportStore {
       .where(
         and(
           eq(leads.workspaceId, workspaceId),
+          isNull(leads.customerDataRestrictedAt),
           window.from ? gte(leads.createdAt, window.from) : undefined,
           window.to ? lte(leads.createdAt, window.to) : undefined,
         ),
@@ -150,6 +155,7 @@ export class DatabaseReportStore implements ReportStore {
       .where(
         and(
           eq(orders.workspaceId, workspaceId),
+          isNull(orders.customerDataRestrictedAt),
           window.from ? gte(orders.submittedAt, window.from) : undefined,
           window.to ? lte(orders.submittedAt, window.to) : undefined,
         ),

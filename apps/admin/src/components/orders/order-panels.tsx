@@ -117,6 +117,23 @@ export function OrderCustomerPanel({ order }: { order: OrderDetail }) {
 
 /** Plan-specific details from the versioned form payload and submission history. */
 export function OrderPlanPanel({ order }: { order: OrderDetail }) {
+  if (!order.payload)
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle asChild>
+            <h2>Customer data</h2>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>
+            {order.customerDataState === 'deleted'
+              ? 'Customer data has been deleted. The commercial record is retained.'
+              : 'Customer data is restricted. Ledger acknowledgement and cleanup must finish before deletion is complete.'}
+          </p>
+        </CardContent>
+      </Card>
+    );
   const payload = order.payload.payload;
   return (
     <Card>

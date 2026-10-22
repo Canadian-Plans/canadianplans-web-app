@@ -271,7 +271,8 @@ export const orderDetailSchema = orderSummarySchema.extend({
   source: z.string().min(1).max(160),
   submittedAt: isoDateTimeSchema,
   snapshot: orderSnapshotSchema,
-  payload: versionedFormSchema(z.record(z.string(), z.unknown())),
+  payload: versionedFormSchema(z.record(z.string(), z.unknown())).nullable(),
+  customerDataState: z.enum(['active', 'restricted', 'deleted']).optional(),
   // Consent captured at submission (invariant 11). Staff-only: never exposed on
   // the public summary. Nullable for orders that predate the consent column.
   consent: orderConsentSchema.nullable(),

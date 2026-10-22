@@ -1,6 +1,6 @@
 import { sql } from 'drizzle-orm';
 import postgres from 'postgres';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { createDatabaseClient, type DatabaseClient } from '@canadian-plans/db';
 import { applyMigrations } from '@canadian-plans/db/migrations';
 import { TEST_RUNTIME_PASSWORD, setTestRuntimePassword } from '@canadian-plans/db/test-helpers';
@@ -83,7 +83,7 @@ databaseDescribe('orders database transaction', () => {
     // (T18), so the fixture needs the key whenever a lead carries an address.
     process.env['EMAIL_CONTACT_HASH_SECRET'] = 'orders-integration-contact-secret';
     await applyMigrations({ connectionString: databaseUrl, ssl: false });
-    admin = postgres(databaseUrl, { max: 1, prepare: false, ssl: false });
+    admin = postgres(databaseUrl, { max: 2, prepare: false, ssl: false });
     await setTestRuntimePassword(admin);
     await admin`
       insert into app.workspaces (id, slug, name)
@@ -580,5 +580,65 @@ databaseDescribe('orders database transaction', () => {
            where workspace_id = ${WORKSPACE} and lead_id = ${RETRY_LEAD}) as keys
     `;
     expect(state).toEqual({ orders: 1, keys: 1 });
+  });
+  it('serializes submission with an earlier draft edit before reading email', async () => {
+    const leadId = crypto.randomUUID();
+    const quoteId = crypto.randomUUID();
+    const token = `cpldg_${crypto.randomUUID()}`;
+    await admin`
+      insert into app.leads (id, workspace_id, status, consent_version, email)
+      values (${leadId}, ${WORKSPACE}, 'incomplete', 'terms-1', 'before@example.test')
+    `;
+    await admin`
+      insert into app.draft_grants (workspace_id, lead_id, token_hash, expires_at)
+      values (${WORKSPACE}, ${leadId}, ${hashDraftGrantToken(token)}, ${new Date(Date.now() + 86_400_000)})
+    `;
+    await admin`
+      insert into app.quotes
+        (id, workspace_id, draft_id, product_id, offer_version_id, currency, charges,
+         total_amount_minor, amount_payable_today_minor, payment_required,
+         document_checklist, terms_version, expires_at)
+      select ${quoteId}, workspace_id, ${leadId}, product_id, offer_version_id, currency,
+        charges, total_amount_minor, amount_payable_today_minor, payment_required,
+        document_checklist, terms_version, ${new Date(NOW.getTime() + 900_000)}
+      from app.quotes where id = ${QUOTE}
+    `;
+    const service = new OrderService(
+      new DatabaseOrderStore(clientA),
+      'honour_until_expiry',
+      () => NOW,
+    );
+    let pending: Promise<unknown> = Promise.resolve();
+    await admin.begin(async (tx) => {
+      const [connection] = await tx<{ pid: number }[]>`select pg_backend_pid() as pid`;
+      if (!connection) throw new Error('missing lock-holder connection');
+      await tx`select id from app.leads where id = ${leadId} for update`;
+      await tx`update app.leads set email = 'after@example.test' where id = ${leadId}`;
+      pending = service.submit({
+        workspaceId: WORKSPACE,
+        actorId: ACTOR,
+        requestId: REQUEST,
+        grantToken: token,
+        idempotencyKey: crypto.randomUUID(),
+        body: { ...requestBody, quoteId },
+      });
+      await vi.waitFor(
+        async () => {
+          const [waiting] = await admin<{ count: number }[]>`
+          select count(*)::int as count from pg_stat_activity
+            where datname = current_database() and ${connection.pid} = any(pg_blocking_pids(pid))
+        `;
+          expect(waiting?.count).toBeGreaterThan(0);
+        },
+        { timeout: 5_000 },
+      );
+    });
+    expect(await pending).toMatchObject({ status: 'created' });
+    const [email] = await admin`
+      select j.payload->>'toAddress' as recipient
+      from app.outbox_jobs j join app.orders o on o.id = (j.payload->>'orderId')::uuid
+      where o.lead_id = ${leadId} and j.job_type = 'order_acknowledgement_email'
+    `;
+    expect(email?.recipient).toBe('after@example.test');
   });
 });

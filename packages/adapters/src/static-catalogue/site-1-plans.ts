@@ -32,10 +32,10 @@ const ARRIVAL_BILLING_PARTY =
 const INTERNET_PROVIDER = 'The provider is confirmed by your advisor before installation';
 const MOBILE_PROVIDER = 'The provider is confirmed when your order is approved';
 /**
- * The terms text customers accept: version 1 of `apps/site-1/content/legal-published.ts`
- * (effective 20 October 2026, copy in docs/legal/terms-v1.md). Change both together.
+ * The terms text customers accept: version 2 of `apps/site-1/content/legal-published.ts`
+ * (effective 21 October 2026, copy in docs/legal/terms-v2.md). Change both together.
  */
-const TERMS_VERSION = 'terms-2026-10-v1';
+const TERMS_VERSION = 'terms-2026-10-v2';
 
 const block = (text: string) => ({
   _type: 'block',

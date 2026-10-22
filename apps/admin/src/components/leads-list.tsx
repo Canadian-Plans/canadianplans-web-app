@@ -1,8 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import type { LeadListItem, LeadStatus } from '@canadian-plans/contracts';
-import { Badge } from '@canadian-plans/ui';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { LeadListItem, LeadStatus, PageInfo } from '@canadian-plans/contracts';
+import { Badge, Button } from '@canadian-plans/ui';
 
 import { BackendError, getStaffLeads } from '../lib/api';
 import { useStaffSession } from './staff-session-provider';
@@ -31,30 +31,42 @@ export function LeadsList({ workspaceSlug }: { workspaceSlug: string }) {
   const accessToken = staff.accessToken;
 
   const [statusFilter, setStatusFilter] = useState<LeadStatus | 'all'>('all');
+  const [page, setPage] = useState(1);
+  const [pageInfo, setPageInfo] = useState<PageInfo>({ page: 1, pageSize: 25, total: 0 });
   const [leads, setLeads] = useState<LeadListItem[]>([]);
   const [message, setMessage] = useState<string>();
   const [loading, setLoading] = useState(false);
+  const requestVersion = useRef(0);
 
   const refresh = useCallback(async () => {
     if (!accessToken || !workspaceId) return;
+    const version = ++requestVersion.current;
     setLoading(true);
     setMessage(undefined);
     try {
       const result = await getStaffLeads(accessToken, workspaceId, {
         status: statusFilter === 'all' ? undefined : statusFilter,
+        page,
+        pageSize: 25,
       });
+      if (requestVersion.current !== version) return;
       setLeads(result.leads);
+      setPageInfo(result.page);
     } catch (error) {
+      if (requestVersion.current !== version) return;
       setMessage(
         `Could not load leads. Reason: ${error instanceof BackendError ? error.code : 'internal_error'}.`,
       );
     } finally {
-      setLoading(false);
+      if (requestVersion.current === version) setLoading(false);
     }
-  }, [accessToken, workspaceId, statusFilter]);
+  }, [accessToken, workspaceId, statusFilter, page]);
 
   useEffect(() => {
     void refresh();
+    return () => {
+      requestVersion.current += 1;
+    };
   }, [refresh]);
 
   return (
@@ -64,7 +76,10 @@ export function LeadsList({ workspaceSlug }: { workspaceSlug: string }) {
           <button
             key={filter.value}
             type="button"
-            onClick={() => setStatusFilter(filter.value)}
+            onClick={() => {
+              setStatusFilter(filter.value);
+              setPage(1);
+            }}
             aria-pressed={statusFilter === filter.value}
             className={`rounded-full border px-3 py-1 text-sm ${
               statusFilter === filter.value
@@ -115,6 +130,31 @@ export function LeadsList({ workspaceSlug }: { workspaceSlug: string }) {
           </table>
         </div>
       )}
+
+      <nav aria-label="Lead pages" className="flex items-center gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={loading || page <= 1}
+          onClick={() => setPage((current) => Math.max(1, current - 1))}
+        >
+          Previous
+        </Button>
+        <span className="text-sm text-muted-foreground">
+          Page {pageInfo.page} of {Math.max(1, Math.ceil(pageInfo.total / pageInfo.pageSize))} ·{' '}
+          {pageInfo.total} lead(s)
+        </span>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={loading || page * pageInfo.pageSize >= pageInfo.total}
+          onClick={() => setPage((current) => current + 1)}
+        >
+          Next
+        </Button>
+      </nav>
 
       {message ? (
         <p role="status" aria-live="polite" className="text-sm text-muted-foreground">

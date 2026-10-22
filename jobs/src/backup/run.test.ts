@@ -1,4 +1,4 @@
-import { sha256Hex } from '@canadian-plans/adapters';
+import { S3R2DocumentStore, sha256Hex } from '@canadian-plans/adapters';
 import { describe, expect, it } from 'vitest';
 
 import { InMemoryArchiveBackend } from './archive-store.js';
@@ -10,7 +10,12 @@ import {
 import { readLatestHeartbeat } from './heartbeat.js';
 import { InMemoryBackupLease } from './lease.js';
 import { verifyManifestArtifacts, backupManifestSchema } from './manifest.js';
-import { BackupIncompleteError, BackupUploadVerificationError, runBackup } from './run.js';
+import {
+  BackupIncompleteError,
+  BackupUploadVerificationError,
+  createBackupRunId,
+  runBackup,
+} from './run.js';
 import {
   FakeR2SourceReader,
   FakeReferencedObjectManifestSource,
@@ -55,7 +60,7 @@ function baseDeps() {
         },
       ]),
       r2Source: new FakeR2SourceReader(
-        new Map([['canadian-plans-site-1/objects/passport.pdf', r2Bytes]]),
+        new Map([['canadian-plans-site-1/workspaces/w1/objects/passport.pdf', r2Bytes]]),
       ),
       sanity: new FakeSanityExporter({
         archive: new TextEncoder().encode('sanity-tarball'),
@@ -69,6 +74,59 @@ function baseDeps() {
 }
 
 describe('runBackup', () => {
+  it('generates distinct attempt IDs even at the same instant', () => {
+    const now = new Date('2026-10-21T01:00:00.000Z');
+    expect(createBackupRunId(now)).not.toBe(createBackupRunId(now));
+  });
+
+  it('refuses to overwrite a successful run and preserves every artifact and heartbeat', async () => {
+    const { backend, deps, lease } = baseDeps();
+    await runBackup(deps);
+    const reader = backend.asReader();
+    const before = new Map<string, Uint8Array | undefined>();
+    for (const object of await reader.listObjects('')) {
+      before.set(object.key, await reader.getObject(object.key));
+    }
+    await expect(runBackup(deps)).rejects.toThrow('backup_run_id_already_exists');
+    for (const [key, bytes] of before) expect(await reader.getObject(key)).toEqual(bytes);
+    expect(lease.isAnyActive()).toBe(false);
+  });
+
+  it('refuses an ID belonging to an incomplete prior attempt', async () => {
+    const { backend, deps } = baseDeps();
+    const key = `${deps.runId}/data.sql.enc`;
+    await backend.asWriter().putObject(key, new Uint8Array([1]));
+    await expect(runBackup(deps)).rejects.toThrow('backup_run_id_already_exists');
+    expect(await backend.asReader().getObject(key)).toEqual(new Uint8Array([1]));
+    expect((await readLatestHeartbeat(backend.asReader())).status).toBe('missing');
+  });
+  it('reads the same physical object addressed by the document adapter', async () => {
+    const { deps } = baseDeps();
+    const documentStore = new S3R2DocumentStore({
+      accountId: 'account',
+      accessKeyId: 'key',
+      secretAccessKey: 'secret',
+      endpoint: 'https://account.r2.cloudflarestorage.com',
+      region: 'auto',
+      bucket: 'canadian-plans-site-1',
+    });
+    const download = await documentStore.issueDownload({
+      workspaceId: 'w1',
+      objectKey: 'objects/passport.pdf',
+      fileName: 'document.pdf',
+      contentType: 'application/pdf',
+      expiresInSeconds: 60,
+    });
+    const read = deps.r2Source.getObject.bind(deps.r2Source);
+    let calls = 0;
+    deps.r2Source.getObject = async (bucket, key) => {
+      expect(new URL(download.url).pathname).toBe(`/${bucket}/${key}`);
+      calls += 1;
+      return read(bucket, key);
+    };
+    await expect(runBackup(deps)).resolves.toMatchObject({ referencedObjectCount: 1 });
+    expect(calls).toBe(1);
+  });
   it('encrypts, uploads and verifies every artifact, then publishes a heartbeat', async () => {
     const { backend, privateKeyBase64, deps } = baseDeps();
     const summary = await runBackup(deps);
@@ -118,7 +176,10 @@ describe('runBackup', () => {
     const { backend, deps } = baseDeps();
     deps.r2Source = new FakeR2SourceReader(
       new Map([
-        ['canadian-plans-site-1/objects/passport.pdf', new TextEncoder().encode('tampered')],
+        [
+          'canadian-plans-site-1/workspaces/w1/objects/passport.pdf',
+          new TextEncoder().encode('tampered'),
+        ],
       ]),
     );
     await expect(runBackup(deps)).rejects.toBeInstanceOf(BackupIncompleteError);

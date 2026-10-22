@@ -56,7 +56,8 @@ every document on **that order's** checklist must be approved.
 
 ### Overriding it
 
-Any staff member with `order.manage` (Orders or Owner) may proceed anyway by
+As confirmed by the owner on 21 Oct 2026, any staff member with `order.manage`
+(Orders or Owner) may proceed anyway by
 sending a `documentOverrideReason` with the transition. The control is not
 access — it is the reason, which is mandatory and recorded in the audit event
 together with exactly which documents were outstanding. An empty or

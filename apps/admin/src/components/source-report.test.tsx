@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SourceReport } from './source-report';
@@ -23,11 +23,44 @@ vi.mock('./staff-session-provider', () => ({
         roles: ['owner'],
         permissions: [],
       },
+      {
+        id: '10000000-0000-4000-8000-000000000002',
+        slug: 'site-2',
+        name: 'Site 2',
+        roles: ['owner'],
+        permissions: [],
+      },
     ],
   }),
 }));
 
 describe('SourceReport', () => {
+  it('ignores a stale report after the workspace has changed', async () => {
+    const oldResponse = await mocks.getSourceReport();
+    type Response = Awaited<ReturnType<typeof import('../lib/api').getSourceReport>>;
+    let resolveStale: (value: Response) => void = () => undefined;
+    const stale = new Promise<Response>((resolve) => {
+      resolveStale = resolve;
+    });
+    mocks.getSourceReport.mockReset();
+    mocks.getSourceReport.mockReturnValueOnce(stale).mockResolvedValueOnce({
+      groups: [],
+      totals: { leads: 0, orders: 0 },
+      from: null,
+      to: null,
+      requestId: 'request',
+    });
+    const view = render(<SourceReport workspaceSlug="site-1" />);
+    await waitFor(() => expect(mocks.getSourceReport).toHaveBeenCalledOnce());
+    view.rerender(<SourceReport workspaceSlug="site-2" />);
+    await waitFor(() =>
+      expect(screen.getByTestId('source-report-totals').textContent).toContain('0 leads'),
+    );
+    await act(async () => {
+      resolveStale(oldResponse);
+    });
+    expect(screen.queryByText('google')).toBeNull();
+  });
   beforeEach(() => {
     mocks.getSourceReport.mockReset();
     mocks.getSourceReport.mockResolvedValue({

@@ -1,3 +1,4 @@
+import type { WebsiteBotAction } from '@canadian-plans/contracts';
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import type {
   RateLimitInput,
@@ -15,6 +16,8 @@ export interface WebsiteContext {
   credentialId: string;
   workspaceId: string;
   callerType: 'website';
+  /** Authenticated website server assertion, never an untrusted forwarding header. */
+  visitorKey?: string;
   scopes: readonly WebsiteScopeName[];
 }
 
@@ -23,6 +26,7 @@ export interface WebsiteRateLimits {
   ipMaxCount: number;
   credentialWindowSeconds: number;
   credentialMaxCount: number;
+  bootstrapMaxCount?: number;
 }
 
 export const DEFAULT_WEBSITE_RATE_LIMITS: WebsiteRateLimits = {
@@ -30,13 +34,14 @@ export const DEFAULT_WEBSITE_RATE_LIMITS: WebsiteRateLimits = {
   ipMaxCount: 120,
   credentialWindowSeconds: 60,
   credentialMaxCount: 300,
+  bootstrapMaxCount: 1200,
 };
 
 export interface WebsiteAuthDependencies {
   resolveCredential(secretHash: string): Promise<WebsiteCredentialResolution | undefined>;
   rateLimit(input: RateLimitInput): Promise<RateLimitResult>;
-  /** Edge/bot admission check run before any database work. Returns true to allow. */
-  botCheck: (req: Request) => boolean | Promise<boolean>;
+  /** Route-owned human admission check, separate from authenticated machine reads. */
+  botCheck: (req: Request, action: WebsiteBotAction) => boolean | Promise<boolean>;
   limits?: WebsiteRateLimits;
 }
 
@@ -54,38 +59,34 @@ function context(req: Request): WebsiteContext {
   return value;
 }
 
-/**
- * Authenticates a storefront request purely by its service credential. The
- * workspace, caller type and scopes come from the credential — never from the
- * body, Host, Origin or CORS (PLATFORM_CONTEXT §4b, invariant 2). Size and
- * edge/bot admission run before any database work; a durable, bounded per-IP
- * and per-credential rate limiter gates database work without a global counter.
- *
- * Bot admission (a fresh Turnstile widget token) applies to requests that write.
- * A read such as the plan list is made by the storefront's server while it
- * renders a page, when no visitor interaction exists to produce a token; it is
- * still gated by the credential, its scope and the rate limits.
- */
-export function requireWebsiteCredential(deps: WebsiteAuthDependencies): RequestHandler {
-  const limits = deps.limits ?? DEFAULT_WEBSITE_RATE_LIMITS;
-  const botCheck = deps.botCheck;
-
-  return async (req: Request, res: Response, next: NextFunction) => {
+/** Human admission is run once at each protected write, before tenant DB work. */
+export function requireHumanProof(
+  deps: WebsiteAuthDependencies,
+  action: WebsiteBotAction,
+): RequestHandler {
+  return async (req, res, next) => {
+    if (!parseCredentialSecret(req.get('authorization'))) {
+      sendWebsiteError(res, req.id, 'missing_credential', 401);
+      return;
+    }
     let admitted = false;
-    if (req.method === 'GET' || req.method === 'HEAD') {
-      admitted = true;
-    } else {
-      try {
-        admitted = await botCheck(req);
-      } catch {
-        // Provider failures deny admission before any database work.
-      }
+    try {
+      admitted = await deps.botCheck(req, action);
+    } catch {
+      /* fail closed */
     }
     if (!admitted) {
       sendWebsiteError(res, req.id, 'caller_forbidden', 403);
       return;
     }
+    next();
+  };
+}
 
+/** Authenticated machine reads need credentials/scopes/limits, without a browser token. */
+export function requireWebsiteCredential(deps: WebsiteAuthDependencies): RequestHandler {
+  const limits = deps.limits ?? DEFAULT_WEBSITE_RATE_LIMITS;
+  return async (req: Request, res: Response, next: NextFunction) => {
     const secret = parseCredentialSecret(req.get('authorization'));
     if (!secret) {
       sendWebsiteError(res, req.id, 'missing_credential', 401);
@@ -94,9 +95,10 @@ export function requireWebsiteCredential(deps: WebsiteAuthDependencies): Request
 
     try {
       const ipLimit = await deps.rateLimit({
-        bucketKey: `ip:${clientIp(req)}`,
+        bucketKey: `bootstrap:ip:${clientIp(req)}`,
         windowSeconds: limits.ipWindowSeconds,
-        maxCount: limits.ipMaxCount,
+        maxCount:
+          limits.bootstrapMaxCount ?? Math.max(limits.ipMaxCount, limits.credentialMaxCount * 4),
       });
       if (!ipLimit.allowed) {
         sendWebsiteError(res, req.id, 'rate_limited', 429, {
@@ -128,10 +130,27 @@ export function requireWebsiteCredential(deps: WebsiteAuthDependencies): Request
         return;
       }
 
+      const assertedVisitor = req.get('x-website-visitor-id');
+      const visitorKey =
+        assertedVisitor && /^[a-f0-9]{64}$/.test(assertedVisitor)
+          ? `asserted:${assertedVisitor}`
+          : `network:${clientIp(req)}`;
+      const visitorLimit = await deps.rateLimit({
+        bucketKey: `visitor:${resolution.credentialId}:${visitorKey}`,
+        windowSeconds: limits.ipWindowSeconds,
+        maxCount: limits.ipMaxCount,
+      });
+      if (!visitorLimit.allowed) {
+        sendWebsiteError(res, req.id, 'rate_limited', 429, {
+          'retry-after': String(visitorLimit.retryAfterSeconds),
+        });
+        return;
+      }
       req.websiteContext = {
         credentialId: resolution.credentialId,
         workspaceId: resolution.workspaceId,
         callerType: 'website',
+        visitorKey,
         scopes: resolution.scopes.filter((scope): scope is WebsiteScopeName =>
           knownScopes.has(scope),
         ),
@@ -216,7 +235,7 @@ export function requireEndpointRateLimit(
     }
     try {
       const outcome = await deps.rateLimit({
-        bucketKey: `endpoint:${endpoint}:ws:${ctx.workspaceId}:ip:${clientIp(req)}`,
+        bucketKey: `endpoint:${endpoint}:ws:${ctx.workspaceId}:visitor:${websiteVisitorKey(req)}`,
         windowSeconds: limit.windowSeconds,
         maxCount: limit.maxCount,
       });
@@ -246,3 +265,8 @@ export function requireScope(scope: WebsiteScopeName): RequestHandler {
 }
 
 export { context as websiteContext };
+
+/** Only credential middleware establishes a trusted assertion. */
+export function websiteVisitorKey(req: Request): string {
+  return req.websiteContext?.visitorKey ?? `network:${clientIp(req)}`;
+}

@@ -111,13 +111,14 @@ The owner pointed to two repos as the source for these facts. Check them before 
 - **Terms and privacy (21 October 2026):** written from those two sites' texts with the
   owner's details: Canadian Plans, 9981 Whalley Blvd, Surrey, BC V3T 0A8;
   info@canadianplans.com; +1 778-682-3771 (the owner says this number will change); disputes
-  under British Columbia law; identity documents deleted 6 months after the order is
-  completed. They are published by the site from `apps/site-1/content/legal-published.ts`
-  (readable copies in `docs/legal/`) as version 1, effective 20 October 2026, and every offer
-  records `terms-2026-10-v1`. Change the text and both versions together.
-- **Assumptions to confirm:** the 6-month clock starts when the order is completed; wish-list
-  emails are kept until we write to that province or are asked to remove them; the
-  cancellation rule is "cancel with us any time before the provider activates"; cookie wording
+  under British Columbia law; customer records and identity documents retained until the customer requests
+  deletion (owner, 21 October 2026). They are published by the site from `apps/site-1/content/legal-published.ts`
+  (readable copies in `docs/legal/`) as version 2, effective 21 October 2026, and every offer
+  records `terms-2026-10-v2`. Change the text and both versions together.
+- **Retention confirmed (21 October 2026):** no fixed deletion period; customer records,
+  identity documents and wish-list emails are deleted on customer request, subject to
+  legal obligations. Technical temporary-file expiry and backup rotation are separate.
+- **Assumptions to confirm:** the cancellation rule is "cancel with us any time before the provider activates"; cookie wording
   says marketing cookies are used only if the visitor opts in. A Canadian lawyer should review
   both texts.
 - **No placeholder is left in the plan catalogue**, so `CATALOGUE_ALLOW_OPEN_INPUTS` is not

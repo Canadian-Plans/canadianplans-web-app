@@ -63,6 +63,45 @@ const config: S3SigningConfig = {
 };
 
 describe('S3ArchiveWriter / S3ArchiveReader / S3ArchiveRetentionAdmin', () => {
+  it.each([S3ArchiveWriter, S3ArchiveReader, S3ArchiveRetentionAdmin])(
+    '%s follows continuation tokens while preserving the requested prefix',
+    async (Store) => {
+      const requests: URL[] = [];
+      const fakeFetch: typeof fetch = async (url) => {
+        requests.push(new URL(String(url)));
+        const next =
+          requests.length === 1
+            ? '<IsTruncated>true</IsTruncated><NextContinuationToken>a&amp;b+==</NextContinuationToken>'
+            : '<IsTruncated>false</IsTruncated>';
+        return new Response(
+          `<ListBucketResult><Contents><Key>run-1/${requests.length}</Key><Size>1</Size></Contents>${next}</ListBucketResult>`,
+        );
+      };
+      expect(await new Store(config, fakeFetch).listObjects('run-1/')).toEqual([
+        { key: 'run-1/1', sizeBytes: 1 },
+        { key: 'run-1/2', sizeBytes: 1 },
+      ]);
+      expect(requests.map((url) => url.searchParams.get('prefix'))).toEqual(['run-1/', 'run-1/']);
+      expect(requests[1]?.searchParams.get('continuation-token')).toBe('a&b+==');
+    },
+  );
+
+  it.each(['', '<NextContinuationToken>repeated</NextContinuationToken>'])(
+    'fails closed for missing or repeated continuation tokens',
+    async (continuation) => {
+      let requests = 0;
+      const fakeFetch: typeof fetch = async () => {
+        requests += 1;
+        return new Response(
+          `<ListBucketResult><IsTruncated>true</IsTruncated>${continuation}</ListBucketResult>`,
+        );
+      };
+      await expect(new S3ArchiveReader(config, fakeFetch).listObjects('')).rejects.toThrow(
+        'archive_list_invalid_continuation',
+      );
+      expect(requests).toBeLessThanOrEqual(2);
+    },
+  );
   it('writer PUTs the object and lists via ListObjectsV2 XML parsing', async () => {
     const requests: { method: string; url: string }[] = [];
     const fakeFetch: typeof fetch = async (url, init) => {
@@ -71,7 +110,7 @@ describe('S3ArchiveWriter / S3ArchiveReader / S3ArchiveRetentionAdmin', () => {
       if (method === 'PUT') {
         return new Response(null, { status: 200, headers: { 'x-amz-version-id': 'v1' } });
       }
-      const xml = `<?xml version="1.0"?><ListBucketResult><Contents><Key>run-1/data.sql.age</Key><Size>42</Size></Contents></ListBucketResult>`;
+      const xml = `<?xml version="1.0"?><ListBucketResult><Contents><Key>run-1/data.sql.age</Key><LastModified>2026-10-21T06:17:03.000Z</LastModified><Size>42</Size></Contents></ListBucketResult>`;
       return new Response(xml, { status: 200 });
     };
 
@@ -79,7 +118,13 @@ describe('S3ArchiveWriter / S3ArchiveReader / S3ArchiveRetentionAdmin', () => {
     const put = await writer.putObject('run-1/data.sql.age', new Uint8Array([1, 2]));
     expect(put.versionId).toBe('v1');
     const listed = await writer.listObjects('run-1/');
-    expect(listed).toEqual([{ key: 'run-1/data.sql.age', sizeBytes: 42 }]);
+    expect(listed).toEqual([
+      {
+        key: 'run-1/data.sql.age',
+        sizeBytes: 42,
+        lastModified: new Date('2026-10-21T06:17:03.000Z'),
+      },
+    ]);
     expect(requests.map((r) => r.method)).toEqual(['PUT', 'GET']);
   });
 

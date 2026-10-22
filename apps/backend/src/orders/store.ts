@@ -198,15 +198,24 @@ async function submitInTransaction(
   // `app_runtime` deliberately holds no UPDATE privilege on the immutable
   // `offer_versions` snapshot (schema.ts), so that lock fails outright.
   // Postgres also rejects a schema-qualified `FOR UPDATE OF "app"."quotes"`,
-  // so the lock is taken here on the quote alone. It is the only row this
-  // submission mutates, and holding it serializes concurrent retries.
+  // so the quote lock is taken separately to serialize concurrent retries.
   const [lockedQuote] = await tx
-    .select({ id: quotes.id })
+    .select({ id: quotes.id, draftId: quotes.draftId })
     .from(quotes)
     .where(and(eq(quotes.workspaceId, input.workspaceId), eq(quotes.id, input.body.quoteId)))
     .limit(1)
     .for('update');
   if (!lockedQuote) return { status: 'quote_not_found' };
+
+  // Serialize with draft saves before reading partner/contact data. Always
+  // take the quote lock first; draft saves never take a quote lock.
+  const [lockedLead] = await tx
+    .select({ id: leads.id })
+    .from(leads)
+    .where(and(eq(leads.workspaceId, input.workspaceId), eq(leads.id, lockedQuote.draftId)))
+    .limit(1)
+    .for('update');
+  if (!lockedLead) return { status: 'draft_invalid' };
 
   const [quote] = await tx
     .select({

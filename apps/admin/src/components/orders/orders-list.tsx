@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useRef, useMemo, useState } from 'react';
 import type {
   AssignableMember,
   ListWorkspaceOrdersQuery,
@@ -143,15 +143,18 @@ export function OrdersList({ workspaceSlug }: { workspaceSlug: string }) {
   const [bulkAssignee, setBulkAssignee] = useState(ALL);
   const [message, setMessage] = useState<string>();
   const [loading, setLoading] = useState(false);
+  const requestVersion = useRef(0);
 
   const query = useMemo(() => toOrderQuery(filters, page), [filters, page]);
 
   const refresh = useCallback(async () => {
     if (!accessToken || !workspaceId) return;
+    const version = ++requestVersion.current;
     setLoading(true);
     setMessage(undefined);
     try {
       const result = await listWorkspaceOrders(accessToken, workspaceId, query);
+      if (requestVersion.current !== version) return;
       setOrders(result.orders);
       setPageInfo(result.page);
       setCapabilities(result.capabilities);
@@ -160,16 +163,20 @@ export function OrdersList({ workspaceSlug }: { workspaceSlug: string }) {
         current.filter((id) => result.orders.some((order) => order.id === id)),
       );
     } catch (error) {
+      if (requestVersion.current !== version) return;
       setMessage(
         `Could not load orders. Reason: ${error instanceof BackendError ? error.code : 'internal_error'}.`,
       );
     } finally {
-      setLoading(false);
+      if (requestVersion.current === version) setLoading(false);
     }
   }, [accessToken, workspaceId, query]);
 
   useEffect(() => {
     void refresh();
+    return () => {
+      requestVersion.current += 1;
+    };
   }, [refresh]);
 
   // Any member with `workspace.read` may filter by assignee; only the bulk

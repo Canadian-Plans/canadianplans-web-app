@@ -33,7 +33,7 @@ export const legalDrafts = {
     shortTitle: 'The short version',
     short: [
       '✓  We only collect what we need to set up your plan and help you.',
-      '✓  Your ID documents are used to activate your plan with Rogers — then deleted after [X] days.',
+      '✓  We retain your customer records and ID documents until you request deletion.',
       '✓  We never sell your personal information.',
       '✓  You can ask to see, correct or delete your information at any time.',
     ],
@@ -82,7 +82,7 @@ export const legalDrafts = {
         id: 'privacy-how-long-we-keep-it',
         title: '5. How long we keep it',
         paragraphs: [
-          'We keep ID documents for [X] days after activation, then delete them. We keep order records for [X] years for accounting and legal reasons.',
+          'We retain customer records and ID documents until you request deletion. There is no automatic deletion period after activation or completion. We delete or restrict the requested personal information, subject to legal and record-keeping obligations. Backup copies expire through the regular backup schedule.',
         ],
         bullets: [],
       },

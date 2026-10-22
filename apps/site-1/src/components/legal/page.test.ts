@@ -56,7 +56,7 @@ describe('legal page source ownership', () => {
       expect(html).toContain(`<h1>${heading}</h1>`);
       expect(html).toContain('<h2');
       expect(html).toContain('9981 Whalley Blvd');
-      expect(html.replace(/<!--.*?-->/gu, '')).toContain('Version 1');
+      expect(html.replace(/<!--.*?-->/gu, '')).toContain('Version 2');
       expect(html).not.toContain('not approved legal text');
     }
   });

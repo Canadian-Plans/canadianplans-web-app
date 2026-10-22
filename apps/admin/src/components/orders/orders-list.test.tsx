@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ListWorkspaceOrdersResponse } from '@canadian-plans/contracts';
 
@@ -95,6 +95,29 @@ beforeEach(() => {
 });
 
 describe('OrdersList', () => {
+  it('ignores an older response that arrives after the current filter results', async () => {
+    type Response = ListWorkspaceOrdersResponse;
+    let resolveStale: (value: Response) => void = () => undefined;
+    const stale = new Promise<Response>((resolve) => {
+      resolveStale = resolve;
+    });
+    mocks.listWorkspaceOrders.mockReturnValueOnce(stale).mockResolvedValueOnce({
+      ...listResponse(true),
+      orders: [],
+      page: { page: 1, pageSize: 25, total: 0 },
+    });
+    render(<OrdersList workspaceSlug="site-1" />);
+    await waitFor(() => expect(mocks.listWorkspaceOrders).toHaveBeenCalledOnce());
+    fireEvent.click(screen.getByRole('button', { name: 'Archived' }));
+    await waitFor(() => expect(mocks.listWorkspaceOrders).toHaveBeenCalledTimes(2));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    await act(async () => {
+      resolveStale(listResponse(true));
+    });
+    expect(screen.queryByText('CP-000123')).toBeNull();
+  });
   it('renders the order row with its source and customer', async () => {
     render(<OrdersList workspaceSlug="site-1" />);
 

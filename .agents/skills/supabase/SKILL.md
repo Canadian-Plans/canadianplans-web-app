@@ -15,7 +15,8 @@ The backend alone accesses business data; frontend Supabase Auth does not author
 frontend Data API access. Use the restricted runtime role and transaction-local
 `app.workspace_id` RLS, including the documented bootstrap exceptions. Generic
 `auth.uid()` examples below illustrate provider behavior, not this project's tenant
-policy. Storage is private R2; jobs use the outbox and Vercel Cron. Introducing
+policy. Storage is private R2; jobs use the outbox and the long-lived Railway backend's
+bounded scheduler, with authenticated manual job routes for recovery. Introducing
 Supabase Storage, Edge Functions or a second scheduler is a separate architecture choice.
 
 Schema changes use Drizzle in [packages/db](../../../packages/db/), its existing

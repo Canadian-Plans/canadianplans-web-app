@@ -88,7 +88,7 @@ describe('A4 backup/restore rehearsal (synthetic data, local isolated harness)',
         },
       ]),
       r2Source: new FakeR2SourceReader(
-        new Map([['canadian-plans-site-1/objects/passport.pdf', passportBytes]]),
+        new Map([['canadian-plans-site-1/workspaces/w1/objects/passport.pdf', passportBytes]]),
       ),
       sanity: new FakeSanityExporter({
         archive: new TextEncoder().encode('synthetic sanity tarball'),

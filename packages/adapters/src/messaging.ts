@@ -7,6 +7,7 @@ import { z } from 'zod';
  */
 export const emailTemplates = [
   'order_acknowledgement',
+  'tracking_otp',
   'order_status',
   'order_awaiting_customer',
   'order_dispatch',
@@ -193,6 +194,7 @@ export class ResendEmailAdapter implements EmailAdapter {
         headers: {
           Authorization: `Bearer ${this.config.apiKey}`,
           'Content-Type': 'application/json',
+          'Idempotency-Key': `${message.workspaceId}/${message.messageId}`,
         },
         body: JSON.stringify({
           from: `${this.config.sender.fromName} <${this.config.sender.fromAddress}>`,
@@ -201,6 +203,7 @@ export class ResendEmailAdapter implements EmailAdapter {
           subject,
           text,
           html,
+          tags: [{ name: 'cp_message_id', value: message.messageId }],
         }),
       });
       if (!response.ok) {
@@ -225,6 +228,11 @@ export class ResendEmailAdapter implements EmailAdapter {
 function renderTemplate(message: EmailMessage): { subject: string; text: string; html?: string } {
   const ref = message.reference ?? message.variables?.reference ?? '';
   switch (message.template) {
+    case 'tracking_otp':
+      return {
+        subject: `Your Canadian Plans tracking code`,
+        text: `Your code for order ${ref} is ${message.variables?.code ?? ''}. It expires 10 minutes after your request. Use only the most recently requested code. If you did not request this code, ignore this email.`,
+      };
     case 'order_acknowledgement':
       return {
         subject: `We received your order ${ref}`,

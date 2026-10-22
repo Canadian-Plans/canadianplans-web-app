@@ -209,6 +209,68 @@ databaseTest('tenant RLS and transaction-pool context', () => {
     ).rejects.toMatchObject({ cause: { code: '42501' } });
   });
 
+  test('audit values permit redaction only, with tenant isolation', async () => {
+    const id = crypto.randomUUID();
+    await tenantDatabase.withTenantTx({ workspaceId: WORKSPACE_A, actorId: ACTOR_A }, (tx) =>
+      tx.execute(sql`
+        insert into app.audit_events
+          (id, workspace_id, actor_id, actor_label, action, entity, entity_id,
+           request_id, "before", "after")
+        values (${id}, ${WORKSPACE_A}, ${ACTOR_A}, 'CI actor', 'lead.updated',
+          'lead', ${MEMBERSHIP_A}, ${crypto.randomUUID()}, '{"value":"old"}', '{"value":"new"}')
+      `),
+    );
+    for (const replacement of ['{"value":"forged"}', 'null', '{}']) {
+      await expect(
+        tenantDatabase.withTenantTx({ workspaceId: WORKSPACE_A, actorId: ACTOR_A }, (tx) =>
+          tx.execute(
+            sql`update app.audit_events set "before" = ${replacement}::jsonb where id = ${id}`,
+          ),
+        ),
+      ).rejects.toMatchObject({ cause: { code: '23514' } });
+    }
+    const crossTenant = await tenantDatabase.withTenantTx(
+      { workspaceId: WORKSPACE_B, actorId: ACTOR_B },
+      (tx) =>
+        tx.execute(sql`update app.audit_events set "before" = null where id = ${id} returning id`),
+    );
+    expect(crossTenant).toHaveLength(0);
+    const withoutContext = await runtimeSql`
+      update app.audit_events set "after" = null where id = ${id} returning id
+    `;
+    expect(withoutContext).toHaveLength(0);
+    const [partlyRedacted] = await tenantDatabase.withTenantTx(
+      { workspaceId: WORKSPACE_A, actorId: ACTOR_A },
+      (tx) =>
+        tx.execute(
+          sql`update app.audit_events set "before" = null where id = ${id} returning "before", "after"`,
+        ),
+    );
+    expect(partlyRedacted).toEqual({ before: null, after: { value: 'new' } });
+    await expect(
+      tenantDatabase.withTenantTx({ workspaceId: WORKSPACE_A, actorId: ACTOR_A }, (tx) =>
+        tx.execute(
+          sql`update app.audit_events set "before" = '{"value":"restored"}' where id = ${id}`,
+        ),
+      ),
+    ).rejects.toMatchObject({ cause: { code: '23514' } });
+    const [redacted] = await tenantDatabase.withTenantTx(
+      { workspaceId: WORKSPACE_A, actorId: ACTOR_A },
+      (tx) =>
+        tx.execute(
+          sql`update app.audit_events set "before" = null, "after" = null where id = ${id} returning "before", "after", action`,
+        ),
+    );
+    expect(redacted).toEqual({ before: null, after: null, action: 'lead.updated' });
+    await expect(
+      tenantDatabase.withTenantTx({ workspaceId: WORKSPACE_A, actorId: ACTOR_A }, (tx) =>
+        tx.execute(
+          sql`update app.audit_events set "after" = '{"value":"forged"}' where id = ${id}`,
+        ),
+      ),
+    ).rejects.toMatchObject({ cause: { code: '23514' } });
+  });
+
   test('sequential units on one pooled connection do not leak SET LOCAL context', async () => {
     const [first] = await tenantDatabase.withTenantTx(
       { workspaceId: WORKSPACE_A, actorId: ACTOR_A },

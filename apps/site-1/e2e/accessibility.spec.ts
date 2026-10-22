@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 /**
  * REQ 10 / §16 gate 12 — automated WCAG 2.1 AA checks on the public storefront.

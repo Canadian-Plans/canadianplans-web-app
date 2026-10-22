@@ -20,6 +20,7 @@ const CREDENTIAL = '80000000-0000-4000-8000-000000000a01';
 const { secret: VALID_SECRET, secretHash: VALID_HASH } = generateServiceSecret();
 
 class FakeLeadStore implements LeadStore {
+  readLead: LeadStore['readLead'] = async () => ({ status: 'grant_invalid' });
   async createLead(): Promise<never> {
     throw new Error('leads are not used by the wish list route');
   }

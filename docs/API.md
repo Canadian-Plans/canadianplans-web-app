@@ -52,8 +52,7 @@ CORS (PLATFORM_CONTEXT §4b, invariant 2).
   DEFINER `app.resolve_website_credential` bootstrap function to a workspace,
   scopes and revocation status. A credential may hold only these scopes:
   `leads:write`, `quotes:create`, `orders:create`, `uploads:customer`,
-  `tracking:otp`. Size and edge/bot admission run before any database work; a
-  durable, bounded per-IP and per-credential rate limiter
+  `tracking:otp`. Protected writes require `X-Turnstile-Token` for their route-owned action before database work; authenticated catalogue/tracking-status GETs do not consume a challenge. A fresh proof is required for each write/retry. The server-owned optional `X-Website-Visitor-Id` digest is trusted only after credential verification; raw forwarding headers are ignored. A durable, bounded network-bootstrap, visitor and credential rate limiter
   (`app.rate_limit_hit`, fixed window, no global counter) gates database work.
   Error codes: `missing_credential`, `invalid_credential`, `credential_revoked`,
   `credential_not_found`, `scope_denied`, `caller_forbidden`, `rate_limited`,
@@ -169,13 +168,25 @@ re-revoking returns the original revocation time.
 
 Storefront endpoint authenticated by a website service credential holding the
 `leads:write` scope. The workspace comes from the credential; any `workspace_id`
-in the body is ignored. Real lead persistence lands in A2; this route currently
-acknowledges the authenticated, scoped context.
+in the body is ignored. Validated contact, form, attribution and product data are
+persisted with the consent version. The response includes the new lead summary
+and a scoped draft grant for subsequent draft updates and checkout.
 
-- `202`: `{ workspaceId, callerType: "website", scopes, requestId }`
+- `201`: `{ lead, draftGrant: { token, expiresAt }, requestId }`
+- `400`: `validation_error`
 - `401`: `missing_credential`, `invalid_credential`, `credential_revoked`
 - `403`: `scope_denied`, `caller_forbidden`
 - `429`: `rate_limited` (with `Retry-After`)
+
+### `GET /api/v1/website/leads/{leadId}`
+
+Resume an unfinished draft with the website credential (`leads:write`) and its
+exact `X-Draft-Grant`. Returns `{ draft: { leadId, productId, contact, form },
+requestId }` with `Cache-Control: private, no-store`. Revoked/expired or mismatched
+grants return `401`; submitted drafts return `409 draft_already_submitted`. Reads
+do not consume a bot proof. The storefront restores only supported, validated
+form data and honors explicit plan/category/province navigation. Grants and the
+submission key stay in the httpOnly cookie; consent must be confirmed again.
 
 ### `POST /api/v1/website/region-waitlist`
 
@@ -288,22 +299,22 @@ audit event with the document types that were outstanding. The override is
 scoped to documents — it does not rescue an illegal edge or a partnered
 activation with no usable commission rule.
 
-| Route                                                 | Purpose                                                                                                                                                                                                                                                                                                                                                                                           |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `GET /orders`                                         | Paginated list. Filters: `status`, `paymentState`, `assigneeId`, `partnerId`, `partnerCode`, `source`, `submittedFrom`/`submittedTo` (ISO, `to` exclusive), `archiveState=active\|archived\|all`. `search` (≤120 chars) matches the reference and, when the actor holds the contact-search capability, the customer name/email/phone with substring matching, parameterized and workspace-scoped. |
-| `GET /orders/{orderId}`                               | Full detail: frozen snapshot, customer, plan payload, consent, status history, audit events, notes, reminders, change requests, amendments, payments, dispatch record, the actor's `capabilities`, and `allowedTransitions` computed from the current status and the live gates.                                                                                                                  |
-| `PATCH /orders/{orderId}`                             | Status transitions: `transition` (`toStatus`, optional `reason`), `dispatch` (`courier` required, optional `trackingReference`/`dispatchDate`), `activate`, `cancel` (`reason` required). All except `cancel` accept an optional `documentOverrideReason` (see the gates above). Dispatch writes `dispatch_records` in the same transaction as the status change and sets `delivery_state`.       |
-| `PATCH /orders/{orderId}/assignee`                    | Assign to an active staff membership of the same workspace, or unassign with `assigneeId: null`.                                                                                                                                                                                                                                                                                                  |
-| `PATCH /orders/{orderId}/archive`                     | Set or clear `archived_at`. Archiving is a visibility action, never deletion.                                                                                                                                                                                                                                                                                                                     |
-| `POST /orders/bulk-assign`                            | Assign up to 100 orders. Each entry carries its own `expectedVersion`; the response reports `assigned`, `version_conflict` or `not_found` per order, so a partial failure is never silent. An unknown assignee returns `404 assignee_not_found` for the whole request.                                                                                                                            |
-| `GET`/`POST /orders/{orderId}/notes`                  | Operational notes with author and timestamp. Append-only; the audit event records only the note id, never its text.                                                                                                                                                                                                                                                                               |
-| `POST /orders/{orderId}/reminders`                    | Schedule a follow-up (`remindAt`, optional `note`).                                                                                                                                                                                                                                                                                                                                               |
-| `DELETE /orders/{orderId}/reminders/{reminderId}`     | Cancel a scheduled reminder.                                                                                                                                                                                                                                                                                                                                                                      |
-| `POST /orders/{orderId}/change-requests`              | Record a proposed customer edit (`patch.contact`, `patch.form`, optional `note`) for staff decision.                                                                                                                                                                                                                                                                                              |
-| `POST /orders/{orderId}/change-requests/{id}/approve` | Approve in one transaction: exactly one audited `order_amendments` row plus the version check. Contact fields are applied to the originating lead; the submitted order envelope (snapshot, payload, consent, terms) stays immutable (REQ 14), so form changes live in the amendment.                                                                                                              |
-| `POST /orders/{orderId}/change-requests/{id}/reject`  | Reject without changing any customer data. Re-resolving a resolved request returns `409 change_request_resolved`.                                                                                                                                                                                                                                                                                 |
-| `POST /orders/{orderId}/payments`                     | Record a manual payment (`paymentState`, optional `method`/`reference`/`amountMinor`) into `payment_records` and update `payment_state` in one transaction. The amount currency always comes from the frozen snapshot.                                                                                                                                                                            |
-| `POST /orders/{orderId}/deletion`                     | Delete the customer's personal data for the order (`reason` required). Requires the `deletion` permission (`record.delete`; verified `aal2` for Owner/Finance). Restricts every linked copy, keeps the reference and commercial snapshot, audits without personal data, and commits a local deletion intent. Returns `202` with `ledgerStatus: pending_acknowledgement`.                          |
+| Route                                                 | Purpose                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /orders`                                         | Paginated list. Filters: `status`, `paymentState`, `assigneeId`, `partnerId`, `partnerCode`, `source`, `submittedFrom`/`submittedTo` (ISO, `to` exclusive), `archiveState=active\|archived\|all`. `search` (≤120 chars) matches the reference and, when the actor holds the contact-search capability, the customer name/email/phone with substring matching, parameterized and workspace-scoped.                                                                 |
+| `GET /orders/{orderId}`                               | Full detail: frozen snapshot, customer, plan payload, consent, status history, audit events, notes, reminders, change requests, amendments, payments, dispatch record, the actor's `capabilities`, and `allowedTransitions` computed from the current status and the live gates.                                                                                                                                                                                  |
+| `PATCH /orders/{orderId}`                             | Status transitions: `transition` (`toStatus`, optional `reason`), `dispatch` (`courier` required, optional `trackingReference`/`dispatchDate`), `activate`, `cancel` (`reason` required). All except `cancel` accept an optional `documentOverrideReason` (see the gates above). Dispatch writes `dispatch_records` in the same transaction as the status change and sets `delivery_state`.                                                                       |
+| `PATCH /orders/{orderId}/assignee`                    | Assign to an active staff membership of the same workspace, or unassign with `assigneeId: null`.                                                                                                                                                                                                                                                                                                                                                                  |
+| `PATCH /orders/{orderId}/archive`                     | Set or clear `archived_at`. Archiving is a visibility action, never deletion.                                                                                                                                                                                                                                                                                                                                                                                     |
+| `POST /orders/bulk-assign`                            | Assign up to 100 orders. Each entry carries its own `expectedVersion`; the response reports `assigned`, `version_conflict` or `not_found` per order, so a partial failure is never silent. An unknown assignee returns `404 assignee_not_found` for the whole request.                                                                                                                                                                                            |
+| `GET`/`POST /orders/{orderId}/notes`                  | Operational notes with author and timestamp. Append-only; the audit event records only the note id, never its text.                                                                                                                                                                                                                                                                                                                                               |
+| `POST /orders/{orderId}/reminders`                    | Schedule a follow-up (`remindAt`, optional `note`).                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `DELETE /orders/{orderId}/reminders/{reminderId}`     | Cancel a scheduled reminder.                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `POST /orders/{orderId}/change-requests`              | Record a proposed customer edit (`patch.contact`, `patch.form`, optional `note`) for staff decision.                                                                                                                                                                                                                                                                                                                                                              |
+| `POST /orders/{orderId}/change-requests/{id}/approve` | Approve in one transaction: exactly one audited `order_amendments` row plus the version check. Contact fields are applied to the originating lead; the submitted order envelope (snapshot, payload, consent, terms) stays immutable (REQ 14), so form changes live in the amendment.                                                                                                                                                                              |
+| `POST /orders/{orderId}/change-requests/{id}/reject`  | Reject without changing any customer data. Re-resolving a resolved request returns `409 change_request_resolved`.                                                                                                                                                                                                                                                                                                                                                 |
+| `POST /orders/{orderId}/payments`                     | Record a manual payment (`paymentState`, optional `method`/`reference`/`amountMinor`) into `payment_records` and update `payment_state` in one transaction. The amount currency always comes from the frozen snapshot.                                                                                                                                                                                                                                            |
+| `POST /orders/{orderId}/deletion`                     | Delete the customer's personal data for the order (`reason` required). Requires the `deletion` permission (`record.delete`; verified `aal2` for Owner/Finance). Restricts every linked copy, keeps the reference and commercial snapshot, audits without personal data, and commits a local deletion intent. Returns `202` with current `ledgerStatus` and `cleanupStatus`; erasure waits for acknowledgement and completion waits for physical document cleanup. |
 
 `GET /api/v1/staff/workspaces/{workspaceId}/members` lists the active staff
 memberships as assignee options. It returns membership id, roles and an
@@ -359,28 +370,37 @@ gate 5), not merely `workspace.read`. Issues a short-lived signed URL
 
 ### Customer-data deletion (T21)
 
-`POST /orders/{orderId}/deletion` clears the order payload/consent and the lead's
-contact/form, deletes notes, amendments, change requests and reminders, nulls
-personal audit `before`/`after` values, and scrubs outbox payloads — while keeping
-the order `reference` and commercial `snapshot`. It writes an audit entry
-(`order.customer_data_deleted`, actor + reason, no deleted personal data) and a
-local deletion intent (identifiers + action only).
+`POST /orders/{orderId}/deletion` remains supported. Privileged verified-MFA
+staff may also `POST /customer-data/search` with `{ email, page? }` to discover
+candidate IDs, then `POST /customer-data/{subjectType}/{subjectId}/deletion`
+with a nonblank `{ reason }`. Supported subjects are `order`, `lead` and
+`region_waitlist`; a converted lead resolves to its order. Search returns
+`subjects`, `page`, `hasMore` and never deletes by matching email alone.
 
-The independent deletion ledger (§13) is published after commit by the
-`deletion_ledger_publish` outbox job: retries reuse the logical id, a durable
-acknowledgement moves the intent to `acknowledged`, and an unavailable or
-unconfigured ledger leaves it `failed`/pending and fails the job closed rather
-than reporting completion. See `docs/RUNBOOKS/data-deletion.md`.
+The first transaction restricts access/sends, revokes grants/tracking challenges,
+and commits an audited intent plus `deletion_ledger_publish`. Personal values
+remain until durable acknowledgement. Acknowledgement atomically queues
+`customer_data_cleanup`, which erases linked personal database copies and records
+every private document key as durable `deletion_object_cleanup` work. Financial
+amounts, the order reference/commercial snapshot and minimal audit evidence remain.
+
+`202` returns the stable `deletionId`, `ledgerStatus` and `cleanupStatus`.
+`acknowledged` does not mean cleanup is complete. `cleanupStatus: completed`
+requires local erasure and every R2 object acknowledgement. Retries reuse the
+intent; missing ledger/storage leaves work pending. Restricted/deleted staff
+order details have `payload: null`, masked personal fields, explicit
+`customerDataState` and disabled operational mutation capabilities.
+See [the deletion runbook](RUNBOOKS/data-deletion.md) for exact scope and limits.
 
 ### Dispatch and activation gates
 
-Phase A keeps dispatch and activation disabled in production until OPEN_INPUTS
-#15/#19 are resolved; partnered activation additionally returns
-`409 feature_not_ready` until activation can commit its commission line
-(invariant 10). Tests and staging exercise both behind the TEST-only
-`ORDER_OPERATIONAL_TRANSITIONS` flag, which the backend ignores when
-`NODE_ENV=production`. The admin surfaces `feature_not_ready` rather than hiding
-the action. See `docs/RUNBOOKS/orders.md`.
+Dispatch and activation require `ORDER_OPERATIONAL_TRANSITIONS` to be exactly
+`1` or `true` in every environment, including production; unset returns
+`409 feature_not_ready`. Required documents must still be approved or the
+document prerequisite explicitly overridden with a recorded reason. Partnered
+activation must commit its commission line atomically (invariant 10) and returns
+`feature_not_ready` if its commission configuration is incomplete. See
+`docs/RUNBOOKS/dispatch-and-activation.md` for the current operational procedure.
 
 ### `POST /api/v1/webhooks/sanity`
 
@@ -390,6 +410,19 @@ until the server-only registry verifies the timestamped HMAC and matching
 provider account. A valid delivery is durably deduplicated in the tenant inbox
 and acknowledged `200`; the body is only a document selector, never commercial
 authority.
+
+### `POST /api/v1/webhooks/resend/{selector}`
+
+Native Resend raw-JSON endpoint (64 KiB limit), mounted before JSON parsing. The
+active registry entry determines provider account, workspace and machine actor
+after verifying the Svix signature and five-minute timestamp window. Body tenant
+fields have no authority. Delivery/bounce/complaint/failure events must correlate
+to a prepared send in that account and match its recipient digest; unknown sends
+return 503 for retry/reconciliation. The signed `svix-id` is deduplicated within
+workspace/provider/account. Temporary bounces do not create permanent suppression;
+a later delivery clears temporary-bounce uncertainty but cannot erase a permanent bounce or complaint. Other signed
+event types are acknowledged as ignored. The old `/api/v1/email/webhook/events`
+shared-secret endpoint is retired (404). See ENV.md for the required cutover.
 
 ### `GET /api/v1/staff/workspaces/{workspaceId}/catalogue`
 
@@ -460,12 +493,22 @@ orders — including timing: the response is held to a minimum latency
 (`TRACKING_OTP_MIN_LATENCY_MS`, default 500 ms) so a matched and unmatched
 request take the same time. The code is keyed-hashed (bound to workspace, order
 and normalized email), expires in 10 minutes, is invalidated by a resend and
-permits at most five attempts. Requests are rate-limited per email and per IP.
+permits at most five attempts. Requests are rate-limited per email and authenticated visitor.
+
+A matching request atomically writes the challenge and a `tracking_otp_email`
+outbox job; no provider is called in the request transaction. The queue stores
+the code encrypted with an authenticated, challenge-bound key derived from
+`TRACKING_HASH_SECRET`. The worker rechecks expiry, pending status, current
+recipient, code hash and deliverability suppression before sending through the
+selected transactional provider. Resends cancel older pending email jobs. Completed
+or uncertain jobs retain identifiers only; a delayed or expired code requires a
+fresh request. `EMAIL_CONTACT_HASH_SECRET`, the email provider and the scheduler
+must be configured as documented in ENV.md.
 
 `POST /api/v1/website/tracking/verify` (`tracking:otp` scope) takes
 `{ email, orderReference, code }`; on success it atomically consumes the code
 and returns a 30-minute scoped grant. Verifications are rate-limited per email
-and per IP before any consumption, and every non-verified outcome returns the
+and authenticated visitor before any consumption, and every non-verified outcome returns the
 same generic `tracking_challenge_invalid` (never whether the challenge exists
 or how it ended).
 

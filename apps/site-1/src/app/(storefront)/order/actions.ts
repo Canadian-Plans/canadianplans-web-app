@@ -4,7 +4,8 @@ import { randomUUID } from 'node:crypto';
 import {
   BackendError,
   type ProvinceCode,
-  type SubmitOrderResponse,
+  websiteBotTokenSchema,
+  type WebsiteBotProof,
   type WebsiteOffer,
 } from '@canadian-plans/contracts';
 import { z } from 'zod';
@@ -12,7 +13,8 @@ import { z } from 'zod';
 import { getBackendClient } from '@/lib/backendClient';
 import { siteConfig } from '@/site.config';
 import { buildOrderForm, parseOrderDetails, type ParsedOrder } from './details';
-import { readOrderDraft, writeOrderDraft } from './draft';
+import { clearOrderDraft, readOrderDraft, writeOrderDraft } from './draft';
+import { verificationContent } from '@content/verification';
 import type {
   ActionResult,
   CallbackInput,
@@ -32,13 +34,11 @@ import type {
  * submission idempotency key live in an httpOnly cookie (see `draft.ts`).
  */
 
-/** The visitor's single-use bot-check token; anything else is dropped, never trusted. */
-const turnstileTokenSchema = z.string().min(1).max(2048);
-
-/** A backend client that forwards the bot-check token on the calls that write. */
-function backend(turnstileToken: unknown) {
-  const parsed = turnstileTokenSchema.safeParse(turnstileToken);
-  return getBackendClient(parsed.success ? { turnstileToken: parsed.data } : {});
+function validProof(input: WebsiteBotProof): boolean {
+  return websiteBotTokenSchema.safeParse(input.turnstileToken).success;
+}
+function verificationFailure(): Extract<ActionResult<never>, { ok: false }> {
+  return { ok: false, code: 'verification_failed', message: verificationContent.failed };
 }
 
 const documentKeysSchema = z.array(z.string().regex(/^[a-z0-9_]{1,64}$/)).max(32);
@@ -223,10 +223,11 @@ export async function saveDetails(
   // Only an internet plan is priced by province; the quote needs it again later.
   const province = order.category === 'internet' ? order.province : undefined;
 
+  if (!validProof(input)) return verificationFailure();
   const existing = await readOrderDraft();
   const contact = order.contact;
   const form = formFor(order, documentKeys.data, false);
-  const client = backend(input.turnstileToken);
+  const client = getBackendClient();
 
   try {
     // The browser is not trusted on what the product is or where it is sold: the
@@ -246,7 +247,7 @@ export async function saveDetails(
         const updated = await client.leads.update(
           existing.leadId,
           { contact, form, productId: productId.data },
-          { draftGrant: existing.draftGrant },
+          { draftGrant: existing.draftGrant, turnstileToken: input.turnstileToken },
         );
         // Same draft, same grant, same submission key — only the plan may change.
         await writeOrderDraft({ ...existing, productId: productId.data, province });
@@ -258,15 +259,20 @@ export async function saveDetails(
         // its own idempotency key rather than dead-ending them on an httpOnly
         // cookie they cannot clear. Anything else is a real failure.
         if (!isFinishedDraft(error)) throw error;
+        await clearOrderDraft();
+        return { ok: false, code: 'retry_fresh_draft', message: verificationContent.retryDraft };
       }
     }
-    const created = await client.leads.create({
-      contact,
-      form,
-      productId: productId.data,
-      attribution: input.attribution,
-      consentVersion: input.consentVersion,
-    });
+    const created = await client.leads.create(
+      {
+        contact,
+        form,
+        productId: productId.data,
+        attribution: input.attribution,
+        consentVersion: input.consentVersion,
+      },
+      { turnstileToken: input.turnstileToken },
+    );
     await writeOrderDraft({
       leadId: created.lead.id,
       draftGrant: created.draftGrant.token,
@@ -286,18 +292,19 @@ export async function saveDocuments(
 ): Promise<ActionResult<{ leadId: string }>> {
   const checked = checkDetails(input.details);
   if (!checked.ok) return checked.failure;
+  if (!validProof(input)) return verificationFailure();
   const draft = await readOrderDraft();
   if (!draft) return draftExpired();
 
   try {
-    const updated = await backend(input.turnstileToken).leads.update(
+    const updated = await getBackendClient().leads.update(
       draft.leadId,
       {
         contact: checked.order.contact,
         form: formFor(checked.order, input.documentKeys, input.acknowledged),
         productId: draft.productId,
       },
-      { draftGrant: draft.draftGrant },
+      { draftGrant: draft.draftGrant, turnstileToken: input.turnstileToken },
     );
     return { ok: true, data: { leadId: updated.lead.id } };
   } catch (error) {
@@ -334,11 +341,11 @@ function documentErrorMessage(error: unknown): string {
  * The service credential and draft grant stay on the server (in the httpOnly cookie).
  */
 export async function createDocumentIntent(input: {
-  turnstileToken?: string;
   documentType: string;
   fileName: string;
   contentType: string;
   sizeBytes: number;
+  turnstileToken?: string;
 }): Promise<DocumentIntentResult> {
   const documentType = documentTypeSchema.safeParse(input.documentType);
   const contentType = contentTypeSchema.safeParse(input.contentType);
@@ -347,10 +354,11 @@ export async function createDocumentIntent(input: {
   if (!documentType.success || !contentType.success || !fileName.success || !sizeBytes.success) {
     return { ok: false, message: 'That file cannot be uploaded.' };
   }
+  if (!validProof(input)) return verificationFailure();
   const draft = await readOrderDraft();
   if (!draft) return { ok: false, message: 'Your saved details have expired. Please start again.' };
   try {
-    const intent = await backend(input.turnstileToken).uploads.createIntent(
+    const intent = await getBackendClient().uploads.createIntent(
       {
         parentType: 'lead',
         parentId: draft.leadId,
@@ -359,7 +367,7 @@ export async function createDocumentIntent(input: {
         contentType: contentType.data,
         sizeBytes: sizeBytes.data,
       },
-      { draftGrant: draft.draftGrant },
+      { draftGrant: draft.draftGrant, turnstileToken: input.turnstileToken },
     );
     return {
       ok: true,
@@ -375,22 +383,23 @@ export async function createDocumentIntent(input: {
 
 /** T17 step 3: finalize the uploaded object; the backend verifies and attaches it. */
 export async function finalizeDocument(input: {
-  turnstileToken?: string;
   uploadId: string;
   checksumSha256: string;
+  turnstileToken?: string;
 }): Promise<DocumentFinalizeResult> {
   const uploadId = z.uuid().safeParse(input.uploadId);
   const checksum = checksumSchema.safeParse(input.checksumSha256);
   if (!uploadId.success || !checksum.success) {
     return { ok: false, message: 'That upload cannot be finalized.' };
   }
+  if (!validProof(input)) return verificationFailure();
   const draft = await readOrderDraft();
   if (!draft) return { ok: false, message: 'Your saved details have expired. Please start again.' };
   try {
-    const finalized = await backend(input.turnstileToken).uploads.finalize(
+    const finalized = await getBackendClient().uploads.finalize(
       uploadId.data,
       { checksumSha256: checksum.data },
-      { draftGrant: draft.draftGrant },
+      { draftGrant: draft.draftGrant, turnstileToken: input.turnstileToken },
     );
     return { ok: true, fileId: finalized.file.id, documentType: finalized.file.documentType };
   } catch (error) {
@@ -399,13 +408,16 @@ export async function finalizeDocument(input: {
 }
 
 /** Step 4 (first half): a server-authoritative quote for the saved draft. */
-export async function requestQuote(turnstileToken?: string): Promise<ActionResult<QuoteResult>> {
+export async function requestQuote(
+  input: WebsiteBotProof = {},
+): Promise<ActionResult<QuoteResult>> {
+  if (!validProof(input)) return verificationFailure();
   const draft = await readOrderDraft();
   if (!draft) return draftExpired();
   try {
-    const result = await backend(turnstileToken).quotes.create(
+    const result = await getBackendClient().quotes.create(
       { leadId: draft.leadId, productId: draft.productId, province: draft.province },
-      { draftGrant: draft.draftGrant },
+      { draftGrant: draft.draftGrant, turnstileToken: input.turnstileToken },
     );
     return { ok: true, data: { quote: result.quote } };
   } catch (error) {
@@ -417,19 +429,20 @@ export async function requestQuote(turnstileToken?: string): Promise<ActionResul
 export async function requestCallback(
   input: CallbackInput,
 ): Promise<ActionResult<{ requested: true }>> {
+  if (!validProof(input)) return verificationFailure();
   const draft = await readOrderDraft();
   if (!draft) return draftExpired();
   const checked = checkDetails(input.details);
   if (!checked.ok) return checked.failure;
   try {
-    await backend(input.turnstileToken).leads.update(
+    await getBackendClient().leads.update(
       draft.leadId,
       {
         contact: checked.order.contact,
         form: formFor(checked.order, input.documentKeys, false, { callbackRequested: true }),
         productId: draft.productId,
       },
-      { draftGrant: draft.draftGrant },
+      { draftGrant: draft.draftGrant, turnstileToken: input.turnstileToken },
     );
     return { ok: true, data: { requested: true } };
   } catch (error) {
@@ -438,14 +451,14 @@ export async function requestCallback(
 }
 
 /**
- * Step 4 (second half). A network timeout is retried once with the SAME
- * idempotency key, so a connection that dropped after the backend committed
- * still returns the one existing order and its reference (REQ 18). A server
- * response — including a retryable 503 — is never turned into a success.
+ * Step 4 (second half). A transport failure asks the browser for a fresh proof
+ * before retrying with the SAME cookie/idempotency key (REQ 18). A server HTTP
+ * response, including 503, is returned for an explicit customer retry.
  */
 export async function submitOrder(
   input: SubmitOrderInput,
 ): Promise<ActionResult<SubmitOrderResult>> {
+  if (!validProof(input)) return verificationFailure();
   const draft = await readOrderDraft();
   if (!draft) return draftExpired();
   const checked = checkDetails(input.details);
@@ -469,24 +482,22 @@ export async function submitOrder(
       marketingOptIn: input.marketingOptIn,
     },
   };
-  const options = { draftGrant: draft.draftGrant, idempotencyKey: draft.idempotencyKey };
-  const client = backend(input.turnstileToken);
+  const options = {
+    draftGrant: draft.draftGrant,
+    idempotencyKey: draft.idempotencyKey,
+    turnstileToken: input.turnstileToken,
+  };
+  const client = getBackendClient();
 
   try {
-    let result: SubmitOrderResponse;
-    try {
-      result = await client.orders.submit(body, options);
-    } catch (error) {
-      // Only a transport/abort failure is retried automatically; a real HTTP
-      // response (even 503) is returned to the customer to retry deliberately.
-      if (error instanceof BackendError) throw error;
-      result = await client.orders.submit(body, options);
-    }
+    const result = await client.orders.submit(body, options);
     return {
       ok: true,
       data: { reference: result.order.reference, orderId: result.order.id },
     };
   } catch (error) {
+    if (!(error instanceof BackendError))
+      return { ok: false, code: 'transport_retry', message: verificationContent.retryOrder };
     return failureFrom(error);
   }
 }

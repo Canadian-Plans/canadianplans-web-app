@@ -125,7 +125,14 @@ only provider-supported changes.
 
 R2 is a source system, not the independently retained archive or deletion
 ledger. Configure an Object Read-only token scoped to the source bucket, then
-record an inventory before downloading:
+record an inventory before downloading. The automated runner holds a backup
+lease from before the database dump through document copy. Its reference query
+includes retained verified file and revision keys even when access is restricted
+or a file is tombstoned. Migration `0024_backup_reference_barrier` prevents local
+customer cleanup from erasing those references during the lease. Staging and
+unverified candidate keys are excluded from the verified reference manifest.
+
+For a manual source inventory:
 
 ```sh
 aws --version
@@ -163,6 +170,18 @@ the tarball. Sanity project settings, API tokens, webhooks, functions, and other
 control-plane configuration are not dataset-export contents.
 
 ### Manifest and encryption
+
+Every backup attempt uses a unique timestamp-and-UUID run ID by default. An
+explicit `BACKUP_RUN_ID` must identify a fresh prefix: the runner rejects any
+prefix already containing artifacts, including an incomplete prior attempt.
+Retry with a new ID; never reuse a successful restore point's prefix.
+
+The manifest is uploaded last. Weekly retention deletes an attempt prefix that has
+no manifest once its newest object is older than the grace period (24 hours): such
+an attempt failed part-way and can never be completed. A newer manifest-less prefix
+may still be uploading and is kept. Retention still fails visibly when a manifest
+exists but cannot be decrypted, or when the archive listing gives no upload time
+for a manifest-less prefix.
 
 Build one canonical manifest containing, at minimum, the run ID, source IDs,
 capture timestamps, tool versions, artifact names, byte counts, record/object
@@ -348,6 +367,17 @@ retention state, decrypt and authenticate each event, validate its minimal
 schema, reject duplicate operation IDs with different content, and compare the
 exact key/version set and digest to a fresh authenticated checkpoint. Replay
 events idempotently against restored data before any traffic or job resumes.
+`apps/backend/src/deletion/replay.ts` provides `createDatabaseLedgerReplay` for
+an explicitly bound isolated target. Order events carry `relatedLeadId` so an
+older draft-only backup can be erased even when the order is absent. Unresolved
+legacy scope or inconsistent relationships fail closed. Replay restricts access,
+revokes credentials and performs local erasure before returning; private-object
+work stays durable and must be processed with the target's configured storage.
+If a restored active backup lease defers local cleanup, replay throws
+`deletion_cleanup_deferred`; keep the target closed and retry after lease expiry
+or completion of the owning backup, without clearing a live lease.
+This callback does not replace the independently authenticated reader, immutable
+ledger verification or real target adapter wiring required by the restore CLI.
 
 The restore remains closed when the ledger or checkpoint is missing,
 unavailable, expired, stale, malformed, undecryptable, has an invalid

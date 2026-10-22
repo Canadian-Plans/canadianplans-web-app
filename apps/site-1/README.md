@@ -6,6 +6,12 @@ Home is a Figma design preview; catalogue pages are placeholders. Order, trackin
 flows are present in code. Live operation still requires approved content,
 configuration and the project's launch evidence.
 
+Pre-arrival preview files are local to the browser, with a 24-hour restore window
+from the last file change. Opening preview storage removes expired or undated legacy
+records across all tab keys; fresh records from other tabs survive. Cleanup runs
+when the preview is used, not in the background while the site is closed. This
+technical preview-cache window does not set retention for real customer documents.
+
 Use `pnpm --filter site-1 dev` from the repository root (port 3001). Shared strict
 TypeScript, ESLint, design tokens and UI primitives apply. The site never imports
 DB packages, backend implementation or server-only adapters.
@@ -113,6 +119,14 @@ project, shared CMS schema types and editor access before editing is operational
 Noindex is not access control. Studio has its own layout, without storefront
 navigation, Tailwind resets or analytics.
 
+Sanity 6's local CLI reads `sanity.cli.ts`, which shares the Studio's public
+project/dataset settings. With those identifiers configured,
+`pnpm --filter site-1 exec sanity schema extract --path schema.json` validates
+and extracts the shared schema without changing the remote project. Keep the
+generated schema outside the checkout when it is only a local verification
+artifact. Provider login, remote provisioning and live editor access are separate
+operational checks.
+
 Umami loads only when both `NEXT_PUBLIC_UMAMI_SCRIPT_URL` and
 `NEXT_PUBLIC_UMAMI_WEBSITE_ID` are nonempty at build time. Automatic tracking is
 disabled until T20 implements sanitized events; the configured script still loads.
@@ -155,8 +169,10 @@ servers:
 
 1. `apps/backend/tests/e2e/harness.ts` — the **real** backend app against a
    disposable Postgres, with a stub published-catalogue provider and an
-   admitting bot check. A live Sanity dataset and a real Cloudflare Turnstile
-   token are not available to CI, so those two seams stand in; everything else
+   stateful action-bound one-use proof verifier. The browser fixture replaces
+   Cloudflare's external script; a synthetic public key is compiled by the test
+   runner, and no live Siteverify/provider call is made. The Sanity stub and
+   provider emulator stand in for unavailable live services; everything else
    (routes, service credential and scopes, RLS, lead/quote/order transactions,
    idempotency, reference generation) is the real code.
 2. the built site-1 server, pointed at the harness with a seeded service

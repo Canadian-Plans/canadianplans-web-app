@@ -132,17 +132,20 @@ tools. **verified** = checked directly today · **read** = from repo code/docs �
   deploys the new code, the `CATALOGUE_ALLOW_OPEN_INPUTS` decision, and Vercel Pro.
 - **Legal text and placeholders (21 Oct):** the plan catalogue no longer has `TEST-`
   placeholders (billing party, provider and pre-arrival eligibility came from Canada Wide and
-  canadaesim; the terms version is `terms-2026-10-v1`). `/terms` and `/privacy` now publish real
+  canadaesim; the terms version is `terms-2026-10-v2`). `/terms` and `/privacy` now publish real
   text from the repo with the owner's business details, so `CATALOGUE_ALLOW_OPEN_INPUTS` is not
   needed. Site-wide placeholder phone, address and emails were replaced with the real ones.
   Still to check: the assumptions listed in `docs/LAUNCH_PLANS.md`, a lawyer's review, and
   the phone number the owner will change.
 - **Bot check (21 Oct):** the backend wanted a Turnstile token on every storefront call, which
   the site never sent, so `/order` showed "Plans are unavailable". Now only writes need the
-  token (reads such as the plan list do not), and the site gets a fresh token before each
-  write. `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is set on Vercel (widget "canadianplans.com (Spin)").
-  Check that the widget lists canadianplans.com and www, and that Railway's
-  `TURNSTILE_SECRET_KEY` and `TURNSTILE_HOSTNAME=canadianplans.com` belong to it.
+  token (reads such as the plan list do not), and the site gets a fresh, one-use token bound
+  to that route's action before each write (actions are listed in `docs/ENV.md`).
+  `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is set on Vercel (widget "canadianplans.com (Spin)").
+  Check that the widget lists canadianplans.com and www, that Railway's
+  `TURNSTILE_SECRET_KEY` belongs to it, and set
+  `TURNSTILE_HOSTNAMES=canadianplans.com,www.canadianplans.com` (the single
+  `TURNSTILE_HOSTNAME` is only a fallback).
 - **Vercel:** the Vercel account connected to this session is the owner's personal Hobby
   account (`md-takibuddin`, team "Md takib 's projects"). It holds older projects, has no
   project linked to this repository and no deployment of any commit from it. The admin and
@@ -171,7 +174,10 @@ These block the first order. Each is a row in `docs/OPEN_INPUTS.md`; answer ther
   each fee, taxes.
 - ☐ **2.7 Courier** (#9) — who ships SIMs, and how you book them.
 - ☐ **2.8 Sender email** (#11) — e.g. `orders@<domain>`.
-- ☐ **2.9 Retention periods** (#10, #16) — needed so the privacy policy is truthful.
+- ☑ **2.9 Retention policy** (#10, #16) — owner confirmed request-only deletion of
+  retained customer records and identity documents on 21 Oct 2026; no fixed period.
+  Version 2 legal text and `RETENTION_POLICY.md` record the decision. The complete
+  customer-request deletion implementation is tracked by C3.
 - ◐ **2.10 Terms and privacy text** (#24) — your own or a lawyer's; Claude can draft a
   first version for you to review, but it is your legal responsibility. _20 Oct: drafts
   adapted from the Canada Wide texts are in `docs/legal/` (`terms-v1-draft.md`,
@@ -191,7 +197,32 @@ Depends on Stage 1 findings and the Stage 2 answers.
 - ☐ **3.1 Point the domain at site-1** _(You buy / Both configure)_ — Vercel domain,
   `NEXT_PUBLIC_SITE_URL`, `ADMIN_ORIGIN`/CORS origins updated.
 - ☐ **3.2 Email sending** _(Both)_ — verify the domain in Resend, SPF/DKIM/DMARC records,
-  `EMAIL_PROVIDER=resend`, sender address from 2.8. Send a test acknowledgement.
+  `EMAIL_PROVIDER=resend`, sender address from 2.8. **Before deploying the
+  `website-improvements` backend** (it sends only through a registered Resend account):
+  1. In the Resend dashboard, add a webhook to
+     `https://<backend>/api/v1/webhooks/resend/<selector>` for `email.delivered`,
+     `email.bounced`, `email.complained` and `email.failed`; copy its `whsec_...` secret.
+  2. Add this entry to the `webhooks` array of Railway's `MACHINE_REGISTRY_JSON`, keeping
+     the existing entries:
+
+     ```json
+     {
+       "selector": "<selector>",
+       "provider": "resend",
+       "providerAccount": "<label>",
+       "workspaceId": "<site-1 workspace UUID>",
+       "actorId": "<new stable UUID>",
+       "verificationSecret": "whsec_..."
+     }
+     ```
+
+  3. Set `RESEND_ACCOUNT_ID=<label>` (the same label) on Railway.
+  4. Apply migrations 0021–0024, then deploy and send a test acknowledgement.
+
+  Without steps 2–3 every customer email fails with `email_account_not_configured`;
+  the retired `EMAIL_WEBHOOK_SHARED_SECRET` endpoint now returns 404. Details:
+  `docs/ENV.md` → Resend.
+
 - ◐ **3.3 Turn on checkout** _(Both)_ — set `QUOTE_WITHDRAWAL_POLICY=honour_until_expiry`
   on Railway (decided 21 Sep, OPEN_INPUTS #14) and redeploy. _20 Oct: set and live
   (deployment `4267deeb`); the no-`checkout_disabled` check waits for real offers (3.7)
@@ -217,8 +248,10 @@ Depends on Stage 1 findings and the Stage 2 answers.
 - ☐ **4.0 Rotate exposed keys** _(You, Claude guides)_ — Cloudflare, R2 and Backblaze B2
   credentials were stored in plain text outside a password manager. Create new keys,
   update Railway/Vercel/GitHub secrets, revoke the old ones. Do this first.
-- ☐ **4.1 Backups** _(You decide, Claude runs)_ — either upgrade Supabase to Pro (daily
-  backups) or provision the T24 GitHub secrets and run one real backup + restore drill.
+- ☐ **4.1 Backups** _(You provision, Claude verifies)_ — enable managed daily database
+  backups (Supabase Pro baseline) **and** provision the T24 GitHub secrets for the
+  separate encrypted daily DB/Auth, R2 and Sanity archive, independent alerts and a
+  rehearsed restore. Verify both recovery paths before real customer data.
   Today there is **no restorable backup** of production.
 - ☐ **4.2 Error tracking** _(Both)_ — connect Sentry (or chosen tool) so production errors
   reach you.

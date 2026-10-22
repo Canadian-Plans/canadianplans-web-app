@@ -35,7 +35,7 @@ export const missingCopy = {
       title: 'Track my order',
       description: 'See your order status',
       icon: 'pin',
-      href: '/track-order',
+      href: '/track',
     },
   ],
 } as const;

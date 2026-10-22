@@ -9,7 +9,18 @@
   "packageManager": "pnpm@9.15.0",
   "pnpm": {
     "overrides": {
-      "@sanity/cli>skills": "1.5.7"
+      "@sanity/cli>skills": "1.5.9",
+      "@esbuild-kit/core-utils@3.3.2>esbuild": "0.25.12",
+      "typeid-js@1.2.0>uuid": "11.1.1",
+      "proxy-addr@<2.0.8": "2.0.8",
+      "source-map-js@<1.2.2": "1.2.2",
+      "brace-expansion@^1.0.0": "1.1.21",
+      "brace-expansion@^5.0.0": "5.0.12",
+      "dompurify@<3.4.16": "3.4.16",
+      "js-yaml@^3.0.0": "3.15.2",
+      "markdown-it@^14.0.0": "14.3.3",
+      "sharp@^0.35.0": "0.35.5",
+      "smol-toml@^1.0.0": "1.9.0"
     }
   },
   "scripts": {

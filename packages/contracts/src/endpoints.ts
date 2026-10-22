@@ -12,6 +12,7 @@ import {
   createLeadResponseSchema,
   updateLeadRequestSchema,
   updateLeadResponseSchema,
+  readLeadResponseSchema,
 } from './leads';
 import { submitOrderRequestSchema, submitOrderResponseSchema } from './orders';
 import { createQuoteRequestSchema, createQuoteResponseSchema } from './quotes';
@@ -30,7 +31,13 @@ import {
   partnerInvoiceResponseSchema,
 } from './partners';
 import { createExportRequestSchema, createExportResponseSchema } from './exports';
-import { deleteCustomerDataRequestSchema, deleteCustomerDataResponseSchema } from './deletion';
+import {
+  deleteCustomerDataRequestSchema,
+  deleteCustomerDataResponseSchema,
+  findDeletionSubjectsRequestSchema,
+  findDeletionSubjectsResponseSchema,
+  requestSubjectDeletionResponseSchema,
+} from './deletion';
 import { healthResponseSchema } from './health';
 import { listWorkspaceJobsResponseSchema, retryWorkspaceJobResponseSchema } from './jobs';
 import {
@@ -82,7 +89,7 @@ import {
   joinRegionWaitlistRequestSchema,
   joinRegionWaitlistResponseSchema,
 } from './region-waitlist';
-import { listWebsiteOffersResponseSchema } from './website-offers';
+import { listWebsiteOffersQuerySchema, listWebsiteOffersResponseSchema } from './website-offers';
 import { webhookAckResponseSchema, webhookDeliveryRequestSchema } from './webhooks';
 
 /**
@@ -440,6 +447,29 @@ export const endpoints: readonly EndpointDef[] = [
     response: deleteCustomerDataResponseSchema,
   },
 
+  {
+    operationId: 'findDeletionSubjects',
+    method: 'POST',
+    path: '/api/v1/staff/workspaces/{workspaceId}/customer-data/search',
+    summary:
+      'Find paginated candidate records for a verified deletion request (Owner/Finance, MFA).',
+    auth: 'staff',
+    successStatus: 200,
+    request: findDeletionSubjectsRequestSchema,
+    response: findDeletionSubjectsResponseSchema,
+  },
+  {
+    operationId: 'requestSubjectDeletion',
+    method: 'POST',
+    path: '/api/v1/staff/workspaces/{workspaceId}/customer-data/{subjectType}/{subjectId}/deletion',
+    summary:
+      'Request deletion for an explicitly selected order, draft or wish-list record (Owner/Finance, MFA).',
+    auth: 'staff',
+    successStatus: 202,
+    request: deleteCustomerDataRequestSchema,
+    response: requestSubjectDeletionResponseSchema,
+  },
+
   // Staff — partners
   {
     operationId: 'listPartners',
@@ -501,6 +531,7 @@ export const endpoints: readonly EndpointDef[] = [
     summary: 'List the published offers this website credential may quote.',
     auth: 'website',
     successStatus: 200,
+    query: listWebsiteOffersQuerySchema,
     response: listWebsiteOffersResponseSchema,
   },
   {
@@ -522,6 +553,16 @@ export const endpoints: readonly EndpointDef[] = [
     successStatus: 200,
     request: updateLeadRequestSchema,
     response: updateLeadResponseSchema,
+    headers: [DRAFT_GRANT],
+  },
+  {
+    operationId: 'readLead',
+    method: 'GET',
+    path: '/api/v1/website/leads/{leadId}',
+    summary: 'Read an unfinished draft with its scoped grant.',
+    auth: 'website',
+    successStatus: 200,
+    response: readLeadResponseSchema,
     headers: [DRAFT_GRANT],
   },
   {

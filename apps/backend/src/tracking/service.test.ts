@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import type { TrackingNotifier, TrackingOtpMessage } from './notifier.js';
+import { openTrackingCode } from './cipher.js';
+import type { QueueTrackingChallengeInput } from './store.js';
 import { TrackingService } from './service.js';
 import type { ConsumeOutcome, TrackingStatusView, TrackingStore } from './store.js';
 
@@ -33,6 +34,20 @@ class MemoryTrackingStore implements TrackingStore {
   }): Promise<{ orderId: string } | undefined> {
     const row = this.orders.get(`${input.workspaceId}:${input.reference}`);
     return row && row.email === input.normalizedEmail ? { orderId: row.orderId } : undefined;
+  }
+
+  readonly sent: { workspaceId: string; email: string; reference: string; code: string }[] = [];
+  async createChallengeAndQueue(input: QueueTrackingChallengeInput): Promise<void> {
+    await this.invalidatePending(input);
+    await this.createChallenge(input);
+    const code = openTrackingCode(SECRET, input, input.sealedCode);
+    if (!code) throw new Error('invalid queued code');
+    this.sent.push({
+      workspaceId: input.workspaceId,
+      email: input.normalizedEmail,
+      reference: REFERENCE,
+      code,
+    });
   }
 
   async invalidatePending(input: {
@@ -101,20 +116,13 @@ class MemoryTrackingStore implements TrackingStore {
   }
 }
 
-class RecordingNotifier implements TrackingNotifier {
-  readonly sent: TrackingOtpMessage[] = [];
-  async send(message: TrackingOtpMessage): Promise<void> {
-    this.sent.push({ ...message });
-  }
-}
-
 function setup(configured = true) {
   const store = new MemoryTrackingStore();
-  const notifier = new RecordingNotifier();
+  const notifier = store;
   let nowMs = Date.parse('2026-09-20T12:00:00.000Z');
   const service = new TrackingService({
     store,
-    notifier,
+    contactHashSecret: () => SECRET,
     secret: configured ? SECRET : undefined,
     now: () => new Date(nowMs),
   });

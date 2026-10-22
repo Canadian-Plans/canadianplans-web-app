@@ -1,6 +1,7 @@
 'use client';
 
-import { useId, useState } from 'react';
+import { useId, useRef, useState } from 'react';
+import { useHumanChallenge } from '@/components/shared/human-challenge';
 
 import { createDocumentIntent, finalizeDocument } from './actions';
 import type { DocumentContentType } from './types';
@@ -28,8 +29,6 @@ export interface DocumentUploadsProps {
   labelFor: (key: string) => string;
   /** Called with the set of checklist keys that now have an attached document. */
   onUploadedChange?: (uploaded: readonly string[]) => void;
-  /** A fresh bot-check token, needed before each call that writes. */
-  getToken?: () => Promise<string | undefined>;
 }
 
 /**
@@ -44,10 +43,12 @@ export function DocumentUploads({
   documentKeys,
   labelFor,
   onUploadedChange,
-  getToken,
 }: DocumentUploadsProps) {
+  const human = useHumanChallenge();
   const baseId = useId();
   const [states, setStates] = useState<Record<string, UploadState>>({});
+  const uploading = useRef(false);
+  const [busy, setBusy] = useState(false);
 
   function update(key: string, next: UploadState, uploaded?: Set<string>): void {
     setStates((current) => {
@@ -67,7 +68,7 @@ export function DocumentUploads({
   }
 
   async function handleFile(key: string, file: File | undefined): Promise<void> {
-    if (!file) return;
+    if (!file || uploading.current) return;
     const contentType = ALLOWED[file.type];
     if (!contentType) {
       update(key, { status: 'error', message: 'Choose a PDF, JPG or PNG file.' });
@@ -77,16 +78,22 @@ export function DocumentUploads({
       update(key, { status: 'error', message: 'That file is larger than the 10 MB limit.' });
       return;
     }
+    // One challenge owner for the whole intent/PUT/finalize lifecycle. A
+    // second file must not consume the proof needed to finish the first.
+    uploading.current = true;
+    setBusy(true);
     update(key, { status: 'uploading' });
     try {
       const checksum = await sha256Hex(file);
-      const intent = await createDocumentIntent({
-        turnstileToken: await getToken?.(),
-        documentType: key,
-        fileName: file.name,
-        contentType,
-        sizeBytes: file.size,
-      });
+      const intent = await human.run('upload-intent', (turnstileToken) =>
+        createDocumentIntent({
+          turnstileToken,
+          documentType: key,
+          fileName: file.name,
+          contentType,
+          sizeBytes: file.size,
+        }),
+      );
       if (!intent.ok) {
         update(key, { status: 'error', message: intent.message });
         return;
@@ -100,11 +107,13 @@ export function DocumentUploads({
         update(key, { status: 'error', message: 'The upload did not complete. Please try again.' });
         return;
       }
-      const finalized = await finalizeDocument({
-        turnstileToken: await getToken?.(),
-        uploadId: intent.uploadId,
-        checksumSha256: checksum,
-      });
+      const finalized = await human.run('upload-finalize', (turnstileToken) =>
+        finalizeDocument({
+          turnstileToken,
+          uploadId: intent.uploadId,
+          checksumSha256: checksum,
+        }),
+      );
       if (!finalized.ok) {
         update(key, { status: 'error', message: finalized.message });
         return;
@@ -115,37 +124,43 @@ export function DocumentUploads({
         status: 'error',
         message: 'The upload could not be completed. Please try again.',
       });
+    } finally {
+      uploading.current = false;
+      setBusy(false);
     }
   }
 
   return (
-    <ul className="space-y-4">
-      {documentKeys.map((key) => {
-        const state = states[key] ?? { status: 'idle' };
-        const inputId = `${baseId}-${key}`;
-        return (
-          <li key={key} className="space-y-1">
-            <label htmlFor={inputId} className="font-medium">
-              {labelFor(key)}
-            </label>
-            <input
-              id={inputId}
-              type="file"
-              accept="application/pdf,image/jpeg,image/png"
-              disabled={state.status === 'uploading'}
-              onChange={(event) => void handleFile(key, event.target.files?.[0])}
-              className="block w-full text-sm"
-              aria-describedby={`${inputId}-status`}
-            />
-            <p id={`${inputId}-status`} className="text-sm text-muted-foreground" role="status">
-              {state.status === 'idle' ? 'PDF, JPG or PNG, up to 10 MB.' : null}
-              {state.status === 'uploading' ? 'Uploading and verifying…' : null}
-              {state.status === 'uploaded' ? `Uploaded ${state.fileName}. Verified.` : null}
-              {state.status === 'error' ? state.message : null}
-            </p>
-          </li>
-        );
-      })}
-    </ul>
+    <>
+      {human.challenge}
+      <ul className="space-y-4">
+        {documentKeys.map((key) => {
+          const state = states[key] ?? { status: 'idle' };
+          const inputId = `${baseId}-${key}`;
+          return (
+            <li key={key} className="space-y-1">
+              <label htmlFor={inputId} className="font-medium">
+                {labelFor(key)}
+              </label>
+              <input
+                id={inputId}
+                type="file"
+                accept="application/pdf,image/jpeg,image/png"
+                disabled={busy}
+                onChange={(event) => void handleFile(key, event.target.files?.[0])}
+                className="block w-full text-sm"
+                aria-describedby={`${inputId}-status`}
+              />
+              <p id={`${inputId}-status`} className="text-sm text-muted-foreground" role="status">
+                {state.status === 'idle' ? 'PDF, JPG or PNG, up to 10 MB.' : null}
+                {state.status === 'uploading' ? 'Uploading and verifying…' : null}
+                {state.status === 'uploaded' ? `Uploaded ${state.fileName}. Verified.` : null}
+                {state.status === 'error' ? state.message : null}
+              </p>
+            </li>
+          );
+        })}
+      </ul>
+    </>
   );
 }

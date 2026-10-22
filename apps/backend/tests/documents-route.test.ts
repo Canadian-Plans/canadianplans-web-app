@@ -77,6 +77,9 @@ beforeEach(async () => {
       store,
       credentialStore: noopCredentialStore,
       leadStore: {
+        readLead: async () => {
+          throw new Error('unused');
+        },
         createLead: async () => {
           throw new Error('unused');
         },

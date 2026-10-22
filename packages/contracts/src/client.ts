@@ -1,3 +1,4 @@
+import { websiteBotTokenSchema, type WebsiteBotProof } from './website-bot';
 import type { z } from 'zod';
 import { catalogueStatusResponseSchema, type CatalogueStatusResponse } from './catalogue';
 
@@ -23,6 +24,8 @@ import {
   createLeadResponseSchema,
   updateLeadRequestSchema,
   updateLeadResponseSchema,
+  readLeadResponseSchema,
+  type ReadLeadResponse,
   type CreateLeadRequest,
   type CreateLeadResponse,
   type UpdateLeadRequest,
@@ -162,6 +165,13 @@ import {
 import {
   deleteCustomerDataRequestSchema,
   deleteCustomerDataResponseSchema,
+  findDeletionSubjectsRequestSchema,
+  findDeletionSubjectsResponseSchema,
+  requestSubjectDeletionResponseSchema,
+  type DeletionSubjectType,
+  type FindDeletionSubjectsRequest,
+  type FindDeletionSubjectsResponse,
+  type RequestSubjectDeletionResponse,
   type DeleteCustomerDataRequest,
   type DeleteCustomerDataResponse,
 } from './deletion';
@@ -213,11 +223,8 @@ export interface BackendClientOptions {
   readonly fetch?: typeof fetch;
   /** Per-request timeout in milliseconds. Defaults to 10s. */
   readonly timeoutMs?: number;
-  /**
-   * Headers added to every request, for example a single-use bot-check token.
-   * They never replace the credential or request id.
-   */
-  readonly extraHeaders?: Readonly<Record<string, string>>;
+  /** Server-owned visitor digest; never a raw browser forwarding header. */
+  readonly websiteVisitorId?: () => string | undefined | Promise<string | undefined>;
 }
 
 type HeaderMap = Record<string, string | undefined>;
@@ -248,15 +255,19 @@ function assertApiPath(url: URL, origin: string): void {
 export interface BackendClient {
   health(): Promise<HealthResponse>;
   leads: {
-    create(body: CreateLeadRequest): Promise<CreateLeadResponse>;
+    read(leadId: string, options: { draftGrant: string }): Promise<ReadLeadResponse>;
+    create(body: CreateLeadRequest, proof?: WebsiteBotProof): Promise<CreateLeadResponse>;
     update(
       leadId: string,
       body: UpdateLeadRequest,
-      options: { draftGrant: string },
+      options: { draftGrant: string } & WebsiteBotProof,
     ): Promise<UpdateLeadResponse>;
   };
   quotes: {
-    create(body: CreateQuoteRequest, options: { draftGrant: string }): Promise<CreateQuoteResponse>;
+    create(
+      body: CreateQuoteRequest,
+      options: { draftGrant: string } & WebsiteBotProof,
+    ): Promise<CreateQuoteResponse>;
   };
   offers: {
     /** The published offers; with a province, only those sold there plus national ones. */
@@ -264,34 +275,37 @@ export interface BackendClient {
   };
   regionWaitlist: {
     /** Leaves an email for a province we do not serve yet. Safe to repeat. */
-    join(body: JoinRegionWaitlistRequest): Promise<JoinRegionWaitlistResponse>;
+    join(
+      body: JoinRegionWaitlistRequest,
+      proof?: WebsiteBotProof,
+    ): Promise<JoinRegionWaitlistResponse>;
   };
   orders: {
     submit(
       body: SubmitOrderRequest,
-      options: { draftGrant: string; idempotencyKey: string },
+      options: { draftGrant: string; idempotencyKey: string } & WebsiteBotProof,
     ): Promise<SubmitOrderResponse>;
   };
   uploads: {
     createIntent(
       body: CreateUploadIntentRequest,
-      options: { draftGrant: string },
+      options: { draftGrant: string } & WebsiteBotProof,
     ): Promise<CreateUploadIntentResponse>;
     finalize(
       uploadId: string,
       body: FinalizeUploadRequest,
-      options: { draftGrant: string },
+      options: { draftGrant: string } & WebsiteBotProof,
     ): Promise<FinalizeUploadResponse>;
   };
   files: {
     createDownloadLink(
       fileId: string,
-      options: { draftGrant: string },
+      options: { draftGrant: string } & WebsiteBotProof,
     ): Promise<CreateDownloadLinkResponse>;
   };
   tracking: {
-    otp(body: TrackingOtpRequest): Promise<TrackingOtpResponse>;
-    verify(body: TrackingVerifyRequest): Promise<TrackingVerifyResponse>;
+    otp(body: TrackingOtpRequest, proof?: WebsiteBotProof): Promise<TrackingOtpResponse>;
+    verify(body: TrackingVerifyRequest, proof?: WebsiteBotProof): Promise<TrackingVerifyResponse>;
     get(options: { customerGrant: string }): Promise<TrackingStatusResponse>;
   };
   staff: {
@@ -384,6 +398,16 @@ export interface BackendClient {
       orderId: string,
       body: DeleteCustomerDataRequest,
     ): Promise<DeleteCustomerDataResponse>;
+    findDeletionSubjects(
+      workspaceId: string,
+      body: FindDeletionSubjectsRequest,
+    ): Promise<FindDeletionSubjectsResponse>;
+    requestSubjectDeletion(
+      workspaceId: string,
+      subjectType: DeletionSubjectType,
+      subjectId: string,
+      body: DeleteCustomerDataRequest,
+    ): Promise<RequestSubjectDeletionResponse>;
     listPartners(workspaceId: string): Promise<ListPartnersResponse>;
     getPartner(workspaceId: string, partnerId: string): Promise<PartnerDetailResponse>;
     changeCommissionState(
@@ -428,10 +452,6 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
       accept: 'application/json',
       'x-request-id': globalThis.crypto.randomUUID(),
     });
-    for (const [key, value] of Object.entries(options.extraHeaders ?? {})) {
-      const name = key.toLowerCase();
-      if (name !== 'authorization' && name !== 'x-request-id') headers.set(key, value);
-    }
     if (config.body !== undefined) {
       headers.set('content-type', 'application/json');
     }
@@ -441,6 +461,11 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
       }
     }
 
+    const visitor = await options.websiteVisitorId?.();
+    if (visitor !== undefined) {
+      if (!/^[a-f0-9]{64}$/.test(visitor)) throw new Error('Invalid website visitor assertion.');
+      headers.set('x-website-visitor-id', visitor);
+    }
     const response = await doFetch(url, {
       method: config.method,
       headers,
@@ -465,16 +490,33 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
     return config.responseSchema.parse(payload);
   }
 
+  function proofHeader(proof?: WebsiteBotProof): HeaderMap {
+    return {
+      'x-turnstile-token':
+        proof?.turnstileToken === undefined
+          ? undefined
+          : websiteBotTokenSchema.parse(proof.turnstileToken),
+    };
+  }
+
   return {
     health: () =>
       call({ method: 'GET', path: '/api/v1/health', responseSchema: healthResponseSchema }),
 
     leads: {
-      create: (body) =>
+      read: (leadId, opts) =>
+        call({
+          method: 'GET',
+          path: `/api/v1/website/leads/${encode(leadId)}`,
+          headers: { 'x-draft-grant': opts.draftGrant },
+          responseSchema: readLeadResponseSchema,
+        }),
+      create: (body, proof) =>
         call({
           method: 'POST',
           path: '/api/v1/website/leads',
           body: createLeadRequestSchema.parse(body),
+          headers: proofHeader(proof),
           responseSchema: createLeadResponseSchema,
         }),
       update: (leadId, body, opts) =>
@@ -482,17 +524,18 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           method: 'PATCH',
           path: `/api/v1/website/leads/${encode(leadId)}`,
           body: updateLeadRequestSchema.parse(body),
-          headers: { 'x-draft-grant': opts.draftGrant },
+          headers: { 'x-draft-grant': opts.draftGrant, ...proofHeader(opts) },
           responseSchema: updateLeadResponseSchema,
         }),
     },
 
     regionWaitlist: {
-      join: (body) =>
+      join: (body, proof) =>
         call({
           method: 'POST',
           path: '/api/v1/website/region-waitlist',
           body: joinRegionWaitlistRequestSchema.parse(body),
+          headers: proofHeader(proof),
           responseSchema: joinRegionWaitlistResponseSchema,
         }),
     },
@@ -503,7 +546,7 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           method: 'POST',
           path: '/api/v1/quotes',
           body: createQuoteRequestSchema.parse(body),
-          headers: { 'x-draft-grant': opts.draftGrant },
+          headers: { 'x-draft-grant': opts.draftGrant, ...proofHeader(opts) },
           responseSchema: createQuoteResponseSchema,
         }),
     },
@@ -524,7 +567,11 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           method: 'POST',
           path: '/api/v1/orders',
           body: submitOrderRequestSchema.parse(body),
-          headers: { 'x-draft-grant': opts.draftGrant, 'idempotency-key': opts.idempotencyKey },
+          headers: {
+            'x-draft-grant': opts.draftGrant,
+            'idempotency-key': opts.idempotencyKey,
+            ...proofHeader(opts),
+          },
           responseSchema: submitOrderResponseSchema,
         }),
     },
@@ -535,7 +582,7 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           method: 'POST',
           path: '/api/v1/website/uploads/intents',
           body: createUploadIntentRequestSchema.parse(body),
-          headers: { 'x-draft-grant': opts.draftGrant },
+          headers: { 'x-draft-grant': opts.draftGrant, ...proofHeader(opts) },
           responseSchema: createUploadIntentResponseSchema,
         }),
       finalize: (uploadId, body, opts) =>
@@ -543,7 +590,7 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           method: 'POST',
           path: `/api/v1/website/uploads/${encode(uploadId)}/finalize`,
           body: finalizeUploadRequestSchema.parse(body),
-          headers: { 'x-draft-grant': opts.draftGrant },
+          headers: { 'x-draft-grant': opts.draftGrant, ...proofHeader(opts) },
           responseSchema: finalizeUploadResponseSchema,
         }),
     },
@@ -553,24 +600,26 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
         call({
           method: 'POST',
           path: `/api/v1/website/files/${encode(fileId)}/download-link`,
-          headers: { 'x-draft-grant': opts.draftGrant },
+          headers: { 'x-draft-grant': opts.draftGrant, ...proofHeader(opts) },
           responseSchema: createDownloadLinkResponseSchema,
         }),
     },
 
     tracking: {
-      otp: (body) =>
+      otp: (body, proof) =>
         call({
           method: 'POST',
           path: '/api/v1/website/tracking/otp',
           body: trackingOtpRequestSchema.parse(body),
+          headers: proofHeader(proof),
           responseSchema: trackingOtpResponseSchema,
         }),
-      verify: (body) =>
+      verify: (body, proof) =>
         call({
           method: 'POST',
           path: '/api/v1/website/tracking/verify',
           body: trackingVerifyRequestSchema.parse(body),
+          headers: proofHeader(proof),
           responseSchema: trackingVerifyResponseSchema,
         }),
       get: (opts) =>
@@ -785,6 +834,20 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           method: 'GET',
           path: `/api/v1/staff/workspaces/${encode(workspaceId)}/partners`,
           responseSchema: listPartnersResponseSchema,
+        }),
+      findDeletionSubjects: (workspaceId, body) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/customer-data/search`,
+          body: findDeletionSubjectsRequestSchema.parse(body),
+          responseSchema: findDeletionSubjectsResponseSchema,
+        }),
+      requestSubjectDeletion: (workspaceId, subjectType, subjectId, body) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/customer-data/${encode(subjectType)}/${encode(subjectId)}/deletion`,
+          body: deleteCustomerDataRequestSchema.parse(body),
+          responseSchema: requestSubjectDeletionResponseSchema,
         }),
       getPartner: (workspaceId, partnerId) =>
         call({

@@ -78,7 +78,7 @@ describe('SanityCatalogueAdapter', () => {
       productKey: 'rogers-sim-5gb',
       productTitle: 'Rogers SIM 5 GB',
       productType: 'sim',
-      // A Sanity document carries no regions, so it is sold nationally.
+      // Legacy documents without explicit regions remain national.
       regions: ['CA'],
       offerName: 'Rogers 5 GB',
       currency: 'CAD',
@@ -118,6 +118,67 @@ describe('SanityCatalogueAdapter', () => {
     const adapter = new SanityCatalogueAdapter(adapterConfig(), fetchImpl);
 
     await expect(adapter.fetchPublishedByDocumentId('missing-offer')).resolves.toBeUndefined();
+  });
+
+  it('preserves optional regional, billing and storefront terms through the provider read', async () => {
+    const fields = {
+      regions: ['ON', 'BC'],
+      billingPeriod: '90_days',
+      presentation: { features: ['Unlimited calls'], tag: 'Student', audiences: ['student'] },
+      promotion: { id: 'fall-student', headline: 'Fall offer', terms: ['New activations only'] },
+    };
+    const { fetchImpl, requests } = respondingFetch(() =>
+      jsonResponse({
+        result: [{ ...publishedOfferDocument, ...fields }],
+      }),
+    );
+    const offers = await new SanityCatalogueAdapter(adapterConfig(), fetchImpl).listPublished();
+    expect(offers[0]?.commercial).toMatchObject(fields);
+    const body = requests[0]?.init.body;
+    if (typeof body !== 'string') throw new Error('missing catalogue query');
+    const query = JSON.parse(body).query;
+    for (const field of Object.keys(fields)) expect(query).toContain(field);
+  });
+
+  it('accepts null optional fields returned by GROQ for legacy documents', async () => {
+    const { fetchImpl } = respondingFetch(() =>
+      jsonResponse({
+        result: {
+          ...publishedOfferDocument,
+          regions: null,
+          billingPeriod: null,
+          presentation: null,
+          promotion: null,
+        },
+      }),
+    );
+    const offer = await new SanityCatalogueAdapter(
+      adapterConfig(),
+      fetchImpl,
+    ).fetchPublishedByDocumentId(publishedOfferDocument._id);
+    expect(offer?.commercial.regions).toEqual(['CA']);
+    expect(offer?.commercial.billingPeriod).toBeUndefined();
+  });
+
+  it.each([
+    { regions: ['CA', 'ON'] },
+    { billingPeriod: 'weekly' },
+    { presentation: { features: ['x'.repeat(201)] } },
+    { promotion: { id: 'bad id', headline: 'Offer', terms: ['Terms'] } },
+  ])('rejects invalid optional commercial fields: %j', async (fields) => {
+    const { fetchImpl } = respondingFetch(() =>
+      jsonResponse({
+        result: {
+          ...publishedOfferDocument,
+          ...fields,
+        },
+      }),
+    );
+    await expect(
+      new SanityCatalogueAdapter(adapterConfig(), fetchImpl).fetchPublishedByDocumentId(
+        publishedOfferDocument._id,
+      ),
+    ).rejects.toMatchObject({ code: 'invalid_response' });
   });
 
   it('raises invalid_response for a malformed document', async () => {

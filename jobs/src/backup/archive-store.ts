@@ -14,6 +14,8 @@ export interface ArchiveObjectMeta {
   key: string;
   sizeBytes: number;
   versionId?: string;
+  /** Provider upload time; absent when the listing does not report it. */
+  lastModified?: Date;
 }
 
 export interface ArchiveWriter {
@@ -53,9 +55,56 @@ function parseListObjectsV2(xml: string): ArchiveObjectMeta[] {
     const block = match[1] ?? '';
     const key = /<Key>([\s\S]*?)<\/Key>/.exec(block)?.[1];
     const size = /<Size>(\d+)<\/Size>/.exec(block)?.[1];
-    if (key) results.push({ key, sizeBytes: size ? Number(size) : 0 });
+    const modified = /<LastModified>([\s\S]*?)<\/LastModified>/.exec(block)?.[1];
+    const lastModified = modified ? new Date(modified) : undefined;
+    if (key)
+      results.push({
+        key,
+        sizeBytes: size ? Number(size) : 0,
+        ...(lastModified && Number.isFinite(lastModified.getTime()) ? { lastModified } : {}),
+      });
   }
   return results;
+}
+
+function xmlValue(xml: string, tag: string): string | undefined {
+  const value = new RegExp(`<${tag}>([\\s\\S]*?)<\\/${tag}>`).exec(xml)?.[1];
+  return value?.replace(/&(amp|lt|gt|quot|apos);/g, (_match, entity: string) => {
+    const entities: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" };
+    return entities[entity] ?? '';
+  });
+}
+
+async function listArchiveObjects(
+  config: S3SigningConfig,
+  prefix: string,
+  fetchImpl: typeof fetch,
+  timeoutMs: number,
+): Promise<ArchiveObjectMeta[]> {
+  const objects: ArchiveObjectMeta[] = [];
+  const seenTokens = new Set<string>();
+  let token: string | undefined;
+  do {
+    const response = await s3Send(
+      config,
+      {
+        method: 'GET',
+        key: '',
+        headers: {},
+        query: { 'list-type': '2', prefix, ...(token ? { 'continuation-token': token } : {}) },
+      },
+      fetchImpl,
+      timeoutMs,
+    );
+    if (!response.ok) throw new Error(`archive_list_failed:${response.status}`);
+    const xml = await response.text();
+    objects.push(...parseListObjectsV2(xml));
+    if (xmlValue(xml, 'IsTruncated') !== 'true') break;
+    token = xmlValue(xml, 'NextContinuationToken');
+    if (!token || seenTokens.has(token)) throw new Error('archive_list_invalid_continuation');
+    seenTokens.add(token);
+  } while (token);
+  return objects;
 }
 
 /** Writer credential: list + put only. Real B2 key must omit readFiles/deleteFiles. */
@@ -78,14 +127,7 @@ export class S3ArchiveWriter implements ArchiveWriter {
   }
 
   async listObjects(prefix: string): Promise<ArchiveObjectMeta[]> {
-    const response = await s3Send(
-      this.config,
-      { method: 'GET', key: '', headers: {}, query: { 'list-type': '2', prefix } },
-      this.fetchImpl,
-      this.timeoutMs,
-    );
-    if (!response.ok) throw new Error(`archive_list_failed:${response.status}`);
-    return parseListObjectsV2(await response.text());
+    return listArchiveObjects(this.config, prefix, this.fetchImpl, this.timeoutMs);
   }
 }
 
@@ -98,14 +140,7 @@ export class S3ArchiveReader implements ArchiveReader {
   ) {}
 
   async listObjects(prefix: string): Promise<ArchiveObjectMeta[]> {
-    const response = await s3Send(
-      this.config,
-      { method: 'GET', key: '', headers: {}, query: { 'list-type': '2', prefix } },
-      this.fetchImpl,
-      this.timeoutMs,
-    );
-    if (!response.ok) throw new Error(`archive_list_failed:${response.status}`);
-    return parseListObjectsV2(await response.text());
+    return listArchiveObjects(this.config, prefix, this.fetchImpl, this.timeoutMs);
   }
 
   async getObject(key: string): Promise<Uint8Array | undefined> {
@@ -175,6 +210,7 @@ export class ArchiveCredentialDeniedError extends Error {
 interface StoredObject {
   body: Uint8Array;
   versionId: string;
+  lastModified: Date;
 }
 
 /**
@@ -189,6 +225,8 @@ export class InMemoryArchiveBackend {
   private readonly objects = new Map<string, StoredObject>();
   private versionCounter = 0;
 
+  constructor(private readonly now: () => Date = () => new Date()) {}
+
   scoped(capabilities: readonly Capability[]): ArchiveWriter & ArchiveRetentionAdmin {
     const allowed = new Set(capabilities);
     const require = (capability: Capability): void => {
@@ -198,7 +236,7 @@ export class InMemoryArchiveBackend {
       putObject: async (key, body) => {
         require('put');
         const versionId = `v${++this.versionCounter}`;
-        this.objects.set(key, { body: structuredClone(body), versionId });
+        this.objects.set(key, { body: structuredClone(body), versionId, lastModified: this.now() });
         return { versionId };
       },
       listObjects: async (prefix) => {
@@ -209,6 +247,7 @@ export class InMemoryArchiveBackend {
             key,
             sizeBytes: value.body.byteLength,
             versionId: value.versionId,
+            lastModified: value.lastModified,
           }));
       },
       getObject: async (key) => {

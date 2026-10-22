@@ -1,29 +1,19 @@
-import { and, eq, or, sql } from 'drizzle-orm';
+import { and, asc, eq, isNull, or, sql } from 'drizzle-orm';
 import {
   auditEvents,
   deletionIntents,
+  draftGrants,
+  files,
+  followUpSchedules,
   leads,
-  orderAmendments,
-  orderChangeRequests,
-  orderNotes,
-  orderReminders,
   orders,
   outboxJobs,
+  regionWaitlist,
+  trackingChallenges,
   withTenantTx,
+  type TenantTransaction,
 } from '@canadian-plans/db';
-
-/**
- * Customer-data deletion for an order (T21, REQ 24/34). One transaction
- * restricts every linked personal copy this branch owns, keeps the minimal
- * commercial record (`reference`, `snapshot`), writes an audit entry with no
- * deleted personal data, and commits a local deletion intent to drive the
- * external ledger.
- *
- * Seams for the parallel branches (documented, not implemented here because the
- * tables do not exist on this branch): T17 file revisions/objects and T18
- * email records / suppressions / follow-up schedules. `order_reminders` is the
- * scheduled-follow-up mechanism that does exist here and is removed.
- */
+import type { DeletionSubjectType, FindDeletionSubjectsResponse } from '@canadian-plans/contracts';
 
 export interface DeleteCustomerDataInput {
   workspaceId: string;
@@ -32,160 +22,372 @@ export interface DeleteCustomerDataInput {
   orderId: string;
   reason: string;
 }
-
+export interface RequestDeletionInput {
+  workspaceId: string;
+  actorId: string;
+  requestId: string;
+  subjectType: DeletionSubjectType;
+  subjectId: string;
+  reason: string;
+}
 export type DeleteCustomerDataOutcome =
-  { status: 'deleted'; deletionId: string } | { status: 'not_found' };
-
+  | {
+      status: 'restricted';
+      deletionId: string;
+      subjectType: DeletionSubjectType;
+      subjectId: string;
+      ledgerStatus: 'pending_acknowledgement' | 'acknowledged';
+      cleanupStatus: 'pending' | 'completed';
+    }
+  | { status: 'not_found' };
 export interface DeletionStore {
   deleteCustomerData(input: DeleteCustomerDataInput): Promise<DeleteCustomerDataOutcome>;
+  requestDeletion(input: RequestDeletionInput): Promise<DeleteCustomerDataOutcome>;
+  findSubjects(input: {
+    workspaceId: string;
+    actorId: string;
+    email: string;
+    page?: number;
+  }): Promise<Omit<FindDeletionSubjectsResponse, 'requestId'>>;
 }
-
 type DeletionDatabase = Pick<import('@canadian-plans/db').DatabaseClient, 'withTenantTx'>;
-const defaultDatabase: DeletionDatabase = { withTenantTx };
 
+/** Immediate restriction only. Personal erasure and R2 deletion wait for durable ledger acknowledgement. */
 export class DatabaseDeletionStore implements DeletionStore {
-  constructor(private readonly database: DeletionDatabase = defaultDatabase) {}
+  constructor(private readonly database: DeletionDatabase = { withTenantTx }) {}
 
-  async deleteCustomerData(input: DeleteCustomerDataInput): Promise<DeleteCustomerDataOutcome> {
+  deleteCustomerData(input: DeleteCustomerDataInput): Promise<DeleteCustomerDataOutcome> {
+    return this.requestDeletion({ ...input, subjectType: 'order', subjectId: input.orderId });
+  }
+
+  async requestDeletion(input: RequestDeletionInput): Promise<DeleteCustomerDataOutcome> {
     return this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.actorId },
       async (tx) => {
-        const [order] = await tx
-          .select({ id: orders.id, leadId: orders.leadId })
-          .from(orders)
-          .where(and(eq(orders.workspaceId, input.workspaceId), eq(orders.id, input.orderId)))
-          .limit(1);
-        if (!order) return { status: 'not_found' };
-
-        const now = new Date();
-        const orderScope = and(
-          eq(orders.workspaceId, input.workspaceId),
-          eq(orders.id, input.orderId),
-        );
-
-        // Restrict the order envelope: drop the customer form and consent. The
-        // commercial snapshot and reference are the retained commercial record.
-        await tx
-          .update(orders)
-          .set({ payload: {}, consent: null, updatedAt: now })
-          .where(orderScope);
-
-        // Restrict the lead's personal contact and form.
-        await tx
-          .update(leads)
-          .set({
-            fullName: null,
-            email: null,
-            phone: null,
-            countryCode: null,
-            payload: null,
-            updatedAt: now,
-          })
-          .where(and(eq(leads.workspaceId, input.workspaceId), eq(leads.id, order.leadId)));
-
-        // Remove child rows that carry personal free text or proposed personal edits.
-        await tx
-          .delete(orderNotes)
-          .where(
-            and(
-              eq(orderNotes.workspaceId, input.workspaceId),
-              eq(orderNotes.orderId, input.orderId),
-            ),
-          );
-        await tx
-          .delete(orderAmendments)
-          .where(
-            and(
-              eq(orderAmendments.workspaceId, input.workspaceId),
-              eq(orderAmendments.orderId, input.orderId),
-            ),
-          );
-        await tx
-          .delete(orderChangeRequests)
-          .where(
-            and(
-              eq(orderChangeRequests.workspaceId, input.workspaceId),
-              eq(orderChangeRequests.orderId, input.orderId),
-            ),
-          );
-        // Scheduled follow-up reminders for this order stop immediately.
-        await tx
-          .delete(orderReminders)
-          .where(
-            and(
-              eq(orderReminders.workspaceId, input.workspaceId),
-              eq(orderReminders.orderId, input.orderId),
-            ),
-          );
-
-        // Keep audit rows (who/when/action) but remove personal before/after values.
-        await tx
-          .update(auditEvents)
-          .set({ before: null, after: null })
-          .where(
-            and(
-              eq(auditEvents.workspaceId, input.workspaceId),
-              or(
-                and(eq(auditEvents.entity, 'order'), eq(auditEvents.entityId, input.orderId)),
-                and(eq(auditEvents.entity, 'lead'), eq(auditEvents.entityId, order.leadId)),
+        let subjectType = input.subjectType;
+        let subjectId = input.subjectId;
+        let leadId: string | undefined;
+        let orderId: string | undefined;
+        if (subjectType === 'region_waitlist') {
+          const [row] = await tx
+            .select({ id: regionWaitlist.id })
+            .from(regionWaitlist)
+            .where(
+              and(
+                eq(regionWaitlist.workspaceId, input.workspaceId),
+                eq(regionWaitlist.id, subjectId),
               ),
-            ),
-          );
-
-        // Scrub queued job payloads that reference this order or lead; the job
-        // rows themselves remain for operational visibility.
-        await tx
-          .update(outboxJobs)
-          .set({ payload: {}, updatedAt: now })
-          .where(
-            and(
-              eq(outboxJobs.workspaceId, input.workspaceId),
-              or(
-                sql`${outboxJobs.payload}->>'orderId' = ${input.orderId}`,
-                sql`${outboxJobs.payload}->>'leadId' = ${order.leadId}`,
-              ),
-            ),
-          );
-
-        // Audit the deletion. The reason is the staff reason; the deleted
-        // personal data is never copied here.
-        await tx.insert(auditEvents).values({
+            )
+            .limit(1)
+            .for('update');
+          if (!row) {
+            const [existing] = await tx
+              .select()
+              .from(deletionIntents)
+              .where(
+                and(
+                  eq(deletionIntents.workspaceId, input.workspaceId),
+                  eq(deletionIntents.subjectType, subjectType),
+                  eq(deletionIntents.subjectId, subjectId),
+                ),
+              )
+              .orderBy(asc(deletionIntents.createdAt))
+              .limit(1);
+            return existing
+              ? {
+                  status: 'restricted',
+                  deletionId: existing.id,
+                  subjectType,
+                  subjectId,
+                  ledgerStatus: existing.ledgerAckId ? 'acknowledged' : 'pending_acknowledgement',
+                  cleanupStatus: existing.completedAt ? 'completed' : 'pending',
+                }
+              : { status: 'not_found' };
+          }
+        } else {
+          if (subjectType === 'order') {
+            const [order] = await tx
+              .select({ leadId: orders.leadId })
+              .from(orders)
+              .where(and(eq(orders.workspaceId, input.workspaceId), eq(orders.id, subjectId)))
+              .limit(1);
+            if (!order) return { status: 'not_found' };
+            leadId = order.leadId;
+          } else leadId = subjectId;
+          // Same lead-first locking order as draft submission: no order can be
+          // created between a lead-only request and its restriction marker.
+          const [lead] = await tx
+            .select({ id: leads.id })
+            .from(leads)
+            .where(and(eq(leads.workspaceId, input.workspaceId), eq(leads.id, leadId)))
+            .limit(1)
+            .for('update');
+          if (!lead) return { status: 'not_found' };
+          const [order] = await tx
+            .select({ id: orders.id })
+            .from(orders)
+            .where(and(eq(orders.workspaceId, input.workspaceId), eq(orders.leadId, leadId)))
+            .limit(1)
+            .for('update');
+          if (order) {
+            orderId = order.id;
+            subjectType = 'order';
+            subjectId = order.id;
+          } else if (subjectType === 'order') return { status: 'not_found' };
+        }
+        await restrictSubject(tx, {
           workspaceId: input.workspaceId,
-          actorId: input.actorId,
-          actorLabel: 'staff',
-          action: 'order.customer_data_deleted',
-          entity: 'order',
-          entityId: input.orderId,
-          before: null,
-          after: { reason: input.reason },
-          requestId: input.requestId,
+          subjectType,
+          subjectId,
+          leadId,
+          orderId,
         });
-
-        // Local intent (identifiers + action only). Publishing to the external
-        // ledger happens after commit through the outbox.
+        const [existing] = await tx
+          .select()
+          .from(deletionIntents)
+          .where(
+            and(
+              eq(deletionIntents.workspaceId, input.workspaceId),
+              eq(deletionIntents.subjectType, subjectType),
+              eq(deletionIntents.subjectId, subjectId),
+            ),
+          )
+          .orderBy(asc(deletionIntents.createdAt))
+          .limit(1);
+        if (existing)
+          return {
+            status: 'restricted',
+            deletionId: existing.id,
+            subjectType,
+            subjectId,
+            ledgerStatus: existing.ledgerAckId ? 'acknowledged' : 'pending_acknowledgement',
+            cleanupStatus: existing.completedAt ? 'completed' : 'pending',
+          };
         const [intent] = await tx
           .insert(deletionIntents)
           .values({
             workspaceId: input.workspaceId,
             action: 'delete_customer_data',
-            subjectType: 'order',
-            subjectId: input.orderId,
+            subjectType,
+            subjectId,
+            relatedLeadId: leadId,
             status: 'pending',
             reason: input.reason,
             actorId: input.actorId,
           })
           .returning({ id: deletionIntents.id });
-        if (!intent) throw new Error('deletion intent insert did not return a row');
-
+        if (!intent) throw new Error('deletion_intent_not_created');
         await tx.insert(outboxJobs).values({
           workspaceId: input.workspaceId,
           jobType: 'deletion_ledger_publish',
           dedupeKey: intent.id,
-          payload: { deletionId: intent.id, orderId: input.orderId },
+          payload: { deletionId: intent.id },
         });
-
-        return { status: 'deleted', deletionId: intent.id };
+        await tx.insert(auditEvents).values({
+          workspaceId: input.workspaceId,
+          actorId: input.actorId,
+          actorLabel: 'staff',
+          action: 'customer_data.restricted',
+          entity: subjectType,
+          entityId: subjectId,
+          after: { reason: input.reason, deletionId: intent.id },
+          requestId: input.requestId,
+        });
+        return {
+          status: 'restricted',
+          deletionId: intent.id,
+          subjectType,
+          subjectId,
+          ledgerStatus: 'pending_acknowledgement',
+          cleanupStatus: 'pending',
+        };
       },
     );
   }
+
+  async findSubjects(input: {
+    workspaceId: string;
+    actorId: string;
+    email: string;
+    page?: number;
+  }): Promise<Omit<FindDeletionSubjectsResponse, 'requestId'>> {
+    return this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: input.actorId },
+      async (tx) => {
+        const normalized = input.email.trim().toLowerCase();
+        const page = input.page ?? 1;
+        const offset = (page - 1) * 100;
+        const drafts = await tx
+          .select({
+            id: leads.id,
+            orderId: orders.id,
+            reference: orders.reference,
+            createdAt: leads.createdAt,
+          })
+          .from(leads)
+          .leftJoin(
+            orders,
+            and(eq(orders.workspaceId, leads.workspaceId), eq(orders.leadId, leads.id)),
+          )
+          .where(
+            and(
+              eq(leads.workspaceId, input.workspaceId),
+              sql`lower(${leads.email}) = ${normalized}`,
+            ),
+          )
+          .orderBy(asc(leads.id))
+          .offset(offset)
+          .limit(101);
+        const waitlist = await tx
+          .select({ id: regionWaitlist.id, createdAt: regionWaitlist.createdAt })
+          .from(regionWaitlist)
+          .where(
+            and(
+              eq(regionWaitlist.workspaceId, input.workspaceId),
+              sql`lower(${regionWaitlist.email}) = ${normalized}`,
+            ),
+          )
+          .orderBy(asc(regionWaitlist.id))
+          .offset(offset)
+          .limit(101);
+        return {
+          page,
+          hasMore: drafts.length > 100 || waitlist.length > 100,
+          subjects: [
+            ...drafts.slice(0, 100).map((row) => ({
+              subjectType: row.orderId ? ('order' as const) : ('lead' as const),
+              subjectId: row.orderId ?? row.id,
+              reference: row.reference,
+              createdAt: row.createdAt.toISOString(),
+            })),
+            ...waitlist.slice(0, 100).map((row) => ({
+              subjectType: 'region_waitlist' as const,
+              subjectId: row.id,
+              reference: null,
+              createdAt: row.createdAt.toISOString(),
+            })),
+          ],
+        };
+      },
+    );
+  }
+}
+
+export interface DeletionScope {
+  workspaceId: string;
+  subjectType: DeletionSubjectType;
+  subjectId: string;
+  leadId: string | undefined;
+  orderId: string | undefined;
+}
+
+export async function restrictSubject(tx: TenantTransaction, scope: DeletionScope): Promise<void> {
+  const now = new Date();
+  if (scope.leadId) {
+    await tx
+      .update(leads)
+      .set({ customerDataRestrictedAt: now })
+      .where(
+        and(
+          eq(leads.workspaceId, scope.workspaceId),
+          eq(leads.id, scope.leadId),
+          isNull(leads.customerDataRestrictedAt),
+        ),
+      );
+    await tx
+      .update(draftGrants)
+      .set({ revokedAt: now })
+      .where(
+        and(
+          eq(draftGrants.workspaceId, scope.workspaceId),
+          eq(draftGrants.leadId, scope.leadId),
+          isNull(draftGrants.revokedAt),
+        ),
+      );
+  }
+  if (scope.orderId) {
+    await tx
+      .update(orders)
+      .set({ customerDataRestrictedAt: now })
+      .where(
+        and(
+          eq(orders.workspaceId, scope.workspaceId),
+          eq(orders.id, scope.orderId),
+          isNull(orders.customerDataRestrictedAt),
+        ),
+      );
+    await tx
+      .update(trackingChallenges)
+      .set({ status: 'consumed', consumedAt: now })
+      .where(
+        and(
+          eq(trackingChallenges.workspaceId, scope.workspaceId),
+          eq(trackingChallenges.orderId, scope.orderId),
+          eq(trackingChallenges.status, 'pending'),
+        ),
+      );
+  }
+  if (scope.subjectType === 'region_waitlist') {
+    await tx
+      .update(regionWaitlist)
+      .set({ customerDataRestrictedAt: now })
+      .where(
+        and(
+          eq(regionWaitlist.workspaceId, scope.workspaceId),
+          eq(regionWaitlist.id, scope.subjectId),
+          isNull(regionWaitlist.customerDataRestrictedAt),
+        ),
+      );
+  }
+  const parent = or(
+    scope.leadId ? and(eq(files.recordType, 'lead'), eq(files.recordId, scope.leadId)) : undefined,
+    scope.orderId
+      ? and(eq(files.recordType, 'order'), eq(files.recordId, scope.orderId))
+      : undefined,
+  );
+  if (parent)
+    await tx
+      .update(files)
+      .set({ status: 'deleted', deletedAt: now, updatedAt: now })
+      .where(and(eq(files.workspaceId, scope.workspaceId), parent, isNull(files.deletedAt)));
+  const linked = or(
+    scope.leadId ? eq(followUpSchedules.leadId, scope.leadId) : undefined,
+    scope.orderId ? eq(followUpSchedules.orderId, scope.orderId) : undefined,
+  );
+  if (linked)
+    await tx
+      .update(followUpSchedules)
+      .set({ status: 'cancelled', cancelledReason: 'customer_deletion', updatedAt: now })
+      .where(
+        and(
+          eq(followUpSchedules.workspaceId, scope.workspaceId),
+          linked,
+          eq(followUpSchedules.status, 'scheduled'),
+        ),
+      );
+  const jobs = or(
+    scope.leadId ? sql`${outboxJobs.payload}->>'leadId' = ${scope.leadId}` : undefined,
+    scope.orderId ? sql`${outboxJobs.payload}->>'orderId' = ${scope.orderId}` : undefined,
+  );
+  if (jobs)
+    await tx
+      .update(outboxJobs)
+      .set({
+        status: 'completed',
+        completedAt: now,
+        leaseOwnerId: null,
+        leaseExpiresAt: null,
+        lockedAt: null,
+        lastErrorCode: 'customer_data_restricted',
+        providerId: 'skipped:customer_deletion',
+        updatedAt: now,
+      })
+      .where(
+        and(
+          eq(outboxJobs.workspaceId, scope.workspaceId),
+          jobs,
+          sql`${outboxJobs.jobType} not in ('deletion_ledger_publish', 'customer_data_cleanup', 'deletion_object_cleanup', 'suppression_ledger_publish')`,
+          sql`${outboxJobs.status} in ('pending', 'processing', 'failed', 'uncertain')`,
+        ),
+      );
 }

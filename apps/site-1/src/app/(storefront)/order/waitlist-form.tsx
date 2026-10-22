@@ -6,8 +6,8 @@ import { Button, FormField, Input } from '@canadian-plans/ui';
 
 import { orderFormContent } from '@content/order-forms';
 
-import { useTurnstile } from '../../../lib/use-turnstile';
 import { joinWaitlist } from './waitlist';
+import { useHumanChallenge } from '@/components/shared/human-challenge';
 
 const copy = orderFormContent.waitlist;
 
@@ -16,26 +16,20 @@ const copy = orderFormContent.waitlist;
  * else, so leaving a wish costs the visitor ten seconds.
  */
 export function WaitlistForm({ province }: { province: ProvinceCode }) {
+  const human = useHumanChallenge();
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | undefined>(undefined);
   const [done, setDone] = useState(false);
   const [busy, setBusy] = useState(false);
-  const turnstile = useTurnstile();
 
   async function onSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     if (busy) return;
     setBusy(true);
     setError(undefined);
-    let token: string | undefined;
-    try {
-      token = await turnstile.getToken();
-    } catch {
-      setBusy(false);
-      setError(copy.failed);
-      return;
-    }
-    const result = await joinWaitlist({ province, email, turnstileToken: token });
+    const result = await human.run('waitlist-join', (turnstileToken) =>
+      joinWaitlist({ province, email, turnstileToken }),
+    );
     setBusy(false);
     if (result.ok) {
       setDone(true);
@@ -58,7 +52,6 @@ export function WaitlistForm({ province }: { province: ProvinceCode }) {
         {copy.title} — {provinceNames[province]}
       </h4>
       <p>{copy.description}</p>
-      <div ref={turnstile.containerRef} />
       <FormField id="waitlist-email" label={copy.emailLabel} required error={error}>
         <Input
           type="email"
@@ -71,6 +64,7 @@ export function WaitlistForm({ province }: { province: ProvinceCode }) {
         />
       </FormField>
       <p className="text-sm">{copy.notice}</p>
+      {human.challenge}
       <Button type="submit" disabled={busy}>
         {copy.submit}
       </Button>

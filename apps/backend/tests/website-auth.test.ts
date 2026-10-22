@@ -59,6 +59,7 @@ class FakeRateLimiter {
 
 /** Records every call so a test can assert what the route handed to the store, without a real database. */
 class FakeLeadStore implements LeadStore {
+  readLead: LeadStore['readLead'] = async () => ({ status: 'grant_invalid' });
   readonly createCalls: CreateLeadInput[] = [];
 
   async createLead(input: CreateLeadInput): Promise<CreateLeadResult> {
@@ -108,6 +109,7 @@ const staffOnly: {
     revokeCredential: async () => ({ status: 'not_found' }),
   },
   leadStore: {
+    readLead: async () => ({ status: 'grant_invalid' }),
     createLead: async () => {
       throw new Error('unused');
     },
@@ -125,6 +127,7 @@ let limiter: FakeRateLimiter;
 let leadStore: FakeLeadStore;
 let admitted: boolean;
 let admissionFailure: boolean;
+let visitorMax: number;
 
 function post(path: string, headers: Record<string, string>, body?: unknown) {
   return fetch(`${baseUrl}${path}`, {
@@ -142,10 +145,19 @@ beforeEach(async () => {
   leadStore = new FakeLeadStore();
   admitted = true;
   admissionFailure = false;
+  visitorMax = 120;
   server = createApp({
     staff: staffOnly,
     website: {
       auth: {
+        limits: {
+          ipWindowSeconds: 60,
+          get ipMaxCount() {
+            return visitorMax;
+          },
+          credentialWindowSeconds: 60,
+          credentialMaxCount: 300,
+        },
         resolveCredential: resolver.resolve,
         rateLimit: limiter.hit,
         botCheck: async () => {
@@ -202,8 +214,12 @@ describe('public website credential authentication', () => {
 
   it('still asks for the bot check on every write', async () => {
     admitted = false;
-    for (const method of ['POST', 'PATCH', 'PUT', 'DELETE']) {
-      const response = await fetch(`${baseUrl}/api/v1/website/leads`, {
+    const leadPath = '/api/v1/website/leads';
+    for (const [method, path] of [
+      ['POST', leadPath],
+      ['PATCH', `${leadPath}/00000000-0000-4000-8000-000000000001`],
+    ] as const) {
+      const response = await fetch(`${baseUrl}${path}`, {
         method,
         headers: { authorization: `Bearer ${VALID_SECRET}`, 'content-type': 'application/json' },
         body: '{}',
@@ -225,10 +241,46 @@ describe('public website credential authentication', () => {
       ).toBe(201);
     }
     const buckets = limiter.inputs
-      .filter((input) => input.bucketKey.startsWith('ip:'))
+      .filter((input) => input.bucketKey.startsWith('bootstrap:ip:'))
       .map((input) => input.bucketKey);
     expect(new Set(buckets).size).toBe(1);
     expect(buckets[0]).not.toContain('203.0.113.');
+  });
+
+  it('separates authenticated visitors behind the same server and retains a shared credential ceiling', async () => {
+    visitorMax = 1;
+    const first = {
+      authorization: `Bearer ${VALID_SECRET}`,
+      'x-website-visitor-id': 'a'.repeat(64),
+    };
+    const second = {
+      authorization: `Bearer ${VALID_SECRET}`,
+      'x-website-visitor-id': 'b'.repeat(64),
+    };
+    expect((await post('/api/v1/website/leads', first, VALID_LEAD_BODY)).status).toBe(201);
+    expect((await post('/api/v1/website/leads', first, VALID_LEAD_BODY)).status).toBe(429);
+    expect((await post('/api/v1/website/leads', second, VALID_LEAD_BODY)).status).toBe(201);
+    const credentials = limiter.inputs.filter((input) => input.bucketKey.startsWith('cred:'));
+    expect(new Set(credentials.map((input) => input.bucketKey)).size).toBe(1);
+    expect(credentials.every((input) => input.maxCount === 300)).toBe(true);
+  });
+  it('does not trust a visitor assertion before service authentication', async () => {
+    const { secret } = generateServiceSecret();
+    for (const visitor of ['a'.repeat(64), 'b'.repeat(64)]) {
+      expect(
+        (
+          await post(
+            '/api/v1/website/leads',
+            { authorization: `Bearer ${secret}`, 'x-website-visitor-id': visitor },
+            VALID_LEAD_BODY,
+          )
+        ).status,
+      ).toBe(401);
+    }
+    expect(limiter.inputs.filter((input) => input.bucketKey.startsWith('visitor:'))).toHaveLength(
+      0,
+    );
+    expect(new Set(limiter.inputs.map((input) => input.bucketKey)).size).toBe(1);
   });
 
   it('requires a well-formed service credential', async () => {
@@ -317,7 +369,7 @@ describe('public website credential authentication', () => {
   });
 
   it('rate-limits before doing credential work', async () => {
-    limiter.denyPrefixes.add('ip:');
+    limiter.denyPrefixes.add('bootstrap:ip:');
     const response = await post(
       '/api/v1/website/leads',
       { authorization: `Bearer ${VALID_SECRET}` },

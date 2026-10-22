@@ -136,6 +136,7 @@ export interface FooterNewsletterContent {
   readonly action: string;
   readonly invalid: string;
   readonly preview: string;
+  readonly failed: string;
 }
 
 export interface FooterLink extends PreviewLink {

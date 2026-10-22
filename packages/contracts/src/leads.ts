@@ -121,3 +121,17 @@ export const updateLeadResponseSchema = z.object({
   requestId: requestIdSchema,
 });
 export type UpdateLeadResponse = z.infer<typeof updateLeadResponseSchema>;
+
+/** Personal draft data requires both the website identity and this lead's grant. */
+export const leadDraftSchema = z.object({
+  leadId: z.uuid(),
+  productId: z.uuid().nullable(),
+  contact: leadContactSchema,
+  form: leadFormSchema.nullable(),
+});
+export type LeadDraft = z.infer<typeof leadDraftSchema>;
+export const readLeadResponseSchema = z.object({
+  draft: leadDraftSchema,
+  requestId: requestIdSchema,
+});
+export type ReadLeadResponse = z.infer<typeof readLeadResponseSchema>;

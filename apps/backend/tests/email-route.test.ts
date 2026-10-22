@@ -1,13 +1,10 @@
 import type { Server } from 'node:http';
-import express from 'express';
+import { createHmac } from 'node:crypto';
+import { createApp } from '../src/app.js';
+import { MachineRegistry } from '../src/machines/registry.js';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { requestId } from '../src/requestId.js';
-import {
-  buildUnsubscribeToken,
-  createEmailRouter,
-  type EmailRouteDependencies,
-} from '../src/routes/email.js';
+import { buildUnsubscribeToken, type EmailRouteDependencies } from '../src/routes/email.js';
 import { hashContact } from '../src/email/hash.js';
 import type {
   ApplyProviderEventOutcome,
@@ -21,7 +18,33 @@ import type {
 const WORKSPACE = '11111111-1111-4111-8111-111111111111';
 const LEAD = '22222222-2222-4222-8222-222222222222';
 const SECRET = 'a-sufficiently-long-contact-hash-secret';
-const WEBHOOK_SECRET = 'a-webhook-shared-secret';
+const WEBHOOK_SECRET =
+  'whsec_' + Buffer.from('native-resend-test-secret-32bytes!').toString('base64');
+const ACTOR = '33333333-3333-4333-8333-333333333333';
+const MESSAGE = '44444444-4444-4444-8444-444444444444';
+function signed(body: string, id = 'evt-1', timestamp = Math.floor(Date.now() / 1000).toString()) {
+  const signature = createHmac('sha256', Buffer.from(WEBHOOK_SECRET.slice(6), 'base64'))
+    .update(`${id}.${timestamp}.${body}`)
+    .digest('base64');
+  return {
+    'content-type': 'application/json',
+    'svix-id': id,
+    'svix-timestamp': timestamp,
+    'svix-signature': `v1,${signature}`,
+  };
+}
+function event(type = 'email.bounced') {
+  return {
+    type,
+    created_at: new Date().toISOString(),
+    data: {
+      email_id: 'resend-id-1',
+      to: ['bounced@example.com'],
+      tags: { cp_message_id: MESSAGE },
+      bounce: { type: 'Permanent' },
+    },
+  };
+}
 
 class FakeEmailStore implements EmailStore {
   unsubscribed: Array<{ contactHash: string; leadId?: string }> = [];
@@ -64,13 +87,41 @@ describe('email routes', () => {
       sessionVerifier: { verify: async () => undefined },
       contactHashSecret: () => SECRET,
       unsubscribeConsentVersion: 'test-1',
-      webhookSharedSecret: WEBHOOK_SECRET,
+      registry: new MachineRegistry({
+        webhooks: [
+          {
+            selector: 'launch',
+            provider: 'resend',
+            providerAccount: 'account-a',
+            workspaceId: WORKSPACE,
+            actorId: ACTOR,
+            verificationSecret: WEBHOOK_SECRET,
+            revoked: false,
+          },
+          {
+            selector: 'revoked',
+            provider: 'resend',
+            providerAccount: 'account-a',
+            workspaceId: WORKSPACE,
+            actorId: ACTOR,
+            verificationSecret: 'retired-resend-secret',
+            revoked: true,
+          },
+          {
+            selector: 'other',
+            provider: 'sanity',
+            providerAccount: 'other',
+            workspaceId: WORKSPACE,
+            actorId: ACTOR,
+            verificationSecret: 'other-provider-secret',
+            revoked: false,
+          },
+        ],
+        schedulers: [],
+      }),
       authorizeDeliveryView: async () => true,
     };
-    const app = express();
-    app.use(requestId);
-    app.use(express.json());
-    app.use('/api/v1/email', createEmailRouter(dependencies));
+    const app = createApp({ email: dependencies });
     server = app.listen(0);
     await new Promise<void>((resolve) => server.once('listening', resolve));
     const address = server.address();
@@ -115,63 +166,141 @@ describe('email routes', () => {
     expect(store.unsubscribed).toHaveLength(0);
   });
 
-  it('rejects an invalid provider event body', async () => {
+  it('verifies native raw bytes and attributes events only to the registry tenant/account', async () => {
+    const body = JSON.stringify({ ...event(), workspaceId: LEAD, actorId: LEAD });
+    const response = await fetch(`${baseUrl}/api/v1/webhooks/resend/launch`, {
+      method: 'POST',
+      headers: signed(body),
+      body,
+    });
+    expect(response.status).toBe(200);
+    expect(store.events).toEqual([
+      expect.objectContaining({
+        workspaceId: WORKSPACE,
+        actorId: ACTOR,
+        provider: 'resend',
+        providerAccount: 'account-a',
+        providerMessageId: 'resend-id-1',
+        messageId: MESSAGE,
+        hardBounce: true,
+        contactHash: hashContact('bounced@example.com', SECRET),
+      }),
+    ]);
+  });
+
+  it.each(['missing', 'altered', 'stale', 'future', 'wrong-key', 'malformed-timestamp'])(
+    'rejects invalid native authentication (%s)',
+    async (mode) => {
+      const body = JSON.stringify(event());
+      const headers = signed(body);
+      if (mode === 'missing') headers['svix-signature'] = '';
+      if (mode === 'wrong-key') headers['svix-signature'] = 'v1,d3Jvbmc=';
+      if (mode === 'stale' || mode === 'future')
+        Object.assign(
+          headers,
+          signed(
+            body,
+            'evt-1',
+            String(Math.floor(Date.now() / 1000) + (mode === 'stale' ? -301 : 301)),
+          ),
+        );
+      if (mode === 'malformed-timestamp') headers['svix-timestamp'] += 'garbage';
+      const response = await fetch(`${baseUrl}/api/v1/webhooks/resend/launch`, {
+        method: 'POST',
+        headers,
+        body: mode === 'altered' ? body + ' ' : body,
+      });
+      expect(response.status).toBe(401);
+      expect(store.events).toEqual([]);
+    },
+  );
+  it.each(['unknown', 'revoked', 'other'])('rejects a %s selector', async (selector) => {
+    const body = JSON.stringify(event());
+    const response = await fetch(`${baseUrl}/api/v1/webhooks/resend/${selector}`, {
+      method: 'POST',
+      headers: signed(body),
+      body,
+    });
+    expect(response.status).toBe(401);
+    expect(store.events).toEqual([]);
+  });
+  it('accepts a valid signature among rotated signatures, including Unicode and whitespace', async () => {
+    const body = JSON.stringify({ ...event(), subject: 'Montréal 🇨🇦' }, null, 2);
+    const headers = signed(body);
+    headers['svix-signature'] = `v2,ignored v1,wrong ${headers['svix-signature']}`;
+    const response = await fetch(`${baseUrl}/api/v1/webhooks/resend/launch`, {
+      method: 'POST',
+      headers,
+      body,
+    });
+    expect(response.status).toBe(200);
+  });
+  it('deduplicates provider redelivery by the signed event id', async () => {
+    const body = JSON.stringify(event());
+    const send = () =>
+      fetch(`${baseUrl}/api/v1/webhooks/resend/launch`, {
+        method: 'POST',
+        headers: signed(body),
+        body,
+      });
+    expect(await (await send()).json()).toEqual({ status: 'applied' });
+    expect(await (await send()).json()).toEqual({ status: 'duplicate' });
+    expect(store.events).toHaveLength(1);
+  });
+  it('does not suppress temporary bounces', async () => {
+    const payload = event();
+    payload.data.bounce.type = 'Transient';
+    const body = JSON.stringify(payload);
+    expect(
+      (
+        await fetch(`${baseUrl}/api/v1/webhooks/resend/launch`, {
+          method: 'POST',
+          headers: signed(body),
+          body,
+        })
+      ).status,
+    ).toBe(200);
+    expect(store.events[0]?.hardBounce).toBe(false);
+  });
+  it.each(['email.opened', 'contact.created'])(
+    'acknowledges unused native events (%s)',
+    async (type) => {
+      const body = JSON.stringify(event(type));
+      const response = await fetch(`${baseUrl}/api/v1/webhooks/resend/launch`, {
+        method: 'POST',
+        headers: signed(body),
+        body,
+      });
+      expect(await response.json()).toEqual({ status: 'ignored' });
+      expect(store.events).toEqual([]);
+    },
+  );
+  it('retires the body-selected normalized shared-secret protocol', async () => {
     const response = await fetch(`${baseUrl}/api/v1/email/webhook/events`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-email-webhook-secret': WEBHOOK_SECRET },
-      body: JSON.stringify({
-        eventType: 'not_a_real_type',
-        workspaceId: WORKSPACE,
-        providerEventId: 'evt-1',
-      }),
+      body: JSON.stringify({ eventType: 'bounce', workspaceId: WORKSPACE }),
     });
-
-    expect(response.status).toBe(400);
-    expect(store.events).toHaveLength(0);
+    expect(response.status).toBe(404);
+    expect(store.events).toEqual([]);
   });
-
-  it('rejects a provider event without the shared secret', async () => {
-    const response = await fetch(`${baseUrl}/api/v1/email/webhook/events`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        eventType: 'bounce',
-        workspaceId: WORKSPACE,
-        providerEventId: 'evt-1',
-      }),
-    });
-
-    expect(response.status).toBe(401);
-    expect(store.events).toHaveLength(0);
-  });
-
-  it('applies a valid bounce event exactly once even if the provider redelivers it', async () => {
-    const body = JSON.stringify({
-      eventType: 'bounce',
-      workspaceId: WORKSPACE,
-      providerEventId: 'evt-dup-1',
-      toAddress: 'bounced@example.com',
-    });
-    const headers = {
-      'content-type': 'application/json',
-      'x-email-webhook-secret': WEBHOOK_SECRET,
-    };
-
-    const first = await fetch(`${baseUrl}/api/v1/email/webhook/events`, {
-      method: 'POST',
-      headers,
-      body,
-    });
-    const second = await fetch(`${baseUrl}/api/v1/email/webhook/events`, {
-      method: 'POST',
-      headers,
-      body,
-    });
-
-    expect(first.status).toBe(200);
-    expect(second.status).toBe(200);
-    expect(await first.json()).toEqual({ status: 'applied' });
-    expect(await second.json()).toEqual({ status: 'duplicate' });
-    expect(store.events).toHaveLength(1);
-  });
+  it.each(['invalid-json', 'non-json', 'oversized', 'invalid-message-tag', 'multiple-recipients'])(
+    'rejects invalid native content (%s)',
+    async (mode) => {
+      const payload = event();
+      if (mode === 'invalid-message-tag') payload.data.tags.cp_message_id = 'not-uuid';
+      if (mode === 'multiple-recipients') payload.data.to.push('other@example.com');
+      let body = mode === 'invalid-json' ? '{' : JSON.stringify(payload);
+      if (mode === 'oversized') body += ' '.repeat(65536);
+      const headers = signed(body);
+      if (mode === 'non-json') headers['content-type'] = 'text/plain';
+      const response = await fetch(`${baseUrl}/api/v1/webhooks/resend/launch`, {
+        method: 'POST',
+        headers,
+        body,
+      });
+      expect(response.status).toBe(400);
+      expect(store.events).toEqual([]);
+    },
+  );
 });

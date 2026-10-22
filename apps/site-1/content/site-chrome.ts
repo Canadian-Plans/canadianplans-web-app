@@ -81,6 +81,7 @@ export const siteFooter: FooterContent = {
     action: 'Sign up',
     invalid: 'Enter a valid email address.',
     preview: 'Thanks! Email sign-ups open soon. Nothing was sent or saved.',
+    failed: "We couldn't complete that request. Please try again.",
   },
   copyright:
     '© 2026 Canadian Plans. Rogers, Fido and Chatr are trademarks of their respective owners.',

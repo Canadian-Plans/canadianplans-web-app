@@ -40,6 +40,7 @@ const resolution: WebsiteCredentialResolution = {
  * coverage of the real SQL these rules mirror).
  */
 class FakeLeadStore implements LeadStore {
+  readLead: LeadStore['readLead'] = async () => ({ status: 'grant_invalid' });
   readonly createCalls: CreateLeadInput[] = [];
   readonly updateCalls: UpdateLeadInput[] = [];
   grants = new Map<string, { leadId: string; expiresAt: number; revoked: boolean }>([
@@ -105,6 +106,7 @@ const staffOnly: {
     revokeCredential: async () => ({ status: 'not_found' }),
   },
   leadStore: {
+    readLead: async () => ({ status: 'grant_invalid' }),
     createLead: async () => {
       throw new Error('unused');
     },
@@ -185,6 +187,51 @@ describe('POST /api/v1/website/leads', () => {
     expect(response.status).toBe(400);
     expect(leadStore.createCalls).toHaveLength(0);
   });
+});
+
+describe('GET /api/v1/website/leads/:leadId', () => {
+  it('requires the exact draft grant and does not cache personal data', async () => {
+    const draft = {
+      leadId: LEAD_A,
+      productId: null,
+      contact: { fullName: 'Saved customer' },
+      form: null,
+    };
+    leadStore.readLead = async ({ grantToken, leadId }) =>
+      grantToken === VALID_GRANT_A && leadId === LEAD_A
+        ? { status: 'read', draft }
+        : { status: 'grant_invalid' };
+    const response = await request('GET', `/api/v1/website/leads/${LEAD_A}`, {
+      'x-draft-grant': VALID_GRANT_A,
+    });
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe('private, no-store');
+    expect(await response.json()).toMatchObject({ draft });
+    const rejectedHeaders: Record<string, string>[] = [
+      {},
+      { 'x-draft-grant': 'cpldg_forged-grant-000000000' },
+      { 'x-draft-grant': VALID_GRANT_A, authorization: 'Bearer invalid' },
+    ];
+    for (const headers of rejectedHeaders) {
+      expect((await request('GET', `/api/v1/website/leads/${LEAD_A}`, headers)).status).toBe(401);
+    }
+    expect(
+      (await request('GET', `/api/v1/website/leads/${LEAD_B}`, { 'x-draft-grant': VALID_GRANT_A }))
+        .status,
+    ).toBe(401);
+  });
+
+  it.each(['grant_expired', 'draft_submitted'] as const)(
+    'does not expose a %s draft',
+    async (status) => {
+      leadStore.readLead = async () => ({ status });
+      const response = await request('GET', `/api/v1/website/leads/${LEAD_A}`, {
+        'x-draft-grant': VALID_GRANT_A,
+      });
+      expect(response.status).toBe(status === 'grant_expired' ? 401 : 409);
+      expect(await response.json()).not.toHaveProperty('draft');
+    },
+  );
 });
 
 describe('PATCH /api/v1/website/leads/:leadId', () => {

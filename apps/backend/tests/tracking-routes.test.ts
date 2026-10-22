@@ -13,7 +13,8 @@ import type { StaffSessionVerifier } from '../src/auth/session.js';
 import type { StaffStore } from '../src/staff/store.js';
 import type { WebsiteCredentialStore } from '../src/website/store.js';
 import { generateServiceSecret } from '../src/website/credential.js';
-import type { TrackingNotifier, TrackingOtpMessage } from '../src/tracking/notifier.js';
+import { openTrackingCode } from '../src/tracking/cipher.js';
+import type { QueueTrackingChallengeInput } from '../src/tracking/store.js';
 import { TrackingService } from '../src/tracking/service.js';
 import { signTrackingGrant } from '../src/tracking/secrets.js';
 import type { ConsumeOutcome, TrackingStatusView, TrackingStore } from '../src/tracking/store.js';
@@ -60,6 +61,20 @@ class FakeTrackingStore implements TrackingStore {
     return row && row.email === input.normalizedEmail ? { orderId: row.orderId } : undefined;
   }
 
+  readonly sent: { workspaceId: string; email: string; reference: string; code: string }[] = [];
+  async createChallengeAndQueue(input: QueueTrackingChallengeInput): Promise<void> {
+    await this.invalidatePending();
+    await this.createChallenge(input);
+    const code = openTrackingCode(SECRET, input, input.sealedCode);
+    if (!code) throw new Error('invalid queued code');
+    this.sent.push({
+      workspaceId: input.workspaceId,
+      email: input.normalizedEmail,
+      reference: REFERENCE,
+      code,
+    });
+  }
+
   async invalidatePending() {
     for (const row of this.rows) if (row.status === 'pending') row.status = 'consumed';
   }
@@ -98,18 +113,12 @@ class FakeTrackingStore implements TrackingStore {
   }
 }
 
-class RecordingNotifier implements TrackingNotifier {
-  readonly sent: TrackingOtpMessage[] = [];
-  async send(message: TrackingOtpMessage) {
-    this.sent.push({ ...message });
-  }
-}
-
 const staffOnly: {
   sessionVerifier: StaffSessionVerifier;
   store: StaffStore;
   credentialStore: WebsiteCredentialStore;
   leadStore: {
+    readLead: () => Promise<never>;
     createLead: () => Promise<never>;
     updateLead: () => Promise<never>;
     listLeads: () => Promise<{
@@ -135,6 +144,9 @@ const staffOnly: {
     revokeCredential: async () => ({ status: 'not_found' }),
   },
   leadStore: {
+    readLead: async () => {
+      throw new Error('unused');
+    },
     createLead: async () => {
       throw new Error('unused');
     },
@@ -148,11 +160,12 @@ const staffOnly: {
 let server: Server;
 let baseUrl: string;
 let store: FakeTrackingStore;
-let notifier: RecordingNotifier;
+let notifier: FakeTrackingStore;
 let nowMs: number;
 let originalSecret: string | undefined;
 let originalLatency: string | undefined;
 let denyRateLimit: boolean;
+let botChecks: number;
 
 function request(
   method: string,
@@ -177,12 +190,13 @@ beforeEach(async () => {
   process.env['TRACKING_HASH_SECRET'] = SECRET;
   process.env['TRACKING_OTP_MIN_LATENCY_MS'] = '200';
   denyRateLimit = false;
+  botChecks = 0;
   store = new FakeTrackingStore();
-  notifier = new RecordingNotifier();
+  notifier = store;
   nowMs = Date.parse('2026-09-20T12:00:00.000Z');
   const service = new TrackingService({
     store,
-    notifier,
+    contactHashSecret: () => SECRET,
     secret: SECRET,
     now: () => new Date(nowMs),
   });
@@ -195,7 +209,10 @@ beforeEach(async () => {
           denyRateLimit
             ? { allowed: false, retryAfterSeconds: 60 }
             : { allowed: true, retryAfterSeconds: 0 },
-        botCheck: async () => true,
+        botCheck: async () => {
+          botChecks += 1;
+          return true;
+        },
       },
       leads: { store: staffOnly.leadStore },
       tracking: { service },
@@ -240,6 +257,17 @@ describe('POST /api/v1/website/tracking/otp', () => {
     // The code is never echoed in the response.
     const text = JSON.stringify(knownBody);
     expect(text).not.toContain(notifier.sent[0]?.code ?? 'no-code');
+  });
+
+  it('verifies a tracking request exactly once through the actual app routers', async () => {
+    const response = await request(
+      'POST',
+      '/api/v1/website/tracking/otp',
+      {},
+      { email: EMAIL, orderReference: REFERENCE },
+    );
+    expect(response.status).toBe(200);
+    expect(botChecks).toBe(1);
   });
 
   it('requires the website credential', async () => {

@@ -1,11 +1,11 @@
 'use server';
 
-import { joinRegionWaitlistRequestSchema } from '@canadian-plans/contracts';
-import { z } from 'zod';
+import { joinRegionWaitlistRequestSchema, websiteBotTokenSchema } from '@canadian-plans/contracts';
 
 import { getBackendClient } from '@/lib/backendClient';
 import { siteConfig } from '@/site.config';
 import type { ActionResult } from './types';
+import { verificationContent } from '@content/verification';
 
 /**
  * Leaves an email on the wish list for a province with no internet or TV plans
@@ -33,11 +33,12 @@ export async function joinWaitlist(input: {
       fieldErrors: { email: 'Enter a valid email address.' },
     };
   }
+  if (!websiteBotTokenSchema.safeParse(input.turnstileToken).success)
+    return { ok: false, code: 'verification_failed', message: verificationContent.failed };
   try {
-    const token = z.string().min(1).max(2048).safeParse(input.turnstileToken);
-    await getBackendClient(token.success ? { turnstileToken: token.data } : {}).regionWaitlist.join(
-      parsed.data,
-    );
+    await getBackendClient().regionWaitlist.join(parsed.data, {
+      turnstileToken: input.turnstileToken,
+    });
     return { ok: true, data: { joined: true } };
   } catch {
     return {

@@ -13,18 +13,45 @@ import { z } from 'zod';
  * check."
  */
 
+const ledgerEventIdentitySchema = z.object({
+  eventId: z.string().min(1),
+  workspaceId: z.string().min(1),
+  subjectId: z.string().min(1),
+  occurredAt: z.iso.datetime(),
+  schemaVersion: z.literal(1),
+  versionId: z.string().min(1),
+});
 export const ledgerEventSchema = z
-  .object({
-    eventId: z.string().min(1),
-    workspaceId: z.string().min(1),
-    subjectType: z.literal('order'),
-    subjectId: z.string().min(1),
-    action: z.literal('delete_customer_data'),
-    occurredAt: z.iso.datetime(),
-    schemaVersion: z.literal(1),
-    versionId: z.string().min(1),
-  })
-  .strict();
+  .discriminatedUnion('action', [
+    ledgerEventIdentitySchema
+      .extend({
+        action: z.literal('delete_customer_data'),
+        subjectType: z.enum(['order', 'lead', 'region_waitlist']),
+        relatedLeadId: z.uuid().optional(),
+      })
+      .strict(),
+    ledgerEventIdentitySchema
+      .extend({
+        action: z.literal('suppress_contact'),
+        subjectType: z.literal('contact'),
+        subjectId: z.string().regex(/^[a-f0-9]{64}$/),
+        reason: z.enum(['hard_bounce', 'complaint', 'manual']),
+      })
+      .strict(),
+  ])
+  .superRefine((event, ctx) => {
+    if (event.action !== 'delete_customer_data' || !event.relatedLeadId) return;
+    if (
+      event.subjectType === 'region_waitlist' ||
+      (event.subjectType === 'lead' && event.relatedLeadId !== event.subjectId)
+    ) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Invalid deletion relationship',
+        path: ['relatedLeadId'],
+      });
+    }
+  });
 export type LedgerEventRecord = z.infer<typeof ledgerEventSchema>;
 
 export interface LedgerCheckpoint {

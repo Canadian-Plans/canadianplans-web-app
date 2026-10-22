@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import postgres from 'postgres';
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
 import { createDatabaseClient, type DatabaseClient } from '@canadian-plans/db';
+import { applyMigrations } from '@canadian-plans/db/migrations';
 
 import { DatabaseDocumentStore } from '../src/documents/store.js';
 
@@ -31,7 +32,7 @@ const WORKSPACE_B = '11000000-0000-4000-8000-0000000000f2';
 const ACTOR = '21000000-0000-4000-8000-0000000000f1';
 const ACTOR_B = '21000000-0000-4000-8000-0000000000f2';
 const REQUEST = '31000000-0000-4000-8000-0000000000f1';
-const LEAD = '91000000-0000-4000-8000-0000000000f1';
+let leadId = randomUUID();
 const TEST_RUNTIME_PASSWORD = 'local_ci_runtime_password';
 
 databaseTest('DatabaseDocumentStore (T17)', () => {
@@ -39,7 +40,7 @@ databaseTest('DatabaseDocumentStore (T17)', () => {
   let database: DatabaseClient;
   let store: DatabaseDocumentStore;
 
-  const intent = (recordId = LEAD, stagingKey = `staging/${WORKSPACE}/${randomUUID()}`) => ({
+  const intent = (recordId = leadId, stagingKey = `staging/${WORKSPACE}/${randomUUID()}`) => ({
     workspaceId: WORKSPACE,
     actorId: ACTOR,
     requestId: REQUEST,
@@ -55,6 +56,7 @@ databaseTest('DatabaseDocumentStore (T17)', () => {
 
   beforeAll(async () => {
     if (!migrationUrl) throw new Error('TEST_MIGRATION_DATABASE_URL is required');
+    await applyMigrations({ connectionString: migrationUrl, ssl: false });
     admin = postgres(migrationUrl, { max: 1, prepare: false, ssl: false });
     await admin.begin(async (tx) => {
       await tx`select pg_advisory_xact_lock(745284914)`;
@@ -83,7 +85,9 @@ databaseTest('DatabaseDocumentStore (T17)', () => {
   });
 
   beforeEach(async () => {
-    await admin`delete from app.files where workspace_id in (${WORKSPACE}, ${WORKSPACE_B})`;
+    // Isolate fixtures by parent ID; raw file deletion correctly requires a
+    // customer-deletion acknowledgement now. The disposable DB owns teardown.
+    leadId = randomUUID();
   });
 
   test('claim → attach makes exactly one available object and records a revision', async () => {
@@ -94,7 +98,7 @@ databaseTest('DatabaseDocumentStore (T17)', () => {
       workspaceId: WORKSPACE,
       actorId: ACTOR,
       fileId: file.id,
-      candidateKey: `candidate/${WORKSPACE}/c1`,
+      candidateKey: `candidate/${WORKSPACE}/${file.id}/c1`,
       now: new Date(),
     });
     expect(claim.status).toBe('claimed');
@@ -104,8 +108,8 @@ databaseTest('DatabaseDocumentStore (T17)', () => {
       actorId: ACTOR,
       requestId: REQUEST,
       fileId: file.id,
-      candidateKey: `candidate/${WORKSPACE}/c1`,
-      objectKey: `candidate/${WORKSPACE}/c1`,
+      candidateKey: `candidate/${WORKSPACE}/${file.id}/c1`,
+      objectKey: `candidate/${WORKSPACE}/${file.id}/c1`,
       detectedMime: 'application/pdf',
       sizeBytes: 10,
       checksumSha256: 'a'.repeat(64),
@@ -125,7 +129,7 @@ databaseTest('DatabaseDocumentStore (T17)', () => {
       workspaceId: WORKSPACE,
       actorId: ACTOR,
       fileId: file.id,
-      candidateKey: `candidate/${WORKSPACE}/c1`,
+      candidateKey: `candidate/${WORKSPACE}/${file.id}/c1`,
       now: new Date(),
     });
     await store.attachVerified({
@@ -133,8 +137,8 @@ databaseTest('DatabaseDocumentStore (T17)', () => {
       actorId: ACTOR,
       requestId: REQUEST,
       fileId: file.id,
-      candidateKey: `candidate/${WORKSPACE}/c1`,
-      objectKey: `candidate/${WORKSPACE}/c1`,
+      candidateKey: `candidate/${WORKSPACE}/${file.id}/c1`,
+      objectKey: `candidate/${WORKSPACE}/${file.id}/c1`,
       detectedMime: 'application/pdf',
       sizeBytes: 10,
       checksumSha256: 'a'.repeat(64),
@@ -143,7 +147,7 @@ databaseTest('DatabaseDocumentStore (T17)', () => {
       workspaceId: WORKSPACE,
       actorId: ACTOR,
       fileId: file.id,
-      candidateKey: `candidate/${WORKSPACE}/c2`,
+      candidateKey: `candidate/${WORKSPACE}/${file.id}/c2`,
       now: new Date(),
     });
     expect(second.status).toBe('already_available');
@@ -156,14 +160,14 @@ databaseTest('DatabaseDocumentStore (T17)', () => {
         workspaceId: WORKSPACE,
         actorId: ACTOR,
         fileId: file.id,
-        candidateKey: `candidate/${WORKSPACE}/a`,
+        candidateKey: `candidate/${WORKSPACE}/${file.id}/a`,
         now: new Date(),
       }),
       store.claimForVerification({
         workspaceId: WORKSPACE,
         actorId: ACTOR,
         fileId: file.id,
-        candidateKey: `candidate/${WORKSPACE}/b`,
+        candidateKey: `candidate/${WORKSPACE}/${file.id}/b`,
         now: new Date(),
       }),
     ]);
@@ -195,7 +199,7 @@ databaseTest('DatabaseDocumentStore (T17)', () => {
       workspaceId: WORKSPACE,
       actorId: ACTOR,
       recordType: 'lead',
-      recordId: LEAD,
+      recordId: leadId,
     });
     expect(listed[0]?.latestReview?.decision).toBe('rejected');
   });

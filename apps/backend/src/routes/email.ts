@@ -8,10 +8,10 @@ import {
   type StaffSessionVerifier,
 } from '../auth/session.js';
 import { DatabaseEmailStore, type EmailStore } from '../email/store.js';
-import { hashContact, normalizeEmail, requireContactHashSecret } from '../email/hash.js';
+import { hashContact, requireContactHashSecret } from '../email/hash.js';
 import { createAuthorize } from '../staff/authorization.js';
 import { DatabaseStaffStore, type StaffStore } from '../staff/store.js';
-import { FakeSuppressionLedgerPublisher } from '@canadian-plans/adapters';
+import { loadMachineRegistry, type MachineRegistry } from '../machines/registry.js';
 
 export interface EmailRouteDependencies {
   store: EmailStore;
@@ -24,8 +24,7 @@ export interface EmailRouteDependencies {
   contactHashSecret: () => string;
   /** The consent-version string recorded for an unsubscribe (CASL). */
   unsubscribeConsentVersion: string;
-  /** Shared secret gating the provider event webhook (see BLOCKERS: real SES/SNS signature verification is pending OPEN_INPUTS #23). */
-  webhookSharedSecret: string | undefined;
+  registry: MachineRegistry;
   /** Read-only visibility into delivery status is `workspace.read`, not a privileged financial action. */
   authorizeDeliveryView: (actorId: string, workspaceId: string) => Promise<boolean>;
 }
@@ -38,11 +37,11 @@ export function createDefaultEmailRouteDependencies(
   staffStore: Pick<StaffStore, 'loadStaffAccess'> = new DatabaseStaffStore(),
 ): EmailRouteDependencies {
   return {
-    store: new DatabaseEmailStore(new FakeSuppressionLedgerPublisher()),
+    store: new DatabaseEmailStore(),
     sessionVerifier: new SupabaseStaffSessionVerifier(),
     contactHashSecret: () => requireContactHashSecret(),
     unsubscribeConsentVersion: process.env.MARKETING_CONSENT_VERSION ?? '1',
-    webhookSharedSecret: process.env.EMAIL_WEBHOOK_SHARED_SECRET,
+    registry: loadMachineRegistry(),
     authorizeDeliveryView: async (actorId, workspaceId) => {
       const authorize = createAuthorize({ accessStore: staffStore, assuranceLevel: 'aal1' });
       const decision = await authorize({ actorId, workspaceId, action: 'workspace.read' });
@@ -97,30 +96,101 @@ function verifyUnsubscribeToken(
   if (expectedBuf.length !== actualBuf.length || !timingSafeEqual(expectedBuf, actualBuf)) {
     return undefined;
   }
-  return { workspaceId, contactHash, leadId: leadId || undefined };
+  const parsed = z
+    .object({
+      workspaceId: z.uuid(),
+      contactHash: z.string().regex(/^[a-f0-9]{64}$/),
+      leadId: z.uuid(),
+    })
+    .safeParse({ workspaceId, contactHash, leadId });
+  return parsed.success ? parsed.data : undefined;
 }
 
-const providerEventSchema = z
-  .object({
-    providerEventId: z.string().min(1).max(200),
-    eventType: z.enum(['delivered', 'bounce', 'complaint', 'reject']),
-    workspaceId: z.uuid(),
-    messageId: z.uuid().optional(),
-    toAddress: z.string().email().optional(),
-    receivedAt: z.string().datetime().optional(),
-  })
-  .strict();
+const resendEventSchema = z.object({
+  type: z.string().min(1).max(100),
+  created_at: z.iso.datetime(),
+  data: z.unknown(),
+});
+const resendEmailSchema = z.object({
+  email_id: z.string().min(1).max(200),
+  to: z.array(z.email()).length(1),
+  tags: z.record(z.string(), z.string()).optional(),
+  bounce: z.object({ type: z.string().min(1) }).optional(),
+});
 
-/**
- * Email routes: a public no-login unsubscribe endpoint, a verified provider
- * event inbox, and a staff-only delivery-status view.
- *
- * NOTE (BLOCKERS): SES/SNS delivery notifications should be verified via the
- * provider's supported transport (signed SNS message or SES event
- * destination with a registered secret) once OPEN_INPUTS #23 is resolved.
- * Today this checks a shared-secret header only — sufficient for the fake
- * adapter and CI, not sufficient for a live SES integration.
+/** Mounted with express.raw BEFORE the app's JSON parser. The old normalized
+ * shared-secret endpoint is retired; only a native signed Resend event is accepted.
  */
+export function createResendWebhookRouter(dependencies: EmailRouteDependencies): Router {
+  const router = Router();
+  router.post('/:selector', async (req, res) => {
+    if (!Buffer.isBuffer(req.body)) {
+      res.status(400).json({ error: 'raw_json_required' });
+      return;
+    }
+    const identity = dependencies.registry.resolveResendWebhook({
+      selector: String(req.params.selector),
+      rawBody: req.body,
+      id: req.get('svix-id') ?? '',
+      timestamp: req.get('svix-timestamp') ?? '',
+      signature: req.get('svix-signature') ?? '',
+    });
+    if (!identity.ok) {
+      res.status(401).json({ error: 'invalid_webhook_signature' });
+      return;
+    }
+    let body: unknown;
+    try {
+      body = JSON.parse(req.body.toString('utf8'));
+    } catch {
+      res.status(400).json({ error: 'invalid_event' });
+      return;
+    }
+    const parsed = resendEventSchema.safeParse(body);
+    if (!parsed.success) {
+      res.status(400).json({ error: 'invalid_event' });
+      return;
+    }
+    const types = {
+      'email.delivered': 'delivered',
+      'email.bounced': 'bounce',
+      'email.complained': 'complaint',
+      'email.failed': 'reject',
+    } as const;
+    const eventType = Object.entries(types).find(([key]) => key === parsed.data.type)?.[1];
+    if (!eventType) {
+      res.status(200).json({ status: 'ignored' });
+      return;
+    }
+    const email = resendEmailSchema.safeParse(parsed.data.data);
+    if (!email.success) {
+      res.status(400).json({ error: 'invalid_event' });
+      return;
+    }
+    const tag = email.data.tags?.cp_message_id;
+    if (tag !== undefined && !z.uuid().safeParse(tag).success) {
+      res.status(400).json({ error: 'invalid_event' });
+      return;
+    }
+    const outcome = await dependencies.store.applyProviderEvent({
+      workspaceId: identity.workspaceId,
+      actorId: identity.actorId,
+      provider: identity.provider,
+      providerAccount: identity.providerAccount,
+      providerEventId: req.get('svix-id')!,
+      eventType,
+      providerMessageId: email.data.email_id,
+      messageId: tag,
+      contactHash: hashContact(email.data.to[0]!, dependencies.contactHashSecret()),
+      hardBounce: eventType === 'bounce' && email.data.bounce?.type === 'Permanent',
+      receivedAt: new Date(parsed.data.created_at),
+    });
+    // Retry uncorrelated events rather than acknowledging and losing an early event.
+    res.status(outcome === 'invalid' ? 503 : 200).json({ status: outcome });
+  });
+  return router;
+}
+
 export function createEmailRouter(dependencies: EmailRouteDependencies): Router {
   const router = Router();
 
@@ -143,32 +213,6 @@ export function createEmailRouter(dependencies: EmailRouteDependencies): Router 
       now: new Date(),
     });
     res.status(200).json({ status: 'unsubscribed' });
-  });
-
-  router.post('/webhook/events', async (req: Request, res: Response) => {
-    const providedSecret = req.get('x-email-webhook-secret');
-    if (!dependencies.webhookSharedSecret || providedSecret !== dependencies.webhookSharedSecret) {
-      res.status(401).json({ error: 'invalid_webhook_signature' });
-      return;
-    }
-    const parsed = providerEventSchema.safeParse(req.body);
-    if (!parsed.success) {
-      res.status(400).json({ error: 'invalid_event' });
-      return;
-    }
-    const contactHash = parsed.data.toAddress
-      ? hashContact(normalizeEmail(parsed.data.toAddress), dependencies.contactHashSecret())
-      : undefined;
-    const outcome = await dependencies.store.applyProviderEvent({
-      workspaceId: parsed.data.workspaceId,
-      actorId: 'system:email_webhook',
-      providerEventId: parsed.data.providerEventId,
-      eventType: parsed.data.eventType,
-      messageId: parsed.data.messageId,
-      contactHash,
-      receivedAt: parsed.data.receivedAt ? new Date(parsed.data.receivedAt) : new Date(),
-    });
-    res.status(200).json({ status: outcome });
   });
 
   router.use('/staff', requireStaffSession(dependencies.sessionVerifier));

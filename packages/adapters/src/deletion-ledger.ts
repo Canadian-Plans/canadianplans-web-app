@@ -10,19 +10,33 @@
  * backend must fail closed, never silently use the in-memory ledger.
  */
 
-export const deletionActions = ['delete_customer_data'] as const;
+export const deletionActions = ['delete_customer_data', 'suppress_contact'] as const;
 export type DeletionAction = (typeof deletionActions)[number];
 
-export interface DeletionLedgerEvent {
+interface LedgerEventIdentity {
   /** Stable logical operation id. A retry republishes the same id (idempotent). */
   eventId: string;
   workspaceId: string;
-  action: DeletionAction;
-  subjectType: 'order';
-  subjectId: string;
   /** ISO-8601 UTC timestamp. */
   occurredAt: string;
+  schemaVersion?: 1;
 }
+
+export type DeletionLedgerEvent = LedgerEventIdentity &
+  (
+    | {
+        action: 'delete_customer_data';
+        subjectType: 'order' | 'lead' | 'region_waitlist';
+        subjectId: string;
+        relatedLeadId?: string;
+      }
+    | {
+        action: 'suppress_contact';
+        subjectType: 'contact';
+        subjectId: string;
+        reason: 'hard_bounce' | 'complaint' | 'manual';
+      }
+  );
 
 export interface DeletionLedgerAcknowledgement {
   acknowledgementId: string;

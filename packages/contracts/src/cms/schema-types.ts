@@ -1,6 +1,17 @@
 import { productTypes } from '@canadian-plans/types';
 import { defineArrayMember, defineField, defineType } from 'sanity';
 import type { SchemaTypeDefinition } from 'sanity';
+import { commercialOfferSchema } from '../catalogue';
+import { regionCodeSchema } from '../regions';
+
+/** Keep optional Studio commercial fields within the same API snapshot bounds. */
+function validateCommercialField(
+  field: 'regions' | 'billingPeriod' | 'presentation' | 'promotion',
+  value: unknown,
+): true | string {
+  const result = commercialOfferSchema.shape[field].safeParse(value);
+  return result.success ? true : (result.error.issues[0]?.message ?? 'Invalid offer value');
+}
 
 /**
  * Shared Sanity Studio schema — the single source of truth for every
@@ -1022,6 +1033,85 @@ const offer = defineType({
       title: 'Offer name',
       type: 'string',
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'regions',
+      title: 'Regions',
+      type: 'array',
+      description:
+        'Use CA alone for Canada-wide availability, or select provinces and territories.',
+      initialValue: ['CA'],
+      of: [defineArrayMember({ type: 'string', options: { list: [...regionCodeSchema.options] } })],
+      validation: (Rule) =>
+        Rule.unique().custom((value) => validateCommercialField('regions', value)),
+    }),
+    defineField({
+      name: 'billingPeriod',
+      title: 'Billing period',
+      type: 'string',
+      description: 'Leave unset for monthly billing on existing offers.',
+      options: {
+        list: [
+          { title: 'Monthly', value: 'month' },
+          { title: 'Every 30 days', value: '30_days' },
+          { title: 'Every 90 days', value: '90_days' },
+        ],
+      },
+      validation: (Rule) => Rule.custom((value) => validateCommercialField('billingPeriod', value)),
+    }),
+    defineField({
+      name: 'presentation',
+      title: 'Storefront presentation',
+      type: 'object',
+      fields: [
+        defineField({ name: 'bestFor', title: 'Best for', type: 'string' }),
+        defineField({ name: 'tag', title: 'Tag', type: 'string' }),
+        defineField({ name: 'popular', title: 'Popular plan', type: 'boolean' }),
+        defineField({
+          name: 'audiences',
+          title: 'Picker audience tags',
+          type: 'array',
+          description:
+            'Lowercase tags such as student or visitor; separate from the mobility audience field.',
+          of: [defineArrayMember({ type: 'string' })],
+        }),
+        defineField({
+          name: 'features',
+          title: 'Features',
+          type: 'array',
+          of: [defineArrayMember({ type: 'string' })],
+          validation: (Rule) => Rule.required(),
+        }),
+        defineField({ name: 'note', title: 'Note', type: 'text' }),
+      ],
+      validation: (Rule) => Rule.custom((value) => validateCommercialField('presentation', value)),
+    }),
+    defineField({
+      name: 'promotion',
+      title: 'Promotion',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'id',
+          title: 'Stable promotion ID',
+          type: 'string',
+          validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+          name: 'headline',
+          title: 'Headline',
+          type: 'string',
+          validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+          name: 'terms',
+          title: 'Promotion terms',
+          type: 'array',
+          of: [defineArrayMember({ type: 'string' })],
+          validation: (Rule) => Rule.required(),
+        }),
+      ],
+      validation: (Rule) => Rule.custom((value) => validateCommercialField('promotion', value)),
     }),
     defineField({
       name: 'service',

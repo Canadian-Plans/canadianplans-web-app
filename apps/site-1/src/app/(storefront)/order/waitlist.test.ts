@@ -4,34 +4,36 @@ import { BackendError } from '@canadian-plans/contracts';
 vi.mock('server-only', () => ({}));
 
 const join = vi.fn();
-const clientOptions = vi.fn();
 vi.mock('@/lib/backendClient', () => ({
-  getBackendClient: (options: unknown) => {
-    clientOptions(options);
-    return { regionWaitlist: { join } };
-  },
+  getBackendClient: () => ({ regionWaitlist: { join } }),
 }));
 
 const { joinWaitlist } = await import('./waitlist');
 
 beforeEach(() => {
   join.mockReset();
-  clientOptions.mockReset();
 });
 
 describe('joinWaitlist', () => {
   it('sends the trimmed email with the server-side consent version and the internet interest', async () => {
     join.mockResolvedValue({ requestId: 'x' });
 
-    const result = await joinWaitlist({ province: 'NS', email: '  pat@example.test ' });
+    const result = await joinWaitlist({
+      province: 'NS',
+      email: '  pat@example.test ',
+      turnstileToken: 'synthetic-proof',
+    });
 
     expect(result).toEqual({ ok: true, data: { joined: true } });
-    expect(join).toHaveBeenCalledWith({
-      province: 'NS',
-      email: 'pat@example.test',
-      interest: 'internet',
-      consentVersion: 'TEST-waitlist-v1',
-    });
+    expect(join).toHaveBeenCalledWith(
+      {
+        province: 'NS',
+        email: 'pat@example.test',
+        interest: 'internet',
+        consentVersion: 'privacy-2026-10-v2',
+      },
+      { turnstileToken: 'synthetic-proof' },
+    );
   });
 
   it.each([
@@ -47,16 +49,14 @@ describe('joinWaitlist', () => {
   it('tells the visitor to try again when the backend fails, without echoing the address', async () => {
     join.mockRejectedValue(new BackendError('internal_error', 500, 'unavailable'));
 
-    const result = await joinWaitlist({ province: 'NS', email: 'pat@example.test' });
+    const result = await joinWaitlist({
+      province: 'NS',
+      email: 'pat@example.test',
+      turnstileToken: 'synthetic-proof',
+    });
 
     expect(result.ok).toBe(false);
     expect(JSON.stringify(result)).not.toContain('pat@example.test');
     if (!result.ok) expect(result.code).toBe('not_saved');
-  });
-
-  it('forwards the visitor bot-check token to the backend', async () => {
-    join.mockResolvedValue({ requestId: 'x' });
-    await joinWaitlist({ province: 'NS', email: 'pat@example.test', turnstileToken: 'tok-w' });
-    expect(clientOptions).toHaveBeenCalledWith({ turnstileToken: 'tok-w' });
   });
 });

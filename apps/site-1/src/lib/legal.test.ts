@@ -1,4 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { LegalBody } from '../components/legal-body';
 const clientMocks = vi.hoisted(() => {
   const fetch = vi.fn();
   return { fetch, createClient: vi.fn(() => ({ fetch })) };
@@ -10,6 +13,22 @@ vi.mock('server-only', () => ({}));
 import { parseLegalDoc, testPlaceholder, getLegalPage } from './legal';
 
 describe('parseLegalDoc', () => {
+  it('preserves CMS section headings and bullet lists through parsing and rendering', () => {
+    const doc = parseLegalDoc({
+      title: 'Terms',
+      version: 1,
+      effectiveDate: '2026-10-20',
+      body: [
+        { _type: 'block', style: 'h2', children: [{ text: 'Conditions' }] },
+        { _type: 'block', listItem: 'bullet', children: [{ text: 'A condition' }] },
+      ],
+    });
+    if (!doc) throw new Error('valid legal document rejected');
+    const html = renderToStaticMarkup(createElement(LegalBody, { blocks: doc.body }));
+    expect(html).toContain('<h2');
+    expect(html).toContain('<ul');
+    expect(html).toContain('<li>A condition</li>');
+  });
   it('accepts a complete versioned document', () => {
     const doc = parseLegalDoc({
       title: 'Terms',
@@ -76,8 +95,8 @@ describe('getLegalPage without Sanity', () => {
     for (const slug of ['privacy', 'terms'] as const) {
       const page = await getLegalPage(slug);
       expect(page.source).toBe('repo');
-      expect(page.version).toBe(1);
-      expect(page.effectiveDate).toBe('2026-10-20');
+      expect(page.version).toBe(2);
+      expect(page.effectiveDate).toBe('2026-10-21');
       const text = page.body.map((block) => block.children?.map((c) => c.text).join('')).join('\n');
       expect(text).toContain('9981 Whalley Blvd, Surrey, BC V3T 0A8');
       expect(text).toContain('info@canadianplans.com');
@@ -85,12 +104,41 @@ describe('getLegalPage without Sanity', () => {
     }
   });
 
-  it('states the owner-confirmed terms: British Columbia law and 6-month ID retention', async () => {
+  it('states British Columbia law and the owner-confirmed request-only deletion policy', async () => {
     const terms = (await getLegalPage('terms')).body.map((b) => b.children?.[0]?.text).join('\n');
     const privacy = (await getLegalPage('privacy')).body
       .map((b) => b.children?.[0]?.text)
       .join('\n');
     expect(terms).toContain('governed by the laws of British Columbia');
-    expect(privacy).toContain('delete identity documents 6 months after your order is completed');
+    expect(privacy).toContain('until you ask us to delete them');
+    expect(privacy).toContain('do not automatically delete');
+    expect(privacy).not.toMatch(/6 months|six months|after your order is completed/);
   });
+});
+
+it('does not serve an older CMS privacy policy over the current owner-approved release', async () => {
+  vi.stubEnv('NEXT_PUBLIC_SANITY_PROJECT_ID', 'test-project');
+  vi.stubEnv('NEXT_PUBLIC_SANITY_DATASET', 'production');
+  clientMocks.fetch.mockResolvedValue({
+    title: 'Old privacy',
+    version: 1,
+    effectiveDate: '2026-10-20',
+    body: [
+      {
+        _type: 'block',
+        children: [{ text: 'We delete identity documents 6 months after completion.' }],
+      },
+    ],
+  });
+  try {
+    const page = await getLegalPage('privacy');
+    expect(page).toMatchObject({ source: 'repo', version: 2, effectiveDate: '2026-10-21' });
+    expect(
+      page.body.map((block) => block.children?.map((child) => child.text).join('')).join('\n'),
+    ).toContain('until you ask us to delete them');
+  } finally {
+    vi.unstubAllEnvs();
+    clientMocks.fetch.mockReset();
+    clientMocks.createClient.mockClear();
+  }
 });

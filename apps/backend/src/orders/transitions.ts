@@ -1,4 +1,5 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
+import { lockCustomerLeadForOrder } from '../deletion/restriction.js';
 import {
   auditEvents,
   dispatchRecords,
@@ -179,6 +180,8 @@ export class DatabaseOrderTransitionStore implements OrderTransitionStore {
     return this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.actorId },
       async (tx) => {
+        if (!(await lockCustomerLeadForOrder(tx, input.workspaceId, input.orderId)))
+          return { status: 'not_found' };
         const [current] = await tx
           .select({
             id: orders.id,
@@ -188,7 +191,13 @@ export class DatabaseOrderTransitionStore implements OrderTransitionStore {
             snapshot: orders.snapshot,
           })
           .from(orders)
-          .where(and(eq(orders.workspaceId, input.workspaceId), eq(orders.id, input.orderId)))
+          .where(
+            and(
+              eq(orders.workspaceId, input.workspaceId),
+              eq(orders.id, input.orderId),
+              isNull(orders.customerDataRestrictedAt),
+            ),
+          )
           .limit(1)
           .for('update');
         if (!current) return { status: 'not_found' };

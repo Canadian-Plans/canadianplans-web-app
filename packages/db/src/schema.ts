@@ -611,6 +611,10 @@ export const leads = appSchema
       payload: jsonb('payload'),
       attribution: jsonb('attribution').notNull().default({}),
       consentVersion: text('consent_version').notNull(),
+      customerDataRestrictedAt: timestamp('customer_data_restricted_at', {
+        withTimezone: true,
+        mode: 'date',
+      }),
       createdAt: createdAt(),
       updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
         .defaultNow()
@@ -684,6 +688,14 @@ export const orders = appSchema
       status: text('status').notNull(),
       paymentState: text('payment_state').notNull(),
       deliveryState: text('delivery_state').notNull(),
+      customerDataRestrictedAt: timestamp('customer_data_restricted_at', {
+        withTimezone: true,
+        mode: 'date',
+      }),
+      customerDataDeletedAt: timestamp('customer_data_deleted_at', {
+        withTimezone: true,
+        mode: 'date',
+      }),
       archivedAt: timestamp('archived_at', { withTimezone: true, mode: 'date' }),
       assigneeId: uuid('assignee_id'),
       version: integer('version').default(1).notNull(),
@@ -1480,6 +1492,7 @@ export const deletionIntents = appSchema
       action: text('action').notNull(),
       subjectType: text('subject_type').notNull(),
       subjectId: uuid('subject_id').notNull(),
+      relatedLeadId: uuid('related_lead_id'),
       status: text('status').notNull().default('pending'),
       reason: text('reason'),
       actorId: uuid('actor_id').notNull(),
@@ -1487,6 +1500,8 @@ export const deletionIntents = appSchema
       lastErrorCode: text('last_error_code'),
       createdAt: createdAt(),
       acknowledgedAt: timestamp('acknowledged_at', { withTimezone: true, mode: 'date' }),
+      localCleanedAt: timestamp('local_cleaned_at', { withTimezone: true, mode: 'date' }),
+      completedAt: timestamp('completed_at', { withTimezone: true, mode: 'date' }),
     },
     (table) => [
       unique('deletion_intents_workspace_id_id_unique').on(table.workspaceId, table.id),
@@ -1495,9 +1510,102 @@ export const deletionIntents = appSchema
         sql`${table.status} in ('pending', 'acknowledged', 'failed')`,
       ),
       check('deletion_intents_action_check', sql`${table.action} in ('delete_customer_data')`),
-      check('deletion_intents_subject_type_check', sql`${table.subjectType} = 'order'`),
+      check(
+        'deletion_intents_subject_type_check',
+        sql`${table.subjectType} in ('order', 'lead', 'region_waitlist')`,
+      ),
+      index('deletion_intents_workspace_subject_idx').on(
+        table.workspaceId,
+        table.subjectType,
+        table.subjectId,
+      ),
       index('deletion_intents_workspace_status_idx').on(table.workspaceId, table.status),
       tenantPolicy('deletion_intents_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/** Durable private-object cleanup; a ledger acknowledgement is required before deletion. */
+export const deletionObjects = appSchema
+  .table(
+    'deletion_objects',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      deletionId: uuid('deletion_id').notNull(),
+      bucket: text('bucket').notNull(),
+      objectKey: text('object_key').notNull(),
+      availableAt: timestamp('available_at', { withTimezone: true, mode: 'date' }).notNull(),
+      completedAt: timestamp('completed_at', { withTimezone: true, mode: 'date' }),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('deletion_objects_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('deletion_objects_workspace_intent_key_unique').on(
+        table.workspaceId,
+        table.deletionId,
+        table.bucket,
+        table.objectKey,
+      ),
+      foreignKey({
+        name: 'deletion_objects_workspace_intent_fk',
+        columns: [table.workspaceId, table.deletionId],
+        foreignColumns: [deletionIntents.workspaceId, deletionIntents.id],
+      }).onDelete('cascade'),
+      index('deletion_objects_pending_idx').on(
+        table.workspaceId,
+        table.completedAt,
+        table.availableAt,
+      ),
+      tenantPolicy('deletion_objects_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/** Protected lease table; narrow functions coordinate R2 cleanup with backup acquisition. */
+export const documentCleanupLeases = appSchema
+  .table(
+    'document_cleanup_leases',
+    {
+      objectId: uuid('object_id')
+        .primaryKey()
+        .references(() => deletionObjects.id, { onDelete: 'cascade' }),
+      workspaceId: uuid('workspace_id').notNull(),
+      leaseOwnerId: uuid('lease_owner_id').notNull(),
+      expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
+    },
+    (table) => [index('document_cleanup_leases_expires_idx').on(table.expiresAt)],
+  )
+  .enableRLS();
+
+/** Minimal provider dedupe tombstones prevent late events from recreating erased associations. */
+export const deletedEmailMessages = appSchema
+  .table(
+    'deleted_email_messages',
+    {
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      messageId: uuid('message_id').notNull(),
+      provider: text('provider'),
+      providerAccount: text('provider_account'),
+      providerId: text('provider_id'),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('deleted_email_messages_workspace_message_unique').on(
+        table.workspaceId,
+        table.messageId,
+      ),
+      index('deleted_email_messages_provider_idx').on(
+        table.workspaceId,
+        table.provider,
+        table.providerAccount,
+        table.providerId,
+      ),
+      tenantPolicy('deleted_email_messages_tenant_policy', table.workspaceId),
     ],
   )
   .enableRLS();
@@ -1562,6 +1670,10 @@ export const regionWaitlist = appSchema
         .references(() => workspaces.id, { onDelete: 'cascade' }),
       province: text('province').notNull(),
       email: text('email').notNull(),
+      customerDataRestrictedAt: timestamp('customer_data_restricted_at', {
+        withTimezone: true,
+        mode: 'date',
+      }),
       /** The plan type the visitor asked about, when known. */
       interest: text('interest'),
       consentVersion: text('consent_version').notNull(),
@@ -1837,6 +1949,8 @@ export const emailMessages = appSchema
       contactHash: text('contact_hash').notNull(),
       status: text('status').default('queued').notNull(),
       providerId: text('provider_id'),
+      provider: text('provider'),
+      providerAccount: text('provider_account'),
       lastErrorCode: text('last_error_code'),
       lastEventAt: timestamp('last_event_at', { withTimezone: true, mode: 'date' }),
       createdAt: createdAt(),
@@ -1865,6 +1979,16 @@ export const emailMessages = appSchema
         columns: [table.workspaceId, table.orderId],
         foreignColumns: [orders.workspaceId, orders.id],
       }),
+      unique('email_messages_provider_id_unique').on(
+        table.workspaceId,
+        table.provider,
+        table.providerAccount,
+        table.providerId,
+      ),
+      check(
+        'email_messages_provider_pair_check',
+        sql`(${table.provider} is null) = (${table.providerAccount} is null)`,
+      ),
       index('email_messages_workspace_status_idx').on(table.workspaceId, table.status),
       index('email_messages_workspace_contact_hash_idx').on(table.workspaceId, table.contactHash),
       tenantPolicy('email_messages_tenant_policy', table.workspaceId),
@@ -1914,7 +2038,9 @@ export const emailSuppressions = appSchema
 /**
  * Marketing opt-in state (CASL, REQ 34). Recorded per lead and/or order at
  * capture with the consent version; unsubscribe writes a new row rather than
- * mutating history so the capture record is preserved.
+ * mutating history so the capture record is preserved. After a deletion request,
+ * only false consent with the fixed retained-opt-out version may omit both
+ * customer links, preventing older opt-ins from becoming effective again.
  */
 export const marketingConsents = appSchema
   .table(
@@ -1946,7 +2072,7 @@ export const marketingConsents = appSchema
       }),
       check(
         'marketing_consents_reference_check',
-        sql`${table.leadId} is not null or ${table.orderId} is not null`,
+        sql`${table.leadId} is not null or ${table.orderId} is not null or (${table.marketingOptIn} = false and ${table.version} = 'retained-opt-out')`,
       ),
       index('marketing_consents_workspace_contact_hash_idx').on(
         table.workspaceId,
@@ -2028,6 +2154,8 @@ export const emailProviderEvents = appSchema
         .notNull()
         .references(() => workspaces.id, { onDelete: 'cascade' }),
       providerEventId: text('provider_event_id').notNull(),
+      provider: text('provider').default('legacy').notNull(),
+      providerAccount: text('provider_account').default('legacy').notNull(),
       eventType: text('event_type').notNull(),
       messageId: uuid('message_id'),
       contactHash: text('contact_hash'),
@@ -2039,6 +2167,8 @@ export const emailProviderEvents = appSchema
       unique('email_provider_events_workspace_id_id_unique').on(table.workspaceId, table.id),
       unique('email_provider_events_workspace_provider_event_unique').on(
         table.workspaceId,
+        table.provider,
+        table.providerAccount,
         table.providerEventId,
       ),
       check(
@@ -2095,6 +2225,9 @@ export const schema = {
   backupLeases,
   auditEvents,
   deletionIntents,
+  deletionObjects,
+  documentCleanupLeases,
+  deletedEmailMessages,
   trackingChallenges,
   regionWaitlist,
   files,

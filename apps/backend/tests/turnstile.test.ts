@@ -63,4 +63,29 @@ describe('Turnstile server verification', () => {
     expect(await verify('challenge')).toBe(false);
     expect(await verify('challenge')).toBe(false);
   });
+  it('accepts only configured exact hostnames and the route-owned action', async () => {
+    const request = vi.fn<typeof fetch>();
+    const verify = createTurnstileVerifier(
+      {
+        secret: 'synthetic-secret',
+        hostnames: ['canadianplans.com', 'www.canadianplans.com'],
+        action: 'order-submit',
+      },
+      request,
+    );
+    for (const hostname of ['canadianplans.com', 'www.canadianplans.com']) {
+      request.mockResolvedValueOnce(
+        Response.json({ success: true, hostname, action: 'order-submit' }),
+      );
+      expect(await verify('fresh-proof')).toBe(true);
+    }
+    request.mockResolvedValueOnce(
+      Response.json({ success: true, hostname: 'foreign.example', action: 'order-submit' }),
+    );
+    expect(await verify('fresh-proof')).toBe(false);
+    request.mockResolvedValueOnce(
+      Response.json({ success: true, hostname: 'canadianplans.com', action: 'lead-save' }),
+    );
+    expect(await verify('fresh-proof')).toBe(false);
+  });
 });

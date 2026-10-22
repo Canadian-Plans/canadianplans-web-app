@@ -1,4 +1,5 @@
-import { sha256Hex } from '@canadian-plans/adapters';
+import { documentObjectKey, sha256Hex } from '@canadian-plans/adapters';
+import { randomUUID } from 'node:crypto';
 
 import type { ArchiveWriter } from './archive-store.js';
 import type { BackupLease } from './lease.js';
@@ -64,11 +65,21 @@ function runPrefix(runId: string): string {
   return `${runId}/`;
 }
 
+/** Each attempt is a separate restore point, including retries on the same day. */
+export function createBackupRunId(now: Date): string {
+  return `run-${now.toISOString().replace(/[:.]/g, '-')}-${randomUUID()}`;
+}
+
 export async function runBackup(deps: BackupRunDependencies): Promise<BackupRunSummary> {
   const now = deps.now ?? (() => new Date());
   const startedAt = now();
   await deps.lease.acquire(deps.runId, deps.leaseTtlSeconds ?? 1800);
   try {
+    // Also protect explicitly supplied run IDs: never overwrite any part of an
+    // earlier successful or incomplete attempt while holding the backup lease.
+    if ((await deps.archiveWriter.listObjects(runPrefix(deps.runId))).length > 0) {
+      throw new Error('backup_run_id_already_exists');
+    }
     // 1. Consistent database/Auth/migration export.
     const db = await deps.database.exportAll();
 
@@ -81,7 +92,10 @@ export async function runBackup(deps: BackupRunDependencies): Promise<BackupRunS
     const r2Artifacts = new Map<string, Uint8Array>();
     const problems: string[] = [];
     for (const object of referenced) {
-      const bytes = await deps.r2Source.getObject(object.bucket, object.objectKey);
+      const bytes = await deps.r2Source.getObject(
+        object.bucket,
+        documentObjectKey(object.workspaceId, object.objectKey),
+      );
       const label = `${object.bucket}/${object.objectKey}`;
       if (!bytes) {
         problems.push(label);

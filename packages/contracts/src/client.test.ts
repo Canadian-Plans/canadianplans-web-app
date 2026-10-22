@@ -35,6 +35,19 @@ function harness(status: number, body: unknown) {
 }
 
 describe('createBackendClient transport', () => {
+  it('reads a personal draft using the grant header without a proof or body', async () => {
+    const draft = { leadId: UUID, productId: null, contact: { fullName: 'Saved' }, form: null };
+    const { client, calls } = harness(200, { draft, requestId: UUID });
+    expect(await client.leads.read(UUID, { draftGrant: 'private-grant' })).toEqual({
+      draft,
+      requestId: UUID,
+    });
+    expect(calls[0]?.headers.get('x-draft-grant')).toBe('private-grant');
+    expect(calls[0]?.headers.has('x-turnstile-token')).toBe(false);
+    expect(calls[0]?.body).toBeUndefined();
+    expect(calls[0]?.method).toBe('GET');
+    expect(calls[0]?.url).toBe(`https://api.example.test/api/v1/website/leads/${UUID}`);
+  });
   it('sends a bearer credential, JSON accept and a request id, and validates the response', async () => {
     const { client, calls } = harness(200, { ok: true, requestId: UUID });
     const result = await client.health();
@@ -76,25 +89,6 @@ describe('createBackendClient transport', () => {
       }),
     ).toThrow();
     expect(calls).toHaveLength(1);
-  });
-
-  it('adds extra headers to every call without letting them replace the credential', async () => {
-    const calls: Headers[] = [];
-    const client = createBackendClient({
-      baseUrl: 'https://api.example.test',
-      credential: 'cplsk_real',
-      extraHeaders: { 'x-turnstile-token': 'tok', authorization: 'Bearer evil' },
-      fetch: async (_url, init) => {
-        calls.push(new Headers(init?.headers));
-        return new Response(JSON.stringify({ offers: [], requestId: UUID }), {
-          status: 200,
-          headers: { 'content-type': 'application/json' },
-        });
-      },
-    });
-    await client.offers.list();
-    expect(calls[0]?.get('x-turnstile-token')).toBe('tok');
-    expect(calls[0]?.get('authorization')).toBe('Bearer cplsk_real');
   });
 
   it('serialises a JSON body with content-type on writes', async () => {
@@ -193,3 +187,45 @@ function _typeContracts(c: BackendClient): void {
   // @ts-expect-error `teleport` is not a valid transition action
   void c.staff.patchOrder('w', 'o', { action: 'teleport', expectedVersion: 0 });
 }
+
+describe('website proof transport', () => {
+  it('forwards a fresh proof per call in a fixed header, without putting it in the body', async () => {
+    const { client, calls } = harness(200, { status: 'challenge_sent', requestId: UUID });
+    for (const turnstileToken of ['proof-first', 'proof-second']) {
+      await client.tracking.otp(
+        { email: 'test@example.test', orderReference: 'CP-TEST' },
+        { turnstileToken },
+      );
+    }
+    expect(calls.map((entry) => entry.headers.get('x-turnstile-token'))).toEqual([
+      'proof-first',
+      'proof-second',
+    ]);
+    expect(calls.every((entry) => !entry.body?.includes('proof-'))).toBe(true);
+    expect(() =>
+      client.tracking.otp(
+        { email: 'test@example.test', orderReference: 'CP-TEST' },
+        { turnstileToken: 'x'.repeat(2049) },
+      ),
+    ).toThrow();
+    expect(calls).toHaveLength(2);
+  });
+  it('adds only a validated server-owned visitor assertion', async () => {
+    const requests: Headers[] = [];
+    let assertion = 'a'.repeat(64);
+    const client = createBackendClient({
+      baseUrl: 'https://api.example.test',
+      credential: 'synthetic',
+      websiteVisitorId: async () => assertion,
+      fetch: async (_url, options) => {
+        requests.push(new Headers(options?.headers));
+        return Response.json({ ok: true, requestId: UUID });
+      },
+    });
+    await client.health();
+    expect(requests[0]?.get('x-website-visitor-id')).toBe(assertion);
+    assertion = 'untrusted-header';
+    await expect(client.health()).rejects.toThrow('Invalid website visitor assertion');
+    expect(requests).toHaveLength(1);
+  });
+});

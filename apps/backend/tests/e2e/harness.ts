@@ -15,9 +15,9 @@
  *     price changed mid-flight (snapshot test), or have an offer withdrawn
  *     (withdrawal-policy test) — all still driven through the real reconcile
  *     path, never by poking the store directly.
- *  2. An admitting bot check, because the production verifier deliberately
- *     rejects Cloudflare's public test secrets and there is no legitimate
- *     token to obtain here.
+ *  2. A stateful, action-bound one-use proof verifier. The browser replaces
+ *     only Cloudflare's external script; missing/reused/wrong-action proofs
+ *     fail here, while production uses the real Siteverify transport.
  *  3. Raised website rate-limit thresholds. The limiter itself is the real
  *     DB-backed one and still runs on every request; only the numbers move, so
  *     the whole suite cannot rate-limit itself from its single shared client
@@ -49,9 +49,14 @@ import {
   type QuoteWithdrawalPolicy,
 } from '../../src/catalogue/policy.js';
 import { DatabaseLeadStore } from '../../src/leads/store.js';
+import { DatabaseRegionWaitlistStore } from '../../src/waitlist/store.js';
 import { OrderService } from '../../src/orders/service.js';
 import { DatabaseOrderStore } from '../../src/orders/store.js';
 import { DatabaseOutboxStore } from '../../src/jobs/store.js';
+import { DatabaseTrackingStore } from '../../src/tracking/store.js';
+import { TrackingService } from '../../src/tracking/service.js';
+import { createTrackingOtpHandler } from '../../src/tracking/delivery.js';
+import { DatabaseEmailStore } from '../../src/email/store.js';
 import type { WebsiteRouteDependencies } from '../../src/routes/website.js';
 import {
   createDefaultStaffRouteDependencies,
@@ -85,6 +90,8 @@ const STAFF_BEARER = process.env['E2E_STAFF_BEARER'] ?? 'e2e-staff-session-owner
 const SERVICE_SECRET =
   process.env['E2E_SERVICE_CREDENTIAL'] ?? 'cplsk_e2e_order_journey_secret_0001';
 const ADMIN_URL = process.env['TEST_MIGRATION_DATABASE_URL'];
+const TRACKING_SECRET = 'e2e-only-tracking-secret-32characters-0001';
+process.env.TRACKING_HASH_SECRET = TRACKING_SECRET;
 
 /**
  * The default policy at boot and after every `reset`. An unset/`unresolved`
@@ -161,7 +168,7 @@ const DEFAULT_OFFERS: readonly OfferSpec[] = [
     offerName: '[TEST] E2E Passport Plan',
     recurringChargeAmountMinor: ORIGINAL_PASSPORT_RECURRING_MINOR,
     amountPayableTodayMinor: ORIGINAL_PASSPORT_PAYABLE_TODAY_MINOR,
-    documentChecklist: ['passport'],
+    documentChecklist: ['passport', 'study_permit'],
   },
   {
     productKey: 'e2e-simple-plan',
@@ -212,6 +219,28 @@ class StubCatalogue implements SanityCatalogue {
         revision,
       ),
     );
+  }
+
+  addInternetFixture(): void {
+    const offer = buildOffer(
+      'e2e-internet-plan',
+      'e2e-document-internet',
+      '[TEST] E2E Internet',
+      3500,
+      0,
+      ['none'],
+      1,
+    );
+    this.offers.set('e2e-internet-plan', {
+      ...offer,
+      commercial: commercialOfferSchema.parse({
+        ...offer.commercial,
+        productTitle: '[TEST] Internet',
+        productType: 'internet',
+        regions: ['SK'],
+        specs: { carrier: 'E2E Internet', dataAllowance: 'Unlimited', speed: '100 Mbps' },
+      }),
+    });
   }
 
   /** Publish a new revision of one offer at a new recurring charge. */
@@ -319,18 +348,34 @@ const E2E_RATE_LIMITS = {
   credentialMaxCount: 20_000,
 };
 
+const usedProofs = new Set<string>();
 const website: WebsiteRouteDependencies = {
   auth: {
     resolveCredential: resolveWebsiteCredential,
     rateLimit: rateLimitHit,
-    botCheck: async () => true,
+    botCheck: async (req, action) => {
+      const token = req.get('x-turnstile-token');
+      if (
+        !token ||
+        !token.startsWith(`e2e.${action}.`) ||
+        !/^[a-f0-9-]{36}$/.test(token.slice(`e2e.${action}.`.length)) ||
+        usedProofs.has(token)
+      )
+        return false;
+      usedProofs.add(token);
+      return true;
+    },
     limits: E2E_RATE_LIMITS,
   },
   leads: { store: new DatabaseLeadStore() },
+  regionWaitlist: { store: new DatabaseRegionWaitlistStore() },
   quotes: { service: { createQuote: (input) => catalogueService.createQuote(input) } },
   orders: { service: { submit: (input) => orderService.submit(input) } },
   // The website-scoped published-offer read the order form's step 1 uses.
   catalogue: { store: new DatabaseCatalogueStore() },
+  tracking: {
+    service: new TrackingService({ store: new DatabaseTrackingStore(), secret: TRACKING_SECRET }),
+  },
 };
 
 // Seam 4: a stub staff-session verifier admitting the one seeded owner actor.
@@ -373,6 +418,14 @@ function buildOutboxHandlers(): JobHandlerRegistry {
   };
   const handlers = new Map(real);
   handlers.set('order_acknowledgement_email', emailWithSeam);
+  handlers.set(
+    'tracking_otp_email',
+    createTrackingOtpHandler({
+      email: emailAdapter,
+      eligibility: new DatabaseEmailStore(),
+      secret: TRACKING_SECRET,
+    }),
+  );
   return handlers;
 }
 
@@ -396,6 +449,16 @@ const DATA_TABLES = [
   'app.audit_events',
   'app.outbox_jobs',
   'app.outbox_job_alerts',
+  'app.email_messages',
+  'app.email_suppressions',
+  'app.email_provider_events',
+  'app.region_waitlist',
+  'app.marketing_consents',
+  'app.follow_up_schedules',
+  'app.tracking_challenges',
+  // OTP limits must start with the rest of each disposable journey's state.
+  // Otherwise earlier desktop/mobile runs consume the same ten-minute bucket.
+  'app.rate_limit_buckets',
 ];
 
 async function reseed(admin: ReturnType<typeof postgres>): Promise<void> {
@@ -417,7 +480,7 @@ async function seedStaticRows(admin: ReturnType<typeof postgres>): Promise<void>
     values (
       ${WORKSPACE_ID},
       ${hashServiceSecret(SERVICE_SECRET)},
-      ${['leads:write', 'quotes:create', 'orders:create']}
+      ${['leads:write', 'quotes:create', 'orders:create', 'tracking:otp']}
     )
   `;
   // A fully-privileged (owner) staff membership so the real authorization store
@@ -528,6 +591,8 @@ async function main(): Promise<void> {
     const path = url.pathname;
     try {
       if (path === '/__e2e__/reset' && req.method === 'POST') {
+        usedProofs.clear();
+        emailAdapter.deliveries.length = 0;
         dropOrders = 0;
         armEmailFailure = false;
         catalogue.restore();
@@ -557,6 +622,12 @@ async function main(): Promise<void> {
         }
         rebuildServices(requested);
         ok(res, { ok: true, policy: requested });
+        return;
+      }
+      if (path === '/__e2e__/add-internet-fixture' && req.method === 'POST') {
+        catalogue.addInternetFixture();
+        await catalogueService.reconcile(WORKSPACE_ID, ACTOR_ID);
+        ok(res);
         return;
       }
       if (path === '/__e2e__/set-price' && req.method === 'POST') {
@@ -599,6 +670,19 @@ async function main(): Promise<void> {
           actorId: STAFF_ACTOR_ID,
         });
         ok(res, { ok: true, ...summary });
+        return;
+      }
+      if (path === '/__e2e__/tracking-code' && req.method === 'GET') {
+        const message = emailAdapter.deliveries.findLast(
+          (entry) =>
+            entry.template === 'tracking_otp' &&
+            entry.reference === url.searchParams.get('reference'),
+        );
+        if (!message?.variables?.code) {
+          res.writeHead(404).end();
+          return;
+        }
+        ok(res, { code: message.variables.code });
         return;
       }
       if (path === '/__e2e__/orders' && req.method === 'GET') {

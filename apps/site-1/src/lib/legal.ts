@@ -37,6 +37,8 @@ const TEST_TITLES: Record<LegalSlug, string> = { privacy: 'Privacy', terms: 'Ter
 
 const blockSchema = z.object({
   _type: z.string(),
+  style: z.string().optional(),
+  listItem: z.string().optional(),
   children: z.array(z.object({ text: z.string().optional() })).optional(),
 });
 const legalDocSchema = z.object({
@@ -108,7 +110,7 @@ export async function getLegalPage(slug: LegalSlug): Promise<LegalPage> {
     });
     const doc: unknown = await client.fetch(LEGAL_PAGE_QUERY, { slug });
     const parsed = parseLegalDoc(doc);
-    if (!parsed) return repoLegalPage(slug);
+    if (!parsed || parsed.version < publishedLegal[slug].version) return repoLegalPage(slug);
     return { ...parsed, source: 'sanity' };
   } catch {
     return repoLegalPage(slug);

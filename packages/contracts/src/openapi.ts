@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { websiteBotTokenSchema } from './website-bot';
 
 import { apiErrorResponseSchema } from './staff-auth';
 import { endpoints, type EndpointAuth, type EndpointDef } from './endpoints';
@@ -107,6 +108,25 @@ function parametersFor(endpoint: EndpointDef): JsonObject[] {
       description: header.description,
       schema: { type: 'string' },
     });
+  }
+  if (endpoint.auth === 'website' || endpoint.auth === 'customer') {
+    params.push({
+      name: 'X-Website-Visitor-Id',
+      in: 'header',
+      required: false,
+      description:
+        'Server-owned keyed visitor digest from the authenticated website; never raw browser forwarding headers.',
+      schema: { type: 'string', pattern: '^[a-f0-9]{64}$' },
+    });
+    if (endpoint.method !== 'GET')
+      params.push({
+        name: 'X-Turnstile-Token',
+        in: 'header',
+        required: true,
+        description:
+          'Fresh single-use challenge token bound to this route action. Obtain a new token before each request or retry.',
+        schema: jsonInputSchemaOf(websiteBotTokenSchema),
+      });
   }
   if (endpoint.query) {
     params.push(...queryParameters(endpoint.query));

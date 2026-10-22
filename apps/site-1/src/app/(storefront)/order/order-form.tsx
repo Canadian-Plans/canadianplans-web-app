@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useHumanChallenge } from '@/components/shared/human-challenge';
 import { OrderConfirmation } from '@/components/shared/order-confirmation';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import {
@@ -28,7 +29,6 @@ import {
 import { orderFormContent } from '@content/order-forms';
 
 import { trackPlanSelected, trackRegionSelected } from '../../../lib/analytics';
-import { useTurnstile } from '../../../lib/use-turnstile';
 import { requestCallback, requestQuote, saveDetails, saveDocuments, submitOrder } from './actions';
 import {
   ORDER_DETAIL_FIELDS,
@@ -63,7 +63,7 @@ export interface OrderFormProps {
   attribution: RawAttribution;
   /** Disclosure version recorded with the saved draft (REQ 17). */
   consentVersion: string;
-  hasDraft: boolean;
+  restoredDetails: OrderDetailsInput | undefined;
 }
 
 function formatMoney(amountMinor: number, currency: string): string {
@@ -98,11 +98,14 @@ export function OrderForm({
   category,
   attribution,
   consentVersion,
-  hasDraft,
+  restoredDetails,
 }: OrderFormProps) {
+  const human = useHumanChallenge();
   const [stepIndex, setStepIndexState] = useState(selected ? 1 : 0);
-  const [details, setDetails] = useState<OrderDetailsInput>(() =>
-    initialDetails(selected?.commercial ?? { productType: 'sim', regions: ['CA'] }),
+  const [details, setDetails] = useState<OrderDetailsInput>(
+    () =>
+      restoredDetails ??
+      initialDetails(selected?.commercial ?? { productType: 'sim', regions: ['CA'] }, province),
   );
   const [fieldErrors, setFieldErrors] = useState<OrderFieldErrors>({});
   const [acknowledged, setAcknowledged] = useState(false);
@@ -116,7 +119,6 @@ export function OrderForm({
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [busy, setBusy] = useState(false);
-  const turnstile = useTurnstile();
   const summaryRef = useRef<HTMLDivElement>(null);
   const stepRef = useRef<HTMLDivElement>(null);
 
@@ -193,24 +195,6 @@ export function OrderForm({
     focusSummary();
   }
 
-  /**
-   * A fresh bot-check token for the next call that writes. On failure the form
-   * shows an error and stops; the visitor can simply try again.
-   */
-  async function freshToken(): Promise<{ token: string | undefined } | undefined> {
-    try {
-      return { token: await turnstile.getToken() };
-    } catch {
-      setBusy(false);
-      setOrderError({
-        code: 'not_saved',
-        message: "We couldn't run the security check. Please try again.",
-      });
-      focusSummary();
-      return undefined;
-    }
-  }
-
   async function handleDetails(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     if (!selected) return;
@@ -221,16 +205,28 @@ export function OrderForm({
       return;
     }
     setBusy(true);
-    const check = await freshToken();
-    if (!check) return;
-    const result = await saveDetails({
-      turnstileToken: check.token,
-      details,
-      documentKeys,
-      productId: selected.productId,
-      attribution,
-      consentVersion,
-    });
+    let result = await human.run('lead-save', (turnstileToken) =>
+      saveDetails({
+        turnstileToken,
+        details,
+        documentKeys,
+        productId: selected.productId,
+        attribution,
+        consentVersion,
+      }),
+    );
+    if (!result.ok && result.code === 'retry_fresh_draft') {
+      result = await human.run('lead-save', (turnstileToken) =>
+        saveDetails({
+          details,
+          documentKeys,
+          productId: selected.productId,
+          attribution,
+          consentVersion,
+          turnstileToken,
+        }),
+      );
+    }
     setBusy(false);
     if (!result.ok) {
       applyFailure(result);
@@ -251,14 +247,9 @@ export function OrderForm({
       return;
     }
     setBusy(true);
-    const check = await freshToken();
-    if (!check) return;
-    const result = await saveDocuments({
-      turnstileToken: check.token,
-      details,
-      documentKeys,
-      acknowledged: true,
-    });
+    const result = await human.run('lead-save', (turnstileToken) =>
+      saveDocuments({ details, documentKeys, acknowledged: true, turnstileToken }),
+    );
     setBusy(false);
     if (!result.ok) {
       applyFailure(result);
@@ -271,9 +262,9 @@ export function OrderForm({
     setBusy(true);
     setQuoteFailed(undefined);
     setOrderError(undefined);
-    const check = await freshToken();
-    if (!check) return;
-    const result = await requestQuote(check.token);
+    const result = await human.run('quote-create', (turnstileToken) =>
+      requestQuote({ turnstileToken }),
+    );
     setBusy(false);
     goToStep(3);
     if (result.ok) {
@@ -292,16 +283,18 @@ export function OrderForm({
     if (!quote) return;
     setBusy(true);
     setOrderError(undefined);
-    const check = await freshToken();
-    if (!check) return;
-    const result = await submitOrder({
-      turnstileToken: check.token,
-      quoteId: quote.id,
-      termsVersion: quote.termsVersion,
-      marketingOptIn,
-      details,
-      documentKeys,
-    });
+    const attempt = (turnstileToken: string) =>
+      submitOrder({
+        turnstileToken,
+        quoteId: quote.id,
+        termsVersion: quote.termsVersion,
+        marketingOptIn,
+        details,
+        documentKeys,
+      });
+    let result = await human.run('order-submit', attempt);
+    if (!result.ok && result.code === 'transport_retry')
+      result = await human.run('order-submit', attempt);
     setBusy(false);
     if (result.ok) {
       // The only path to the confirmation step: a server-issued reference.
@@ -335,9 +328,9 @@ export function OrderForm({
 
   async function handleCallback(): Promise<void> {
     setBusy(true);
-    const check = await freshToken();
-    if (!check) return;
-    const result = await requestCallback({ turnstileToken: check.token, details, documentKeys });
+    const result = await human.run('lead-save', (turnstileToken) =>
+      requestCallback({ details, documentKeys, turnstileToken }),
+    );
     setBusy(false);
     if (result.ok) {
       setCallbackRequested(true);
@@ -383,7 +376,9 @@ export function OrderForm({
                 {formatMoney(commercial.recurringChargeAmountMinor, commercial.currency)} {period}
               </p>
               <Button asChild>
-                <Link href={`/order?plan=${encodeURIComponent(offer.productId)}`}>
+                <Link
+                  href={`/order?plan=${encodeURIComponent(offer.productId)}${commercial.productType === 'internet' && province ? `&province=${province}` : ''}`}
+                >
                   Select {commercial.offerName}
                 </Link>
               </Button>
@@ -546,12 +541,19 @@ export function OrderForm({
               <ArrivalFields details={details} errors={fieldErrors} onChange={patchArrival} />
             ) : null}
             {details.category === 'internet' ? (
-              <InternetFields details={details} errors={fieldErrors} onChange={patchInternet} />
+              <InternetFields
+                details={details}
+                errors={fieldErrors}
+                onChange={patchInternet}
+                provinces={provinceCodeSchema.options.filter(
+                  (code) => selected && isOfferSoldIn(selected.commercial.regions, code),
+                )}
+              />
             ) : null}
             {details.category === 'mobile' ? (
               <MobileFields details={details} errors={fieldErrors} onChange={patchMobile} />
             ) : null}
-            {hasDraft ? (
+            {restoredDetails ? (
               <p className="text-sm">We found your saved details and will update them.</p>
             ) : null}
             <div className="flex flex-wrap gap-4">
@@ -586,7 +588,6 @@ export function OrderForm({
             <DocumentUploads
               documentKeys={documentKeys.filter((key) => key !== 'none')}
               labelFor={checklistLabel}
-              getToken={turnstile.getToken}
             />
           ) : (
             <p>Nothing to upload for this plan.</p>
@@ -719,7 +720,7 @@ export function OrderForm({
         {orderError ? (
           <div role="alert" className="space-y-2">
             <p>{orderError.message}</p>
-            {orderError.code === 'not_saved' ? (
+            {orderError.code === 'not_saved' || orderError.code === 'transport_retry' ? (
               <Button type="button" onClick={performSubmit} disabled={busy}>
                 {busy ? 'Trying again…' : 'Try again'}
               </Button>
@@ -748,7 +749,7 @@ export function OrderForm({
 
   return (
     <div className="space-y-8">
-      <div ref={turnstile.containerRef} />
+      {human.challenge}
       <Stepper steps={STEPS} currentStepId={STEPS[stepIndex]?.id ?? 'plan'} />
       {showSummary && stepIndex !== 4 ? (
         <div

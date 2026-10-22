@@ -19,9 +19,75 @@ const job = (overrides: Partial<ClaimedJob> = {}): ClaimedJob => ({
   messageId: crypto.randomUUID(),
   payloadVersion: 1,
   payload: { orderId: '22222222-2222-4222-8222-222222222222' },
+  actorId: '20000000-0000-4000-8000-000000000781',
   attempts: 1,
   leaseOwnerId: crypto.randomUUID(),
   ...overrides,
+});
+
+describe('email delivery boundary', () => {
+  it('prepares correlation before sending and records the provider result afterwards', async () => {
+    const order: string[] = [];
+    const registry = createJobHandlerRegistry({
+      email: {
+        send: async () => {
+          order.push('send');
+          return { status: 'delivered', providerId: 'resend-id' };
+        },
+      },
+      analytics: new FakeAnalyticsSink(),
+      eligibility: {
+        checkTransactional: async () => ({ eligible: true }),
+        checkMarketing: async () => ({ eligible: true }),
+      },
+      delivery: {
+        prepare: async () => {
+          order.push('prepare');
+        },
+        recordResult: async () => {
+          order.push('record');
+        },
+      },
+    });
+    await registry.get('order_acknowledgement_email')?.(
+      job({
+        jobType: 'order_acknowledgement_email',
+        payload: {
+          orderId: crypto.randomUUID(),
+          reference: 'CP-TEST',
+          toAddress: 'test@example.test',
+          contactHash: 'hash',
+        },
+      }),
+    );
+    expect(order).toEqual(['prepare', 'send', 'record']);
+  });
+  it('rejects email execution without a scheduler actor', async () => {
+    const email = new FakeEmailAdapter();
+    const registry = createJobHandlerRegistry({
+      email,
+      analytics: new FakeAnalyticsSink(),
+      eligibility: {
+        checkTransactional: async () => ({ eligible: true }),
+        checkMarketing: async () => ({ eligible: true }),
+      },
+    });
+    await expect(
+      registry.get('order_acknowledgement_email')?.(
+        job({
+          actorId: undefined,
+          jobType: 'order_acknowledgement_email',
+          payload: {
+            orderId: crypto.randomUUID(),
+            reference: 'CP-TEST',
+            toAddress: 'test@example.test',
+            contactHash: 'hash',
+          },
+        }),
+      ),
+    ).rejects.toMatchObject({ code: 'email_actor_missing' });
+    expect(email.deliveries).toEqual([]);
+  });
 });
 
 describe('outbox runner', () => {
@@ -35,7 +101,7 @@ describe('outbox runner', () => {
     const store: OutboxStore = {
       claim: vi.fn(async ({ workspaceId }) => {
         calls.push(`claim:${workspaceId}`);
-        return [{ ...claimed, workspaceId }];
+        return calls.length === 1 ? [{ ...claimed, workspaceId }] : [];
       }),
       recordOutcome: vi.fn(async ({ workspaceId }) => {
         calls.push(`record:${workspaceId}`);
@@ -65,6 +131,7 @@ describe('outbox runner', () => {
       `claim:${claimed.workspaceId}`,
       'provider',
       `record:${claimed.workspaceId}`,
+      `claim:${claimed.workspaceId}`,
     ]);
     expect(result).toMatchObject({ claimed: 1, completed: 1 });
   });
@@ -82,6 +149,98 @@ describe('outbox runner', () => {
     expect(store.claim).toHaveBeenCalledOnce();
   });
 
+  it('keeps queued jobs unleased until execution, including overlapping runners', async () => {
+    let clock = 0;
+    const rows = Array.from({ length: 4 }, () => ({
+      job: job({ jobType: 'slow' }),
+      status: 'pending',
+      expiresAt: 0,
+      owner: '',
+    }));
+    const executions = new Map<string, number>();
+    const store: OutboxStore = {
+      claim: vi.fn(async ({ limit, leaseExpiresAt, leaseOwnerId }) =>
+        rows
+          .filter(
+            (row) =>
+              row.status === 'pending' || (row.status === 'processing' && row.expiresAt <= clock),
+          )
+          .slice(0, limit)
+          .map((row) => {
+            row.status = 'processing';
+            row.expiresAt = leaseExpiresAt.getTime();
+            row.owner = leaseOwnerId;
+            return { ...row.job, leaseOwnerId };
+          }),
+      ),
+      recordOutcome: async ({ jobId, leaseOwnerId }) => {
+        const row = rows.find((candidate) => candidate.job.id === jobId);
+        if (!row || row.owner !== leaseOwnerId) return 'lease_lost';
+        row.status = 'completed';
+        return 'recorded';
+      },
+    };
+    const options = {
+      store,
+      batchSize: 4,
+      leaseMs: 60_000,
+      handlerTimeoutMs: 0,
+      now: () => new Date(clock),
+      handlers: new Map([
+        [
+          'slow',
+          async (claimed: ClaimedJob) => {
+            executions.set(claimed.id, (executions.get(claimed.id) ?? 0) + 1);
+            // Each handler fits its lease, but the queue takes longer than one lease.
+            clock += 25_000;
+            if (executions.size === 3) {
+              expect(rows.filter((row) => row.status === 'processing')).toHaveLength(1);
+              await new OutboxRunner(options).run({
+                authorizedWorkspaceIds: [claimed.workspaceId],
+                actorId: crypto.randomUUID(),
+              });
+            }
+            return { status: 'completed' as const, providerId: claimed.id };
+          },
+        ],
+      ]),
+    };
+    await new OutboxRunner(options).run({
+      authorizedWorkspaceIds: [job().workspaceId],
+      actorId: crypto.randomUUID(),
+    });
+    expect([...executions.values()]).toEqual([1, 1, 1, 1]);
+    expect(rows.every((row) => row.status === 'completed')).toBe(true);
+  });
+
+  it('checks the run deadline between jobs in the same workspace', async () => {
+    let clock = 0;
+    const store: OutboxStore = {
+      claim: vi.fn(async () => [job({ jobType: 'slow' })]),
+      recordOutcome: vi.fn(async () => 'recorded' as const),
+    };
+    const runner = new OutboxRunner({
+      store,
+      runDeadlineMs: 1_000,
+      now: () => new Date(clock),
+      handlers: new Map([
+        [
+          'slow',
+          async () => {
+            clock += 600;
+            return { status: 'completed' as const, providerId: 'test' };
+          },
+        ],
+      ]),
+    });
+    const result = await runner.run({
+      authorizedWorkspaceIds: [job().workspaceId],
+      actorId: crypto.randomUUID(),
+    });
+    expect(result).toMatchObject({ claimed: 2, completed: 2 });
+    expect(store.claim).toHaveBeenCalledTimes(2);
+  });
+
   it('fails permanently on an unregistered handler and at max attempts', async () => {
     const outcomes: JobOutcome[] = [];
     const jobs = [
@@ -89,7 +248,7 @@ describe('outbox runner', () => {
       job({ jobType: 'known', attempts: 3 }),
     ];
     const store: OutboxStore = {
-      claim: vi.fn(async () => jobs),
+      claim: vi.fn(async () => jobs.splice(0, 1)),
       recordOutcome: vi.fn(async ({ outcome }) => {
         outcomes.push(outcome);
         return 'recorded' as const;
@@ -120,7 +279,7 @@ describe('outbox runner', () => {
     let signal: AbortSignal | undefined;
     const claimed = job({ jobType: 'slow_provider' });
     const store: OutboxStore = {
-      claim: vi.fn(async () => [claimed]),
+      claim: vi.fn().mockResolvedValueOnce([claimed]).mockResolvedValue([]),
       recordOutcome: vi.fn(async ({ outcome }) => {
         outcomes.push(outcome);
         return 'recorded' as const;
@@ -187,7 +346,7 @@ describe('outbox runner', () => {
   it('counts a lost lease instead of the outcome, and does not count it as completed', async () => {
     const claimed = job();
     const store: OutboxStore = {
-      claim: vi.fn(async () => [claimed]),
+      claim: vi.fn().mockResolvedValueOnce([claimed]).mockResolvedValue([]),
       recordOutcome: vi.fn(async () => 'lease_lost' as const),
     };
     const runner = new OutboxRunner({

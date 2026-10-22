@@ -71,7 +71,7 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch((error: unknown) => {
+main().catch(async (error: unknown) => {
   console.error(
     JSON.stringify({
       event: 'monitor_failed',
@@ -85,4 +85,9 @@ main().catch((error: unknown) => {
     environment: process.env.DEPLOYMENT_ENV ?? process.env.NODE_ENV,
   });
   process.exitCode = 1;
+  await createOwnerAlertChannelFromEnv()
+    .send({ kind: 'backup_stale', detail: 'monitor_failed', occurredAt: new Date().toISOString() })
+    .catch(() => {
+      console.error(JSON.stringify({ event: 'monitor_alert_delivery_failed' }));
+    });
 });

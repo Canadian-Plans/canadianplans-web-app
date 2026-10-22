@@ -25,6 +25,10 @@ export interface RetentionRunOptions {
 export interface RetentionRunReport {
   totalRuns: number;
   unreadableManifests: string[];
+  /** Attempts with no manifest, older than the grace period: deleted as abandoned. */
+  abandonedRunIds: string[];
+  /** Attempts with no manifest yet, still inside the grace period: kept for now. */
+  pendingRunIds: string[];
   retainedRunIds: string[];
   candidateDeletions: string[];
   deleted: string[];
@@ -50,20 +54,38 @@ export async function runRetention(options: RetentionRunOptions): Promise<Retent
 
   const allObjects = await options.admin.listObjects('');
   const runIds = new Set<string>();
+  // Newest upload time per run; undefined when any object's time is unknown.
+  const lastUploadByRunId = new Map<string, number | undefined>();
   for (const object of allObjects) {
     const runId = extractRunId(object.key);
-    if (runId) runIds.add(runId);
+    if (!runId) continue;
+    runIds.add(runId);
+    const previous = lastUploadByRunId.has(runId) ? lastUploadByRunId.get(runId) : 0;
+    const uploaded = object.lastModified?.getTime();
+    lastUploadByRunId.set(
+      runId,
+      previous === undefined || uploaded === undefined ? undefined : Math.max(previous, uploaded),
+    );
   }
+  const cutoff = now().getTime() - graceMs;
 
   const runs: RunInfo[] = [];
   const unreadableManifests: string[] = [];
+  const abandonedRunIds: string[] = [];
+  const pendingRunIds: string[] = [];
   for (const runId of runIds) {
     const manifestKey = `${runId}/manifest.json.enc`;
     const ciphertext = await options.admin.getObject(manifestKey);
     if (!ciphertext) {
-      // No manifest to reason about this run's references safely: never
-      // guess, never delete anything belonging to it this cycle.
-      unreadableManifests.push(manifestKey);
+      // The backup writes its manifest last, so a run without one is an
+      // attempt that failed part-way (or is still uploading). Every attempt
+      // has its own run ID and is never resumed, so once its newest object
+      // is past the grace period nothing can complete it: delete it. An
+      // unknown upload time cannot prove that, so it fails visibly instead.
+      const lastUpload = lastUploadByRunId.get(runId);
+      if (lastUpload === undefined) unreadableManifests.push(manifestKey);
+      else if (lastUpload < cutoff) abandonedRunIds.push(runId);
+      else pendingRunIds.push(runId);
       continue;
     }
     try {
@@ -84,11 +106,14 @@ export async function runRetention(options: RetentionRunOptions): Promise<Retent
     policy,
   );
   // A run whose manifest could not be read cannot be proven safe to delete —
-  // treat it as retained too until it can be verified.
+  // treat it as retained too until it can be verified. Pending attempts may
+  // still be uploading.
   for (const manifestKey of unreadableManifests) {
     const runId = extractRunId(manifestKey);
     if (runId) retainedRunIds.add(runId);
   }
+  for (const runId of pendingRunIds) retainedRunIds.add(runId);
+  const abandoned = new Set(abandonedRunIds);
 
   const retainedObjectKeys = new Set<string>([HEARTBEAT_KEY]);
   const runById = new Map(runs.map((run) => [run.runId, run]));
@@ -97,7 +122,6 @@ export async function runRetention(options: RetentionRunOptions): Promise<Retent
     if (run) for (const key of run.objectKeys) retainedObjectKeys.add(key);
   }
 
-  const cutoff = now().getTime() - graceMs;
   const capturedAtByRunId = new Map(runs.map((run) => [run.runId, run.capturedAt.getTime()]));
   const candidateDeletions = allObjects
     .map((object) => object.key)
@@ -105,6 +129,7 @@ export async function runRetention(options: RetentionRunOptions): Promise<Retent
       if (retainedObjectKeys.has(key)) return false;
       const runId = extractRunId(key);
       if (!runId) return false;
+      if (abandoned.has(runId)) return true;
       // Unknown run age (manifest unreadable) is already retained above, so
       // reaching here means the run's age is known; enforce the grace period.
       const capturedAt = capturedAtByRunId.get(runId);
@@ -122,6 +147,8 @@ export async function runRetention(options: RetentionRunOptions): Promise<Retent
   return {
     totalRuns: runIds.size,
     unreadableManifests,
+    abandonedRunIds,
+    pendingRunIds,
     retainedRunIds: [...retainedRunIds],
     candidateDeletions,
     deleted,

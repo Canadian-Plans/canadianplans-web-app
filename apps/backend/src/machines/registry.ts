@@ -149,6 +149,36 @@ function verifySanitySignature(
   return textEqual(received, expected);
 }
 
+/** Resend uses Standard Webhooks/Svix: id.timestamp.rawBody, whsec_ base64 key.
+ * Protocol: resend-node/src/webhooks/webhooks.ts and standard-webhooks JS verifier.
+ */
+function verifyResendSignature(
+  input: {
+    id: string;
+    timestamp: string;
+    signature: string;
+    rawBody: Buffer;
+  },
+  secret: string,
+  nowMs: number,
+): boolean {
+  if (!input.id || input.id.length > 200 || !/^\d+$/.test(input.timestamp)) return false;
+  const age = Math.abs(nowMs / 1000 - Number(input.timestamp));
+  if (!Number.isFinite(age) || age > 300 || !secret.startsWith('whsec_')) return false;
+  const encoded = secret.slice(6);
+  if (!/^[A-Za-z0-9+/]+={0,2}$/.test(encoded)) return false;
+  const key = Buffer.from(encoded, 'base64');
+  if (key.length < 16) return false;
+  const expected = createHmac('sha256', key)
+    .update(`${input.id}.${input.timestamp}.`)
+    .update(input.rawBody)
+    .digest('base64');
+  return input.signature.split(' ').some((part) => {
+    const [version, signature, extra] = part.split(',');
+    return version === 'v1' && extra === undefined && !!signature && textEqual(signature, expected);
+  });
+}
+
 export class MachineRegistry {
   private readonly webhooks: Map<string, WebhookEntry>;
   private readonly schedulers: Map<string, SchedulerEntry>;
@@ -182,6 +212,7 @@ export class MachineRegistry {
     const entry = this.webhooks.get(input.selector);
     if (!entry || entry.revoked) return { ok: false, reason: 'machine_unknown' };
 
+    if (entry.provider === 'resend') return { ok: false, reason: 'machine_signature_invalid' };
     if (input.expectedProvider && entry.provider !== input.expectedProvider) {
       return { ok: false, reason: 'machine_account_mismatch' };
     }
@@ -218,6 +249,36 @@ export class MachineRegistry {
       providerAccount: entry.providerAccount,
       actorId: entry.actorId,
     };
+  }
+
+  resolveResendWebhook(input: {
+    selector: string;
+    id: string;
+    timestamp: string;
+    signature: string;
+    rawBody: Buffer;
+  }): WebhookResolution {
+    const entry = this.webhooks.get(input.selector);
+    if (!entry || entry.revoked) return { ok: false, reason: 'machine_unknown' };
+    if (entry.provider !== 'resend') return { ok: false, reason: 'machine_account_mismatch' };
+    if (!verifyResendSignature(input, entry.verificationSecret, this.now())) {
+      return { ok: false, reason: 'machine_signature_invalid' };
+    }
+    return {
+      ok: true,
+      selector: entry.selector,
+      provider: entry.provider,
+      providerAccount: entry.providerAccount,
+      workspaceId: entry.workspaceId,
+      actorId: entry.actorId,
+    };
+  }
+
+  resendForWorkspace(workspaceId: string): { providerAccount: string } | undefined {
+    const matches = [...this.webhooks.values()].filter(
+      (entry) => !entry.revoked && entry.provider === 'resend' && entry.workspaceId === workspaceId,
+    );
+    return matches.length === 1 ? { providerAccount: matches[0]!.providerAccount } : undefined;
   }
 
   /** Internal-only provider configuration lookup; never accepts caller-supplied workspace context. */

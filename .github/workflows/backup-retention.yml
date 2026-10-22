@@ -37,6 +37,11 @@ jobs:
           node-version: 22.19.0
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Install and verify age (decrypts retained manifests)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y age
+          age --version
       - name: Write the escrowed recovery private key to a runner-local file
         # Never a repository file, artifact name, or object metadata — only the
         # runner's protected secret store and this ephemeral, workspace-scoped

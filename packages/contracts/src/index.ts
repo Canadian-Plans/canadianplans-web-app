@@ -160,6 +160,8 @@ export {
   leadStatusSchema,
   leadSummarySchema,
   rawAttributionSchema,
+  leadDraftSchema,
+  readLeadResponseSchema,
   updateLeadRequestSchema,
   updateLeadResponseSchema,
   type Attribution,
@@ -172,6 +174,8 @@ export {
   type LeadStatus,
   type LeadSummary,
   type RawAttribution,
+  type LeadDraft,
+  type ReadLeadResponse,
   type UpdateLeadRequest,
   type UpdateLeadResponse,
 } from './leads';
@@ -200,6 +204,15 @@ export {
   deleteCustomerDataRequestSchema,
   deleteCustomerDataResponseSchema,
   deletionLedgerStatusSchema,
+  deletionSubjectTypeSchema,
+  deletionCleanupStatusSchema,
+  requestSubjectDeletionResponseSchema,
+  findDeletionSubjectsRequestSchema,
+  findDeletionSubjectsResponseSchema,
+  type DeletionSubjectType,
+  type RequestSubjectDeletionResponse,
+  type FindDeletionSubjectsResponse,
+  type FindDeletionSubjectsRequest,
   type DeleteCustomerDataRequest,
   type DeleteCustomerDataResponse,
   type DeletionLedgerStatus,
@@ -449,3 +462,10 @@ export {
   type BackendClient,
   type BackendClientOptions,
 } from './client';
+
+export {
+  websiteBotActions,
+  websiteBotTokenSchema,
+  type WebsiteBotAction,
+  type WebsiteBotProof,
+} from './website-bot';

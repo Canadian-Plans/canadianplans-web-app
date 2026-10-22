@@ -17,16 +17,17 @@ Read-only provider observation on 2026-09-14 found no Vercel projects in the
 Canadian Plans team and one Supabase project in `us-west-2`. Do not use that
 project as evidence of Canadian staging compliance (required: `ca-central-1`).
 
-Website routes that write validate `X-Turnstile-Token` through Cloudflare
-Siteverify before database work. It denies missing configuration, invalid tokens,
-hostname/action mismatches and provider failures. Reads (`GET`, such as the plan
-list the storefront renders on the server) need no token, because no visitor is
-present to produce one; they stay behind the credential, its scope and the rate
-limits. The storefront gets a fresh widget token with action `lead-submit` before
-every call that writes (`apps/site-1/src/lib/turnstile.ts`) and forwards it from its
-server actions. Tests inject explicit admission or mock the provider response.
-The backend does not trust caller-controlled `X-Forwarded-For`; any deployment
-proxy trust policy must be narrowly verified before enabling public traffic.
+Protected website writes validate a fresh `X-Turnstile-Token` with their fixed
+route action before database work. Missing configuration, invalid/reused tokens,
+hostname/action mismatches and provider errors fail closed. Machine catalogue
+and granted tracking-status reads still require credentials, scopes and limits,
+but no browser challenge. Live provider/hostname verification remains a deployment
+check; CI emulates the external script and enforces one-use action-bound proofs.
+The backend never trusts arbitrary `X-Forwarded-For`. The Vercel storefront reads
+its proxy-set `x-real-ip` only inside the Vercel runtime and sends a keyed visitor
+digest over the authenticated service connection. Other hosts or missing ingress
+metadata use the backend network identity; confirm the proxy-derived IP is the
+visitor's address if another proxy sits in front of Vercel.
 
 ## Runtime
 
@@ -55,7 +56,7 @@ Unset (either value) means no ledger is configured: a `deletion_ledger_publish` 
 
 ## Customer tracking (T22)
 
-- `TRACKING_HASH_SECRET` — backend-only HMAC secret (at least 32 characters) that keys the order-tracking email/code hashes and the 30-minute tracking grant. Unset or too short means tracking is unavailable: the OTP request still answers neutrally and verify/status fail closed with `persistence_unavailable`. Never expose it to a browser bundle and rotate it only with a deployment (existing grants and pending codes become invalid).
+- `TRACKING_HASH_SECRET` — backend-only HMAC secret (at least 32 characters) that keys the order-tracking email/code hashes and the 30-minute tracking grant, and derives a separate AES-GCM key for encrypted OTP outbox delivery. Unset or too short means tracking is unavailable: the OTP request still answers neutrally and verify/status fail closed with `persistence_unavailable`. Never expose it to a browser bundle and rotate it only with a deployment (existing grants, pending codes and encrypted OTP jobs become invalid).
 - `TRACKING_OTP_MIN_LATENCY_MS` — optional backend-only minimum latency for the neutral `tracking/otp` response (default `500`, capped at `5000`), so a matched and unmatched request are timing-indistinguishable. Set lower only in tests; never lower it in production.
 
 ## Supabase
@@ -83,24 +84,42 @@ The application has no privileged Supabase key variable. Staff invitations use a
 
 ## Cloudflare Turnstile
 
-- `TURNSTILE_SECRET_KEY` — backend-only Siteverify secret; public test secrets are rejected
-- `TURNSTILE_HOSTNAME` — exact allowed storefront hostname returned by Siteverify, without scheme or path
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY` — storefront public widget key, compiled at build time. Missing key prevents protected form submission; it never bypasses verification.
+- `TURNSTILE_SECRET_KEY` — backend-only Siteverify secret; public test secrets are rejected.
+- `TURNSTILE_HOSTNAMES` — backend-only comma-separated exact permitted hostnames (for example `canadianplans.com,www.canadianplans.com`), maximum 20. No scheme, path, port or wildcard. Configure corresponding hostnames on the provider widget.
+- `TURNSTILE_HOSTNAME` — legacy single-host fallback when `TURNSTILE_HOSTNAMES` is unset.
 
-The verifier has a five-second network timeout and does not cache successful tokens.
-It never takes the allowed hostname from the request. Do not place live Turnstile
-credentials in previews. The current credential proof endpoint uses `lead-submit`;
-future public actions must bind their own expected action explicitly.
+Use separate preview keys and a preview backend; never copy production secrets
+into previews. Provider verification is bounded to five seconds and is never
+cached. Human proofs are consumed once on matched routes, not by a catch-all
+router. The widget requests a new token for every protected request, including
+upload intent/finalization and a retry after a transport failure. Cancellation,
+provider errors and expiry keep entered form values and allow a fresh attempt.
 
-Storefront (site-1, Vercel): `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is the widget's public
-site key. Without it the form sends no token and the backend refuses every write.
-Allow `challenges.cloudflare.com` in the storefront CSP (`next.config.ts`).
+| Operation                                            | Required provider action               |
+| ---------------------------------------------------- | -------------------------------------- |
+| Create/update lead, save documents, callback request | `lead-save`                            |
+| Province wish list                                   | `waitlist-join`                        |
+| Create quote                                         | `quote-create`                         |
+| Submit order                                         | `order-submit`                         |
+| Upload intent / finalize                             | `upload-intent` / `upload-finalize`    |
+| Customer download-link issuance                      | `file-download`                        |
+| Tracking code request / verification                 | `tracking-request` / `tracking-verify` |
+
+The browser never chooses the backend's expected action. Transport recovery
+obtains a fresh proof while retaining the same order idempotency key. Starting a
+new purchase after a finished draft also obtains a fresh proof before creating
+a new lead/key. SSR offers and authenticated tracking-status GETs require no
+challenge. Hostname/provider configuration and a live verification on each
+published domain must be checked before release; local emulation is not evidence
+of live Cloudflare configuration.
 
 ## Per-endpoint rate limits (REQ 37)
 
 The public write surface carries a tighter per-endpoint budget on top of the
-coarse per-IP/per-credential ceiling in `requireWebsiteCredential`. Each budget
-is keyed by `(endpoint, workspace, IP)` and durable (the `rateLimitHit` SQL
-function). Defaults (per 60s): `leads` 30, `quotes` 30, `orders` 10, `tracking` 20. Override per deployment; invalid/absent values fall back to the default:
+coarse network-bootstrap/per-visitor/per-credential ceilings in `requireWebsiteCredential`. Each budget
+is keyed by `(endpoint, workspace, authenticated visitor)` and durable (the `rateLimitHit` SQL
+function). The bootstrap network budget is 1,200/minute; valid callers also have a 300/minute credential ceiling and a 120/minute visitor ceiling. Defaults (per 60s): `leads` 30, `quotes` 30, `orders` 10, `tracking` 20. Override per deployment; invalid/absent values fall back to the default:
 
 - `RATE_LIMIT_LEADS_MAX` / `RATE_LIMIT_LEADS_WINDOW`
 - `RATE_LIMIT_QUOTES_MAX` / `RATE_LIMIT_QUOTES_WINDOW`
@@ -108,7 +127,7 @@ function). Defaults (per 60s): `leads` 30, `quotes` 30, `orders` 10, `tracking` 
 - `RATE_LIMIT_TRACKING_MAX` / `RATE_LIMIT_TRACKING_WINDOW`
 
 `WINDOW` is in seconds; both must be positive integers. `tracking` layers on top
-of the existing per-email/per-IP OTP limits, which are unchanged.
+of the existing per-email/per-visitor OTP limits, which are unchanged.
 
 ## Sanity
 
@@ -144,15 +163,22 @@ connecting Sanity later needs no code change.
 
 - `EMAIL_PROVIDER` — backend-only, explicit selection: `fake`, `resend`, or `ses`. There is no implicit default; an unset or unrecognised value fails every email job closed with `provider_not_configured` rather than guessing. `fake` is only honoured outside `NODE_ENV=production`. Set to `fake` in CI and preview deployments; `resend` is the live default (OPEN_INPUTS #23: Resend selected for launch); `ses` remains available but is deferred to a later migration.
 - `EMAIL_CONTACT_HASH_SECRET` — backend-only, at least 16 characters. Keys the HMAC used to match a contact against suppression/consent records without storing the raw address; rotating it invalidates existing unsubscribe links and orphans old suppression matches, so treat it as a durable secret, not a rotate-on-a-whim one.
-- `EMAIL_WEBHOOK_SHARED_SECRET` — backend-only shared secret gating `/api/v1/email/webhook/events`. Interim verification only: provider webhook notifications should move to the provider's supported signed transport (Resend's Svix signature, or SES/SNS) as a follow-up.
+- `EMAIL_WEBHOOK_SHARED_SECRET` — retired; the old normalized endpoint returns 404. Configure native Resend verification through `MACHINE_REGISTRY_JSON` instead.
 - `MARKETING_CONSENT_VERSION` — the consent-version string recorded when a customer unsubscribes via the no-login link; defaults to `"1"` if unset.
 
 ## Resend (current email provider)
 
+- `RESEND_ACCOUNT_ID` — server-owned account label matching the active Resend webhook registry entry for each sending workspace. Sending fails closed if the mapping is absent, ambiguous, or differs from this label.
 - `RESEND_API_KEY`
 - `RESEND_FROM_EMAIL` — must be an address on a domain verified in the Resend account
 - `RESEND_FROM_NAME`
 - `RESEND_REPLY_TO_EMAIL` — optional
+
+Configure Resend's webhook URL as `/api/v1/webhooks/resend/<selector>` and subscribe to `email.delivered`, `email.bounced`, `email.complained`, and `email.failed`. Add a webhook registry entry with `provider: "resend"`, the account label in `providerAccount`, its workspace UUID, a stable machine `actorId` UUID, and the dashboard's `whsec_...` signing secret. The endpoint verifies native `svix-id`, `svix-timestamp`, and `svix-signature` over the original bytes within five minutes. No workspace or account header from the provider is trusted. Use a separate secret for each active registry entry.
+
+Apply migration 0022 before deploying. Create the native provider endpoint and registry mapping through the owner's deployment process; do not route the old shared-secret protocol to it. Newly prepared sends include a logical message tag and a stable idempotency key; events must match that recorded workspace/account/contact and provider ID. Old uncorrelated messages are not guessed into an account: the endpoint returns 503 for reconciliation/retry. Inspect those events during cutover. Resend's idempotency window remains provider-defined; uncertain sends require reconciliation, not indefinite blind retry.
+
+Bounce/complaint suppression commits with a `suppression_ledger_publish` outbox job, using the same `DELETION_LEDGER_*` publisher and authenticated restore checkpoint as deletion events. An unavailable ledger leaves the job pending/failed and visible; it never falls back to an in-memory production publisher. The recovery integration must accept and replay `suppress_contact` events (keyed contact digest and reason) before reopening restored data.
 
 ## AWS SES (deferred)
 
@@ -164,7 +190,7 @@ Not selected for launch (OPEN_INPUTS #23); kept wired for a later migration off 
 - `SES_FROM_EMAIL`
 - `SES_FROM_NAME`
 - `SES_REPLY_TO_EMAIL` — optional
-- `SES_CONFIGURATION_SET_NAME` — optional; required in practice to receive delivery/bounce/complaint events at `/api/v1/email/webhook/events`
+- `SES_CONFIGURATION_SET_NAME` — optional. Native SES/SNS event ingestion is not implemented; the retired normalized webhook cannot be used for SES.
 
 ## Observability and analytics
 
@@ -224,3 +250,16 @@ search index. `/studio` is `noindex` (via `next-sanity`) and disallowed in
 - `B2_APPLICATION_KEY`
 - `B2_BUCKET`
 - `B2_ENDPOINT`
+
+### Customer-requested physical document cleanup
+
+The backend's durable cleanup worker requires the configured private `R2_BUCKET`
+and the existing backend-only R2 credentials to permit DELETE inside its workspace
+prefix. It never substitutes fake deletion when configuration is missing. A key
+whose recorded bucket differs from the configured bucket stays pending; migrate
+old-bucket cleanup through an explicitly configured worker instead of marking it
+complete. Apply migration 0023 before the new backend. The backup runner must use
+the protected lease interface, which waits for active cleanup requests before
+starting its snapshot. Independent ledger acknowledgement is required before
+personal database/object erasure; see the deletion and restore runbooks. Live R2
+permission/ledger durability verification belongs to the deployment operator.

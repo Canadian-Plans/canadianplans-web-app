@@ -41,6 +41,7 @@ class FakeRateLimiter {
 }
 
 class FakeLeadStore implements LeadStore {
+  readLead: LeadStore['readLead'] = async () => ({ status: 'grant_invalid' });
   readonly createCalls: CreateLeadInput[] = [];
   async createLead(input: CreateLeadInput): Promise<CreateLeadResult> {
     this.createCalls.push(input);
@@ -85,6 +86,7 @@ const staffOnly: {
     revokeCredential: async () => ({ status: 'not_found' }),
   },
   leadStore: {
+    readLead: async () => ({ status: 'grant_invalid' }),
     createLead: async () => {
       throw new Error('unused');
     },
@@ -142,7 +144,7 @@ afterEach(async () => {
 });
 
 describe('per-endpoint rate limits', () => {
-  it('applies a tighter per-endpoint budget scoped to workspace and IP', async () => {
+  it('applies a tighter per-endpoint budget scoped to workspace and authenticated visitor', async () => {
     const response = await post(
       '/api/v1/website/leads',
       { authorization: `Bearer ${VALID_SECRET}` },
@@ -150,7 +152,7 @@ describe('per-endpoint rate limits', () => {
     );
     expect(response.status).toBe(201);
     const endpointHit = limiter.inputs.find((input) =>
-      input.bucketKey.startsWith(`endpoint:leads:ws:${WORKSPACE}:ip:`),
+      input.bucketKey.startsWith(`endpoint:leads:ws:${WORKSPACE}:visitor:`),
     );
     expect(endpointHit).toBeDefined();
     expect(endpointHit?.maxCount).toBe(DEFAULT_ENDPOINT_RATE_LIMITS.leads.maxCount);

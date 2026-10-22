@@ -470,6 +470,14 @@ databaseDescribe('staff order actions against Postgres', () => {
   });
 
   test('search and filters stay inside the workspace and match the derived source label', async () => {
+    const absentPartner = await query.listOrders({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      partnerCode: 'NO-SUCH-PARTNER',
+      includeContactSearch: true,
+    });
+    expect(absentPartner.orders).toEqual([]);
+    expect(absentPartner.page.total).toBe(0);
     const byName = await query.listOrders({
       workspaceId: WORKSPACE,
       actorId: ACTOR,

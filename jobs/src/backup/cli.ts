@@ -5,7 +5,7 @@ import { S3ArchiveWriter } from './archive-store.js';
 import { nodeRunCommand } from './command.js';
 import { AgeCliEncryptor } from './encryptor.js';
 import { PgBackupLease } from './lease.js';
-import { runBackup } from './run.js';
+import { createBackupRunId, runBackup } from './run.js';
 import {
   PsqlReferencedObjectManifestSource,
   S3R2SourceReader,
@@ -27,13 +27,9 @@ function requiredEnv(name: string): string {
   return value;
 }
 
-function todayRunId(now: Date): string {
-  return `run-${now.toISOString().slice(0, 10)}`;
-}
-
 async function main(): Promise<void> {
   const now = new Date();
-  const runId = process.env.BACKUP_RUN_ID?.trim() || todayRunId(now);
+  const runId = process.env.BACKUP_RUN_ID?.trim() || createBackupRunId(now);
 
   const sourceDbUrl = requiredEnv('SOURCE_DATABASE_URL');
   const leaseDbUrl = requiredEnv('BACKUP_LEASE_DATABASE_URL');

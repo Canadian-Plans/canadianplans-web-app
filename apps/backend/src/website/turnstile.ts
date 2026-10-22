@@ -8,11 +8,16 @@ const verificationSchema = z.object({
 
 /** Validate once with the provider; never cache successful challenge tokens. */
 export function createTurnstileVerifier(
-  config: { secret?: string; hostname?: string; action: string },
+  config: { secret?: string; hostname?: string; hostnames?: readonly string[]; action: string },
   request: typeof fetch = fetch,
 ): (token: string | undefined) => Promise<boolean> {
+  const hostnames = config.hostnames ?? (config.hostname ? [config.hostname] : []);
+  const configuredHosts =
+    hostnames.length > 0 &&
+    hostnames.length <= 20 &&
+    hostnames.every((host) => /^(?:[a-z0-9-]+\.)*[a-z0-9-]+$/.test(host));
   return async (token) => {
-    if (!config.secret || !config.hostname || !config.action || !token || token.length > 2048) {
+    if (!config.secret || !configuredHosts || !config.action || !token || token.length > 2048) {
       return false;
     }
     // Cloudflare's public test secrets must never enable the runtime admission path.
@@ -30,7 +35,7 @@ export function createTurnstileVerifier(
       const result = verificationSchema.safeParse(data);
       return (
         result.success &&
-        result.data.hostname === config.hostname &&
+        hostnames.includes(result.data.hostname) &&
         result.data.action === config.action
       );
     } catch {

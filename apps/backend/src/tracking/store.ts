@@ -1,8 +1,9 @@
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, isNull, sql } from 'drizzle-orm';
 import {
   dispatchRecords,
   leads,
   orders,
+  outboxJobs,
   trackingChallenges,
   withTenantTx,
   type TenantTransaction,
@@ -10,6 +11,8 @@ import {
 import { z } from 'zod';
 
 import { hashesEqual } from './secrets.js';
+import { findUnsatisfiedDocuments } from '../orders/document-prerequisite.js';
+import { customerSubjectActive, lockCustomerLeadForOrder } from '../deletion/restriction.js';
 
 /**
  * Tracking persistence (T22). Every read/write runs inside the workspace's RLS
@@ -31,7 +34,21 @@ export interface TrackingStatusView {
   updatedAt: Date;
 }
 
+export interface QueueTrackingChallengeInput {
+  workspaceId: string;
+  orderId: string;
+  challengeId: string;
+  normalizedEmail: string;
+  emailHash: string;
+  codeHash: string;
+  expiresAt: Date;
+  now: Date;
+  sealedCode: string;
+  contactHash: string;
+}
+
 export interface TrackingStore {
+  createChallengeAndQueue(input: QueueTrackingChallengeInput): Promise<void>;
   matchOrder(input: {
     workspaceId: string;
     reference: string;
@@ -85,12 +102,156 @@ export class DatabaseTrackingStore implements TrackingStore {
           .where(
             and(
               eq(orders.workspaceId, input.workspaceId),
+              isNull(orders.customerDataRestrictedAt),
               eq(orders.reference, input.reference),
               sql`lower(${leads.email}) = ${input.normalizedEmail}`,
             ),
           )
           .limit(1);
         return row ? { orderId: row.id } : undefined;
+      },
+    );
+  }
+
+  async createChallengeAndQueue(input: QueueTrackingChallengeInput): Promise<void> {
+    await this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: input.workspaceId },
+      async (tx) => {
+        // Serialize resends for one order and recheck the contact after matching.
+        if (!(await lockCustomerLeadForOrder(tx, input.workspaceId, input.orderId))) return;
+        await tx
+          .select({ id: orders.id })
+          .from(orders)
+          .where(and(eq(orders.workspaceId, input.workspaceId), eq(orders.id, input.orderId)))
+          .for('update');
+        const [order] = await tx
+          .select({ reference: orders.reference, email: leads.email })
+          .from(orders)
+          .innerJoin(
+            leads,
+            and(eq(leads.workspaceId, orders.workspaceId), eq(leads.id, orders.leadId)),
+          )
+          .where(
+            and(
+              eq(orders.workspaceId, input.workspaceId),
+              isNull(orders.customerDataRestrictedAt),
+              eq(orders.id, input.orderId),
+            ),
+          );
+        if (!order || order.email?.trim().toLowerCase() !== input.normalizedEmail) return;
+        await tx
+          .update(trackingChallenges)
+          .set({ status: 'consumed', consumedAt: input.now })
+          .where(
+            and(
+              eq(trackingChallenges.workspaceId, input.workspaceId),
+              eq(trackingChallenges.orderId, input.orderId),
+              eq(trackingChallenges.emailHash, input.emailHash),
+              eq(trackingChallenges.status, 'pending'),
+            ),
+          );
+        await tx
+          .update(outboxJobs)
+          .set({
+            status: 'completed',
+            completedAt: input.now,
+            providerId: 'skipped:superseded',
+            payload: { orderId: input.orderId },
+            updatedAt: input.now,
+          })
+          .where(
+            and(
+              eq(outboxJobs.workspaceId, input.workspaceId),
+              eq(outboxJobs.jobType, 'tracking_otp_email'),
+              eq(outboxJobs.status, 'pending'),
+              sql`${outboxJobs.payload}->>'orderId' = ${input.orderId}`,
+            ),
+          );
+        await tx.insert(trackingChallenges).values({
+          id: input.challengeId,
+          workspaceId: input.workspaceId,
+          orderId: input.orderId,
+          emailHash: input.emailHash,
+          codeHash: input.codeHash,
+          expiresAt: input.expiresAt,
+        });
+        await tx.insert(outboxJobs).values({
+          workspaceId: input.workspaceId,
+          jobType: 'tracking_otp_email',
+          dedupeKey: input.challengeId,
+          payload: {
+            orderId: input.orderId,
+            challengeId: input.challengeId,
+            reference: order.reference,
+            toAddress: input.normalizedEmail,
+            contactHash: input.contactHash,
+            sealedCode: input.sealedCode,
+            expiresAt: input.expiresAt.toISOString(),
+          },
+        });
+      },
+    );
+  }
+
+  async pendingDelivery(input: {
+    workspaceId: string;
+    actorId: string;
+    orderId: string;
+    challengeId: string;
+    now: Date;
+  }): Promise<
+    | {
+        codeHash: string;
+        email: string;
+        reference: string;
+      }
+    | undefined
+  > {
+    return this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: input.actorId },
+      async (tx) => {
+        const [row] = await tx
+          .select({
+            codeHash: trackingChallenges.codeHash,
+            email: leads.email,
+            reference: orders.reference,
+            expiresAt: trackingChallenges.expiresAt,
+            attempts: trackingChallenges.attempts,
+          })
+          .from(trackingChallenges)
+          .innerJoin(
+            orders,
+            and(
+              eq(orders.workspaceId, trackingChallenges.workspaceId),
+              eq(orders.id, trackingChallenges.orderId),
+            ),
+          )
+          .innerJoin(
+            leads,
+            and(eq(leads.workspaceId, orders.workspaceId), eq(leads.id, orders.leadId)),
+          )
+          .where(
+            and(
+              eq(trackingChallenges.workspaceId, input.workspaceId),
+              eq(trackingChallenges.orderId, input.orderId),
+              eq(trackingChallenges.id, input.challengeId),
+              isNull(orders.customerDataRestrictedAt),
+              isNull(leads.customerDataRestrictedAt),
+              eq(trackingChallenges.status, 'pending'),
+            ),
+          )
+          .limit(1);
+        if (
+          !row?.email ||
+          row.expiresAt.getTime() <= input.now.getTime() ||
+          row.attempts >= MAX_TRACKING_ATTEMPTS
+        )
+          return undefined;
+        return {
+          codeHash: row.codeHash,
+          email: row.email.trim().toLowerCase(),
+          reference: row.reference,
+        };
       },
     );
   }
@@ -128,6 +289,8 @@ export class DatabaseTrackingStore implements TrackingStore {
     return this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.workspaceId },
       async (tx) => {
+        if (!(await customerSubjectActive(tx, input.workspaceId, { orderId: input.orderId })))
+          throw new Error('tracking_challenge_inactive');
         const [row] = await tx
           .insert(trackingChallenges)
           .values({
@@ -154,6 +317,8 @@ export class DatabaseTrackingStore implements TrackingStore {
     return this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.workspaceId },
       async (tx) => {
+        if (!(await customerSubjectActive(tx, input.workspaceId, { orderId: input.orderId })))
+          return 'not_found';
         const [challenge] = await tx
           .select({
             id: trackingChallenges.id,
@@ -235,7 +400,13 @@ export class DatabaseTrackingStore implements TrackingStore {
             updatedAt: orders.updatedAt,
           })
           .from(orders)
-          .where(and(eq(orders.workspaceId, input.workspaceId), eq(orders.id, input.orderId)))
+          .where(
+            and(
+              eq(orders.workspaceId, input.workspaceId),
+              isNull(orders.customerDataRestrictedAt),
+              eq(orders.id, input.orderId),
+            ),
+          )
           .limit(1);
         if (!order) return undefined;
 
@@ -251,8 +422,12 @@ export class DatabaseTrackingStore implements TrackingStore {
           .orderBy(desc(dispatchRecords.dispatchedAt))
           .limit(1);
 
-        // T17 seam: subtract files already available once document tables exist.
         const checklist = snapshotSchema.safeParse(order.snapshot ?? {}).data?.documentChecklist;
+        const outstanding = await findUnsatisfiedDocuments(tx, {
+          workspaceId: input.workspaceId,
+          orderId: input.orderId,
+          required: checklist ?? [],
+        });
 
         return {
           reference: order.reference,
@@ -260,7 +435,7 @@ export class DatabaseTrackingStore implements TrackingStore {
           paymentState: order.paymentState,
           deliveryState: order.deliveryState,
           trackingReference: dispatch?.trackingReference ?? null,
-          documentsRequired: [...(checklist ?? [])],
+          documentsRequired: [...outstanding],
           updatedAt: order.updatedAt,
         };
       },

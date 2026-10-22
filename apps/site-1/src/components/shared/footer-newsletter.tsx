@@ -26,12 +26,16 @@ export function FooterNewsletter({ content }: { content: FooterNewsletterContent
             return;
           }
           startTransition(async () => {
-            const result = await newsletterPreviewAction(email);
-            setMessage(
-              result.status === 'preview'
-                ? { tone: 'done', text: content.preview }
-                : { tone: 'error', text: content.invalid },
-            );
+            try {
+              const result = await newsletterPreviewAction(email);
+              setMessage(
+                result.status === 'preview'
+                  ? { tone: 'done', text: content.preview }
+                  : { tone: 'error', text: content.invalid },
+              );
+            } catch {
+              setMessage({ tone: 'error', text: content.failed });
+            }
           });
         }}
       >

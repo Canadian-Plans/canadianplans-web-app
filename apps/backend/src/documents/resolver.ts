@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import { leads, offerVersions, orders, withTenantTx } from '@canadian-plans/db';
 import { commercialOfferSchema } from '@canadian-plans/contracts';
 import type { DocumentParentType } from '@canadian-plans/contracts';
@@ -34,7 +34,13 @@ export class DatabaseDocumentContextResolver implements DocumentContextResolver 
           const [lead] = await tx
             .select({ offerVersionId: leads.selectedOfferVersionId })
             .from(leads)
-            .where(and(eq(leads.workspaceId, input.workspaceId), eq(leads.id, input.recordId)))
+            .where(
+              and(
+                eq(leads.workspaceId, input.workspaceId),
+                isNull(leads.customerDataRestrictedAt),
+                eq(leads.id, input.recordId),
+              ),
+            )
             .limit(1);
           if (!lead) return { found: false };
           if (!lead.offerVersionId) return { found: true, allowed: [] };
@@ -56,7 +62,13 @@ export class DatabaseDocumentContextResolver implements DocumentContextResolver 
         const [order] = await tx
           .select({ snapshot: orders.snapshot })
           .from(orders)
-          .where(and(eq(orders.workspaceId, input.workspaceId), eq(orders.id, input.recordId)))
+          .where(
+            and(
+              eq(orders.workspaceId, input.workspaceId),
+              isNull(orders.customerDataRestrictedAt),
+              eq(orders.id, input.recordId),
+            ),
+          )
           .limit(1);
         if (!order) return { found: false };
         const parsed = snapshotChecklistSchema.safeParse(order.snapshot);
@@ -79,7 +91,13 @@ export class DatabaseDocumentContextResolver implements DocumentContextResolver 
         const [order] = await tx
           .select({ leadId: orders.leadId })
           .from(orders)
-          .where(and(eq(orders.workspaceId, input.workspaceId), eq(orders.id, input.orderId)))
+          .where(
+            and(
+              eq(orders.workspaceId, input.workspaceId),
+              isNull(orders.customerDataRestrictedAt),
+              eq(orders.id, input.orderId),
+            ),
+          )
           .limit(1);
         return order?.leadId ?? undefined;
       },

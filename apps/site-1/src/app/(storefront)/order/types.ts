@@ -1,4 +1,4 @@
-import type { Quote, RawAttribution } from '@canadian-plans/contracts';
+import type { Quote, RawAttribution, WebsiteBotProof } from '@canadian-plans/contracts';
 
 import type { OrderDetailsInput, OrderFieldErrors } from './details';
 
@@ -22,7 +22,11 @@ export type OrderErrorCode =
   | 'offer_unavailable'
   | 'region_not_served'
   | 'terms_changed'
-  | 'unavailable';
+  | 'unavailable'
+  | 'verification_failed'
+  | 'request_failed'
+  | 'retry_fresh_draft'
+  | 'transport_retry';
 
 export type ActionResult<T> =
   | { ok: true; data: T }
@@ -33,9 +37,7 @@ export type ActionResult<T> =
       fieldErrors?: OrderFieldErrors;
     };
 
-export interface SaveDetailsInput {
-  /** A fresh Turnstile token for this call; each one is single-use. */
-  turnstileToken?: string;
+export interface SaveDetailsInput extends WebsiteBotProof {
   details: OrderDetailsInput;
   /** The selected offer's `documentChecklist`, persisted with the draft. */
   documentKeys: readonly string[];
@@ -45,25 +47,19 @@ export interface SaveDetailsInput {
   consentVersion: string;
 }
 
-export interface SaveDocumentsInput {
-  /** A fresh Turnstile token for this call; each one is single-use. */
-  turnstileToken?: string;
+export interface SaveDocumentsInput extends WebsiteBotProof {
   details: OrderDetailsInput;
   documentKeys: readonly string[];
   /** The placeholder step records that the customer saw the checklist. */
   acknowledged: boolean;
 }
 
-export interface CallbackInput {
-  /** A fresh Turnstile token for this call; each one is single-use. */
-  turnstileToken?: string;
+export interface CallbackInput extends WebsiteBotProof {
   details: OrderDetailsInput;
   documentKeys: readonly string[];
 }
 
-export interface SubmitOrderInput {
-  /** A fresh Turnstile token for this call; each one is single-use. */
-  turnstileToken?: string;
+export interface SubmitOrderInput extends WebsiteBotProof {
   quoteId: string;
   termsVersion: string;
   marketingOptIn: boolean;

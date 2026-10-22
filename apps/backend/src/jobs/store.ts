@@ -94,6 +94,32 @@ async function alertTerminalJobs(
 export class DatabaseOutboxStore implements OutboxStore, JobAdminStore {
   constructor(private readonly database: Pick<DatabaseClient, 'withTenantTx'> = { withTenantTx }) {}
 
+  async queueHealth(input: {
+    authorizedWorkspaceIds: readonly string[];
+    actorId: string;
+  }): Promise<{ failed: number; uncertain: number }> {
+    const counts = { failed: 0, uncertain: 0 };
+    for (const workspaceId of new Set(input.authorizedWorkspaceIds)) {
+      const rows = await this.database.withTenantTx({ workspaceId, actorId: input.actorId }, (tx) =>
+        tx
+          .select({
+            failed: sql<number>`count(*) filter (where ${outboxJobs.status} = 'failed')::int`,
+            uncertain: sql<number>`count(*) filter (where ${outboxJobs.status} = 'uncertain')::int`,
+          })
+          .from(outboxJobs)
+          .where(
+            and(
+              eq(outboxJobs.workspaceId, workspaceId),
+              inArray(outboxJobs.status, ['failed', 'uncertain']),
+            ),
+          ),
+      );
+      counts.failed += rows[0]?.failed ?? 0;
+      counts.uncertain += rows[0]?.uncertain ?? 0;
+    }
+    return counts;
+  }
+
   async claim(input: {
     workspaceId: string;
     actorId: string;
@@ -178,6 +204,9 @@ export class DatabaseOutboxStore implements OutboxStore, JobAdminStore {
                   status: 'pending',
                   availableAt: input.outcome.availableAt,
                   lastErrorCode: input.outcome.errorCode,
+                  ...(input.outcome.preserveAttempt
+                    ? { attempts: sql`greatest(0, ${outboxJobs.attempts} - 1)` }
+                    : {}),
                 }
               : input.outcome.status === 'uncertain'
                 ? {
@@ -191,9 +220,18 @@ export class DatabaseOutboxStore implements OutboxStore, JobAdminStore {
                     status: 'failed',
                     lastErrorCode: input.outcome.errorCode,
                   };
+        // A tracking code's delivery details are needed only until the job ends.
+        const terminal = input.outcome.status !== 'retry';
         const updated = await tx
           .update(outboxJobs)
-          .set(update)
+          .set({
+            ...update,
+            ...(terminal
+              ? {
+                  payload: sql`case when ${outboxJobs.jobType} = 'tracking_otp_email' then jsonb_build_object('orderId', ${outboxJobs.payload}->>'orderId', 'challengeId', ${outboxJobs.payload}->>'challengeId') else ${outboxJobs.payload} end`,
+                }
+              : {}),
+          })
           .where(
             and(
               eq(outboxJobs.workspaceId, input.workspaceId),

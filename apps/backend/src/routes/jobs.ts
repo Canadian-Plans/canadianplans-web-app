@@ -18,7 +18,9 @@ export interface JobsRouteDependencies {
   deploymentEnvironment?: string;
 }
 
-export function createDefaultJobsRouteDependencies(): JobsRouteDependencies {
+export function createDefaultJobsRouteDependencies(): JobsRouteDependencies & {
+  queueHealth: DatabaseOutboxStore['queueHealth'];
+} {
   const store = new DatabaseOutboxStore();
   const runner = new OutboxRunner({
     store,
@@ -27,6 +29,7 @@ export function createDefaultJobsRouteDependencies(): JobsRouteDependencies {
   return {
     registry: loadMachineRegistry(),
     run: (input) => runner.run(input),
+    queueHealth: (input) => store.queueHealth(input),
     selector: process.env.JOB_RUNNER_SELECTOR,
     deploymentEnvironment: loadDeploymentEnvironment(),
   };

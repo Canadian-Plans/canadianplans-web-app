@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import {
   auditEvents,
   leads,
@@ -27,6 +27,7 @@ import {
 } from '@canadian-plans/contracts';
 
 import { changeRequestPayloadSchema, type ChangeRequestPayload } from './query-store.js';
+import { lockCustomerLeadForOrder } from '../deletion/restriction.js';
 
 type ActionDatabase = Pick<import('@canadian-plans/db').DatabaseClient, 'withTenantTx'>;
 const defaultDatabase: ActionDatabase = { withTenantTx };
@@ -177,6 +178,7 @@ async function lockOrder(
   workspaceId: string,
   orderId: string,
 ): Promise<OrderLockRow | undefined> {
+  if (!(await lockCustomerLeadForOrder(tx, workspaceId, orderId))) return undefined;
   const [row] = await tx
     .select({
       id: orders.id,
@@ -185,7 +187,13 @@ async function lockOrder(
       snapshot: orders.snapshot,
     })
     .from(orders)
-    .where(and(eq(orders.workspaceId, workspaceId), eq(orders.id, orderId)))
+    .where(
+      and(
+        eq(orders.workspaceId, workspaceId),
+        eq(orders.id, orderId),
+        isNull(orders.customerDataRestrictedAt),
+      ),
+    )
     .limit(1)
     .for('update');
   return row;
@@ -199,7 +207,13 @@ async function orderExists(
   const [row] = await tx
     .select({ id: orders.id })
     .from(orders)
-    .where(and(eq(orders.workspaceId, workspaceId), eq(orders.id, orderId)))
+    .where(
+      and(
+        eq(orders.workspaceId, workspaceId),
+        eq(orders.id, orderId),
+        isNull(orders.customerDataRestrictedAt),
+      ),
+    )
     .limit(1);
   return row !== undefined;
 }
@@ -757,7 +771,13 @@ async function applyContactPatch(
   const [order] = await tx
     .select({ leadId: orders.leadId })
     .from(orders)
-    .where(and(eq(orders.workspaceId, workspaceId), eq(orders.id, orderId)))
+    .where(
+      and(
+        eq(orders.workspaceId, workspaceId),
+        eq(orders.id, orderId),
+        isNull(orders.customerDataRestrictedAt),
+      ),
+    )
     .limit(1);
   if (!order) return { before: {}, after: {} };
 

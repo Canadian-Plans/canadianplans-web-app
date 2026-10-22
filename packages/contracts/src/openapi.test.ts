@@ -70,4 +70,27 @@ describe('OpenAPI generation', () => {
     expect(headerNames).toContain('Idempotency-Key');
     expect(headerNames).toContain('X-Draft-Grant');
   });
+
+  it('documents the optional province filter on published offers', () => {
+    const paths = asObject(doc['paths']);
+    const operation = asObject(asObject(paths['/api/v1/website/offers'])['get']);
+    const parameters = operation['parameters'];
+    if (!Array.isArray(parameters)) throw new Error('expected parameters array');
+    const province = parameters.map(asObject).find((parameter) => parameter['name'] === 'province');
+    expect(province).toMatchObject({ in: 'query', required: false });
+    expect(asObject(asObject(province)['schema'])['enum']).toContain('SK');
+  });
+  it('requires single-use proof on website writes and leaves authenticated reads proof-free', () => {
+    const paths = asObject(doc['paths']);
+    for (const endpoint of endpoints.filter(
+      (entry) => entry.auth === 'website' || entry.auth === 'customer',
+    )) {
+      const operation = asObject(asObject(paths[endpoint.path])[endpoint.method.toLowerCase()]);
+      const parameters = operation['parameters'];
+      if (!Array.isArray(parameters)) throw new Error('expected parameters');
+      const proof = parameters.map(asObject).find((entry) => entry['name'] === 'X-Turnstile-Token');
+      if (endpoint.method === 'GET') expect(proof).toBeUndefined();
+      else expect(proof).toMatchObject({ in: 'header', required: true });
+    }
+  });
 });
