@@ -6,6 +6,5 @@
       "source": "/(.*)",
       "destination": "/api"
     }
-  ],
-  "ignoreCommand": "node ../../scripts/affected-builds.mjs --vercel backend"
+  ]
 }
