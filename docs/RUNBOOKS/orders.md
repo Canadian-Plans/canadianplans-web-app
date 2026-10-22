@@ -87,6 +87,20 @@ Exact steps:
    `payment_state` together.
 8. **Archive** hides an order from the default list. It is never a deletion.
 
+### Cancellations (owner decision, 22 Oct 2026; OPEN_INPUTS #20)
+
+Canadian Plans takes no payment, so a cancellation never involves a refund from us.
+
+1. **Before activation** (any status up to Dispatched): if the customer asks to cancel,
+   use **Cancel order** with the reason "Customer request" and the date of the request.
+   If the order was already handed to the provider, ask the provider to cancel it too and
+   add a note with their reference. No charge to the customer.
+2. **After activation:** the order stays Activated. Tell the customer to cancel with the
+   provider directly, under the provider's terms and notice period, and add a note to the
+   order with the date and what was said. Staff do not promise any refund or credit.
+3. Escalate to the owner if the provider charged the customer for something that was
+   cancelled before activation.
+
 Optimistic concurrency: every write sends the `recordVersion` shown on screen.
 On `409 version_conflict` the admin shows "changed by someone else" and offers
 **Reload order**; reload and re-apply the action. Never retry blind — the other

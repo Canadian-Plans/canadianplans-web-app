@@ -90,10 +90,21 @@ From the site-1 design content; all "$0 due today", prices before tax.
 
 - Do the "in store" prices in table D ($60, $80, $67) and the carrier names (Fido, Rogers,
   Chatr) hold up as true public claims?
-- Any one-time fees (SIM, activation, shipping) that the provider bills (OPEN_INPUTS #4).
-- Who bills the customer, and when (the provider, after activation, or Canadian Plans).
-- Required documents per plan (OPEN_INPUTS #6); mobile currently needs ID plus a credit check.
-- Tax handling and who collects each fee (OPEN_INPUTS #19).
+
+### Answered 22 October 2026 (owner)
+
+- **Billing:** the provider bills the customer directly after activation. Canadian Plans
+  takes no money and charges no one-time fees (no SIM, activation or shipping fee).
+- **Documents:** internet and TV none; BYOD mobile `government_id` plus the provider's
+  identity and credit check; pre-arrival eSIM none. The catalogue already matches.
+- **Fees and taxes:** the provider collects every charge and its taxes.
+- **Shipping:** none at launch; no courier.
+- **Activation evidence:** the provider's confirmation number, plus phone number (mobile)
+  or install date (internet).
+- **Cancellation:** free before activation; after activation the customer cancels with the
+  provider.
+- **Sender email:** `Canadian Plans <orders@canadianplans.com>`, replies to
+  `info@canadianplans.com`.
 
 ### Filled from the owner's other sites (20 October 2026)
 

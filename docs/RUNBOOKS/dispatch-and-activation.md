@@ -90,6 +90,20 @@ commission rule.
    (see [failed-email-recovery.md](failed-email-recovery.md) if it doesn't
    arrive).
 
+### No shipping at launch (owner decision, 22 Oct 2026; OPEN_INPUTS #9)
+
+Canadian Plans ships no SIM cards: mobile plans use eSIM or a SIM the provider sends, and
+internet is installed by the provider. The status flow still passes through Dispatched,
+so use it to record the handoff to the provider:
+
+- **Courier:** `Provider handoff (no shipment)`.
+- **Tracking reference:** the provider's order or confirmation number.
+- **Dispatch date:** the day the order was submitted to the provider.
+
+The `order_dispatch` email still goes to the customer, and today it says "Your order … has
+shipped … via <courier>. Tracking: …" (`packages/adapters/src/messaging.ts`). Reword it
+for a provider handoff before the first real order.
+
 ## Normal activation flow (once enabled)
 
 1. Use **Activate** on the order. For a **partnered** order (has a
@@ -105,6 +119,9 @@ commission rule.
    retrying; do not activate the order and handle commission separately, the
    two must commit together (invariant 10).
 3. A successful activation queues the `order_activation` transactional email.
+4. **Activation evidence** (OPEN_INPUTS #19): before pressing Activate, add a note to the
+   order with the provider's confirmation number, plus the new phone number (mobile) or
+   the install date (internet).
 
 ## An order appears stuck
 
