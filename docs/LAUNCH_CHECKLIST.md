@@ -296,8 +296,12 @@ Depends on Stage 1 findings and the Stage 2 answers.
   Today there is **no restorable backup** of production. _22 Oct: owner decided no backup for
   now and stays on Supabase Free. Risk accepted: a database loss before this is done cannot
   be recovered._
-- ☐ **4.2 Error tracking** _(Both)_ — connect Sentry (or chosen tool) so production errors
-  reach you. _22 Oct: skipped for now (owner); errors only appear in Railway and Vercel logs._
+- ◐ **4.2 Error tracking** _(Both)_ — connect Sentry (or chosen tool) so production errors
+  reach you. _22 Oct: Sentry org `canadian-plans` with projects `canadian-plans-backend` and
+  `canadian-plans-admin`. `SENTRY_DSN` set on Railway (live with the next backend deploy) and
+  `NEXT_PUBLIC_SENTRY_DSN` on Vercel admin (live with the next admin build). The code posts
+  scrubbed events itself; no Sentry SDK. A test event reached each project. Not covered: the
+  storefront (site-1) and the GitHub Actions jobs, which have no DSN._
 - ☐ **4.3 Alerts** _(Claude)_ — confirm owner alerts and the synthetic order check are
   green with the scheduler on.
 - ☑ **4.4 Staff accounts** _(You)_ — invite staff in admin with the right roles; MFA on for
