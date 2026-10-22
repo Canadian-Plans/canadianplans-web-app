@@ -108,6 +108,14 @@ function createInvalidBodyError(errorTracker: ErrorTracker): ErrorRequestHandler
  */
 export function createApp(options: CreateAppOptions = {}): Express {
   const app = express();
+  // Behind Railway's edge every socket carries the proxy address, so the
+  // pre-auth IP limiter would otherwise share one bucket across all callers.
+  // Only a deployment-declared hop count makes X-Forwarded-For trustworthy;
+  // the default (0) keeps forwarded headers ignored.
+  const trustProxyHops = Number(process.env['TRUST_PROXY_HOPS'] ?? 0);
+  if (Number.isInteger(trustProxyHops) && trustProxyHops > 0) {
+    app.set('trust proxy', trustProxyHops);
+  }
   const errorTracker = options.errorTracker ?? createErrorTrackerFromEnv();
 
   app.use(requestId);

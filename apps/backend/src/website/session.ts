@@ -94,8 +94,11 @@ export function requireWebsiteCredential(deps: WebsiteAuthDependencies): Request
     }
 
     try {
+      const secretHash = hashServiceSecret(secret);
+      // Keyed by IP and presented secret so a junk bearer token cannot share
+      // (and exhaust) the real credential's bootstrap bucket.
       const ipLimit = await deps.rateLimit({
-        bucketKey: `bootstrap:ip:${clientIp(req)}`,
+        bucketKey: `bootstrap:ip:${clientIp(req)}:${secretHash.slice(0, 16)}`,
         windowSeconds: limits.ipWindowSeconds,
         maxCount:
           limits.bootstrapMaxCount ?? Math.max(limits.ipMaxCount, limits.credentialMaxCount * 4),
@@ -107,7 +110,6 @@ export function requireWebsiteCredential(deps: WebsiteAuthDependencies): Request
         return;
       }
 
-      const secretHash = hashServiceSecret(secret);
       const resolution = await deps.resolveCredential(secretHash);
       if (!resolution) {
         sendWebsiteError(res, req.id, 'invalid_credential', 401);

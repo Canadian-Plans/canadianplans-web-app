@@ -247,6 +247,69 @@ describe('public website credential authentication', () => {
     expect(buckets[0]).not.toContain('203.0.113.');
   });
 
+  it('keys the IP bucket on the forwarded address once TRUST_PROXY_HOPS declares the proxy', async () => {
+    process.env['TRUST_PROXY_HOPS'] = '1';
+    let proxied: Server;
+    try {
+      proxied = createApp({
+        staff: staffOnly,
+        website: {
+          auth: { resolveCredential: resolver.resolve, rateLimit: limiter.hit, botCheck: () => true },
+          leads: { store: leadStore },
+        },
+      }).listen(0);
+    } finally {
+      delete process.env['TRUST_PROXY_HOPS'];
+    }
+    await new Promise<void>((resolve) => proxied.once('listening', resolve));
+    const address = proxied.address();
+    if (address === null || typeof address === 'string') throw new Error('expected TCP server');
+    try {
+      for (const forwarded of ['203.0.113.1', '203.0.113.2']) {
+        const response = await fetch(`http://127.0.0.1:${address.port}/api/v1/website/leads`, {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${VALID_SECRET}`,
+            'content-type': 'application/json',
+            'x-forwarded-for': forwarded,
+          },
+          body: JSON.stringify(VALID_LEAD_BODY),
+        });
+        expect(response.status).toBe(201);
+      }
+    } finally {
+      await new Promise<void>((resolve) => proxied.close(() => resolve()));
+    }
+    const buckets = limiter.inputs
+      .filter((input) => input.bucketKey.startsWith('bootstrap:ip:'))
+      .map((input) => input.bucketKey);
+    expect(new Set(buckets).size).toBe(2);
+    expect(buckets[0]).toContain('203.0.113.1');
+    expect(buckets[1]).toContain('203.0.113.2');
+  });
+
+  it('does not let a junk bearer token share the real credential bootstrap bucket', async () => {
+    expect(
+      (await post('/api/v1/website/leads', { authorization: `Bearer ${VALID_SECRET}` }, VALID_LEAD_BODY))
+        .status,
+    ).toBe(201);
+    expect(
+      (
+        await post(
+          '/api/v1/website/leads',
+          { authorization: `Bearer cplsk_${'0'.repeat(16)}` },
+          VALID_LEAD_BODY,
+        )
+      ).status,
+    ).toBe(401);
+    const buckets = new Set(
+      limiter.inputs
+        .filter((input) => input.bucketKey.startsWith('bootstrap:ip:'))
+        .map((input) => input.bucketKey),
+    );
+    expect(buckets.size).toBe(2);
+  });
+
   it('separates authenticated visitors behind the same server and retains a shared credential ceiling', async () => {
     visitorMax = 1;
     const first = {
