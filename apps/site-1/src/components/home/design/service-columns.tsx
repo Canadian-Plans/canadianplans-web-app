@@ -29,15 +29,23 @@ export function HomeServiceColumns() {
               </span>
               <h3>{item.title}</h3>
               <div className="cp-hd-column-price">
-                <span className="cp-hd-column-from">{c.from}</span>
-                <span className="cp-hd-column-amount">
-                  <span className="cp-hd-column-currency">{c.currency}</span>
-                  <span className="cp-hd-column-dollars">{item.dollars}</span>
-                  <span className="cp-hd-column-cents">
-                    <span>{item.cents}</span>
-                    <span>{c.period}</span>
+                {'quote' in item ? (
+                  <span className="cp-hd-column-amount">
+                    <span className="cp-hd-column-dollars">{item.quote}</span>
                   </span>
-                </span>
+                ) : (
+                  <>
+                    <span className="cp-hd-column-from">{c.from}</span>
+                    <span className="cp-hd-column-amount">
+                      <span className="cp-hd-column-currency">{c.currency}</span>
+                      <span className="cp-hd-column-dollars">{item.dollars}</span>
+                      <span className="cp-hd-column-cents">
+                        <span>{item.cents}</span>
+                        <span>{c.period}</span>
+                      </span>
+                    </span>
+                  </>
+                )}
               </div>
               <ul className="cp-hd-ticks">
                 {item.features.map((feature) => (

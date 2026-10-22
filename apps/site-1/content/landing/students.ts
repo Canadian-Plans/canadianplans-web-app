@@ -191,7 +191,6 @@ export const studentsLanding: LandingPageContent = {
         title: 'Compare and learn',
         links: [
           { label: 'All pre-arrival plans', href: '/pre-arrival-sim' },
-          { label: 'Rogers vs Fido', href: '/compare/rogers-vs-fido' },
           { label: 'Newcomer guides', href: '/guides' },
         ],
       },

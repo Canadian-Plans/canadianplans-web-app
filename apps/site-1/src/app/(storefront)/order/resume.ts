@@ -106,9 +106,15 @@ export function selectOrderDraft(input: {
   const saved = input.draft
     ? input.offers.find((offer) => offer.productId === input.draft?.productId && matches(offer))
     : undefined;
+  // Static pages link by the catalogue's stable productKey; the plan list links by productId.
   const selected =
     input.requestedPlan !== undefined
-      ? input.offers.find((offer) => offer.productId === input.requestedPlan && matches(offer))
+      ? input.offers.find(
+          (offer) =>
+            (offer.productId === input.requestedPlan ||
+              offer.commercial.productKey === input.requestedPlan) &&
+            matches(offer),
+        )
       : saved;
   const restored = selected && input.draft ? restoreOrderDetails(input.draft, selected) : undefined;
   // A province change must not silently put the saved address under a new price.

@@ -409,7 +409,7 @@ export const arrivalAssets = {
 } satisfies Record<string, FigmaAsset>;
 export const arrivalChrome: ChromeContent = {
   ...chromeContent,
-  promo: 'Moving in? Add home internet from $55/mo.',
+  promo: 'Moving in? Add home internet from $50/mo.',
   promoLink: { label: 'See home internet', href: '/#internet' },
   promoMobileLabel: 'See home internet →',
   navigationLabel: 'Main navigation',
@@ -454,4 +454,14 @@ export const arrivalChromeAssets = {
   chat: arrivalAssets['364-2211-imgIcon'],
   menu: arrivalAssets['364-2211-imgIcon1'],
   footerLogo: arrivalAssets['109-183-imgFrame'],
+};
+
+/** Catalogue productKey for each pre-arrival card, so "Continue" opens that plan in /order. */
+export const preArrivalProductKeys: Readonly<Record<string, string>> = {
+  'preview-fido-essential': 'prearrival-fido-essential-75',
+  'preview-rogers-plus': 'prearrival-rogers-plus-100',
+  'preview-rogers-unlimited': 'prearrival-rogers-unlimited-120',
+  'preview-chatr-50': 'prearrival-chatr-50',
+  'preview-chatr-90': 'prearrival-chatr-90',
+  'preview-chatr-90-day': 'prearrival-chatr-75-90-day',
 };

@@ -6,18 +6,13 @@ import {
   type ChromeContent,
   type FooterContent,
 } from './components';
-export type MobileBrand = 'chatr' | 'fido' | 'rogers';
-export type MobilePayType = 'prepaid' | 'postpaid';
-export type MobileDataBand = 'any' | 'under20' | '20to60' | 'over60';
-export type MobileSort = 'recommended' | 'price-low' | 'price-high' | 'data-high';
+
+/**
+ * A bring-your-own-device mobile plan as sold in /order. `id` is the catalogue productKey
+ * (packages/adapters/src/static-catalogue/site-1-plans.ts); keep prices and features in step.
+ */
 export interface MobilePlan extends PlanCardContent {
-  readonly previewOnly: true;
-  readonly brand: MobileBrand;
-  readonly dataGb: number;
   readonly priceCad: number;
-  readonly payType: MobilePayType;
-  readonly bringOwnPhone: boolean;
-  readonly tone: 'lemon' | 'mint' | 'sky';
   readonly featured: boolean;
 }
 export const mobileCopy = {
@@ -36,13 +31,13 @@ export const mobileCopy = {
   separator: '/',
   hero: {
     description:
-      "See every plan side by side, explained in plain words. Keep your number and bring your own phone. Prepaid plans don't need a Canadian credit history.",
+      'Three plans, explained in plain words. Bring your own unlocked phone and keep your number. An identity and credit check is required.',
   },
   quick: {
     eyebrow: 'Quick answer · Updated October 2026',
-    title: 'Rogers, Fido or Chatr: which should I choose?',
+    title: 'Which mobile plan should I choose?',
     description:
-      'All three are owned by Rogers and use its network. Chatr is the cheapest (prepaid, from $29/mo, no credit check). Fido is the middle option with 5G and good value (from $45/mo). Rogers is premium, with 5G+ and Canada–US plans (from $55/mo). Prices CAD, taxes extra.',
+      'Canada + US at $40/mo with 100 GB suits most people. Choose $65/mo for 150 GB and Mexico, or $90/mo for unlimited data at our fastest speeds. All three are postpaid with unlimited talk and text. Prices CAD, taxes extra.',
   },
   plans: {
     eyebrow: 'Mobile plans',
@@ -50,132 +45,36 @@ export const mobileCopy = {
     date: 'Prices as of October 2026 · CAD, taxes extra',
     includesTitle: 'Every plan:',
     includes:
-      'keep your number, no contract and $0 to order online. We call you to confirm before we switch anything.',
-    note: 'PLACEHOLDER plans and prices. Replace with current Rogers, Fido and Chatr offers before launch.',
-  },
-  filters: {
-    brand: 'Brand',
-    pay: 'Pay',
-    payType: 'Pay type',
-    data: 'Data',
-    phone: 'Bring my own phone',
-    title: 'Filters',
-    clear: 'Clear all',
-    close: 'Close filters',
-    sort: 'Sort',
-    active: 'Active filters',
-    remove: 'Remove',
-    sheetDescription: 'Filter preview plans by brand, pay type, data and phone support.',
-    showPrefix: 'Show',
-    plural: 'plans',
-    singular: 'plan',
-    results: 'plans shown',
-    empty: 'No preview plans match these filters.',
-    emptyHelp: 'Clear the filters to see all four plans.',
-    brandOptions: [
-      {
-        id: 'all',
-        label: 'All',
-      },
-      {
-        id: 'chatr',
-        label: 'Chatr',
-      },
-      {
-        id: 'fido',
-        label: 'Fido',
-      },
-      {
-        id: 'rogers',
-        label: 'Rogers',
-      },
-    ],
-    payOptions: [
-      {
-        id: 'any',
-        label: 'Any',
-      },
-      {
-        id: 'prepaid',
-        label: 'Prepaid',
-      },
-      {
-        id: 'postpaid',
-        label: 'Postpaid',
-      },
-    ],
-    dataOptions: [
-      {
-        id: 'any',
-        label: 'Any',
-      },
-      {
-        id: 'under20',
-        label: 'Under 20 GB',
-      },
-      {
-        id: '20to60',
-        label: '20–60 GB',
-      },
-      {
-        id: 'over60',
-        label: '60 GB+',
-      },
-    ],
-    sortOptions: [
-      {
-        id: 'recommended',
-        label: 'Most popular',
-      },
-      {
-        id: 'price-low',
-        label: 'Price: low to high',
-      },
-      {
-        id: 'price-high',
-        label: 'Price: high to low',
-      },
-      {
-        id: 'data-high',
-        label: 'Data: high to low',
-      },
-    ],
+      'unlimited talk and text, bring your own phone, eSIM or SIM card, no connection fee and $0 to order online. We call you to confirm before we switch anything.',
+    note: 'An advisor confirms your exact price, and the provider is confirmed when your order is approved.',
   },
   comparison: {
-    title: 'Which brand fits you?',
-    description: 'Same network, different prices and perks. Here is the difference in plain words.',
-    brands: ['Chatr', 'Fido', 'Rogers'],
+    title: 'Compare the three plans',
+    description: 'Same unlimited talk and text. The difference is data and where you can use it.',
+    columns: ['Canada + US', 'Canada + US + Mexico', '5G+ Complete Unlimited'],
     rows: [
       {
-        label: 'Best for',
-        values: ['Lowest monthly price', 'Best value for most people', 'Fastest speeds & travel'],
+        label: 'Price',
+        values: ['$40/mo', '$65/mo', '$90/mo'],
       },
       {
-        label: 'How you pay',
-        values: ['Prepaid', 'Prepaid or postpaid', 'Postpaid'],
+        label: 'Data',
+        values: ['100 GB 5G', '150 GB 5G', 'Unlimited, up to 2 Gbps*'],
       },
       {
-        label: 'Credit check',
-        values: ['No', 'Postpaid only', 'Yes (or deposit)'],
+        label: 'Use it in',
+        values: ['Canada & the US', 'Canada, the US & Mexico', 'Canada, the US & Mexico'],
       },
       {
-        label: 'Builds Canadian credit',
-        values: ['No', 'With postpaid', 'Yes'],
+        label: 'Roaming data',
+        values: ['Up to 5 GB/day', 'Up to 5 GB/day', 'Ask an advisor'],
       },
       {
-        label: 'Network',
-        values: ['Rogers', 'Rogers · 5G', 'Rogers · 5G+'],
-      },
-      {
-        label: 'US & travel',
-        values: ['Add-ons', 'Roam add-ons', 'Canada–US plans'],
-      },
-      {
-        label: 'Plans from',
-        values: ['$29/mo', '$45/mo', '$55/mo'],
+        label: 'Mobile hotspot',
+        values: ['Ask an advisor', 'Ask an advisor', '50 GB'],
       },
     ],
-    note: 'VERIFY before publishing: network features (5G/5G+), credit checks and roaming options per brand.',
+    note: '*Speeds up to 2 Gbps. Data sharing is not included on 5G+ Complete Unlimited.',
   },
   faq: {
     eyebrow: 'FAQ',
@@ -191,145 +90,98 @@ export const mobileCopy = {
       {
         id: 'mobile-faq-1',
         question: 'When do I pay?',
-        answer: 'This answer is awaiting approved content for the design preview.',
+        answer:
+          'Nothing is paid on this website. The provider bills you directly once your plan is active.',
       },
       {
         id: 'mobile-faq-2',
         question: 'Do I need a credit check for a phone plan in Canada?',
-        answer: 'This answer is awaiting approved content for the design preview.',
+        answer:
+          'Yes, for these plans. They are postpaid, so an identity and credit check is required. You upload government ID with your order.',
       },
       {
         id: 'mobile-faq-3',
-        question: 'Are these official Rogers, Fido and Chatr plans?',
-        answer: 'This answer is awaiting approved content for the design preview.',
+        question: 'Who provides the service?',
+        answer:
+          'Canadian Plans is an authorised sales agent. The provider is confirmed when your order is approved, and your service agreement is with them.',
       },
       {
         id: 'mobile-faq-4',
         question: 'Can I bring my own phone?',
-        answer: 'This answer is awaiting approved content for the design preview.',
+        answer:
+          'Yes, every plan is bring-your-own-device. Your phone must be unlocked and compatible. Choose an eSIM or a SIM card.',
       },
       {
         id: 'mobile-faq-5',
         question: 'What do I need to switch providers?',
-        answer: 'This answer is awaiting approved content for the design preview.',
+        answer:
+          'Government ID for the credit check, and your current account number and PIN if you are keeping your number. An advisor walks you through it.',
       },
       {
         id: 'mobile-faq-6',
         question: 'Can I add a family member later?',
-        answer: 'This answer is awaiting approved content for the design preview.',
+        answer: 'Yes. Place a separate order for each line, or ask an advisor to help you choose.',
       },
     ],
-  },
-  preview: {
-    title: 'Mobile plan preview',
-    description:
-      'This is a design preview. No order, number transfer or contact request has been created.',
-    advisorTitle: 'Advisor preview',
-    advisorDescription:
-      'Advisor contact will be connected separately. This preview sends no message.',
-    close: 'Back to plans',
-    selected: 'Selected',
-    ratingLabel: '5 out of 5 stars',
-    unavailableNeed:
-      'This need is not tagged in the preview plan data. Use the filters to compare plans, or ask an advisor when the service is connected.',
   },
 } as const;
 export const mobilePlans: readonly MobilePlan[] = [
   {
-    id: 'preview-mobile-chatr-20',
-    previewOnly: true,
-    brand: 'chatr',
-    dataGb: 20,
-    priceCad: 29,
-    payType: 'prepaid',
-    bringOwnPhone: true,
-    tone: 'lemon',
-    featured: false,
-    carrier: 'Chatr',
-    allowance: '20 GB',
-    amount: '$29',
-    period: '/mo',
-    finePrint: 'CAD · taxes extra · no contract',
-    goodFor: 'Good for: Light use, lowest price, no credit check.',
-    features: [
-      '✓ Unlimited Canada talk & text',
-      '✓ Int’l texting',
-      '✓ No contract · top up monthly',
-    ],
-    buttonLabel: 'Choose 20 GB',
-    selectedLabel: 'Selected',
-  },
-  {
-    id: 'preview-mobile-fido-60',
-    previewOnly: true,
-    brand: 'fido',
-    dataGb: 60,
-    priceCad: 45,
-    payType: 'prepaid',
-    bringOwnPhone: true,
-    tone: 'mint',
+    id: 'mobile-can-us-100',
+    priceCad: 40,
     featured: true,
-    carrier: 'Fido',
-    allowance: '60 GB',
-    amount: '$45',
-    period: '/mo',
-    finePrint: 'CAD · taxes extra · no contract',
-    goodFor: 'Good for: Streaming and video calls home.',
-    features: [
-      '✓ Unlimited Canada talk & text',
-      '✓ 5G speeds',
-      '✓ Int’l texting to 200+ countries',
-    ],
-    buttonLabel: 'Choose 60 GB',
-    selectedLabel: 'Selected',
-    badge: 'Most popular',
-  },
-  {
-    id: 'preview-mobile-rogers-100',
-    previewOnly: true,
-    brand: 'rogers',
-    dataGb: 100,
-    priceCad: 55,
-    payType: 'postpaid',
-    bringOwnPhone: true,
-    tone: 'sky',
-    featured: false,
-    carrier: 'Rogers',
+    carrier: 'Canada + US',
     allowance: '100 GB',
-    amount: '$55',
+    amount: '$40',
     period: '/mo',
-    finePrint: 'CAD · taxes extra · no contract',
-    goodFor: 'Good for: Heavy data and US trips.',
+    finePrint: 'CAD · taxes extra · postpaid',
+    goodFor: 'Good for: Talk, text and 5G data in Canada and the US.',
     features: [
-      '✓ Unlimited Canada–US talk & text',
-      '✓ 5G+ priority network',
-      '✓ Builds Canadian credit',
+      '✓ 100 GB of high-speed 5G data',
+      '✓ Unlimited talk & text',
+      '✓ Use it in Canada & the US',
+      '✓ Roaming data up to 5 GB/day',
     ],
     buttonLabel: 'Choose 100 GB',
     selectedLabel: 'Selected',
+    badge: 'Limited time offer',
   },
   {
-    id: 'preview-mobile-rogers-150',
-    previewOnly: true,
-    brand: 'rogers',
-    dataGb: 150,
-    priceCad: 75,
-    payType: 'postpaid',
-    bringOwnPhone: true,
-    tone: 'sky',
+    id: 'mobile-can-us-mex-150',
+    priceCad: 65,
     featured: false,
-    carrier: 'Rogers',
+    carrier: 'Canada + US + Mexico',
     allowance: '150 GB',
-    amount: '$75',
+    amount: '$65',
     period: '/mo',
-    finePrint: 'CAD · taxes extra · no contract',
-    goodFor: 'Good for: Power users, hotspot for work.',
+    finePrint: 'CAD · taxes extra · postpaid',
+    goodFor: 'Good for: More data, plus Mexico for travel and family calls.',
     features: [
-      '✓ Unlimited Canada–US talk & text',
-      '✓ 5G+ priority network',
-      '✓ Roam Like Home eligible',
+      '✓ 150 GB of high-speed 5G data',
+      '✓ Unlimited talk & text',
+      '✓ Use it in Canada, the US & Mexico',
+      '✓ Roaming data up to 5 GB/day',
     ],
     buttonLabel: 'Choose 150 GB',
+    selectedLabel: 'Selected',
+  },
+  {
+    id: 'mobile-5g-plus-complete-unlimited',
+    priceCad: 90,
+    featured: false,
+    carrier: '5G+ Complete Unlimited',
+    allowance: 'Unlimited',
+    amount: '$90',
+    period: '/mo',
+    finePrint: 'CAD · taxes extra · postpaid',
+    goodFor: 'Good for: Unlimited data at our fastest speeds, nationwide.',
+    features: [
+      '✓ Unlimited data, speeds up to 2 Gbps*',
+      '✓ 50 GB mobile hotspot',
+      '✓ Unlimited talk & text',
+      '✓ Use it in Canada, the US & Mexico',
+    ],
+    buttonLabel: 'Choose Unlimited',
     selectedLabel: 'Selected',
   },
 ];

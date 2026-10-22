@@ -413,28 +413,6 @@ export const guideList: readonly GuideListEntry[] = [
     keywords: ['airport', 'yyz', 'toronto', 'esim'],
   },
   {
-    id: 'rogers-vs-fido',
-    previewOnly: true,
-    topic: 'phones',
-    category: 'Phones & SIMs',
-    title: 'Rogers vs Fido vs Chatr, compared for newcomers',
-    detail: 'Comparison · Updated Oct 2026',
-    caption: 'Phone showing Rogers and Fido plans side by side',
-    href: '/compare/rogers-vs-fido',
-    keywords: ['carrier', 'compare', 'chatr'],
-  },
-  {
-    id: 'rogers-credit',
-    previewOnly: true,
-    topic: 'credit',
-    category: 'Money & credit',
-    title: 'Rogers for newcomers: credit checks, deposits and switching',
-    detail: 'Guide · Updated Oct 2026',
-    caption: 'Newcomer setting up a new phone at a kitchen table',
-    href: '/mobile-plans/rogers',
-    keywords: ['credit check', 'deposit', 'build credit', 'keep your number'],
-  },
-  {
     id: 'vancouver-internet',
     previewOnly: true,
     topic: 'internet',
@@ -493,16 +471,11 @@ export const guidesIndexCopy = {
       text: 'Can I get a Canadian number before I arrive?',
       href: `/guides/${studentIndiaGuide.slug}#guide-faq`,
     },
-    {
-      id: 'carrier',
-      text: 'Which carrier is cheapest in Canada?',
-      href: '/compare/rogers-vs-fido#three-brands',
-    },
     { id: 'sin', text: 'Do I need a SIN to get a phone plan?', href: '/faq#faq-eligibility' },
     {
       id: 'credit',
-      text: 'Can I get a phone plan without a credit check?',
-      href: '/mobile-plans/rogers#guide',
+      text: 'Do I need a credit check for a phone plan?',
+      href: '/mobile-plans#faq',
     },
     {
       id: 'install',
@@ -512,7 +485,7 @@ export const guidesIndexCopy = {
     {
       id: 'number',
       text: 'Can I keep my number if I change carriers?',
-      href: '/mobile-plans/rogers#switch',
+      href: '/mobile-plans#faq',
     },
   ],
   final: {

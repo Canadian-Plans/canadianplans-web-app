@@ -15,8 +15,6 @@ export const routes = [
   ['sim-students', '/pre-arrival-sim/students'],
   ['sim-india', '/pre-arrival-sim/from-india'],
   ['sim-airport', '/pre-arrival-sim/toronto-pearson'],
-  ['mobile-rogers', '/mobile-plans/rogers'],
-  ['compare-rogers-fido', '/compare/rogers-vs-fido'],
   ['internet-vancouver', '/home-internet/vancouver'],
   ['internet-ontario', '/home-internet/ontario'],
   ['contact', '/contact'],

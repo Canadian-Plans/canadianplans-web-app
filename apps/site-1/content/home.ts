@@ -76,11 +76,11 @@ export const homeCopy = {
         title: 'Settle',
         subtitle: 'with fast home internet',
         features: [
-          '✓  Up to 1.5 Gbps, unlimited data',
+          '✓  Up to 2 Gbps, unlimited data',
           '✓  Free professional install',
           '✓  Add TV & streaming anytime',
         ],
-        price: '$55',
+        price: '$50',
         href: '/home-internet',
       },
       {
@@ -91,12 +91,12 @@ export const homeCopy = {
         title: 'Switch',
         subtitle: 'to a plan that fits',
         features: [
-          '✓  Rogers, Fido & Chatr side by side',
+          '✓  Unlimited talk & text on every plan',
           '✓  Bring your phone or upgrade',
           '✓  Keep your number',
         ],
-        price: '$29',
-        href: '#popular-plans',
+        price: '$40',
+        href: '/mobile-plans',
       },
     ],
   },
@@ -227,7 +227,7 @@ export const homeCopy = {
         tag: '3 · WEEK 1',
         title: 'Book home internet',
         description: 'We check speeds and book a free pro install, often in 3 days.',
-        detail: 'Home internet · from $55',
+        detail: 'Home internet · from $50',
       },
       {
         id: 'journey-4',
@@ -236,16 +236,16 @@ export const homeCopy = {
         tag: '4 · MONTH 1',
         title: 'Upgrade or add lines',
         description: 'Add a partner’s line, pick a bigger plan, or bundle TV.',
-        detail: 'Mobile plans · from $29',
+        detail: 'Mobile plans · from $40',
       },
     ],
   },
   internet: {
     title: 'Add home internet.',
     description:
-      'Up to 1.5 Gbps on the Rogers network, unlimited data and a free pro install, often within 3 days of moving in.',
+      'Up to 2 Gbps, depending on your province, with unlimited data and a free pro install, often within 3 days of moving in.',
     circleLabel: 'starting at',
-    circleAmount: '$55',
+    circleAmount: '$50',
     circleSuffix: '/mo · CAD',
     heading: ['See what’s available', 'at your new address.'],
     intro:

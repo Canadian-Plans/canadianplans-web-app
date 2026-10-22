@@ -6,7 +6,7 @@ import {
   type ChromeContent,
   type FooterContent,
 } from './components';
-/** Figma source examples; no live offers or coverage. */
+/** Copy for /home-internet; plan prices come from internetPlansByProvince below. */
 export const internetCopy = {
   title: 'Home Internet | Canadian Plans',
   skip: 'Skip to main content',
@@ -22,11 +22,11 @@ export const internetCopy = {
     },
   ],
   hero: {
-    eyebrow: 'Home Internet & TV · BC, ON, AB, MB, SK',
+    eyebrow: 'Home Internet & TV · BC, AB, MB, SK',
     title: 'Fast home internet from move-in day.',
     description:
-      'Up to 1.5 Gbps on the Rogers network. Unlimited data, a free install, and most homes are online within 3 days.',
-    price: 'From $55/mo',
+      'Up to 2 Gbps, depending on your province. Unlimited data, a free install, and most homes are online within 3 days.',
+    price: 'From $50/mo',
     priceNote: 'CAD, plus tax. Pay $0 to order.',
     features: [
       '✓ Authorized Rogers dealer in Surrey, BC',
@@ -34,61 +34,24 @@ export const internetCopy = {
       "✓ No Canadian credit history? We'll explain your options",
     ],
   },
-  form: {
-    title: 'Check your address',
-    description: 'Real speeds and prices for your building in seconds. No sign-up.',
-    postalLabel: 'Postal code',
-    postalPlaceholder: 'e.g. V3T 1Z2',
-    dateLabel: 'Move-in date (optional)',
-    datePlaceholder: 'DD / MM / YYYY',
-    submit: 'Check availability',
-    note: 'We never share your address. You pay nothing until we call to confirm.',
-    pending: 'Checking preview…',
-    invalidPostal: 'That postal code looks incomplete. Canadian postal codes look like A1A 1A1.',
-    invalidDate: 'Enter a valid move-in date in DD / MM / YYYY format.',
-    retry: 'Try again',
-    mockNotice: 'Mock preview only. No live availability has been checked.',
-  },
   quick: {
     eyebrow: 'Quick answer · Updated October 2026',
     title: 'How much is home internet in Canada?',
     description:
-      'With us, Rogers-network home internet starts at $55/mo for 150 Mbps (CAD, taxes extra), with unlimited data, a WiFi modem and free professional installation. Most homes in BC, Ontario, Alberta, Manitoba and Saskatchewan can be installed within about 3 days.',
-  },
-  finder: {
-    heading: {
-      eyebrow: 'Not sure what speed you need?',
-      title: ['Find your speed in 30 seconds.'],
-    },
-    peopleQuestion: '1. How many people live with you?',
-    people: ['Just me', '2–3', '4 or more'],
-    activityQuestion: '2. What do you do online?',
-    activities: ['Browsing & email', 'Streaming & video calls', 'Gaming & 4K', 'Working from home'],
-    tvQuestion: '3. Want TV too?',
-    tv: ['No, internet only', 'Yes, add TV'],
-    recommend: 'We recommend',
-    period: '/mo · CAD',
-    recommendation: 'Enough for 2–3 people streaming in 4K and on video calls at the same time.',
-    descriptions: [
-      'For everyday browsing and HD streaming.',
-      'For streaming and video calls across several devices.',
-      'For a busy household, gaming and large downloads.',
-      'For creators and households with demanding downloads.',
-    ],
-    tvNotice: 'TV is a future-service preview. An advisor would explain the available packages.',
+      'Prices depend on your province: from $50/mo in Saskatchewan, $70/mo in British Columbia and Alberta, and $90/mo in Manitoba (CAD, taxes extra). Every plan has unlimited data, a free WiFi router and modem, free professional installation and no upfront payment. Most homes are installed within about 3 days.',
   },
   plans: {
     heading: {
       eyebrow: 'Internet plans',
-      title: ['Pick your internet speed.'],
+      title: ['Plans and prices by province.'],
     },
     date: 'Prices as of October 2026 · CAD, taxes extra',
     includesTitle: 'Every plan includes',
     includes: [
       '✓ Unlimited data',
-      '✓ WiFi modem',
+      '✓ Free WiFi router & modem',
       '✓ Free professional install',
-      '✓ Pay nothing until we confirm',
+      '✓ No upfront payment',
     ],
   },
   comparison: {
@@ -99,27 +62,27 @@ export const internetCopy = {
     },
     label: 'Internet speed comparison',
     featureLabel: 'Usage',
-    columns: ['150 Mbps', '500 Mbps', '1 Gbps', '1.5 Gbps'],
+    columns: ['500 Mbps', '1 Gbps', '2 Gbps'],
     rows: [
       {
         label: '4K streams at once',
-        values: ['1', '3', '6', '8+'],
+        values: ['3', '6', '8+'],
       },
       {
         label: 'HD video calls at once',
-        values: ['2', '6', '10+', '15+'],
+        values: ['6', '10+', '15+'],
       },
       {
         label: 'Download a 50 GB game',
-        values: ['≈ 45 min', '≈ 14 min', '≈ 7 min', '≈ 5 min'],
+        values: ['≈ 14 min', '≈ 7 min', '≈ 3 min'],
       },
       {
         label: 'Devices online comfortably',
-        values: ['5', '15', '30', '40+'],
+        values: ['15', '30', '40+'],
       },
       {
         label: 'Best for',
-        values: ['1–2 people', '2–4 people', '4+ people', 'Power users'],
+        values: ['2–4 people', '4+ people', 'Power users'],
       },
     ],
     note: 'Download times are theoretical at full plan speed (50 GB = 400 gigabits). Device and stream counts are guidance, not guarantees.',
@@ -154,145 +117,177 @@ export const internetCopy = {
       {
         id: 'internet-faq-0',
         question: 'Is there a contract?',
-        answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
+        answer:
+          'Your service agreement is with the provider, and an advisor explains it before anything is booked. In Manitoba, British Columbia and Alberta your monthly price is locked for 2 years.',
       },
       {
         id: 'internet-faq-1',
         question: 'Can I book my internet install before I move in?',
-        answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
+        answer:
+          'Yes. Add your move-in date to your order and an advisor books the first install slot after you get the keys.',
       },
       {
         id: 'internet-faq-2',
         question: 'Is the WiFi modem included?',
-        answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
+        answer:
+          'Yes. A WiFi router and modem are included on every plan, with no monthly equipment rental fee.',
       },
       {
         id: 'internet-faq-3',
         question: 'What happens to my internet if I move again?',
-        answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
+        answer:
+          'Talk to an advisor before you move. They check whether service is available at your new address and what it costs there.',
       },
     ],
   },
-  result: {
-    title: 'Check your address',
-    availableTitle: 'Great news, internet is available here!',
-    address: '9981 Whalley Blvd, Surrey, BC',
-    popular: 'POPULAR',
-    earliestInstall: 'Earliest install: Thursday, Oct 15. You pay nothing until we confirm.',
-    unavailableTitle: 'We can’t install at this address yet',
-    unavailableDescription:
-      'Our partner network doesn’t reach this area today. We may still be able to help.',
-    alternativesHeading: 'Here’s what you can do',
-    alternatives: [
-      'Get a mobile plan with a hotspot, it works anywhere with Rogers coverage',
-      'Join the waitlist and we’ll email you as soon as your area is covered',
-      'Talk to an advisor about other options near you',
-    ],
-    waitlist: 'Join the waitlist',
-    advisor: 'Talk to an advisor',
-    close: 'Close address preview',
-    closeSymbol: '×',
-    speedsLabel: 'Choose an available preview speed',
-    error: 'No mock result is configured for that postal code. Try V3T 1Z2 or T0L 1A0.',
-    lookupFailed: 'We couldn’t check your address. Your details are still here. Please try again.',
-    continuationTitle: 'Internet plan preview',
-    continuationDescription:
-      'Your sample plan is selected. Checkout and installation booking will be connected separately. No order has been created.',
-    waitlistTitle: 'Waitlist preview',
-    waitlistDescription:
-      'Waitlist registration is a future integration. No email or notification request has been saved.',
-    advisorTitle: 'Talk to an advisor',
-    advisorDescription:
-      'Advisor contact is a design preview. No message or callback request has been sent.',
-    tvTitle: 'TV bundle preview',
-    tvDescription:
-      'Internet and TV are planned for a later launch. This preview creates no booking or order.',
-    back: 'Back to address results',
-    dismiss: 'Close preview',
-  },
 };
+export type InternetProvince = 'SK' | 'MB' | 'BC' | 'AB';
+/**
+ * An internet or internet + TV plan as sold in /order. `id` is the catalogue productKey
+ * (packages/adapters/src/static-catalogue/site-1-plans.ts); keep prices in step with it.
+ */
 export interface InternetPlan extends PlanCardContent {
-  readonly previewOnly: true;
+  readonly province: InternetProvince;
+  readonly priceCad: number;
   readonly mbps: number;
-  readonly resultLabel: string;
-  readonly resultPrice: string;
-  readonly continueLabel: string;
 }
-export const internetPlans: readonly InternetPlan[] = [
-  {
-    id: 'preview-internet-150',
-    mbps: 150,
-    resultLabel: 'Up to 150 Mbps',
-    resultPrice: '$55/mo',
-    previewOnly: true,
-    carrier: '',
-    allowance: '150',
-    unit: 'Mbps',
-    amount: '$55',
+export const internetProvinceNames: Record<InternetProvince, string> = {
+  SK: 'Saskatchewan',
+  MB: 'Manitoba',
+  BC: 'British Columbia',
+  AB: 'Alberta',
+};
+export const internetPromotions: Record<InternetProvince, string> = {
+  SK: 'Up to 2 months free',
+  MB: '2-year price lock',
+  BC: '2-year price lock',
+  AB: '2-year price lock',
+};
+const internetPlan = (
+  province: InternetProvince,
+  id: string,
+  title: string,
+  speed: string,
+  mbps: number,
+  priceCad: number,
+  extra: readonly string[] = [],
+  badge?: string,
+): InternetPlan => ({
+  id,
+  province,
+  priceCad,
+  mbps,
+  carrier: title,
+  allowance: speed,
+  amount: `$${priceCad}`,
+  period: '/mo',
+  finePrint: 'CAD · taxes extra · unlimited data',
+  goodFor: `${internetPromotions[province]} · ${internetProvinceNames[province]}`,
+  features: [`✓ Unlimited data up to ${speed}`, ...extra, '✓ Free WiFi router & modem'],
+  buttonLabel: `Choose ${speed}`,
+  selectedLabel: 'Selected ✓',
+  ...(badge ? { badge } : {}),
+});
+const tv = ['✓ TV with 120+ channels', '✓ 1 PVR box'];
+const streamSaver = ['✓ 70+ channels on the app', '✓ Netflix, Disney+ and Apple TV'];
+const westernPlans = (province: 'BC' | 'AB'): InternetPlan[] => {
+  const key = province.toLowerCase();
+  return [
+    internetPlan(province, `internet-${key}-500`, 'High Speed Unlimited', '500 Mbps', 500, 70),
+    internetPlan(
+      province,
+      `internet-${key}-1000`,
+      'High Speed Unlimited',
+      '1 Gbps',
+      1000,
+      80,
+      [],
+      'Popular',
+    ),
+    internetPlan(
+      province,
+      `internet-streamsaver-${key}-1000`,
+      'Internet + StreamSaver TV',
+      '1 Gbps',
+      1000,
+      115,
+      streamSaver,
+    ),
+    internetPlan(
+      province,
+      `internet-tv-${key}-1000`,
+      'Internet + TV Bundle',
+      '1 Gbps',
+      1000,
+      140,
+      tv,
+    ),
+  ];
+};
+/** Every internet plan by province, exactly as /order sells it. */
+export const internetPlansByProvince: Record<InternetProvince, readonly InternetPlan[]> = {
+  SK: [
+    internetPlan('SK', 'internet-sk-1000', 'High Speed Unlimited', '1 Gbps', 1000, 50),
+    internetPlan(
+      'SK',
+      'internet-sk-2000',
+      'High Speed Unlimited',
+      '2 Gbps',
+      2000,
+      60,
+      [],
+      'Popular',
+    ),
+    internetPlan('SK', 'internet-tv-sk-1000', 'Internet + TV Bundle', '1 Gbps', 1000, 90, tv),
+  ],
+  MB: [
+    internetPlan('MB', 'internet-mb-500', 'High Speed Unlimited', '500 Mbps', 500, 90),
+    internetPlan(
+      'MB',
+      'internet-mb-2000',
+      'High Speed Unlimited',
+      '2 Gbps',
+      2000,
+      100,
+      [],
+      'Popular',
+    ),
+    internetPlan('MB', 'internet-tv-mb-2000', 'Internet + TV Bundle', '2 Gbps', 2000, 150, tv),
+  ],
+  BC: westernPlans('BC'),
+  AB: westernPlans('AB'),
+};
+export const internetProvinces = [
+  'SK',
+  'MB',
+  'BC',
+  'AB',
+] as const satisfies readonly InternetProvince[];
+/** The order form link for one plan, or for a province's plan list. */
+export const internetOrderHref = (province: string, plan?: InternetPlan) =>
+  plan
+    ? `/order?plan=${plan.id}&category=internet&province=${plan.province}`
+    : `/order?category=internet&province=${province}`;
+/** One summary card per province for /home-internet; each opens that province in /order. */
+export const internetProvinceCards: readonly (PlanCardContent & {
+  readonly province: InternetProvince;
+})[] = internetProvinces.map((province) => {
+  const plans = internetPlansByProvince[province];
+  const from = Math.min(...plans.map((plan) => plan.priceCad));
+  const top = plans.reduce((best, plan) => (plan.mbps > best.mbps ? plan : best));
+  return {
+    id: `internet-${province.toLowerCase()}`,
+    province,
+    carrier: internetProvinceNames[province],
+    allowance: `Up to ${top.allowance}`,
+    amount: `$${from}`,
     period: '/mo',
-    finePrint: 'CAD · taxes extra · unlimited data',
-    goodFor: 'Good for: 1–2 people · browsing & HD streaming',
-    buttonLabel: 'Choose 150 Mbps',
+    finePrint: `From · CAD · taxes extra · ${internetPromotions[province].toLowerCase()}`,
+    features: plans.map((plan) => `✓ ${plan.carrier}, ${plan.allowance}: ${plan.amount}/mo`),
+    buttonLabel: `See ${province} plans`,
     selectedLabel: 'Selected ✓',
-    features: [],
-    continueLabel: 'Continue with 150 Mbps →',
-  },
-  {
-    id: 'preview-internet-500',
-    mbps: 500,
-    resultLabel: 'Up to 500 Mbps',
-    resultPrice: '$75/mo',
-    badge: 'Most popular',
-    previewOnly: true,
-    carrier: '',
-    allowance: '500',
-    unit: 'Mbps',
-    amount: '$75',
-    period: '/mo',
-    finePrint: 'CAD · taxes extra · unlimited data',
-    goodFor: 'Good for: 2–4 people · 4K & video calls',
-    buttonLabel: 'Choose 500 Mbps',
-    selectedLabel: 'Selected ✓',
-    features: [],
-    continueLabel: 'Continue with 500 Mbps →',
-  },
-  {
-    id: 'preview-internet-1000',
-    mbps: 1000,
-    resultLabel: 'Up to 1 Gbps',
-    resultPrice: '$90/mo',
-    previewOnly: true,
-    carrier: '',
-    allowance: '1',
-    unit: 'Gbps',
-    amount: '$90',
-    period: '/mo',
-    finePrint: 'CAD · taxes extra · unlimited data',
-    goodFor: 'Good for: 4+ people · gaming & big downloads',
-    buttonLabel: 'Choose 1 Gbps',
-    selectedLabel: 'Selected ✓',
-    features: [],
-    continueLabel: 'Continue with 1 Gbps →',
-  },
-  {
-    id: 'preview-internet-1500',
-    mbps: 1500,
-    resultLabel: 'Up to 1.5 Gbps',
-    resultPrice: '$105/mo',
-    previewOnly: true,
-    carrier: '',
-    allowance: '1.5',
-    unit: 'Gbps',
-    amount: '$105',
-    period: '/mo',
-    finePrint: 'CAD · taxes extra · unlimited data',
-    goodFor: 'Good for: Creators & power users',
-    buttonLabel: 'Choose 1.5 Gbps',
-    selectedLabel: 'Selected ✓',
-    features: [],
-    continueLabel: 'Continue with 1.5 Gbps →',
-  },
-];
+  };
+});
 export const internetAssets = {
   '106-34-imgEllipse': {
     src: '/design/home-internet/106-34-imgEllipse.svg',
@@ -582,8 +577,4 @@ export const internetChromeAssets = {
   chat: internetAssets['212-51-imgIcon'],
   menu: internetAssets['212-51-imgIcon1'],
   footerLogo: internetAssets['106-34-imgFrame'],
-};
-export const internetLookupFixtures = {
-  availablePostalCode: 'V3T 1Z2',
-  unavailablePostalCode: 'T0L 1A0',
 };

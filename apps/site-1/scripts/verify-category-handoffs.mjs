@@ -17,13 +17,12 @@ try {
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
     for (const [query, speed, amount] of [
-      ['', '500 Mbps', '$75'],
-      ['?plan=preview-internet-150', '150 Mbps', '$55'],
-      ['?plan=preview-internet-500', '500 Mbps', '$75'],
-      ['?plan=preview-internet-1000', '1 Gbps', '$90'],
-      ['?plan=preview-internet-1500', '1.5 Gbps', '$105'],
-      ['?plan=unknown&price=0', '500 Mbps', '$75'],
-      ['?plan=preview-internet-150&plan=preview-internet-1000', '500 Mbps', '$75'],
+      ['', '1 Gbps', '$80'],
+      ['?plan=internet-bc-500', '500 Mbps', '$70'],
+      ['?plan=internet-sk-2000', '2 Gbps', '$60'],
+      ['?plan=internet-mb-500', '500 Mbps', '$90'],
+      ['?plan=unknown&price=0', '1 Gbps', '$80'],
+      ['?plan=internet-bc-500&plan=internet-sk-2000', '1 Gbps', '$80'],
     ]) {
       assert.equal((await page.goto(`${origin}/order/home-internet${query}`))?.status(), 200);
       if (width === 390) await page.locator('.cp-io-mobile-summary').locator('summary').click();

@@ -7,9 +7,10 @@ import {
   type FinderStepId,
   type FinderConfig,
   type FinderMatch,
+  type FinderCatalogMatch,
   finderArrivalMatches,
-  finderResidentCatalog,
-  finderMatchPriorities,
+  finderPhoneMatches,
+  finderInternetMatches,
 } from '@content/plan-finder';
 
 export interface FinderState {
@@ -69,13 +70,25 @@ export function finderSummary(state: FinderState): readonly string[] {
   });
 }
 
-/** Fixture recommendations only: province/provider/audience eligibility is not inferred. */
+const rankings: Record<
+  FinderAnswers['priority'],
+  (a: FinderCatalogMatch, b: FinderCatalogMatch) => number
+> = {
+  price: (a, b) => a.priceCad - b.priceCad,
+  speed: (a, b) => b.speedRank - a.speedRank || a.priceCad - b.priceCad,
+  value: (a, b) => Number(b.popular) - Number(a.popular) || a.priceCad - b.priceCad,
+};
+
+/**
+ * The top two catalogue plans for the answers. Internet uses the chosen province's plans,
+ * so a province with no internet plans gets no match. Provider/audience eligibility is not inferred.
+ */
 export function finderMatches(state: FinderState): readonly FinderMatch[] {
   if (state.step !== 'result') return [];
   if (state.answers.location === 'arrival') return finderArrivalMatches;
-  const order = finderMatchPriorities[state.answers.priority ?? 'value'];
-  return [...finderResidentCatalog[state.answers.need ?? 'phone']]
-    .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id))
-    .filter((plan) => order.includes(plan.id))
-    .slice(0, 2);
+  const catalog =
+    state.answers.need === 'internet'
+      ? finderInternetMatches(state.answers.province)
+      : finderPhoneMatches;
+  return [...catalog].sort(rankings[state.answers.priority ?? 'value']).slice(0, 2);
 }

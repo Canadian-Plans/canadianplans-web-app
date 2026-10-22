@@ -322,14 +322,10 @@ export function PlanFinderModal({
                       >
                         {copy.details}
                       </CpButton>
-                      <CpButton
-                        tone={index === 0 ? 'primary' : 'outline'}
-                        onClick={() => {
-                          setChosen(match);
-                          setView('selected');
-                        }}
-                      >
-                        {index === 0 ? copy.getPlan : copy.choosePlan}
+                      <CpButton asChild tone={index === 0 ? 'primary' : 'outline'}>
+                        <a href={match.href} onClick={onClose}>
+                          {index === 0 ? copy.getPlan : copy.choosePlan}
+                        </a>
                       </CpButton>
                     </div>
                   </article>

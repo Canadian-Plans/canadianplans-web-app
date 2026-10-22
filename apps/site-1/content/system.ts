@@ -21,13 +21,13 @@ export const missingCopy = {
     },
     {
       title: 'Mobile plans',
-      description: 'From $29/mo, for your phone',
+      description: 'From $40/mo, for your phone',
       icon: 'mobile',
       href: '/mobile-plans',
     },
     {
       title: 'Home internet',
-      description: 'From $55/mo, Wi-Fi at home',
+      description: 'From $50/mo, Wi-Fi at home',
       icon: 'wifi',
       href: '/home-internet',
     },
@@ -112,7 +112,7 @@ export const searchItems: readonly SearchItem[] = [
       'Unlimited Canada calls & texts · 1,000 international minutes · ready the moment you land',
     label: 'PLAN · MOST POPULAR WITH STUDENTS',
     crumb: '',
-    href: '/order/pre-arrival?plan=preview-rogers-plus',
+    href: '/order?plan=prearrival-rogers-plus-100&category=sim',
     keywords: ['student sim card', 'esim', 'rogers', 'plan', 'international', '100 gb'],
   },
   {

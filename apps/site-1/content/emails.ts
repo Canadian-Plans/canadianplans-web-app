@@ -109,7 +109,7 @@ export const emailFixtures = {
     previewOnly: true,
     orderReference: 'CP-2026-10519',
     plan: 'Home internet · 500 Mbps',
-    monthlyPrice: '$75/mo + tax',
+    monthlyPrice: '$70/mo + tax',
     installPrice: 'Free',
     shortDate: 'Thu, Oct 15',
     date: 'Thursday, October 15',
