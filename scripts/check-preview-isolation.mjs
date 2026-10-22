@@ -3,7 +3,14 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const sha256Fingerprint = /^sha256:[0-9a-f]{64}$/;
-const allowedStatuses = new Set(['not_provisioned', 'provisioned']);
+/**
+ * not_provisioned: no preview deployments exist. credential_free: previews are
+ * built, but the platform gives them no variables at all, so they cannot reach
+ * any resource (SEC-15). provisioned: previews hold credentials, each bound to
+ * an isolated, fingerprinted preview resource.
+ */
+const allowedStatuses = new Set(['not_provisioned', 'credential_free', 'provisioned']);
+const isoDate = /^\d{4}-\d{2}-\d{2}$/;
 const allowedPlatforms = new Set(['vercel', 'railway']);
 const forbiddenKey = /^(secret|token|password|connectionString|url|endpoint)$/i;
 
@@ -139,6 +146,21 @@ export function validatePreviewIsolation(inventory, expected = {}) {
     if (deployment.status === 'not_provisioned' && deployment.credentialNames.length > 0) {
       fail(`${deployment.deployment} cannot inventory credentials while not provisioned`);
     }
+    if (deployment.status === 'credential_free') {
+      // A credential-free claim must record what was observed and when, so it
+      // cannot pass by assertion alone.
+      if (deployment.credentialNames.length > 0) {
+        fail(`${deployment.deployment} cannot list credentials while credential-free`);
+      }
+      if (
+        deployment.previewScopedVariableCount !== 0 ||
+        !isoDate.test(deployment.observedAt ?? '')
+      ) {
+        fail(
+          `${deployment.deployment} credential-free previews need previewScopedVariableCount 0 and an observedAt date`,
+        );
+      }
+    }
     for (const credentialName of deployment.credentialNames) {
       const key = `${deployment.deployment}:${credentialName}`;
       if (!catalogKeys.has(key)) fail(`${key} is absent from the credential catalog`);
@@ -177,6 +199,8 @@ export function validatePreviewIsolation(inventory, expected = {}) {
   return {
     deployments: deployments.length,
     provisionedDeployments: deployments.filter((entry) => entry.status === 'provisioned').length,
+    credentialFreeDeployments: deployments.filter((entry) => entry.status === 'credential_free')
+      .length,
     credentialBindings: bindings.length,
   };
 }
@@ -206,6 +230,6 @@ if (isMain) {
     ],
   });
   console.info(
-    `Preview isolation inventory valid: ${result.provisionedDeployments}/${result.deployments} deployments provisioned, ${result.credentialBindings} credential bindings.`,
+    `Preview isolation inventory valid: ${result.provisionedDeployments}/${result.deployments} deployments provisioned, ${result.credentialFreeDeployments} credential-free, ${result.credentialBindings} credential bindings.`,
   );
 }

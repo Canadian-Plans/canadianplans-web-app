@@ -8,13 +8,18 @@ The redacted [deployment inventory](DEPLOYMENT_INVENTORY.json) records which
 credential names are present in each preview deployment and maps each one to a
 non-production resource using a SHA-256 fingerprint of the provider-issued
 immutable resource ID. Display names are not accepted as isolation evidence.
-Preview deployments are currently recorded as not provisioned; update the
-inventory in the same reviewed change that provisions any preview credential.
+On 2026-10-22 admin and site-1 previews were recorded as `credential_free`:
+Vercel builds them for each PR, but every variable is scoped to Production
+only, so a preview gets no backend URL and no credentials. The backend has no
+preview deployments (Railway deploys only production). Never add a
+Preview-scoped variable or enable Railway PR environments without updating the
+inventory with an isolated preview resource in the same reviewed change.
 Provisioned inventory entries must declare `emailProvider: fake` and
 `authSmtp: fake_sink`; customer email configuration does not configure Auth SMTP.
 The check validates the committed inventory, not live provider configuration.
 Read-only provider observation on 2026-09-14 found no Vercel projects in the
-Canadian Plans team and one Supabase project in `us-west-2`. Do not use that
+Canadian Plans team and one Supabase project in `us-west-2`; on 2026-10-22 the
+team had three Vercel projects (admin, site-1, Umami). Do not use that
 project as evidence of Canadian staging compliance (required: `ca-central-1`).
 
 Protected website writes validate a fresh `X-Turnstile-Token` with their fixed

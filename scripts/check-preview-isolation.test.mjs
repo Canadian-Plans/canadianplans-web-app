@@ -48,6 +48,7 @@ test('accepts a preview credential mapped to a distinct immutable resource finge
   assert.deepEqual(validatePreviewIsolation(validInventory()), {
     deployments: 1,
     provisionedDeployments: 1,
+    credentialFreeDeployments: 0,
     credentialBindings: 1,
   });
 });
@@ -126,6 +127,29 @@ test('rejects raw credential values anywhere in the redacted inventory', () => {
   const inventory = validInventory();
   inventory.previewCredentialBindings[0].secret = 'must-not-be-committed';
   assert.throws(() => validatePreviewIsolation(inventory), /raw credential\/resource field/);
+});
+
+test('accepts credential-free previews only with a recorded observation (SEC-15)', () => {
+  const inventory = validInventory();
+  inventory.resources = [];
+  inventory.previewCredentialBindings = [];
+  inventory.previewDeployments[0] = {
+    deployment: 'backend',
+    status: 'credential_free',
+    credentialNames: [],
+    previewScopedVariableCount: 0,
+    observedAt: '2026-10-22',
+  };
+  assert.equal(validatePreviewIsolation(inventory).credentialFreeDeployments, 1);
+
+  inventory.previewDeployments[0].previewScopedVariableCount = 2;
+  assert.throws(() => validatePreviewIsolation(inventory), /credential-free previews need/);
+  inventory.previewDeployments[0].previewScopedVariableCount = 0;
+  delete inventory.previewDeployments[0].observedAt;
+  assert.throws(() => validatePreviewIsolation(inventory), /credential-free previews need/);
+  inventory.previewDeployments[0].observedAt = '2026-10-22';
+  inventory.previewDeployments[0].credentialNames = ['DATABASE_URL'];
+  assert.throws(() => validatePreviewIsolation(inventory), /cannot list credentials/);
 });
 
 test('accepts an explicitly unprovisioned preview with no credentials', () => {
