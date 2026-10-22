@@ -333,8 +333,14 @@ describe.skipIf(!databaseUrl)('complete customer deletion under runtime RLS', ()
     ).toBeUndefined();
     for (const fileId of fixture.fileIds)
       expect(
-        (await fixture.docs.issueDownload({ workspaceId: WORKSPACE, actorId: ACTOR, fileId }))
-          .status,
+        (
+          await fixture.docs.issueDownload({
+            workspaceId: WORKSPACE,
+            actorId: ACTOR,
+            fileId,
+            requestId: REQUEST,
+          })
+        ).status,
       ).not.toBe('issued');
     expect(
       (

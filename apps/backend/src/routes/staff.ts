@@ -1709,6 +1709,7 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         workspaceId: workspaceId.data,
         actorId: actor.actorId,
         fileId: fileId.data,
+        requestId: req.id,
       });
       if (outcome.status === 'issued') {
         res.json({

@@ -750,6 +750,7 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
           workspaceId: ctx.workspaceId,
           actorId: ctx.credentialId,
           fileId: fileId.data,
+          requestId: req.id,
           ownedLeadId: leadId,
         });
         if (outcome.status === 'issued') {

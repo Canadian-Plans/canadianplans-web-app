@@ -153,6 +153,14 @@ export interface DocumentRecordStore {
     now: Date;
     graceSeconds: number;
   }): Promise<{ expiredIntents: number; cleanedObjects: string[] }>;
+  /** Audit a signed download link (invariant 11); never records customer data. */
+  recordDownloadIssued(input: {
+    workspaceId: string;
+    actorId: string;
+    requestId: string;
+    fileId: string;
+    audience: 'staff' | 'website';
+  }): Promise<void>;
 }
 
 interface FileDbRow {
@@ -553,6 +561,28 @@ export class DatabaseDocumentStore implements DocumentRecordStore {
             },
           },
         };
+      },
+    );
+  }
+
+  async recordDownloadIssued(input: {
+    workspaceId: string;
+    actorId: string;
+    requestId: string;
+    fileId: string;
+    audience: 'staff' | 'website';
+  }): Promise<void> {
+    await this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: input.actorId },
+      async (tx) => {
+        await writeAudit(tx, {
+          workspaceId: input.workspaceId,
+          actorId: input.actorId,
+          requestId: input.requestId,
+          action: 'file.download_issued',
+          fileId: input.fileId,
+          after: { audience: input.audience },
+        });
       },
     );
   }

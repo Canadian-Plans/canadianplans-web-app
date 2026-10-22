@@ -27,6 +27,18 @@ import type {
 export class InMemoryDocumentRecordStore implements DocumentRecordStore {
   private readonly rows = new Map<string, FileRow>();
   private readonly reviews = new Map<string, ReviewEventRow[]>();
+  readonly audits: { action: string; fileId: string; audience: string }[] = [];
+
+  async recordDownloadIssued(input: {
+    fileId: string;
+    audience: 'staff' | 'website';
+  }): Promise<void> {
+    this.audits.push({
+      action: 'file.download_issued',
+      fileId: input.fileId,
+      audience: input.audience,
+    });
+  }
 
   snapshot(fileId: string): FileRow | undefined {
     const row = this.rows.get(fileId);
