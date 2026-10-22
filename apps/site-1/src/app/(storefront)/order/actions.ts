@@ -137,6 +137,17 @@ function alreadyOrdered(): ActionResult<never> {
 
 function failureFrom(error: unknown): ActionResult<never> {
   if (error instanceof BackendError) {
+    // The same key arrived with a different payload: an earlier submit whose
+    // response was lost already created the order (REQ 18). Retrying with this
+    // key can only conflict again, so no "Try again" — point at the order.
+    if (error.code === 'idempotency_conflict') {
+      return {
+        ok: false,
+        code: 'draft_expired',
+        message:
+          'We already received an order for these details. Check your email for the confirmation, or use Track order. To buy another plan, start a new order.',
+      };
+    }
     if (error.code === 'draft_already_submitted') return alreadyOrdered();
     if (error.code === 'draft_expired' || error.code === 'draft_not_found') return draftExpired();
     if (
@@ -499,6 +510,9 @@ export async function submitOrder(
   } catch (error) {
     if (!(error instanceof BackendError))
       return { ok: false, code: 'transport_retry', message: verificationContent.retryOrder };
+    // The order behind this draft already exists; the next visit to /order
+    // must start a fresh draft and key instead of conflicting forever.
+    if (error.code === 'idempotency_conflict') await clearOrderDraft();
     return failureFrom(error);
   }
 }

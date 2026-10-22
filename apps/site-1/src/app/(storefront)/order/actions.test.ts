@@ -330,6 +330,27 @@ describe('single-use proof and order recovery', () => {
     ]);
     expect(draftKey()).toBe(key);
   });
+  it('treats an idempotency conflict as an order already received, with no retry loop', async () => {
+    leadsCreate.mockResolvedValue({ lead: { id: LEAD_A }, draftGrant: { token: 'grant-a' } });
+    await saveDetails(input());
+    ordersSubmit.mockRejectedValueOnce(new BackendError('idempotency_conflict', 409, 'req-1'));
+    expect(
+      await submitOrder({
+        quoteId: '44444444-4444-4444-8444-444444444444',
+        termsVersion: 'test-terms',
+        marketingOptIn: true,
+        details,
+        documentKeys: ['passport'],
+        turnstileToken: 'submit-proof',
+      }),
+    ).toMatchObject({
+      ok: false,
+      code: 'draft_expired',
+      message: expect.stringMatching(/already received an order/),
+    });
+    // The finished draft is cleared, so the next order gets a fresh key.
+    expect(jar.has('cp_order_draft')).toBe(false);
+  });
 });
 
 it('forwards separate intent/finalization proofs with the same private draft grant', async () => {
