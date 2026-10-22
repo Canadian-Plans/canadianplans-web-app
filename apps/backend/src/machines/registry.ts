@@ -123,7 +123,11 @@ function textEqual(a: string, b: string): boolean {
   return left.length === right.length && timingSafeEqual(left, right);
 }
 
-/** Sanity signs `timestamp.rawBody` and encodes the HMAC using base64url. */
+/**
+ * Sanity signs `timestamp.rawBody` and encodes the HMAC using base64url. The
+ * `t` value is a millisecond Unix timestamp (@sanity/webhook rejects anything
+ * else), so it is compared with `nowMs` directly.
+ */
 function verifySanitySignature(
   header: string,
   secret: string,
@@ -131,7 +135,7 @@ function verifySanitySignature(
   nowMs: number,
 ): boolean {
   const values = new Map(
-    header.split(',').map((part) => {
+    header.split(/[, ]+/).map((part) => {
       const separator = part.indexOf('=');
       return separator < 1 ? ['', ''] : [part.slice(0, separator), part.slice(separator + 1)];
     }),
@@ -139,7 +143,7 @@ function verifySanitySignature(
   const timestamp = values.get('t');
   const received = values.get('v1');
   if (!timestamp || !received || !/^\d+$/.test(timestamp)) return false;
-  const ageMs = Math.abs(nowMs - Number(timestamp) * 1_000);
+  const ageMs = Math.abs(nowMs - Number(timestamp));
   if (!Number.isFinite(ageMs) || ageMs > 5 * 60 * 1_000) return false;
   const expected = createHmac('sha256', secret)
     .update(timestamp)

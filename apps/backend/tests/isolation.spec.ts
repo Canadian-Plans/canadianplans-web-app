@@ -406,7 +406,8 @@ databaseTest('Phase A tenant isolation gate', () => {
     // signature before the account check this test targets is reached.
     const nowMs = Date.parse('2026-09-16T00:00:00.000Z');
     const registry = new MachineRegistry(config, () => nowMs);
-    const timestamp = String(nowMs / 1_000);
+    // Sanity signs with a millisecond Unix timestamp.
+    const timestamp = String(nowMs);
     const signature = `t=${timestamp},v1=${createHmac('sha256', webhookSecret)
       .update(`${timestamp}.${rawBody}`)
       .digest('base64url')}`;

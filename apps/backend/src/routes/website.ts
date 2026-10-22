@@ -1,5 +1,5 @@
 import { websiteBotActions, type WebsiteBotAction } from '@canadian-plans/contracts';
-import { Router, type Request } from 'express';
+import { Router, type Request, type Response } from 'express';
 import { rateLimitHit, resolveWebsiteCredential } from '@canadian-plans/db';
 import {
   commercialOfferSchema,
@@ -78,16 +78,35 @@ export interface WebsiteRouteDependencies {
 
 export function createDefaultWebsiteRouteDependencies(): WebsiteRouteDependencies {
   const registry = loadMachineRegistry();
+  const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
+  const turnstileHosts = (process.env.TURNSTILE_HOSTNAMES ?? process.env.TURNSTILE_HOSTNAME ?? '')
+    .split(',')
+    .map((host) => host.trim())
+    .filter(Boolean);
+  // Every protected write fails closed without these, so say so once at boot
+  // instead of leaving the owner to discover it from customer 403s.
+  if (!turnstileSecret || turnstileHosts.length === 0) {
+    logRequestError({
+      requestId: 'startup',
+      route: 'website:turnstile',
+      code: 'bot_check_unconfigured',
+      flag: 'not_retryable',
+    });
+  }
   const verifiers = new Map(
     websiteBotActions.map((action) => [
       action,
       createTurnstileVerifier({
-        secret: process.env.TURNSTILE_SECRET_KEY,
-        hostnames: (process.env.TURNSTILE_HOSTNAMES ?? process.env.TURNSTILE_HOSTNAME ?? '')
-          .split(',')
-          .map((host) => host.trim())
-          .filter(Boolean),
+        secret: turnstileSecret,
+        hostnames: turnstileHosts,
         action,
+        onFailure: (code) =>
+          logRequestError({
+            requestId: 'turnstile',
+            route: `website:${action}`,
+            code: `bot_check_${code}`,
+            flag: 'not_retryable',
+          }),
       }),
     ]),
   );
@@ -133,8 +152,8 @@ export function createQuoteRouter(dependencies: WebsiteRouteDependencies): Route
   if (!quoteDependencies) return router;
   router.post(
     '/quotes',
-    requireHumanProof(dependencies.auth, 'quote-create'),
     requireWebsiteCredential(dependencies.auth),
+    requireHumanProof(dependencies.auth, 'quote-create'),
     requireScope('quotes:create'),
     requireEndpointRateLimit(dependencies.auth, 'quotes', endpointRateLimits.quotes),
     async (req, res) => {
@@ -190,8 +209,8 @@ export function createQuoteRouter(dependencies: WebsiteRouteDependencies): Route
         sendDomainError(res, req.id, 'unpriced_lead_required', 503, {
           canSaveUnpricedLead: true,
         });
-      } catch {
-        sendDomainError(res, req.id, 'internal_error', 500);
+      } catch (error) {
+        failRequest(req, res, '/api/v1/quotes', error);
       }
     },
   );
@@ -211,8 +230,8 @@ export function createOrderRouter(dependencies: WebsiteRouteDependencies): Route
   if (!orderDependencies) return router;
   router.post(
     '/orders',
-    requireHumanProof(dependencies.auth, 'order-submit'),
     requireWebsiteCredential(dependencies.auth),
+    requireHumanProof(dependencies.auth, 'order-submit'),
     requireScope('orders:create'),
     requireEndpointRateLimit(dependencies.auth, 'orders', endpointRateLimits.orders),
     async (req, res) => {
@@ -294,35 +313,41 @@ export function createOrderRouter(dependencies: WebsiteRouteDependencies): Route
         }
         sendDomainError(res, req.id, 'conflict', 409);
       } catch (error) {
-        // Only a genuine connection/availability failure is retryable. A logic
-        // bug or an unparsable snapshot must surface as a non-retryable 500
-        // instead of being masked as transient, and every failure is logged
-        // with only scrubbed identifiers (PLATFORM_CONTEXT.md invariant 12).
-        const workspaceId = req.websiteContext?.workspaceId;
-        if (isConnectionLevelError(error)) {
-          logRequestError({
-            requestId: req.id,
-            workspaceId,
-            route: '/api/v1/orders',
-            code: 'persistence_unavailable',
-            flag: 'retryable',
-          });
-          res.setHeader('retry-after', '2');
-          sendDomainError(res, req.id, 'persistence_unavailable', 503, { retryable: true });
-          return;
-        }
-        logRequestError({
-          requestId: req.id,
-          workspaceId,
-          route: '/api/v1/orders',
-          code: 'internal_error',
-          flag: 'not_retryable',
-        });
-        sendDomainError(res, req.id, 'internal_error', 500);
+        failRequest(req, res, '/api/v1/orders', error);
       }
     },
   );
   return router;
+}
+
+/**
+ * Every website handler's last-resort failure path. Only a genuine
+ * connection/availability failure is retryable; a logic bug or an unparsable
+ * row surfaces as a non-retryable 500 instead of being masked as transient.
+ * Each failure is logged with scrubbed identifiers only (invariant 12).
+ */
+function failRequest(req: Request, res: Response, route: string, error: unknown): void {
+  const workspaceId = req.websiteContext?.workspaceId;
+  if (isConnectionLevelError(error)) {
+    logRequestError({
+      requestId: req.id,
+      workspaceId,
+      route,
+      code: 'persistence_unavailable',
+      flag: 'retryable',
+    });
+    res.setHeader('retry-after', '2');
+    sendDomainError(res, req.id, 'persistence_unavailable', 503, { retryable: true });
+    return;
+  }
+  logRequestError({
+    requestId: req.id,
+    workspaceId,
+    route,
+    code: 'internal_error',
+    flag: 'not_retryable',
+  });
+  sendDomainError(res, req.id, 'internal_error', 500);
 }
 
 function requireDraftGrant(req: Request): string | undefined {
@@ -339,9 +364,11 @@ function requireDraftGrant(req: Request): string | undefined {
 export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Router {
   const router = Router();
   const authenticate = requireWebsiteCredential(dependencies.auth);
+  // Credential (and its rate limits) first: an unauthenticated caller must never
+  // make the backend call Cloudflare, and every write still proves a human once.
   const admit = (action: WebsiteBotAction) => [
-    requireHumanProof(dependencies.auth, action),
     authenticate,
+    requireHumanProof(dependencies.auth, action),
   ];
 
   /**
@@ -382,8 +409,8 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
         ];
       });
       res.json({ offers, requestId: req.id });
-    } catch {
-      sendDomainError(res, req.id, 'internal_error', 500);
+    } catch (error) {
+      failRequest(req, res, '/api/v1/website/offers', error);
     }
   });
 
@@ -416,8 +443,8 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
           draftGrant: result.grant,
           requestId: req.id,
         });
-      } catch {
-        sendDomainError(res, req.id, 'internal_error', 500);
+      } catch (error) {
+        failRequest(req, res, '/api/v1/website/leads', error);
       }
     },
   );
@@ -453,8 +480,8 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
         return;
       }
       res.json({ draft: outcome.draft, requestId: req.id });
-    } catch {
-      sendDomainError(res, req.id, 'internal_error', 500);
+    } catch (error) {
+      failRequest(req, res, '/api/v1/website/leads/:leadId', error);
     }
   });
 
@@ -506,8 +533,8 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
         }
 
         res.json({ lead: outcome.lead, requestId: req.id });
-      } catch {
-        sendDomainError(res, req.id, 'internal_error', 500);
+      } catch (error) {
+        failRequest(req, res, '/api/v1/website/leads/:leadId', error);
       }
     },
   );
@@ -542,8 +569,8 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
         });
         // Same answer whether or not the email was already listed.
         res.status(201).json({ requestId: req.id });
-      } catch {
-        sendDomainError(res, req.id, 'internal_error', 500);
+      } catch (error) {
+        failRequest(req, res, '/api/v1/website/region-waitlist', error);
       }
     },
   );
@@ -616,8 +643,8 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
           return;
         }
         sendDomainError(res, req.id, 'checklist_mismatch', 409);
-      } catch {
-        sendDomainError(res, req.id, 'internal_error', 500);
+      } catch (error) {
+        failRequest(req, res, '/api/v1/website/uploads/intents', error);
       }
     },
   );
@@ -682,8 +709,8 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
             sendDomainError(res, req.id, 'upload_not_found', 404);
             return;
         }
-      } catch {
-        sendDomainError(res, req.id, 'internal_error', 500);
+      } catch (error) {
+        failRequest(req, res, '/api/v1/website/uploads/:uploadId/finalize', error);
       }
     },
   );
@@ -723,6 +750,7 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
           workspaceId: ctx.workspaceId,
           actorId: ctx.credentialId,
           fileId: fileId.data,
+          requestId: req.id,
           ownedLeadId: leadId,
         });
         if (outcome.status === 'issued') {
@@ -738,8 +766,8 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
           return;
         }
         sendDomainError(res, req.id, 'file_not_found', 404);
-      } catch {
-        sendDomainError(res, req.id, 'internal_error', 500);
+      } catch (error) {
+        failRequest(req, res, '/api/v1/website/files/:fileId/download-link', error);
       }
     },
   );
@@ -780,8 +808,8 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
 
   router.post(
     '/tracking/otp',
-    requireHumanProof(dependencies.auth, 'tracking-request'),
     requireWebsiteCredential(dependencies.auth),
+    requireHumanProof(dependencies.auth, 'tracking-request'),
     requireScope('tracking:otp'),
     requireEndpointRateLimit(dependencies.auth, 'tracking', endpointRateLimits.tracking),
     async (req, res) => {
@@ -802,6 +830,7 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
                   secret,
                   ctx.workspaceId,
                   normalizeEmail(body.data.email),
+                  'otp',
                 ),
                 windowSeconds: TRACKING_OTP_EMAIL_WINDOW_SECONDS,
                 maxCount: TRACKING_OTP_EMAIL_MAX_REQUESTS,
@@ -820,8 +849,15 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
             });
           }
         }
-      } catch {
-        // Neutral response regardless of internal outcome.
+      } catch (error) {
+        // Neutral response regardless of internal outcome, but never silent.
+        logRequestError({
+          requestId: req.id,
+          workspaceId: req.websiteContext?.workspaceId,
+          route: '/api/v1/website/tracking/otp',
+          code: isConnectionLevelError(error) ? 'persistence_unavailable' : 'internal_error',
+          flag: 'not_retryable',
+        });
       }
       // Enumeration resistance includes timing: the response is not sent until
       // the floor has elapsed, so a match does not measurably differ.
@@ -832,8 +868,8 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
 
   router.post(
     '/tracking/verify',
-    requireHumanProof(dependencies.auth, 'tracking-verify'),
     requireWebsiteCredential(dependencies.auth),
+    requireHumanProof(dependencies.auth, 'tracking-verify'),
     requireScope('tracking:otp'),
     requireEndpointRateLimit(dependencies.auth, 'tracking', endpointRateLimits.tracking),
     async (req, res) => {
@@ -854,7 +890,12 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
         // five-attempt cap on each individual challenge.
         const emailLimit = secret
           ? await dependencies.auth.rateLimit({
-              bucketKey: emailRateBucket(secret, ctx.workspaceId, normalizeEmail(body.data.email)),
+              bucketKey: emailRateBucket(
+                secret,
+                ctx.workspaceId,
+                normalizeEmail(body.data.email),
+                'verify',
+              ),
               windowSeconds: TRACKING_OTP_EMAIL_WINDOW_SECONDS,
               maxCount: TRACKING_OTP_VERIFY_EMAIL_MAX_REQUESTS,
             })
@@ -884,8 +925,8 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
         // One generic failure for every non-verified outcome, so a guesser never
         // learns whether the challenge exists or how it ended.
         sendDomainError(res, req.id, 'tracking_challenge_invalid', 400);
-      } catch {
-        sendDomainError(res, req.id, 'internal_error', 500);
+      } catch (error) {
+        failRequest(req, res, '/api/v1/website/tracking/verify', error);
       }
     },
   );
@@ -926,8 +967,8 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
           updatedAt: status.updatedAt.toISOString(),
           requestId: req.id,
         });
-      } catch {
-        sendDomainError(res, req.id, 'internal_error', 500);
+      } catch (error) {
+        failRequest(req, res, '/api/v1/website/tracking', error);
       }
     },
   );

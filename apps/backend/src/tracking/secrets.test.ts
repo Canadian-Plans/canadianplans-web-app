@@ -26,7 +26,10 @@ describe('tracking hashing', () => {
     expect(codeBindingHash(SECRET, WORKSPACE, ORDER, 'a@b.co', '123456')).not.toBe(
       codeBindingHash(SECRET, WORKSPACE, ORDER, 'a@b.co', '654321'),
     );
-    expect(emailRateBucket(SECRET, WORKSPACE, 'a@b.co')).not.toContain('a@b.co');
+    expect(emailRateBucket(SECRET, WORKSPACE, 'a@b.co', 'otp')).not.toContain('a@b.co');
+    // Requesting and verifying never share a counter.
+    expect(emailRateBucket(SECRET, WORKSPACE, 'a@b.co', 'otp')).toMatch(/^email:otp:/);
+    expect(emailRateBucket(SECRET, WORKSPACE, 'a@b.co', 'verify')).toMatch(/^email:verify:/);
   });
 
   it('generates a six-digit code and compares hashes in constant time', () => {

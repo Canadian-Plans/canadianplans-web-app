@@ -7,10 +7,13 @@ permissions:
   contents: read
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # PR pushes supersede each other; every main push must finish, because
+  # build:affected only diffs the newest push (github.event.before).
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   verify:
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     env:
       MIGRATION_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/canadian_plans_test
       MIGRATION_DATABASE_SSL_MODE: disable
@@ -67,6 +70,8 @@ jobs:
             echo 'Supabase service-role usage is forbidden in application code.' >&2
             exit 1
           fi
+      - name: Integration suites must not be skipped
+        run: test -n "$TEST_MIGRATION_DATABASE_URL" && test "$DB_TEST_ALLOW_DESTRUCTIVE" = '1'
       - run: pnpm run test
       - name: Verify generated API contract is current
         run: |

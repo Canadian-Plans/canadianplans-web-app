@@ -77,7 +77,10 @@ import {
 } from '@canadian-plans/jobs';
 import postgres from 'postgres';
 import { applyMigrations } from '@canadian-plans/db/migrations';
-import { setTestRuntimePassword } from '@canadian-plans/db/test-helpers';
+import {
+  assertDisposableDatabaseUrl,
+  setTestRuntimePassword,
+} from '@canadian-plans/db/test-helpers';
 import { rateLimitHit, resolveWebsiteCredential } from '@canadian-plans/db';
 
 const INTERNAL_PORT = Number(process.env['E2E_BACKEND_PORT'] ?? 4101);
@@ -112,6 +115,18 @@ const ORIGINAL_PASSPORT_PAYABLE_TODAY_MINOR = 4_500;
 
 if (!ADMIN_URL) {
   process.stderr.write('TEST_MIGRATION_DATABASE_URL is required for the e2e harness.\n');
+  process.exit(1);
+}
+
+// The harness truncates 22 tenant tables and resets app_runtime's password:
+// refuse anything but a local or explicitly disposable database, for both the
+// privileged URL and the runtime URL the backend will use.
+try {
+  assertDisposableDatabaseUrl(ADMIN_URL);
+  const runtimeUrl = process.env['DATABASE_URL'];
+  if (runtimeUrl) assertDisposableDatabaseUrl(runtimeUrl);
+} catch (error) {
+  process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
   process.exit(1);
 }
 

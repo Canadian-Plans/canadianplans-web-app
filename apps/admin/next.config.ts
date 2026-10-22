@@ -28,6 +28,14 @@ const apiOrigin = originOf(process.env.NEXT_PUBLIC_API_BASE_URL);
 const supabaseOrigin = originOf(process.env.NEXT_PUBLIC_SUPABASE_URL);
 const sentryOrigin = originOf(process.env.NEXT_PUBLIC_SENTRY_DSN);
 
+// With connect-src pinned to these origins, a production deployment missing
+// either would silently block the API or sign-in at runtime: fail the build.
+if (process.env.VERCEL_ENV === 'production' && (!apiOrigin || !supabaseOrigin)) {
+  throw new Error(
+    'NEXT_PUBLIC_API_BASE_URL and NEXT_PUBLIC_SUPABASE_URL must be set for the production CSP',
+  );
+}
+
 function buildCsp(): string {
   const scriptExtra = isProduction ? [] : ["'unsafe-eval'"];
   const directives: Record<string, string[]> = {
@@ -36,12 +44,15 @@ function buildCsp(): string {
     'object-src': ["'none'"],
     'frame-ancestors': ["'none'"],
     'form-action': ["'self'"],
-    'img-src': ["'self'", 'data:', 'blob:', 'https:'],
+    // Admin loads only its own icon and the data: MFA QR code.
+    'img-src': ["'self'", 'data:', 'blob:'],
     'font-src': ["'self'", 'data:'],
     'style-src': ["'self'", "'unsafe-inline'"],
     'script-src': dedupe(["'self'", "'unsafe-inline'", ...scriptExtra]),
-    // Backend API, Supabase Auth (token verification + refresh), and Sentry.
-    'connect-src': dedupe(["'self'", apiOrigin, supabaseOrigin, sentryOrigin, 'https:']),
+    // Backend API, Supabase Auth (token verification + refresh), and Sentry only:
+    // a bare https: would let an injected script post the localStorage session
+    // anywhere. Signed document links open in a new tab, not via fetch.
+    'connect-src': dedupe(["'self'", apiOrigin, supabaseOrigin, sentryOrigin]),
     'worker-src': ["'self'", 'blob:'],
     'manifest-src': ["'self'"],
   };

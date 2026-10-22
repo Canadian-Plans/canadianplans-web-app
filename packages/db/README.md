@@ -28,7 +28,7 @@ Transaction-local settings are mandatory under transaction pooling. A session-le
 
 The Vitest integration suite runs only when `TEST_MIGRATION_DATABASE_URL` and `DB_TEST_ALLOW_DESTRUCTIVE=1` are both present. The URL must name a database ending in `_test`; never reuse `MIGRATION_DATABASE_URL`, because the suite changes the runtime-role password and writes fixtures. CI provides a disposable PostgreSQL service, applies the migration to an empty database first, then verifies missing/wrong context, composite tenant foreign keys, non-bypass runtime privileges, denied workspace enumeration, append-only audit privileges and pooled-connection context cleanup.
 
-For local development, `pnpm --filter @canadian-plans/db db:seed` adds two deterministic synthetic workspaces and actors. It refuses to run when `NODE_ENV=production` and never creates Auth users.
+For local development, `DB_SEED_ALLOW_SYNTHETIC=1 pnpm --filter @canadian-plans/db db:seed` adds two deterministic synthetic workspaces and actors. It refuses to run without that flag, when `NODE_ENV=production`, or against any hosted Supabase host (`*.supabase.co` / `*.supabase.com`) unless the database name ends in `_test` or `_dev`; it never renames an existing workspace and never creates Auth users.
 
 ## Must never import
 

@@ -1,3 +1,4 @@
+import { createErrorTrackerFromEnv, type ErrorTracker } from '@canadian-plans/adapters';
 import { Router, type Request, type Response } from 'express';
 import {
   bulkAssignOrdersRequestSchema,
@@ -34,6 +35,7 @@ import {
   type StaffSessionVerifier,
   type VerifiedStaffSession,
 } from '../auth/session.js';
+import { isConnectionLevelError, logRequestError } from '../http/logger.js';
 import { sendStaffAuthError } from '../http/staff-errors.js';
 import { sendDomainError } from '../http/domain-errors.js';
 import { sendWebsiteError } from '../http/website-errors.js';
@@ -86,6 +88,8 @@ export interface StaffRouteDependencies {
   documentService?: Pick<DocumentService, 'listForOrder' | 'review' | 'issueDownload'>;
   /** Kept beside the transition store so the rendered action set matches what the write path accepts. */
   operationalTransitionsEnabled?: boolean;
+  /** Receives every unexpected handler failure; optional so tests can omit it. */
+  errorTracker?: ErrorTracker;
 }
 
 export function createDefaultStaffRouteDependencies(): StaffRouteDependencies {
@@ -110,6 +114,7 @@ export function createDefaultStaffRouteDependencies(): StaffRouteDependencies {
     jobStore: new DatabaseOutboxStore(),
     documentService: createDocumentServiceFromEnv(),
     operationalTransitionsEnabled,
+    errorTracker: createErrorTrackerFromEnv(),
   };
 }
 
@@ -146,6 +151,34 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
     return createAuthorize({
       accessStore: dependencies.store,
       assuranceLevel: actor.assuranceLevel,
+    });
+  }
+
+  /**
+   * Every handler's last-resort failure path: a scrubbed log record plus the
+   * error tracker, so a staff-side 500 is never silent. Neither the body, the
+   * headers nor the error message reach the log (invariant 12).
+   */
+  function reportFailure(req: Request, error: unknown): void {
+    const workspaceId =
+      typeof req.params['workspaceId'] === 'string' ? req.params['workspaceId'] : undefined;
+    const routePath: unknown = req.route?.path;
+    const route = `${req.baseUrl}${typeof routePath === 'string' ? routePath : req.path}`;
+    const connection = isConnectionLevelError(error);
+    logRequestError({
+      requestId: req.id,
+      workspaceId,
+      route,
+      code: connection ? 'persistence_unavailable' : 'internal_error',
+      flag: connection ? 'retryable' : 'not_retryable',
+    });
+    dependencies.errorTracker?.captureException(error, {
+      requestId: req.id,
+      workspaceId,
+      actorId: req.staffSession?.actorId,
+      route,
+      release: process.env['RELEASE_SHA'] ?? 'unknown',
+      environment: process.env['DEPLOYMENT_ENV'] ?? process.env['NODE_ENV'],
     });
   }
 
@@ -304,7 +337,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         requestId: req.id,
       });
       res.json({ workspaces, requestId: req.id });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -349,7 +383,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
           .map((permission) => permission.name),
         requestId: req.id,
       });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -386,7 +421,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         pageSize: query.data.pageSize,
       });
       res.json({ leads: result.leads, page: result.page, requestId: req.id });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -434,7 +470,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         totals: result.totals,
         requestId: req.id,
       });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -467,7 +504,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
       res.json(
         await dependencies.catalogueStore.catalogueStatus(workspaceId.data, actor.actorId, req.id),
       );
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -514,7 +552,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         canRetry: retryDecision.allowed,
         requestId: req.id,
       });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -560,7 +599,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         return;
       }
       res.json({ jobId: jobId.data, status: 'pending', requestId: req.id });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -610,7 +650,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         capabilities,
         requestId: req.id,
       });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -637,7 +678,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         actor.actorId,
       );
       res.json({ members, requestId: req.id });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -671,7 +713,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         return;
       }
       res.json({ results: outcome.results, requestId: req.id });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -690,7 +733,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         return;
       }
       await sendOrderDetail(res, req, workspaceId.data, orderId.data);
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -779,7 +823,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
           return;
       }
       await sendOrderDetail(res, req, workspaceId.data, orderId.data);
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -803,7 +848,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
       });
       if (sendOrderWriteOutcome(res, req.id, outcome.status)) return;
       await sendOrderDetail(res, req, context.workspaceId, context.orderId);
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -827,7 +873,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
       });
       if (sendOrderWriteOutcome(res, req.id, outcome.status)) return;
       await sendOrderDetail(res, req, context.workspaceId, context.orderId);
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -859,7 +906,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         return;
       }
       res.json({ notes: outcome.notes, requestId: req.id });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -893,7 +941,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         notes: notes.status === 'found' ? notes.notes : [created.note],
         requestId: req.id,
       });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -920,7 +969,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         return;
       }
       res.status(201).json({ reminder: outcome.reminder, requestId: req.id });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -952,7 +1002,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
           return;
         }
         res.json({ reminderId: reminderId.data, requestId: req.id });
-      } catch {
+      } catch (error) {
+        reportFailure(req, error);
         sendStaffAuthError(res, req.id, 'internal_error', 500);
       }
     },
@@ -982,7 +1033,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         return;
       }
       res.status(201).json({ changeRequest: outcome.changeRequest, requestId: req.id });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -1019,7 +1071,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
     async (req, res) => {
       try {
         await resolveChangeRequest(req, res, 'approve');
-      } catch {
+      } catch (error) {
+        reportFailure(req, error);
         sendStaffAuthError(res, req.id, 'internal_error', 500);
       }
     },
@@ -1030,7 +1083,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
     async (req, res) => {
       try {
         await resolveChangeRequest(req, res, 'reject');
-      } catch {
+      } catch (error) {
+        reportFailure(req, error);
         sendStaffAuthError(res, req.id, 'internal_error', 500);
       }
     },
@@ -1073,7 +1127,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
       });
       if (sendOrderWriteOutcome(res, req.id, outcome.status)) return;
       await sendOrderDetail(res, req, context.workspaceId, context.orderId, 201);
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -1126,7 +1181,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         cleanupStatus: outcome.cleanupStatus,
         requestId: req.id,
       });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -1155,7 +1211,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
       });
       res.setHeader('cache-control', 'private, no-store');
       res.json({ ...result, requestId: req.id });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -1201,7 +1258,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
           cleanupStatus: outcome.cleanupStatus,
           requestId: req.id,
         });
-      } catch {
+      } catch (error) {
+        reportFailure(req, error);
         sendStaffAuthError(res, req.id, 'internal_error', 500);
       }
     },
@@ -1240,6 +1298,7 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
       });
       res.status(201).json({ membershipId, status: 'pending', requestId: req.id });
     } catch (error) {
+      if (!isUniqueViolation(error)) reportFailure(req, error);
       sendStaffAuthError(
         res,
         req.id,
@@ -1288,7 +1347,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         return;
       }
       res.json({ membershipId: membershipId.data, status: 'revoked', requestId: req.id });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -1327,7 +1387,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         requestId: req.id,
       });
       res.status(201).json({ credential: credentialSummary(record), secret, requestId: req.id });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -1360,7 +1421,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         workspaceId: workspaceId.data,
       });
       res.json({ credentials: records.map(credentialSummary), requestId: req.id });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -1401,7 +1463,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
       }
       // Idempotent: revoking an already-revoked credential returns its first revocation time.
       res.json({ id: credentialId.data, revokedAt: result.revokedAt, requestId: req.id });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -1437,7 +1500,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         actor.actorId,
       );
       res.json({ partners, requestId: req.id });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -1486,7 +1550,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         payoutDisabledReason: PAYOUT_DISABLED_REASON,
         requestId: req.id,
       });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -1540,7 +1605,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
           sendDomainError(res, req.id, 'feature_not_ready', 409);
           return;
       }
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -1577,7 +1643,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         return;
       }
       res.json({ files: outcome.files.map(toStaffFile), requestId: req.id });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -1613,7 +1680,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         return;
       }
       res.json({ file: toStaffFile(outcome.file), requestId: req.id });
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
@@ -1641,6 +1709,7 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         workspaceId: workspaceId.data,
         actorId: actor.actorId,
         fileId: fileId.data,
+        requestId: req.id,
       });
       if (outcome.status === 'issued') {
         res.json({
@@ -1655,7 +1724,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         return;
       }
       sendDomainError(res, req.id, 'file_not_found', 404);
-    } catch {
+    } catch (error) {
+      reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });

@@ -63,6 +63,35 @@ describe('Turnstile server verification', () => {
     expect(await verify('challenge')).toBe(false);
     expect(await verify('challenge')).toBe(false);
   });
+  it('reports why it denied, as a bounded code, without changing the fail-closed result', async () => {
+    const onFailure = vi.fn();
+    const silent = vi.fn<typeof fetch>();
+    expect(
+      await createTurnstileVerifier({ action: 'lead-submit', onFailure }, silent)('challenge'),
+    ).toBe(false);
+    expect(onFailure).toHaveBeenLastCalledWith('unconfigured');
+    expect(silent).not.toHaveBeenCalled();
+
+    const unreachable = vi.fn<typeof fetch>().mockRejectedValueOnce(new Error('network'));
+    expect(await createTurnstileVerifier({ ...config, onFailure }, unreachable)('challenge')).toBe(
+      false,
+    );
+    expect(onFailure).toHaveBeenLastCalledWith('provider_unreachable');
+
+    const rejected = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(Response.json({ ...valid, hostname: 'other.example' }));
+    expect(await createTurnstileVerifier({ ...config, onFailure }, rejected)('challenge')).toBe(
+      false,
+    );
+    expect(onFailure).toHaveBeenLastCalledWith('provider_rejected');
+
+    // A missing token is the visitor's problem, not an outage: not reported.
+    onFailure.mockClear();
+    expect(await createTurnstileVerifier({ ...config, onFailure }, silent)(undefined)).toBe(false);
+    expect(onFailure).not.toHaveBeenCalled();
+  });
+
   it('accepts only configured exact hostnames and the route-owned action', async () => {
     const request = vi.fn<typeof fetch>();
     const verify = createTurnstileVerifier(

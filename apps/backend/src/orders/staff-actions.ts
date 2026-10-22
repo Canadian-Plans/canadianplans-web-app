@@ -177,8 +177,9 @@ async function lockOrder(
   tx: TenantTransaction,
   workspaceId: string,
   orderId: string,
+  leadLock: 'share' | 'update' = 'share',
 ): Promise<OrderLockRow | undefined> {
-  if (!(await lockCustomerLeadForOrder(tx, workspaceId, orderId))) return undefined;
+  if (!(await lockCustomerLeadForOrder(tx, workspaceId, orderId, leadLock))) return undefined;
   const [row] = await tx
     .select({
       id: orders.id,
@@ -653,7 +654,9 @@ export class DatabaseStaffOrderActionStore implements StaffOrderActionStore {
     return this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.actorId },
       async (tx) => {
-        const current = await lockOrder(tx, input.workspaceId, input.orderId);
+        // Approval may UPDATE the lead's contact, so take the lead FOR UPDATE
+        // before the order lock instead of upgrading a FOR SHARE lock later.
+        const current = await lockOrder(tx, input.workspaceId, input.orderId, 'update');
         if (!current) return { status: 'not_found' };
         if (current.version !== input.expectedVersion) return { status: 'version_conflict' };
 

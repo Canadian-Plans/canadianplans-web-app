@@ -20,7 +20,7 @@ import { DatabaseDocumentStore } from '../src/documents/store.js';
 function disposableDatabaseUrl(): string | undefined {
   const url = process.env.TEST_MIGRATION_DATABASE_URL;
   const allowed = process.env.DB_TEST_ALLOW_DESTRUCTIVE === '1';
-  if (!url && !allowed) return undefined;
+  if (!url && !allowed && !process.env.CI) return undefined;
   if (!url || !allowed) throw new Error('Both disposable database test settings are required.');
   return url;
 }

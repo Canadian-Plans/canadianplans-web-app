@@ -428,7 +428,7 @@ shared-secret endpoint is retired (404). See ENV.md for the required cutover.
 
 Any staff member with `workspace.read` can view the read-only last sync
 attempt/success/error, recent event errors, and each product's current immutable
-offer version. Catalogue editing remains in Sanity.
+offer version. Catalogue editing happens in Sanity once a workspace has a Sanity registry entry; until then site-1 is served from the repo catalogue (`packages/adapters/src/static-catalogue/site-1-plans.ts`, ADR 0005) and edited by code change and deploy.
 
 ### `GET /api/v1/staff/workspaces/{workspaceId}/jobs`
 

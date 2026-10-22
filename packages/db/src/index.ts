@@ -3,8 +3,10 @@ import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
 import { schema } from './schema.js';
+import { postgresSsl, sslModeFromEnv, type SslMode } from './ssl.js';
 
 export * from './schema.js';
+export { postgresSsl, sslModeFromEnv, type SslMode } from './ssl.js';
 
 export interface TenantContext {
   workspaceId: string;
@@ -13,7 +15,7 @@ export interface TenantContext {
 
 export interface DatabaseClientOptions {
   connectionString: string;
-  ssl?: 'require' | false;
+  ssl?: SslMode;
   maxConnections?: number;
 }
 
@@ -67,7 +69,7 @@ function createClient(options: DatabaseClientOptions) {
   return postgres(options.connectionString, {
     max: options.maxConnections ?? 1,
     prepare: false,
-    ssl: options.ssl ?? 'require',
+    ssl: postgresSsl(options.ssl, process.env.DATABASE_SSL_CA),
   });
 }
 
@@ -150,11 +152,8 @@ export function createDatabaseClient(options: DatabaseClientOptions): DatabaseCl
 
 let defaultClient: DatabaseClient | undefined;
 
-function runtimeSsl(): 'require' | false {
-  const mode = process.env.DATABASE_SSL_MODE ?? 'require';
-  if (mode === 'require') return 'require';
-  if (mode === 'disable') return false;
-  throw new Error('DATABASE_SSL_MODE must be either "require" or "disable"');
+function runtimeSsl(): SslMode {
+  return sslModeFromEnv('DATABASE_SSL_MODE', process.env.DATABASE_SSL_MODE);
 }
 
 const DEFAULT_POOL_MAX = 8;

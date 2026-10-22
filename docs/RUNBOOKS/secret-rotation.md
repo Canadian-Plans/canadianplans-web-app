@@ -99,12 +99,14 @@ There are **at least three distinct B2 application keys** by design
 ([restore.md](restore.md)) — do not rotate them together or reuse one for
 another's role:
 
-- The daily backup writer (`B2_APPLICATION_KEY_ID` / `B2_APPLICATION_KEY` on
-  the `backup` GitHub Environment) — list + write only, no read/delete.
-- The retention administrator (separate GitHub Environment) — adds delete,
+- The daily backup writer (`B2_ARCHIVE_WRITER_KEY_ID` /
+  `B2_ARCHIVE_WRITER_APPLICATION_KEY` on the `backup` GitHub Environment) — list +
+  write only, no read/delete.
+- The retention administrator (`B2_ARCHIVE_RETENTION_KEY_ID` /
+  `B2_ARCHIVE_RETENTION_APPLICATION_KEY`, separate GitHub Environment) — adds delete,
   used only by `backup-retention.yml`.
-- The backup monitor's read-only reader (separate GitHub Environment,
-  `backup-monitor` — see [backup-alert-response.md](backup-alert-response.md)).
+- The backup monitor's read-only reader (`B2_ARCHIVE_READER_KEY_ID` /
+  `B2_ARCHIVE_READER_APPLICATION_KEY`, separate GitHub Environment, `backup-monitor` — see [backup-alert-response.md](backup-alert-response.md)).
 - The deletion-ledger writer (`DELETION_LEDGER_TOKEN`, Railway backend) —
   write-only, cannot delete or read back events.
 

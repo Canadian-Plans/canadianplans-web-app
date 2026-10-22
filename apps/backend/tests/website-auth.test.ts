@@ -179,6 +179,40 @@ afterEach(async () => {
 });
 
 describe('public website credential authentication', () => {
+  it('never calls the bot check for an unknown credential', async () => {
+    let botChecks = 0;
+    const unknown = createApp({
+      staff: staffOnly,
+      website: {
+        auth: {
+          resolveCredential: resolver.resolve,
+          rateLimit: limiter.hit,
+          botCheck: async () => {
+            botChecks += 1;
+            return true;
+          },
+        },
+        leads: { store: leadStore },
+      },
+    }).listen(0);
+    await new Promise<void>((resolve) => unknown.once('listening', resolve));
+    const address = unknown.address();
+    if (address === null || typeof address === 'string') throw new Error('expected TCP server');
+    try {
+      const response = await fetch(`http://127.0.0.1:${address.port}/api/v1/website/leads`, {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer cplsk_${'0'.repeat(16)}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(VALID_LEAD_BODY),
+      });
+      expect(response.status).toBe(401);
+      expect(botChecks).toBe(0);
+    } finally {
+      await new Promise<void>((resolve) => unknown.close(() => resolve()));
+    }
+  });
   it('denies an asynchronous admission exception without database work', async () => {
     admissionFailure = true;
     const response = await post(
@@ -187,7 +221,8 @@ describe('public website credential authentication', () => {
       {},
     );
     expect(response.status).toBe(403);
-    expect(limiter.inputs).toHaveLength(0);
+    // The credential and its limiters now run first; no lead write happens.
+    expect(leadStore.createCalls).toHaveLength(0);
   });
   it('denies failed admission before touching database-backed dependencies', async () => {
     admitted = false;
@@ -197,7 +232,8 @@ describe('public website credential authentication', () => {
       {},
     );
     expect(response.status).toBe(403);
-    expect(limiter.inputs).toHaveLength(0);
+    // The credential and its limiters now run first; no lead write happens.
+    expect(leadStore.createCalls).toHaveLength(0);
   });
 
   it('does not ask for the bot check on a read, but still needs the credential', async () => {

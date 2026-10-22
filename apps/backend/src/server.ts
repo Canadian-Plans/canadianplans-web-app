@@ -1,3 +1,4 @@
+import { createOwnerAlertChannelFromEnv } from '@canadian-plans/adapters';
 import { closeDatabase } from '@canadian-plans/db';
 
 import { createApp } from './app.js';
@@ -26,12 +27,19 @@ function startScheduler(): Scheduler | undefined {
   try {
     return createBackendScheduler(createDefaultSchedulerDependencies());
   } catch (error) {
+    const code =
+      error instanceof SchedulerConfigurationError ? error.code : 'scheduler_start_failed';
     logRequestError({
       requestId: 'scheduler',
       route: 'scheduler',
-      code: error instanceof SchedulerConfigurationError ? error.code : 'scheduler_start_failed',
+      code,
       flag: isConnectionLevelError(error) ? 'retryable' : 'not_retryable',
     });
+    // The service stays healthy for HTTP while no emails send and no catalogue
+    // syncs, so the owner is told directly (fire-and-forget; never blocks boot).
+    void createOwnerAlertChannelFromEnv()
+      .send({ kind: 'scheduler_not_started', detail: code, occurredAt: new Date().toISOString() })
+      .catch(() => {});
     return undefined;
   }
 }

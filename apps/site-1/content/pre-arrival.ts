@@ -37,7 +37,7 @@ export const arrivalCopy = {
     eyebrow: 'Quick answer · Updated October 2026',
     title: 'Can I get a Canadian phone number before I arrive?',
     description:
-      "Yes. Order a pre-arrival eSIM 1 to 3 weeks before your flight. You get your number right away, and your plan starts when you land. Students, workers and PRs get monthly Rogers or Fido plans from $35 a month; visitors get Chatr prepaid plans from $35 for 30 days (CAD, plus tax). You don't need a Canadian credit history, just your passport and your visa or permit.",
+      "Yes. Order a pre-arrival eSIM 1 to 3 weeks before your flight. You get your number right away, and your plan starts when you land. Students, workers and PRs get monthly Rogers or Fido plans from $35 a month; visitors get Chatr prepaid plans from $35 for 30 days (CAD, plus tax). You don't need a Canadian credit history, and you upload nothing to order: an advisor confirms your eligibility with you.",
   },
   picker: {
     step: 'Step 1 of 2',

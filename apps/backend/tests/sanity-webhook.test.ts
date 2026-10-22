@@ -12,7 +12,8 @@ const WORKSPACE = '10000000-0000-4000-8000-000000000451';
 const WEBHOOK_ACTOR = '20000000-0000-4000-8000-000000000451';
 const SECRET = 'sanity-webhook-secret-for-tests';
 const NOW = Date.parse('2026-09-16T00:00:00.000Z');
-const TIMESTAMP = String(NOW / 1_000);
+// Sanity sends millisecond timestamps (13 digits), never seconds.
+const TIMESTAMP = String(NOW);
 
 function signature(body: string): string {
   return `t=${TIMESTAMP},v1=${createHmac('sha256', SECRET)
@@ -119,9 +120,25 @@ describe('POST /api/v1/webhooks/sanity', () => {
     });
   });
 
+  it('accepts the 13-digit millisecond timestamp Sanity really sends, space-separated or not', async () => {
+    expect(TIMESTAMP).toMatch(/^\d{13}$/);
+    const body = JSON.stringify({ documentId: 'sanity-offer-1', ignoredPrice: 1 });
+    const mac = createHmac('sha256', SECRET).update(`${TIMESTAMP}.${body}`).digest('base64url');
+    const response = await post('project-site-1', { signature: `t=${TIMESTAMP}, v1=${mac}` });
+    expect(response.status).toBe(200);
+  });
+
+  it('rejects a seconds-precision timestamp as stale rather than accepting it', async () => {
+    const body = JSON.stringify({ documentId: 'sanity-offer-1', ignoredPrice: 1 });
+    const seconds = String(Math.floor(NOW / 1_000));
+    const mac = createHmac('sha256', SECRET).update(`${seconds}.${body}`).digest('base64url');
+    const response = await post('project-site-1', { signature: `t=${seconds},v1=${mac}` });
+    expect(response.status).toBe(401);
+  });
+
   it('rejects a correctly signed delivery whose timestamp is older than five minutes', async () => {
     const body = JSON.stringify({ documentId: 'sanity-offer-1', ignoredPrice: 1 });
-    const staleTimestamp = String((NOW - 6 * 60_000) / 1_000);
+    const staleTimestamp = String(NOW - 6 * 60_000);
     const staleSignature = `t=${staleTimestamp},v1=${createHmac('sha256', SECRET)
       .update(`${staleTimestamp}.${body}`)
       .digest('base64url')}`;

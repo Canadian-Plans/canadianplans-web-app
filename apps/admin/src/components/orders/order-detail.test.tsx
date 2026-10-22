@@ -324,9 +324,31 @@ describe('OrderDetailView optimistic concurrency', () => {
     await renderDetail();
 
     fireEvent.click(screen.getByRole('button', { name: 'Activate' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Confirm activation' }));
 
     const alert = await screen.findByRole('alert');
     expect(alert.textContent).toMatch(/not enabled yet/i);
+  });
+});
+
+describe('OrderDetailView activation confirmation', () => {
+  it('sends nothing until activation is confirmed, and nothing when the dialog is closed', async () => {
+    current = order({ fulfilmentStatus: 'dispatched' });
+    await renderDetail();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Activate' }));
+    await screen.findByRole('button', { name: 'Confirm activation' });
+    expect(mocks.patchWorkspaceOrder).not.toHaveBeenCalled();
+
+    // The footer Close (the dialog also has its own X button with the same name).
+    const closeButtons = screen.getAllByRole('button', { name: 'Close' });
+    const footerClose = closeButtons[closeButtons.length - 1];
+    if (!footerClose) throw new Error('expected a Close button');
+    fireEvent.click(footerClose);
+    await waitFor(() =>
+      expect(screen.queryByRole('button', { name: 'Confirm activation' })).toBeNull(),
+    );
+    expect(mocks.patchWorkspaceOrder).not.toHaveBeenCalled();
   });
 });
 
@@ -374,6 +396,7 @@ describe('OrderDetailView end-to-end processing', () => {
 
     const activate = await screen.findByRole('button', { name: 'Activate' });
     fireEvent.click(activate);
+    fireEvent.click(await screen.findByRole('button', { name: 'Confirm activation' }));
 
     await waitFor(() => expect(current.fulfilmentStatus).toBe('activated'));
     expect(screen.getAllByText('Activated').length).toBeGreaterThan(0);
@@ -400,6 +423,9 @@ describe('OrderDetailView payment recording', () => {
     fireEvent.change(screen.getByLabelText('Amount (CAD)'), { target: { value: '25.00' } });
     fireEvent.change(screen.getByLabelText('Method'), { target: { value: 'interac' } });
     fireEvent.click(screen.getByRole('button', { name: 'Record payment' }));
+    // Nothing is written until the summary is confirmed.
+    expect(mocks.recordOrderPayment).not.toHaveBeenCalled();
+    fireEvent.click(await screen.findByRole('button', { name: 'Confirm payment record' }));
 
     await waitFor(() =>
       expect(mocks.recordOrderPayment).toHaveBeenCalledWith(

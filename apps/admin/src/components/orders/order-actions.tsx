@@ -62,6 +62,7 @@ export function OrderActions({
 }: OrderActionProps) {
   const [dispatchOpen, setDispatchOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [activateOpen, setActivateOpen] = useState(false);
   const [courier, setCourier] = useState('');
   const [trackingReference, setTrackingReference] = useState('');
   const [dispatchDate, setDispatchDate] = useState('');
@@ -130,18 +131,7 @@ export function OrderActions({
             </Button>
           ) : null}
           {canActivate ? (
-            <Button
-              type="button"
-              disabled={write.busy}
-              onClick={() =>
-                void write.run(() =>
-                  patchWorkspaceOrder(accessToken, workspaceId, order.id, {
-                    action: 'activate',
-                    expectedVersion,
-                  }),
-                )
-              }
-            >
+            <Button type="button" disabled={write.busy} onClick={() => setActivateOpen(true)}>
               Activate
             </Button>
           ) : null}
@@ -272,6 +262,40 @@ export function OrderActions({
               }}
             >
               Record dispatch
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={activateOpen} onOpenChange={setActivateOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Activate order</DialogTitle>
+            <DialogDescription>
+              Activation is final and creates the partner commission for this order. Only confirm
+              once the carrier has activated the plan.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setActivateOpen(false)}>
+              Close
+            </Button>
+            <Button
+              type="button"
+              disabled={write.busy}
+              onClick={async () => {
+                // Close either way: there is nothing to keep, and a refusal
+                // (e.g. feature_not_ready) must be visible on the page.
+                setActivateOpen(false);
+                await write.run(() =>
+                  patchWorkspaceOrder(accessToken, workspaceId, order.id, {
+                    action: 'activate',
+                    expectedVersion,
+                  }),
+                );
+              }}
+            >
+              Confirm activation
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -7,6 +7,7 @@ import type {
 } from '@canadian-plans/db';
 import { websiteScopeNames, type WebsiteScopeName } from '@canadian-plans/types';
 
+import { logRequestError } from '../http/logger.js';
 import { sendWebsiteError } from '../http/website-errors.js';
 import { sendDomainError } from '../http/domain-errors.js';
 import { hashServiceSecret, parseCredentialSecret } from './credential.js';
@@ -59,7 +60,11 @@ function context(req: Request): WebsiteContext {
   return value;
 }
 
-/** Human admission is run once at each protected write, before tenant DB work. */
+/**
+ * Human admission is run once at each protected write, after the service
+ * credential (and its rate limits) and before tenant DB work, so an
+ * unauthenticated caller can never make the backend call the provider.
+ */
 export function requireHumanProof(
   deps: WebsiteAuthDependencies,
   action: WebsiteBotAction,
@@ -73,9 +78,21 @@ export function requireHumanProof(
     try {
       admitted = await deps.botCheck(req, action);
     } catch {
-      /* fail closed */
+      // Fail closed, but visibly: no token or body is logged (invariant 12).
+      logRequestError({
+        requestId: req.id,
+        route: `website:${action}`,
+        code: 'bot_check_error',
+        flag: 'not_retryable',
+      });
     }
     if (!admitted) {
+      logRequestError({
+        requestId: req.id,
+        route: `website:${action}`,
+        code: 'bot_check_denied',
+        flag: 'not_retryable',
+      });
       sendWebsiteError(res, req.id, 'caller_forbidden', 403);
       return;
     }

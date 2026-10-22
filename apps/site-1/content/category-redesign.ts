@@ -75,7 +75,7 @@ export const categoryPages = {
   },
   'home-internet': {
     mainId: 'internet-main',
-    planHref: '#address-check',
+    planHref: '#internet-plans',
     breadcrumb: {
       items: internetCopy.breadcrumb,
       label: internetCopy.breadcrumbLabel,

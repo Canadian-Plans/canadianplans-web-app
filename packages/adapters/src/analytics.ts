@@ -52,6 +52,12 @@ export interface UmamiAnalyticsOptions {
   readonly websiteIdForWorkspace: (workspaceId: string) => string | undefined;
   /** Optional hostname recorded on the event; omitted entirely when unset. */
   readonly hostname?: string;
+  /**
+   * Sent as the User-Agent. Umami drops events whose agent looks like a bot
+   * (Node's default `node`/`undici` does), so a browser-shaped value is used;
+   * it must not contain "bot", "crawler", "spider" or a URL.
+   */
+  readonly userAgent?: string;
   /** Injectable fetch for tests; defaults to the global. */
   readonly fetch?: typeof fetch;
   /** Per-request timeout; defaults to 10s. */
@@ -64,6 +70,8 @@ export interface UmamiAnalyticsOptions {
  * the constant sanitized path `/` (never the customer's URL), and the only data
  * field is the opaque internal subject id.
  */
+const DEFAULT_UMAMI_USER_AGENT = 'Mozilla/5.0 (compatible; CanadianPlansServer/1.0)';
+
 export class UmamiAnalyticsSink implements AnalyticsSink {
   private readonly doFetch: typeof fetch;
   private readonly timeoutMs: number;
@@ -90,7 +98,11 @@ export class UmamiAnalyticsSink implements AnalyticsSink {
 
     const response = await this.doFetch(this.options.endpoint, {
       method: 'POST',
-      headers: { 'content-type': 'application/json', accept: 'application/json' },
+      headers: {
+        'content-type': 'application/json',
+        accept: 'application/json',
+        'user-agent': this.options.userAgent ?? DEFAULT_UMAMI_USER_AGENT,
+      },
       body: JSON.stringify(payload),
       redirect: 'error',
       signal: AbortSignal.timeout(this.timeoutMs),

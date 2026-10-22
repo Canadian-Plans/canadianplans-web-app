@@ -1,11 +1,17 @@
 import { and, eq } from 'drizzle-orm';
 import { leads, orders, type TenantTransaction } from '@canadian-plans/db';
 
-/** Acquire the lead before an order write, matching deletion's lock order. */
+/**
+ * Acquire the lead before an order write, matching deletion's lock order.
+ * A caller that will later UPDATE the lead must take it `update` up front:
+ * upgrading a FOR SHARE lock after the order lock deadlocks with any
+ * concurrent action on the same order.
+ */
 export async function lockCustomerLeadForOrder(
   tx: TenantTransaction,
   workspaceId: string,
   orderId: string,
+  mode: 'share' | 'update' = 'share',
 ): Promise<boolean> {
   const [order] = await tx
     .select({ leadId: orders.leadId })
@@ -18,7 +24,7 @@ export async function lockCustomerLeadForOrder(
     .from(leads)
     .where(and(eq(leads.workspaceId, workspaceId), eq(leads.id, order.leadId)))
     .limit(1)
-    .for('share');
+    .for(mode);
   return lead !== undefined && lead.restrictedAt === null;
 }
 

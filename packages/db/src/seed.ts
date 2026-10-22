@@ -1,4 +1,5 @@
 import postgres from 'postgres';
+import { postgresSsl, sslModeFromEnv, type SslMode } from './ssl.js';
 
 import { staffPermissionNames, staffRoleNames } from '@canadian-plans/types';
 
@@ -29,7 +30,7 @@ export const CATALOGUE_SEED_IDS = {
 
 export interface SeedDatabaseOptions {
   connectionString: string;
-  ssl?: 'require' | false;
+  ssl?: SslMode;
 }
 
 /** Idempotent synthetic development seed. It never creates Supabase Auth users. */
@@ -37,7 +38,7 @@ export async function seedDatabase(options: SeedDatabaseOptions): Promise<void> 
   const client = postgres(options.connectionString, {
     max: 1,
     prepare: false,
-    ssl: options.ssl ?? 'require',
+    ssl: postgresSsl(options.ssl, process.env.MIGRATION_DATABASE_SSL_CA),
   });
 
   try {
@@ -47,8 +48,11 @@ export async function seedDatabase(options: SeedDatabaseOptions): Promise<void> 
         values
           (${STAFF_SEED_IDS.siteWorkspace}, 'site-1', 'Northern Arrival Mobile'),
           (${STAFF_SEED_IDS.demoWorkspace}, 'demo-2', 'Maple Demo Sandbox')
-        on conflict (id) do update
-        set slug = excluded.slug, name = excluded.name
+        -- Never rename an existing workspace: production site-1 was created
+        -- from this seed id and has since been renamed by the owner. No conflict
+        -- target, so a concurrent seed racing on the id *or* the slug unique key
+        -- (parallel integration suites share one database) is skipped too.
+        on conflict do nothing
       `;
 
       for (const workspaceId of [STAFF_SEED_IDS.siteWorkspace, STAFF_SEED_IDS.demoWorkspace]) {
@@ -198,19 +202,38 @@ export async function seedDatabase(options: SeedDatabaseOptions): Promise<void> 
   }
 }
 
-function migrationSsl(): 'require' | false {
-  const mode = process.env.MIGRATION_DATABASE_SSL_MODE ?? 'require';
-  if (mode === 'require') return 'require';
-  if (mode === 'disable') return false;
-  throw new Error('MIGRATION_DATABASE_SSL_MODE must be either "require" or "disable"');
+/**
+ * Refuses a hosted Supabase database unless its name marks it as disposable.
+ * NODE_ENV alone is not a guard: it is usually unset in a shell or a CI step,
+ * and the seed upserts synthetic partners and TEST offers into the target.
+ */
+export function assertSyntheticSeedTarget(connectionString: string): void {
+  const url = new URL(connectionString);
+  const hosted = /(^|\.)supabase\.(co|com)$/i.test(url.hostname);
+  const database = url.pathname.replace(/^\//, '');
+  if (hosted && !/(_test|_dev)$/.test(database)) {
+    throw new Error(
+      `Refusing to seed ${url.hostname}/${database}: the synthetic seed never targets a hosted Supabase database.`,
+    );
+  }
+}
+
+function migrationSsl(): SslMode {
+  return sslModeFromEnv('MIGRATION_DATABASE_SSL_MODE', process.env.MIGRATION_DATABASE_SSL_MODE);
 }
 
 if (process.argv[1]?.endsWith('seed.ts')) {
   if (process.env.NODE_ENV === 'production') {
     throw new Error('The synthetic staff seed is disabled in production.');
   }
+  if (process.env.DB_SEED_ALLOW_SYNTHETIC !== '1') {
+    throw new Error(
+      'Set DB_SEED_ALLOW_SYNTHETIC=1 to run the synthetic seed; it must never target a hosted Supabase database.',
+    );
+  }
   const connectionString = process.env.MIGRATION_DATABASE_URL;
   if (!connectionString) throw new Error('MIGRATION_DATABASE_URL is required');
+  assertSyntheticSeedTarget(connectionString);
   await seedDatabase({ connectionString, ssl: migrationSsl() });
   console.info('Seeded isolated site-1 and demo-2 staff workspaces.');
 }

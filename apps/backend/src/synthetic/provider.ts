@@ -55,8 +55,12 @@ export function createSyntheticCatalogueProvider(): CatalogueProvider {
       async fetchPublishedByDocumentId() {
         return syntheticPublishedOffer();
       },
-      async fetchPublishedByProductKey() {
-        return syntheticPublishedOffer();
+      // Echo the provisioned row's key: issueQuote upserts by the offer's key
+      // and compares the product id, so a fixed key made any other
+      // provisioned product_key fail every run with product_not_found.
+      async fetchPublishedByProductKey(productKey: string) {
+        const offer = syntheticPublishedOffer();
+        return { ...offer, commercial: { ...offer.commercial, productKey } };
       },
       async listPublished() {
         return [syntheticPublishedOffer()];

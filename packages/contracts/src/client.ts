@@ -447,10 +447,11 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
       }
     }
 
+    const requestId = globalThis.crypto.randomUUID();
     const headers = new Headers({
       authorization: `Bearer ${options.credential}`,
       accept: 'application/json',
-      'x-request-id': globalThis.crypto.randomUUID(),
+      'x-request-id': requestId,
     });
     if (config.body !== undefined) {
       headers.set('content-type', 'application/json');
@@ -475,7 +476,18 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
       signal: config.signal ?? AbortSignal.timeout(timeoutMs),
     });
 
-    const payload: unknown = await response.json();
+    // An edge 502/504, an unknown path (Express's HTML 404) or an empty body is
+    // not JSON. That is still an HTTP answer, so it becomes a BackendError with
+    // the real status rather than a SyntaxError. Transport failures and
+    // timeouts deliberately stay non-BackendErrors: callers treat those as
+    // "outcome unknown" and retry with the same idempotency key.
+    const text = await response.text();
+    let payload: unknown;
+    try {
+      payload = text.length === 0 ? undefined : JSON.parse(text);
+    } catch {
+      payload = undefined;
+    }
     if (!response.ok) {
       const parsed = apiErrorResponseSchema.safeParse(payload);
       if (parsed.success) {
@@ -485,8 +497,9 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           parsed.data.error.requestId,
         );
       }
-      throw new BackendError('internal_error', response.status, 'unavailable');
+      throw new BackendError('internal_error', response.status, requestId);
     }
+    if (payload === undefined) throw new BackendError('internal_error', response.status, requestId);
     return config.responseSchema.parse(payload);
   }
 

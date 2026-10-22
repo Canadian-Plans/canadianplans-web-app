@@ -277,6 +277,52 @@ describe('protected staff routes', () => {
     expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe('version_conflict');
   });
 
+  it('reports an unexpected handler failure to the tracker and the log, never silently', async () => {
+    const captureException = vi.fn();
+    const failing = createApp({
+      staff: {
+        sessionVerifier: verifier,
+        store,
+        credentialStore: noopCredentialStore,
+        leadStore: Object.assign(new MemoryLeadStore(), {
+          listLeads: async () => {
+            throw new Error('boom');
+          },
+        }),
+        errorTracker: { captureException },
+      },
+    }).listen(0);
+    await new Promise<void>((resolve) => failing.once('listening', resolve));
+    const address = failing.address();
+    if (address === null || typeof address === 'string') throw new Error('expected TCP server');
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:${address.port}/api/v1/staff/workspaces/${WORKSPACE}/leads`,
+        { headers: { authorization: 'Bearer aal1-token' } },
+      );
+      expect(response.status).toBe(500);
+      expect(apiErrorResponseSchema.parse(await response.json()).error.code).toBe('internal_error');
+      expect(captureException).toHaveBeenCalledOnce();
+      expect(captureException).toHaveBeenCalledWith(
+        expect.any(Error),
+        expect.objectContaining({
+          requestId: expect.any(String),
+          workspaceId: WORKSPACE,
+          actorId: ACTOR,
+        }),
+      );
+      const records = logged.mock.calls.map(([line]) => JSON.parse(String(line)));
+      expect(records).toContainEqual(
+        expect.objectContaining({ event: 'request_error', code: 'internal_error' }),
+      );
+      expect(JSON.stringify(records)).not.toContain('boom');
+    } finally {
+      logged.mockRestore();
+      await new Promise<void>((resolve) => failing.close(() => resolve()));
+    }
+  });
+
   it('rejects malformed JSON with the shared safe error envelope', async () => {
     const response = await fetch(`${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/invitations`, {
       method: 'POST',

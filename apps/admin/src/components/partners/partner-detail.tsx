@@ -15,6 +15,12 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   Table,
   TableBody,
   TableCell,
@@ -54,6 +60,9 @@ export function PartnerDetail({
   const [error, setError] = useState<string | undefined>();
   const [loading, setLoading] = useState(true);
   const [pendingId, setPendingId] = useState<string | undefined>();
+  const [confirmTarget, setConfirmTarget] = useState<
+    { id: string; orderReference: string } | undefined
+  >();
 
   const load = useCallback(async () => {
     if (!workspaceId || !accessToken) return;
@@ -223,7 +232,12 @@ export function PartnerDetail({
                           size="sm"
                           variant="outline"
                           disabled={pendingId === commission.id}
-                          onClick={() => void markCarrierPaid(commission.id)}
+                          onClick={() =>
+                            setConfirmTarget({
+                              id: commission.id,
+                              orderReference: commission.orderReference,
+                            })
+                          }
                         >
                           Mark carrier paid
                         </Button>
@@ -245,6 +259,39 @@ export function PartnerDetail({
           )}
         </CardContent>
       </Card>
+      <Dialog
+        open={confirmTarget !== undefined}
+        onOpenChange={(open) => {
+          if (!open) setConfirmTarget(undefined);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Mark carrier paid</DialogTitle>
+            <DialogDescription>
+              Confirms the carrier has paid Canadian Plans for order {confirmTarget?.orderReference}
+              .
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setConfirmTarget(undefined)}>
+              Close
+            </Button>
+            <Button
+              type="button"
+              disabled={confirmTarget === undefined || pendingId === confirmTarget.id}
+              onClick={async () => {
+                if (!confirmTarget) return;
+                const target = confirmTarget.id;
+                setConfirmTarget(undefined);
+                await markCarrierPaid(target);
+              }}
+            >
+              Confirm carrier paid
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

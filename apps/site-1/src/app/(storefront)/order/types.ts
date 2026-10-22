@@ -43,8 +43,6 @@ export interface SaveDetailsInput extends WebsiteBotProof {
   documentKeys: readonly string[];
   productId: string;
   attribution: RawAttribution;
-  /** The disclosure version shown with the save notice (REQ 17). */
-  consentVersion: string;
 }
 
 export interface SaveDocumentsInput extends WebsiteBotProof {

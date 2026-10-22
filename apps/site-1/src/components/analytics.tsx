@@ -17,10 +17,15 @@ import { hasAnalyticsConsent } from '@/lib/cookie-consent';
  * parameters.
  */
 
+/** Editor and design-preview routes are never measured (README: Studio has no analytics). */
+function isUntrackedPath(pathname: string): boolean {
+  return pathname === '/studio' || pathname.startsWith('/studio/') || pathname.startsWith('/dev/');
+}
+
 export function Analytics() {
   const { scriptUrl, websiteId } = siteConfig.analytics;
-  const analyticsAllowed = useCookieConsent()?.analytics ?? false;
   const pathname = usePathname();
+  const analyticsAllowed = (useCookieConsent()?.analytics ?? false) && !isUntrackedPath(pathname);
   const [ready, setReady] = useState(false);
   const lastTracked = useRef<string | undefined>(undefined);
 

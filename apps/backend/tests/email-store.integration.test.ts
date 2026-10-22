@@ -11,7 +11,7 @@ import { DatabaseEmailStore, type ProviderEventInput } from '../src/email/store.
 import { hashContact } from '../src/email/hash.js';
 
 const migrationUrl = process.env.TEST_MIGRATION_DATABASE_URL;
-if (migrationUrl || process.env.DB_TEST_ALLOW_DESTRUCTIVE) {
+if (migrationUrl || process.env.DB_TEST_ALLOW_DESTRUCTIVE || process.env.CI) {
   if (
     !migrationUrl ||
     process.env.DB_TEST_ALLOW_DESTRUCTIVE !== '1' ||

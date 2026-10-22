@@ -10,7 +10,7 @@ links to documents already read.
 
 ## 1. What this is
 
-Canadian Plans is a new, independent business owned solely by Takib (Dhaka-based). It sells Canadian telecom plans to an **international** audience — people buying *before* they arrive in Canada (students, immigrants, workers, tourists). One legal entity, one owner who approves everything, roughly 5–6 staff at launch working in functional areas (orders, partners, finance, content). Only the owner deploys to production. All code is written by AI agents under the owner's direction.
+Canadian Plans is a new, independent business owned solely by Takib (Dhaka-based). It sells Canadian telecom plans to an **international** audience — people buying *before* they arrive in Canada (students, immigrants, workers, tourists). One legal entity, one owner who approves everything, the owner as the only staff member at launch (decided 22 October 2026), growing to roughly 5–6 staff in functional areas (orders, partners, finance, content). Only the owner deploys to production. All code is written by AI agents under the owner's direction.
 
 This is **not** Get Canada SIM. That was a separate, earlier venture. Do not carry over its branding, content, or business data. The old `Md-Takibuddin/canadaesim` repo may be consulted as a **code-pattern reference only**, never as a business reference.
 
@@ -22,7 +22,7 @@ Five deployable apps, one shared database. Each app is a separate deployment —
 |---|---|---|
 | **backend** | Express + strict TypeScript API. The **only** app that connects to the database. | Supabase Postgres (pooled), R2, selected email provider |
 | **admin** | Next.js app for staff — orders, partners, finance, content, settings. | backend API only |
-| **site-1 (Canadian Plans)** | Next.js storefront — SIM / mobile plans (Rogers). Launches first. Embeds Sanity Studio. | backend API + its own Sanity |
+| **site-1 (Canadian Plans)** | Next.js storefront — pre-arrival eSIM, mobile and regional home internet. Launches first. Embeds Sanity Studio (not connected yet). | backend API; plans come from the repo catalogue (ADR 0005) until its own Sanity is connected |
 | **site-2** | Next.js storefront — mobile-internet plans. Phase B. | backend API + its own Sanity |
 | **site-3** | Next.js storefront — home-internet plans. Phase B. | backend API + its own Sanity |
 
@@ -36,11 +36,11 @@ The three storefronts are **separate brands** with their own names, domains, loo
 | Backend | **Express** (strict TS) | The only DB client. Runs as a long-lived server on **Railway** (Docker) over the pooled DB connection, with scheduled work — outbox every 60s, catalogue sync every 300s, and a later synthetic check — on an **in-process scheduler** enabled by `ENABLE_SCHEDULER=1`. Railway cron cannot do minute-level work (five-minute floor, no precision guarantee), which is why the schedule is in-process; the authenticated `/api/internal/...` routes stay for manual invocation. See ADR 0004. |
 | Frontends | **Next.js** (App Router) | admin + 3 sites, each its own Vercel project. Never touch the DB. Each storefront's *server* may hold only its own scoped backend service credential; the browser holds none. |
 | Hosting | **Railway** for the backend (long-lived container, US West); **Vercel** for admin and each storefront (Next.js) | The backend container has no serverless limits and runs its own schedule (ADR 0004). Admin/site-1 keep one Vercel project each. Use local development and eligible free services initially; backend compute is outside Canada and the owner's region decision is pending (ADR 0004 residency). PR previews use manual job invocation only. |
-| Database + Auth | **Supabase** (Postgres + Auth), Canada region | Free during build → Pro at launch. Backend connects via the **pooled** connection string (Supavisor, transaction mode). |
+| Database + Auth | **Supabase** (Postgres + Auth), `us-west-2` (see §7; moving to `ca-central-1` is open) | Free during build → Pro at launch. Backend connects via the **pooled** connection string (Supavisor, transaction mode). |
 | Tenant isolation | Postgres **RLS** + per-request tenant context | `SET LOCAL app.workspace_id` inside each transaction — works under the transaction-mode pooler. |
 | File storage | **Cloudflare R2** | Private buckets, signature-verified uploads, signed download URLs. |
-| CMS | **Sanity** (Free), embedded per site | Official `next-sanity` template; Studio mounted at `/studio` in each storefront. One Sanity project per site. |
-| Email | **EmailAdapter; Amazon SES preferred candidate** | SES production access, verified sender and delivery-event tests must pass before selection is final. Resend is an alternative if SES is unsuitable, not an automatic migration or failover. |
+| CMS | **Sanity** (Free), embedded per site | Official `next-sanity` template; Studio mounted at `/studio` in each storefront. One Sanity project per site. Until site-1's project is connected, its plans and prices live in the repo catalogue (`packages/adapters/src/static-catalogue/site-1-plans.ts`, ADR 0005); a connected Sanity registry entry always wins. |
+| Email | **EmailAdapter; Resend selected for launch** (OPEN_INPUTS #23, 21 September 2026) | Domain verified with SPF/DKIM/DMARC; native webhook verification. Amazon SES stays wired for a later migration, not as an automatic failover. |
 | Analytics | **Umami** | No PII in events. |
 | UI | **shadcn/ui** via shadcn MCP | Shared primitives in a workspace package. Canadian Plans uses the owner's Figma file as its visual reference (12 October 2026). |
 | ORM / validation / tests | **Drizzle**, **Zod**, **Vitest**, **Playwright** | Vitest for unit/component; Playwright for e2e. In backend and every frontend. |
@@ -124,7 +124,7 @@ The owner requires request-only deletion of retained customer records and accept
 - Build and maintain through AI under the owner's direction; the owner handles approvals, account access and production deployment. Require tested scripts, diagnostics and runbooks rather than assuming AI will recover an undocumented system.
 - Use free plans where permitted during development. Vercel Pro is approved in principle when required; production Supabase Pro is the standard baseline. Do not interpret this planning decision as authority to purchase or deploy.
 - Standard recovery baseline: managed daily database backups, a separate encrypted daily archive covering DB/Auth, R2 and Sanity, independent alerts and a rehearsed restore. Exact recovery-time/loss objectives and PITR are deferred, not launch blockers for development. This baseline does not promise zero loss. Pause checkout when integrity cannot be established rather than confirm an unsafe order; measure actual recovery before launch.
-- Amazon SES is a preferred email candidate subject to account approval and integration verification; finalize through OPEN_INPUTS #23 before live sending. No provider migration is required merely because volume grows.
+- Email provider: Resend was selected for launch (OPEN_INPUTS #23, 21 September 2026); Amazon SES remains a possible later migration. No provider migration is required merely because volume grows.
 
 ### Storefront design decision — 12 October 2026
 
@@ -164,7 +164,7 @@ canadian-plans/
   apps/
     backend/          Express + TS. The only DB client. Long-lived container on Railway.
     admin/            Next.js staff app. API client only.
-    site-1/           Next.js storefront (SIM). Embeds Sanity Studio at /studio.
+    site-1/           Next.js storefront. Embeds Sanity Studio at /studio; repo catalogue until Sanity is connected (ADR 0005).
     site-2/           Next.js storefront (mobile internet). Phase B.
     site-3/           Next.js storefront (home internet). Phase B.
   packages/

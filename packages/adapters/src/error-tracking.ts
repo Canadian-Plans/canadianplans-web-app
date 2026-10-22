@@ -28,7 +28,8 @@ export function parseSentryDsn(dsn: string): SentryDsn | undefined {
   try {
     const url = new URL(dsn);
     const publicKey = url.username;
-    const projectId = url.pathname.replace(/^\//, '');
+    // Tolerate a trailing slash in SENTRY_DSN; it must not corrupt the project id.
+    const projectId = url.pathname.replace(/^\/+|\/+$/g, '');
     if (!publicKey || !url.host || !projectId) return undefined;
     return { publicKey, host: url.host, projectId };
   } catch {
@@ -83,9 +84,21 @@ export class SentryHttpErrorTracker implements ErrorTracker {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(event),
-    }).catch(() => {
-      // Best-effort delivery only; see class doc.
-    });
+      redirect: 'error',
+      signal: AbortSignal.timeout(5_000),
+    })
+      .then((response) => {
+        // Still best-effort, but a rejected DSN/endpoint must not be silent.
+        // Never log the endpoint (it carries the public key) or the event.
+        if (!response.ok) {
+          console.error(
+            JSON.stringify({ event: 'error_tracker_delivery_rejected', status: response.status }),
+          );
+        }
+      })
+      .catch(() => {
+        console.error(JSON.stringify({ event: 'error_tracker_delivery_failed' }));
+      });
   }
 }
 

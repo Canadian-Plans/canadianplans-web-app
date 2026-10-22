@@ -3,7 +3,16 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { websiteScopeNames, type WebsiteScopeName } from '@canadian-plans/types';
 import type { ServiceCredentialSummary } from '@canadian-plans/contracts';
-import { Button, Label } from '@canadian-plans/ui';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Label,
+} from '@canadian-plans/ui';
 
 import {
   BackendError,
@@ -26,6 +35,7 @@ export function ServiceCredentialsManager({ workspaceSlug }: { workspaceSlug: st
   const [issuedSecret, setIssuedSecret] = useState<string>();
   const [message, setMessage] = useState<string>();
   const [busy, setBusy] = useState(false);
+  const [revokeTarget, setRevokeTarget] = useState<ServiceCredentialSummary>();
 
   const accessToken = staff.accessToken;
 
@@ -162,7 +172,7 @@ export function ServiceCredentialsManager({ workspaceSlug }: { workspaceSlug: st
                     type="button"
                     variant="outline"
                     disabled={busy}
-                    onClick={() => void revoke(credential.id)}
+                    onClick={() => setRevokeTarget(credential)}
                   >
                     Revoke
                   </Button>
@@ -178,6 +188,41 @@ export function ServiceCredentialsManager({ workspaceSlug }: { workspaceSlug: st
           {message}
         </p>
       ) : null}
+
+      <Dialog
+        open={revokeTarget !== undefined}
+        onOpenChange={(open) => {
+          if (!open) setRevokeTarget(undefined);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Revoke credential</DialogTitle>
+            <DialogDescription>
+              Any storefront using credential {revokeTarget?.id} will stop working immediately. This
+              cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setRevokeTarget(undefined)}>
+              Close
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={busy}
+              onClick={async () => {
+                if (!revokeTarget) return;
+                const target = revokeTarget.id;
+                setRevokeTarget(undefined);
+                await revoke(target);
+              }}
+            >
+              Revoke credential
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

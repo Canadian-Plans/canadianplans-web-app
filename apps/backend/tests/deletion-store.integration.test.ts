@@ -36,7 +36,7 @@ import { DatabaseEmailStore } from '../src/email/store.js';
 import { hashContact } from '../src/email/hash.js';
 
 const databaseUrl = process.env.TEST_MIGRATION_DATABASE_URL;
-if (databaseUrl || process.env.DB_TEST_ALLOW_DESTRUCTIVE) {
+if (databaseUrl || process.env.DB_TEST_ALLOW_DESTRUCTIVE || process.env.CI) {
   if (
     !databaseUrl ||
     process.env.DB_TEST_ALLOW_DESTRUCTIVE !== '1' ||
@@ -333,8 +333,14 @@ describe.skipIf(!databaseUrl)('complete customer deletion under runtime RLS', ()
     ).toBeUndefined();
     for (const fileId of fixture.fileIds)
       expect(
-        (await fixture.docs.issueDownload({ workspaceId: WORKSPACE, actorId: ACTOR, fileId }))
-          .status,
+        (
+          await fixture.docs.issueDownload({
+            workspaceId: WORKSPACE,
+            actorId: ACTOR,
+            fileId,
+            requestId: REQUEST,
+          })
+        ).status,
       ).not.toBe('issued');
     expect(
       (

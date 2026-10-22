@@ -166,6 +166,8 @@ let originalSecret: string | undefined;
 let originalLatency: string | undefined;
 let denyRateLimit: boolean;
 let botChecks: number;
+/** Counts per bucket like app.rate_limit_hit, so shared buckets would show up. */
+let bucketCounts: Map<string, number>;
 
 function request(
   method: string,
@@ -191,6 +193,7 @@ beforeEach(async () => {
   process.env['TRACKING_OTP_MIN_LATENCY_MS'] = '200';
   denyRateLimit = false;
   botChecks = 0;
+  bucketCounts = new Map();
   store = new FakeTrackingStore();
   notifier = store;
   nowMs = Date.parse('2026-09-20T12:00:00.000Z');
@@ -205,10 +208,14 @@ beforeEach(async () => {
     website: {
       auth: {
         resolveCredential: async (hash) => (hash === SECRET_HASH ? resolution : undefined),
-        rateLimit: async () =>
-          denyRateLimit
+        rateLimit: async (input) => {
+          if (denyRateLimit) return { allowed: false, retryAfterSeconds: 60 };
+          const count = (bucketCounts.get(input.bucketKey) ?? 0) + 1;
+          bucketCounts.set(input.bucketKey, count);
+          return count > input.maxCount
             ? { allowed: false, retryAfterSeconds: 60 }
-            : { allowed: true, retryAfterSeconds: 0 },
+            : { allowed: true, retryAfterSeconds: 0 };
+        },
         botCheck: async () => {
           botChecks += 1;
           return true;
@@ -303,6 +310,36 @@ describe('POST /api/v1/website/tracking/otp', () => {
 });
 
 describe('POST /api/v1/website/tracking/verify', () => {
+  it('keeps code requests and code checks on separate per-email counters', async () => {
+    await request(
+      'POST',
+      '/api/v1/website/tracking/otp',
+      {},
+      { email: EMAIL, orderReference: REFERENCE },
+    );
+    const code = notifier.sent[0]?.code ?? '';
+    const wrongCode = code === '000000' ? '111111' : '000000';
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      await request(
+        'POST',
+        '/api/v1/website/tracking/verify',
+        {},
+        { email: EMAIL, orderReference: REFERENCE, code: wrongCode },
+      );
+    }
+    // A customer who mistyped five times can still ask for a fresh code.
+    await request(
+      'POST',
+      '/api/v1/website/tracking/otp',
+      {},
+      { email: EMAIL, orderReference: REFERENCE },
+    );
+    expect(notifier.sent).toHaveLength(2);
+    const emailBuckets = [...bucketCounts.keys()].filter((key) => key.startsWith('email:'));
+    expect(emailBuckets.some((key) => key.startsWith('email:otp:'))).toBe(true);
+    expect(emailBuckets.some((key) => key.startsWith('email:verify:'))).toBe(true);
+  });
+
   it('rejects a wrong code and accepts the sent code once', async () => {
     await request(
       'POST',

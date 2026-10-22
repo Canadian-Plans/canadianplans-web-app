@@ -328,11 +328,11 @@ Leave `apps/backend/vercel.json`, `src/vercelHandler.ts`, `api/index.ts` and the
 | `TURNSTILE_HOSTNAME`                  | storefront hostname, no scheme or path     |                                                             |
 | `SANITY_*`                            | per `docs/ENV.md`                          | Needed by the catalogue provider                            |
 | `R2_*`                                | per `docs/ENV.md`                          | Only once T17 lands                                         |
+| `QUOTE_WITHDRAWAL_POLICY`             | `honour_until_expiry`                      | Required in production; see `docs/ENV.md`                   |
+| `ORDER_OPERATIONAL_TRANSITIONS`       | `1`                                        | Required in production; see `docs/ENV.md`                   |
 
 **Must NOT be set on this service:** `OUTBOX_ADAPTERS` (a fake provider on
-production is forbidden), `ORDER_OPERATIONAL_TRANSITIONS`,
-`QUOTE_WITHDRAWAL_POLICY` (until OPEN_INPUTS #14 is resolved),
-`MIGRATION_DATABASE_URL`, `TEST_MIGRATION_DATABASE_URL`,
+production is forbidden), `MIGRATION_DATABASE_URL`, `TEST_MIGRATION_DATABASE_URL`,
 `DB_TEST_ALLOW_DESTRUCTIVE`.
 
 **Supabase network check [OWNER]:** confirm the Supabase project has no IP

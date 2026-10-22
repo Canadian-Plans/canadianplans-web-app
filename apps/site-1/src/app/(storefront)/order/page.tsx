@@ -9,7 +9,6 @@ import {
   type LeadDraft,
 } from '@canadian-plans/contracts';
 
-import { siteConfig } from '@/site.config';
 import { getBackendClient } from '@/lib/backendClient';
 import { captureRawAttribution, type SearchParams } from '@/lib/attribution';
 import { readOrderDraft } from './draft';
@@ -98,7 +97,6 @@ export default async function OrderPage({ searchParams }: { searchParams: Promis
           province={restored.province}
           category={category.success ? category.data : undefined}
           attribution={attribution}
-          consentVersion={siteConfig.legal.consentVersion}
           restoredDetails={restored.details}
         />
       )}

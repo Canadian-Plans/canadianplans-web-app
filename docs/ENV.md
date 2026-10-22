@@ -45,7 +45,7 @@ visitor's address if another proxy sits in front of Vercel.
 - `JOB_RUNNER_SELECTOR` — backend-only selector for the scheduler registry entry used by the in-process scheduler and the manual `/api/internal/jobs/run` route. The entry must have `outbox:run`, an explicit `actorId`, and the complete authorized workspace UUID set. The runner takes its workspace set and actor only from this verified entry, never from a database tenant scan.
 - `CATALOGUE_SYNC_SELECTOR` — backend-only selector for the scheduler registry entry used by the 300-second in-process catalogue sync (T10B) and the manual `/api/internal/catalogue/sync` route. The entry must have the existing `reconcile:run` scope (no new scope or migration), an explicit `actorId`, and the complete authorized workspace UUID set; its `secret` must equal `CRON_SECRET` (see the single-entry note above). Unset means the route cannot resolve a scheduler and fails closed.
 - `OUTBOX_ADAPTERS` — backend-only explicit provider opt-in. Only `fake` is accepted, and only when `NODE_ENV` is not `production`, to construct the in-memory email/analytics fakes. Otherwise the analytics handler uses the configured Umami sink (below) and the email handler stays unconfigured until T18 wires its adapter. Unset, unknown or any value on a production deployment with no configured sink selects no provider: handlers fail permanently with `provider_not_configured`, so each claimed job is recorded as failed and appears in admin rather than completing with a fake provider id. There is no implicit default; never set a fake provider on production.
-- `QUOTE_WITHDRAWAL_POLICY` — `immediate` or `honour_until_expiry`. This is a **TEST policy only** while OPEN_INPUTS #14 is unresolved. Unset/unknown becomes `unresolved` and disables priced checkout; do not set it in production until the owner records the decision.
+- `QUOTE_WITHDRAWAL_POLICY` — `immediate` or `honour_until_expiry`. OPEN_INPUTS #14 resolved this to `honour_until_expiry` on 21 September 2026 and it is set on the production backend; it is **required** for priced checkout. Unset/unknown becomes `unresolved` and every quote and order returns `503 priced_checkout_disabled`.
 - `ORDER_OPERATIONAL_TRANSITIONS` — operational switch for the dispatch and activate transitions. Must be exactly `1` or `true` to have any effect. It was TEST-only and ignored in production while OPEN_INPUTS #15 (transition prerequisites) was unresolved; #15 is now answered, so it applies in every environment. It is deliberately opt-in — unset means dispatch/activation return `409 feature_not_ready` — so fulfilment goes live only when the owner sets it, and unsetting it stops dispatch/activation without a deploy. It never authorizes skipping the document prerequisite: required documents must still be approved, or an `order.manage` holder must override with a recorded reason (`docs/RUNBOOKS/dispatch-and-activation.md`).
 
 ## Deletion ledger (T21, §13)
@@ -67,10 +67,11 @@ Unset (either value) means no ledger is configured: a `deletion_ledger_publish` 
 - `NEXT_PUBLIC_SUPABASE_URL` — admin browser Auth endpoint
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` — admin publishable/legacy anonymous key; the admin client extracts Auth only and never calls Data or Storage APIs
 - `DATABASE_URL` — backend-only Supavisor transaction-mode URL for the restricted `app_runtime` role; never use the migration owner or a service-role key
-- `DATABASE_SSL_MODE` — optional; defaults to `require`, with `disable` allowed only for local disposable PostgreSQL
+- `DATABASE_SSL_MODE` — optional; `require` (default: encrypted, but the server certificate is **not** checked), `verify-full` (encrypted and the server certificate is verified) or `disable` (local disposable PostgreSQL only). Switch Railway to `verify-full` after confirming it connects to the Supabase pooler.
+- `DATABASE_SSL_CA` — optional PEM text of the CA used with `verify-full` (Supabase: Dashboard → Settings → Database → SSL). Needed only if Node does not already trust the pooler's certificate chain.
 - `DATABASE_POOL_MAX` — optional backend-only size of the shared application pool (integer 1–50; default `8`). The long-lived Railway process serves HTTP requests and the in-process scheduler from this one pool, so `1` serialises everything. Keep `DATABASE_POOL_MAX × replicas` below the Supabase pooler's client limit for the project's compute tier.
 - `MIGRATION_DATABASE_URL` — offline/CI migration connection using a separate privileged database role; never exposed to applications or previews
-- `MIGRATION_DATABASE_SSL_MODE` — optional; defaults to `require`, with `disable` allowed only for local disposable PostgreSQL
+- `MIGRATION_DATABASE_SSL_MODE` — optional; same values as `DATABASE_SSL_MODE` (`require` default, `verify-full`, `disable`), with `MIGRATION_DATABASE_SSL_CA` as the optional CA
 - `TEST_MIGRATION_DATABASE_URL` — test-only privileged connection to a disposable database whose name ends in `_test`; never reuse a staging or production migration URL
 - `DB_TEST_ALLOW_DESTRUCTIVE` — explicit integration-test opt-in; must be exactly `1` and is set only alongside `TEST_MIGRATION_DATABASE_URL`
 
@@ -207,6 +208,7 @@ Not selected for launch (OPEN_INPUTS #23); kept wired for a later migration off 
 - `UMAMI_EVENTS_URL` — backend-only full URL of the Umami collect endpoint server events POST to (for Umami Cloud, `https://cloud.umami.is/api/send`). Never exposed to a browser bundle.
 - `UMAMI_WORKSPACE_WEBSITES` — backend-only JSON array `[{ "workspaceId": "<uuid>", "websiteId": "<umami-site-id>" }]` mapping each workspace to its Umami website id. A workspace with no mapping fails closed (`analytics_site_unmapped`) rather than sending to the wrong site (REQ 35). Unset or malformed means no server sink is configured, so the outbox fails closed.
 - `UMAMI_HOSTNAME` — optional backend-only hostname recorded on server events; omitted when unset.
+- `UMAMI_USER_AGENT` — optional backend-only User-Agent for server events. Defaults to a browser-shaped value because Umami discards events whose agent looks like a bot (Node's default does); never include "bot", "crawler", "spider" or a URL.
 
 Server lead/order conversion events are emitted once from the backend outbox; browser page views and `plan_selected` come from the Umami script. Never enable a server event that the browser also sends, or a submission is counted twice.
 
@@ -225,7 +227,7 @@ The email channel reuses the Resend credentials already documented under **Resen
 Runs lead → quote → order → cancel every 15 minutes on the backend's in-process scheduler (`SYNTHETIC_CHECK_INTERVAL_MS`), and is also reachable at `/api/internal/synthetic-check/run` for a manual staging invocation, mirroring the outbox/catalogue-sync jobs routes.
 
 - `SYNTHETIC_WORKSPACE_ID` — backend-only UUID of a dedicated, owner-provisioned workspace that exists only to be ordered from and cancelled. It is never a customer-facing workspace and never appears in admin's site list.
-- `SYNTHETIC_PRODUCT_ID` — backend-only UUID of one `app.products` row in that workspace (any `product_key` is fine; the check's own in-memory catalogue provider — `apps/backend/src/synthetic/provider.ts` — supplies a fixed, zero-cost, no-document offer for it, so no Sanity project is needed for this workspace).
+- `SYNTHETIC_PRODUCT_ID` — backend-only UUID of one `app.products` row in that workspace (the check serves its fixed, zero-cost, no-document offer under that row's `product_key`, so any key works; `synthetic-check` is the conventional one).
 - `SYNTHETIC_CHECK_SELECTOR` — points at the **same** scheduler registry entry as `JOB_RUNNER_SELECTOR`/`CATALOGUE_SYNC_SELECTOR` (one `CRON_SECRET`, one entry — see the `MACHINE_REGISTRY_JSON` note above); the entry additionally needs the `synthetic:check` scope and `authorizedWorkspaceIds`/`workspaceIds` including `SYNTHETIC_WORKSPACE_ID`. Unset or missing the scope means the scheduler skips the task entirely (logged once) — it never blocks outbox/catalogue-sync from starting.
 
 Provisioning is a one-time, owner-run step (create the workspace row and one product row, add `synthetic:check` to the registry entry's scopes) — there is no seed script for it because it touches production, matching how the machine registry itself is deployment configuration, not application data (§4b).
@@ -248,10 +250,22 @@ search index. `/studio` is `noindex` (via `next-sanity`) and disallowed in
 
 ## Backblaze B2 backups
 
-- `B2_APPLICATION_KEY_ID`
-- `B2_APPLICATION_KEY`
-- `B2_BUCKET`
-- `B2_ENDPOINT`
+GitHub Environment secrets, one environment per role (names only; the
+exact commands are in [restore.md](RUNBOOKS/restore.md)):
+
+- **backup** (`backup.yml`, list + write only): `BACKUP_SOURCE_DATABASE_URL`,
+  `BACKUP_LEASE_DATABASE_URL`, `BACKUP_SUPABASE_PROJECT_REF`, `BACKUP_R2_*` (read-only
+  source), optional `BACKUP_SANITY_PROJECT_ID` / `BACKUP_SANITY_AUTH_TOKEN`,
+  `RECOVERY_AGE_RECIPIENT` (public key only), `B2_ARCHIVE_ENDPOINT`, `B2_ARCHIVE_REGION`,
+  `B2_ARCHIVE_BUCKET`, `B2_ARCHIVE_WRITER_KEY_ID`, `B2_ARCHIVE_WRITER_APPLICATION_KEY`.
+- **backup-monitor** (read-only): `B2_ARCHIVE_READER_KEY_ID`,
+  `B2_ARCHIVE_READER_APPLICATION_KEY`, `B2_ARCHIVE_ENDPOINT`, `B2_ARCHIVE_REGION`,
+  `B2_ARCHIVE_BUCKET`, plus the owner-alert `OWNER_ALERT_*` / `RESEND_*` values.
+- **backup-retention** (list + delete; never holds the recovery private key):
+  `B2_ARCHIVE_RETENTION_KEY_ID`, `B2_ARCHIVE_RETENTION_APPLICATION_KEY`,
+  `B2_ARCHIVE_ENDPOINT`, `B2_ARCHIVE_REGION`, `B2_ARCHIVE_BUCKET`.
+- **restore** (owner-run): `B2_ARCHIVE_READER_*` and the escrowed recovery private key
+  supplied as a file path (`RECOVERY_PRIVATE_KEY_PATH`) at restore time only.
 
 ### Customer-requested physical document cleanup
 

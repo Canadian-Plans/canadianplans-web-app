@@ -265,6 +265,7 @@ export class DocumentService {
     workspaceId: string;
     actorId: string;
     fileId: string;
+    requestId: string;
     /** When set (website caller), the file must be a lead document owned by this lead. */
     ownedLeadId?: string;
   }): Promise<DownloadOutcome> {
@@ -284,6 +285,15 @@ export class DocumentService {
       fileName: sanitizedDownloadFilename(file.documentType, file.id, file.detectedMime),
       contentType: file.detectedMime,
       expiresInSeconds: this.downloadTtlSeconds,
+    });
+    // Audited after the presign, in its own short transaction: no external
+    // call ever runs inside a tenant transaction (invariant 7).
+    await this.store.recordDownloadIssued({
+      workspaceId: input.workspaceId,
+      actorId: input.actorId,
+      requestId: input.requestId,
+      fileId: file.id,
+      audience: input.ownedLeadId === undefined ? 'staff' : 'website',
     });
     return { status: 'issued', url: link.url, expiresAt: link.expiresAt };
   }

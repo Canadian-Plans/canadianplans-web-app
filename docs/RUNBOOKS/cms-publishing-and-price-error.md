@@ -6,6 +6,12 @@ Owner and escalation contact: Takib. This runbook is the staff-facing
 mechanism (webhook, scheduler, manual invocation, actor attribution). Read
 catalogue-sync.md first; this file does not repeat its commands.
 
+> **Until Sanity is connected, site-1 has no CMS publishing step.** Its plans and
+> prices live in the repo catalogue (`packages/adapters/src/static-catalogue/site-1-plans.ts`,
+> ADR 0005): fix a price with a code change and a backend deploy, as described in
+> [catalogue-sync.md](catalogue-sync.md#where-site-1s-plans-come-from-today-repo-catalogue-adr-0005).
+> The Sanity flow below applies once the workspace has a Sanity registry entry.
+
 ## Required access
 
 - Sanity project access (Editor role or above) to publish/unpublish content.

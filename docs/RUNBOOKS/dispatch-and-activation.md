@@ -100,9 +100,9 @@ so use it to record the handoff to the provider:
 - **Tracking reference:** the provider's order or confirmation number.
 - **Dispatch date:** the day the order was submitted to the provider.
 
-The `order_dispatch` email still goes to the customer, and today it says "Your order … has
-shipped … via <courier>. Tracking: …" (`packages/adapters/src/messaging.ts`). Reword it
-for a provider handoff before the first real order.
+The `order_dispatch` email then tells the customer their order "has been handed to your
+provider" and that the provider will contact them; the provider confirmation number is
+appended when you record one (`packages/adapters/src/messaging.ts`).
 
 ## Normal activation flow (once enabled)
 

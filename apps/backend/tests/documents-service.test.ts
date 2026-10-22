@@ -199,6 +199,7 @@ describe('DocumentService — upload/verify/attach', () => {
       workspaceId: WORKSPACE,
       actorId: ACTOR,
       fileId,
+      requestId: REQUEST,
     });
     expect(link.status).toBe('issued');
     const served = ctx.r2.getObject(finalized.file.objectKey ?? '');
@@ -292,8 +293,13 @@ describe('DocumentService — download and permission scoping', () => {
       workspaceId: WORKSPACE,
       actorId: ACTOR,
       fileId,
+      requestId: REQUEST,
     });
     if (link.status !== 'issued') throw new Error('expected issued');
+    // Every issued link is audited without customer data (invariant 11).
+    expect(ctx.store.audits).toEqual([
+      { action: 'file.download_issued', fileId, audience: 'staff' },
+    ]);
     const ttlMs = link.expiresAt.getTime() - before;
     // ~120s (link expiry is ultimately enforced by R2 on the presigned URL).
     expect(ttlMs).toBeGreaterThan(110_000);
@@ -323,6 +329,7 @@ describe('DocumentService — download and permission scoping', () => {
       workspaceId: WORKSPACE,
       actorId: ACTOR,
       fileId,
+      requestId: REQUEST,
     });
     expect(link.status).toBe('not_available');
   });
@@ -345,8 +352,34 @@ describe('DocumentService — download and permission scoping', () => {
       workspaceId: OTHER_WORKSPACE,
       actorId: ACTOR,
       fileId,
+      requestId: REQUEST,
     });
     expect(link.status).toBe('not_found');
+  });
+
+  it('audits a customer download as the website audience', async () => {
+    const ctx = buildService();
+    const fileId = await createLeadIntent(ctx.service);
+    ctx.r2.putStagingObject(ctx.store.snapshot(fileId)?.stagingKey ?? '', PDF);
+    await ctx.service.finalize({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      requestId: REQUEST,
+      fileId,
+      checksumSha256: sha256Hex(PDF),
+      ownedLeadId: LEAD,
+    });
+    const link = await ctx.service.issueDownload({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      fileId,
+      requestId: REQUEST,
+      ownedLeadId: LEAD,
+    });
+    expect(link.status).toBe('issued');
+    expect(ctx.store.audits).toEqual([
+      { action: 'file.download_issued', fileId, audience: 'website' },
+    ]);
   });
 
   it('does not let one draft finalize or download another draft’s file', async () => {

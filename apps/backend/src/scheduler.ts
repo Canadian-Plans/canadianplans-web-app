@@ -283,6 +283,7 @@ export function createDefaultSchedulerDependencies(): BackendSchedulerDependenci
   const synthetic = createDefaultSyntheticCheckRouteDependencies();
   const alerts = createOwnerAlertChannelFromEnv();
   let queueHealth = INITIAL_QUEUE_HEALTH_STATE;
+  let catalogueFailing = false;
   return {
     registry: jobs.registry,
     runOutbox: (input) =>
@@ -293,9 +294,67 @@ export function createDefaultSchedulerDependencies(): BackendSchedulerDependenci
         (state) => (queueHealth = state),
         () => queueHealth,
       ),
-    runCatalogueSync: (input) => catalogue.run(input),
+    runCatalogueSync: (input) =>
+      runCatalogueSyncWithAlert(
+        catalogue,
+        alerts,
+        input,
+        (failing) => (catalogueFailing = failing),
+        () => catalogueFailing,
+      ),
     runSyntheticCheck: (input) => synthetic.run(input),
   };
+}
+
+/**
+ * The catalogue runner records drain/reconcile failures in its summary and
+ * resolves normally, so without this wrapper a sync that never publishes a
+ * plan (missing static-catalogue workspace, open TEST- inputs, DB errors) is
+ * invisible while customers see an empty plan list. Edge-triggered: one owner
+ * alert when the sync starts failing, none while it keeps failing, and a new
+ * one only after a clean run. Failure codes are already bounded, so they are
+ * log/alert-safe.
+ */
+export async function runCatalogueSyncWithAlert(
+  catalogue: {
+    run(input: SchedulerRunInput): Promise<{ failures: readonly CatalogueAlertFailure[] }>;
+  },
+  alerts: OwnerAlertChannel,
+  input: SchedulerRunInput,
+  setFailing: (failing: boolean) => void,
+  wasFailing: () => boolean,
+): Promise<unknown> {
+  const summary = await catalogue.run(input);
+  const failing = summary.failures.length > 0;
+  if (failing) {
+    logRequestError({
+      requestId: 'scheduler:catalogue_sync',
+      route: 'scheduler',
+      code: summary.failures[0]?.errorCode ?? 'catalogue_sync_failed',
+      flag: 'not_retryable',
+    });
+    if (!wasFailing()) {
+      await alerts
+        .send({
+          kind: 'catalogue_sync_failed',
+          detail: summary.failures
+            .slice(0, 5)
+            .map((failure) => `${failure.stage}:${failure.errorCode}`)
+            .join(','),
+          occurredAt: new Date().toISOString(),
+        })
+        .catch(() => {
+          // Best-effort — the sync's own outcome is already recorded in its state row.
+        });
+    }
+  }
+  setFailing(failing);
+  return summary;
+}
+
+interface CatalogueAlertFailure {
+  stage: string;
+  errorCode: string;
 }
 
 /**
