@@ -21,8 +21,11 @@ DB packages, backend implementation or server-only adapters.
 `src/site.config.ts` is public: site ID/slug, the confirmed name Canadian Plans,
 CAD, en-CA and public Umami configuration. The app/package/workspace identifier
 stays `site-1`; branding does not rename tenant IDs, environment variables or
-deployment resources. The storefront domain remains an input in
-`docs/OPEN_INPUTS.md` #2.
+deployment resources. The storefront domain is `canadianplans.com`
+(`docs/OPEN_INPUTS.md` #2). Production sets `NEXT_PUBLIC_SITE_URL=https://canadianplans.com`
+(22 October 2026), which drives canonical URLs, the sitemap and `robots.txt`. It is read at
+build time, so changing it needs a new site-1 build; a plain redeploy of the same commit is
+skipped by the `affected-builds` ignore step.
 
 The owner supplied the Figma design on 12 October 2026. See the
 [design-to-code plan](../../docs/DESIGN_TO_CODE_PLAN.md) for the desktop/mobile

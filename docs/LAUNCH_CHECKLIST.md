@@ -221,9 +221,12 @@ identity #8, Umami/Sentry choice #12/#13, Phase B items.
 
 Depends on Stage 1 findings and the Stage 2 answers.
 
-- ☐ **3.1 Point the domain at site-1** _(You buy / Both configure)_ — Vercel domain,
-  `NEXT_PUBLIC_SITE_URL`, `ADMIN_ORIGIN`/CORS origins updated.
-- ☐ **3.2 Email sending** _(Both)_ — verify the domain in Resend, SPF/DKIM/DMARC records,
+- ◐ **3.1 Point the domain at site-1** _(You buy / Both configure)_ — Vercel domain,
+  `NEXT_PUBLIC_SITE_URL`, `ADMIN_ORIGIN`/CORS origins updated. _22 Oct: `canadianplans.com`
+  serves site-1 over HTTPS; `NEXT_PUBLIC_SITE_URL=https://canadianplans.com` set on Vercel
+  (owner approved) and site-1 rebuilt, so canonical links no longer say `localhost`. Left:
+  confirm `/order` reaches the backend after the backend deploy (1.2)._
+- ◐ **3.2 Email sending** _(Both)_ — verify the domain in Resend, SPF/DKIM/DMARC records,
   `EMAIL_PROVIDER=resend`, sender address from 2.8. **Before deploying the
   `website-improvements` backend** (it sends only through a registered Resend account):
   1. In the Resend dashboard, add a webhook to
@@ -250,6 +253,12 @@ Depends on Stage 1 findings and the Stage 2 answers.
   the retired `EMAIL_WEBHOOK_SHARED_SECRET` endpoint now returns 404. Details:
   `docs/ENV.md` → Resend.
 
+  _22 Oct: domain verified in Resend; SPF (`send.`), DKIM (`resend._domainkey`) and DMARC
+  (`p=none`) are published; the Resend webhook `resend-site-1` exists and
+  `RESEND_ACCOUNT_ID` is set. `RESEND_FROM_EMAIL=orders@canadianplans.com`,
+  `RESEND_FROM_NAME=Canadian Plans` and `RESEND_REPLY_TO_EMAIL=info@canadianplans.com` set on
+  Railway without a redeploy. Left: deploy the backend (1.2) and send a test email._
+
 - ◐ **3.3 Turn on checkout** _(Both)_ — set `QUOTE_WITHDRAWAL_POLICY=honour_until_expiry`
   on Railway (decided 21 Sep, OPEN_INPUTS #14) and redeploy. _20 Oct: set and live
   (deployment `4267deeb`); the no-`checkout_disabled` check waits for real offers (3.7)
@@ -261,37 +270,50 @@ Depends on Stage 1 findings and the Stage 2 answers.
 - ☑ **3.5 site-1 service credential** _(You, needs MFA)_ — create in admin → Settings,
   Claude sets `SITE_1_SERVICE_CREDENTIAL` on Vercel site-1 and redeploys. _22 Oct: one
   active credential, and the Vercel production variable is set._
-- ☐ **3.6 Site name** _(Claude)_ — replace `SITE_1_NAME_PLACEHOLDER` with "Canadian Plans".
-- ☐ **3.7 Real plans in Sanity `production`** _(Both)_ — siteSettings + the launch offers
+- ☑ **3.6 Site name** _(Claude)_ — replace `SITE_1_NAME_PLACEHOLDER` with "Canadian Plans".
+  _22 Oct: the placeholder is gone from code; the site-1 workspace in the production
+  database was renamed from "Northern Arrival Mobile" to "Canadian Plans" (owner approved)._
+- ☑ **3.7 Real plans in Sanity `production`** _(Both)_ — siteSettings + the launch offers
   from 2.2–2.6, published. Claude prepares the documents, you review and publish.
+  _Superseded: Sanity is deferred; the real plans live in the repo catalogue (ADR 0005)._
 - ☐ **3.8 Catalogue sync check** _(Claude)_ — offer_versions appear for site-1 and `/order`
   lists the real plans (no "Plans are unavailable").
-- ☐ **3.9 Make static pages match the catalogue** _(Claude)_ — the redesigned landing
-  pages are static; their plan names and prices must match what `/order` sells.
-- ☐ **3.10 Legal pages** _(Claude)_ — publish the terms/privacy text from 2.10 and record
-  their versions.
+- ☑ **3.9 Make static pages match the catalogue** _(Claude)_ — the redesigned landing
+  pages are static; their plan names and prices must match what `/order` sells. _22 Oct:
+  PR #22; every plan button links to its plan in `/order`._
+- ☑ **3.10 Legal pages** _(Claude)_ — publish the terms/privacy text from 2.10 and record
+  their versions. _22 Oct: `/terms` and `/privacy` live as version 2, effective 21 Oct._
 
 ## Stage 4 — Safety net before real customer data (Both)
 
-- ☐ **4.0 Rotate exposed keys** _(You, Claude guides)_ — Cloudflare, R2 and Backblaze B2
+- ☐ **4.0 Rotate exposed keys** _(You, Claude guides; owner chose later on 22 Oct)_ — Cloudflare, R2 and Backblaze B2
   credentials were stored in plain text outside a password manager. Create new keys,
   update Railway/Vercel/GitHub secrets, revoke the old ones. Do this first.
 - ☐ **4.1 Backups** _(You provision, Claude verifies)_ — enable managed daily database
   backups (Supabase Pro baseline) **and** provision the T24 GitHub secrets for the
   separate encrypted daily DB/Auth, R2 and Sanity archive, independent alerts and a
   rehearsed restore. Verify both recovery paths before real customer data.
-  Today there is **no restorable backup** of production.
-- ☐ **4.2 Error tracking** _(Both)_ — connect Sentry (or chosen tool) so production errors
-  reach you.
+  Today there is **no restorable backup** of production. _22 Oct: owner decided no backup for
+  now and stays on Supabase Free. Risk accepted: a database loss before this is done cannot
+  be recovered._
+- ◐ **4.2 Error tracking** _(Both)_ — connect Sentry (or chosen tool) so production errors
+  reach you. _22 Oct: Sentry org `canadian-plans` with projects `canadian-plans-backend` and
+  `canadian-plans-admin`. `SENTRY_DSN` set on Railway (live with the next backend deploy) and
+  `NEXT_PUBLIC_SENTRY_DSN` on Vercel admin (live with the next admin build). The code posts
+  scrubbed events itself; no Sentry SDK. A test event reached each project. Not covered: the
+  storefront (site-1) and the GitHub Actions jobs, which have no DSN._
 - ☐ **4.3 Alerts** _(Claude)_ — confirm owner alerts and the synthetic order check are
   green with the scheduler on.
-- ☐ **4.4 Staff accounts** _(You)_ — invite staff in admin with the right roles; MFA on for
-  you and Finance.
+- ☑ **4.4 Staff accounts** _(You)_ — invite staff in admin with the right roles; MFA on for
+  you and Finance. _22 Oct: owner-only at launch; the owner is the only account that can sign
+  in, with MFA. Three 14 Sep seed memberships point to deleted users and cannot log in._
 
 ## Stage 5 — Rehearse the first order (Both)
 
-- ☐ **5.1 Run the e2e specs** _(Claude)_ — `order.spec.ts` and `a2-launch-gates.spec.ts`
-  need a Postgres harness (none on this PC; use CI or a temporary database).
+- ☑ **5.1 Run the e2e specs** _(Claude)_ — `order.spec.ts` and `a2-launch-gates.spec.ts`
+  need a Postgres harness (none on this PC; use CI or a temporary database). _22 Oct: CI
+  runs them on every push against a disposable Postgres; on `main` `1af1773` all 84 site-1
+  e2e tests passed (desktop and mobile), both specs included._
 - ☐ **5.2 Production test order** _(Both)_ — a controlled, non-billable order on the live
   site: submit → acknowledgement email arrives → appears in admin → documents uploaded
   and approved → status moves to ready/dispatched. No real carrier activation; cancel it
@@ -307,16 +329,20 @@ Depends on Stage 1 findings and the Stage 2 answers.
   in `apps/site-1/src/lib/seo.ts` to `true` and deploy; the commercial pages and the
   sitemap follow it (`publicRobots()` / `INDEXABLE_PATHS`).
 - ☐ **6.2 Analytics** _(Both)_ — Umami (or chosen tool) recording visits and order starts.
-- ☐ **6.3 Announce** _(You)_ — first customers usually come from people you can reach
+- ◐ **6.3 Announce** _(You)_ — first customers usually come from people you can reach _22 Oct: skipped for now (owner)._
   directly: newcomer and student groups, WhatsApp/Facebook communities, friends and
-  partners. Claude can draft posts and a short launch message.
+  partners. Claude can draft posts and a short launch message. _22 Oct: drafts for every channel in
+  [marketing/launch-posts.md](marketing/launch-posts.md) (English, no offer); post after
+  `/order` lists plans._
 
 ## Stage 7 — The first real order (You, Claude on call)
 
 - ☐ **7.1 Order arrives** — alert/email received, order visible in admin.
 - ☐ **7.2 Check documents** — approve or request re-upload.
 - ☐ **7.3 Payment** — collect as decided in 2.4 and record it.
-- ☐ **7.4 Dispatch or activate** — book courier / activate with Rogers, update status.
+- ☐ **7.4 Dispatch or activate** — book courier / activate with Rogers, update status. _22 Oct:
+  `ORDER_OPERATIONAL_TRANSITIONS=1` set on Railway (owner approved), live with the next backend
+  deploy; without it Dispatch and Activate return `feature_not_ready`._
 - ☐ **7.5 Customer confirmed** — customer has a working SIM; note anything that was
   awkward and turn it into a fix or a runbook change.
 
