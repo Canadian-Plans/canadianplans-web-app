@@ -26,7 +26,7 @@ X-Scheduler-Selector: <CATALOGUE_SYNC_SELECTOR>
 ```
 
 The command reads `DATABASE_URL`, `DATABASE_SSL_MODE`,
-`MACHINE_REGISTRY_JSON`, and the TEST-only `QUOTE_WITHDRAWAL_POLICY`. It prints
+`MACHINE_REGISTRY_JSON`, and `QUOTE_WITHDRAWAL_POLICY`. It prints
 only a bounded diagnostic code on failure. Re-running either action is safe:
 inbox delivery IDs, canonical version hashes, and product leases make the work
 idempotent and convergent.
