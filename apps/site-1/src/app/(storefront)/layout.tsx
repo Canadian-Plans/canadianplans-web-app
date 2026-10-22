@@ -2,7 +2,6 @@ import type { ReactNode } from 'react';
 import { SkipLink } from '@canadian-plans/ui';
 import { componentAssets } from '@content/components';
 import { siteChrome, siteFooter } from '@content/site-chrome';
-import { Analytics } from '../../components/analytics';
 import { Footer } from '@/components/shared/chrome';
 import { SiteHeader } from '@/components/shared/site-header';
 import './globals.css';
@@ -27,7 +26,6 @@ export default function StorefrontLayout({ children }: { children: ReactNode }) 
         assets={componentAssets}
         brandHref="/"
       />
-      <Analytics />
     </div>
   );
 }
