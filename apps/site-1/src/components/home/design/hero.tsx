@@ -72,12 +72,6 @@ export function HomeHero() {
             </button>
           </form>
           <div className="cp-hd-hero-trust">
-            <span>
-              <span className="cp-hd-stars" aria-hidden="true">
-                {h.stars}
-              </span>{' '}
-              <strong>{h.ratingScore}</strong> {h.ratingText}
-            </span>
             {h.assurances.map((item) => (
               <span key={item}>
                 <span className="cp-hd-tick" aria-hidden="true">
