@@ -306,8 +306,10 @@ Depends on Stage 1 findings and the Stage 2 answers.
 
 ## Stage 5 — Rehearse the first order (Both)
 
-- ☐ **5.1 Run the e2e specs** _(Claude)_ — `order.spec.ts` and `a2-launch-gates.spec.ts`
-  need a Postgres harness (none on this PC; use CI or a temporary database).
+- ☑ **5.1 Run the e2e specs** _(Claude)_ — `order.spec.ts` and `a2-launch-gates.spec.ts`
+  need a Postgres harness (none on this PC; use CI or a temporary database). _22 Oct: CI
+  runs them on every push against a disposable Postgres; on `main` `1af1773` all 84 site-1
+  e2e tests passed (desktop and mobile), both specs included._
 - ☐ **5.2 Production test order** _(Both)_ — a controlled, non-billable order on the live
   site: submit → acknowledgement email arrives → appears in admin → documents uploaded
   and approved → status moves to ready/dispatched. No real carrier activation; cancel it
