@@ -6,6 +6,7 @@ import type { MachineScopeName } from '@canadian-plans/types';
 import { loadDeploymentEnvironment } from './config/deployment.js';
 import { createDocumentServiceFromEnv } from './documents/factory.js';
 import type { DocumentService } from './documents/service.js';
+import { DatabaseAbandonedLeadPruner } from './retention/abandoned-leads.js';
 import { isConnectionLevelError, logRequestError } from './http/logger.js';
 import {
   INITIAL_QUEUE_HEALTH_STATE,
@@ -35,6 +36,8 @@ export const CATALOGUE_SYNC_INTERVAL_MS = 300_000;
 export const SYNTHETIC_CHECK_INTERVAL_MS = 15 * 60_000;
 /** REL-18: abandoned uploads expire after a 24-hour grace, so hourly is plenty. */
 export const DOCUMENT_CLEANUP_INTERVAL_MS = 60 * 60_000;
+/** SEC-12 / REL-19: retention windows are measured in days, so once a day. */
+export const DATA_RETENTION_INTERVAL_MS = 24 * 60 * 60_000;
 
 const DEFAULT_STARTUP_DELAY_MS = 10_000;
 const DEFAULT_JITTER_MS = 5_000;
@@ -42,16 +45,18 @@ const OUTBOX_PREFIX = 'scheduler:outbox';
 const CATALOGUE_SYNC_PREFIX = 'scheduler:catalogue_sync';
 const SYNTHETIC_CHECK_PREFIX = 'scheduler:synthetic_check';
 const DOCUMENT_CLEANUP_PREFIX = 'scheduler:document_cleanup';
+const DATA_RETENTION_PREFIX = 'scheduler:data_retention';
 const SCHEDULER_ROUTE = 'scheduler';
 const SCHEDULER_ERROR_PREFIXES: Record<SchedulerTaskName, string> = {
   outbox: OUTBOX_PREFIX,
   catalogue_sync: CATALOGUE_SYNC_PREFIX,
   synthetic_check: SYNTHETIC_CHECK_PREFIX,
   document_cleanup: DOCUMENT_CLEANUP_PREFIX,
+  data_retention: DATA_RETENTION_PREFIX,
 };
 
 export type SchedulerTaskName =
-  'outbox' | 'catalogue_sync' | 'synthetic_check' | 'document_cleanup';
+  'outbox' | 'catalogue_sync' | 'synthetic_check' | 'document_cleanup' | 'data_retention';
 
 export interface SchedulerTask {
   name: SchedulerTaskName;
@@ -187,6 +192,8 @@ export interface BackendSchedulerDependencies {
   runSyntheticCheck(input: SyntheticCheckRunInput): Promise<unknown>;
   /** Expires abandoned uploads and deletes their R2 objects (REL-18). */
   runDocumentCleanup(input: SchedulerRunInput): Promise<unknown>;
+  /** Daily retention: abandoned order forms (SEC-12) and operational rows (REL-19). */
+  runDataRetention(input: SchedulerRunInput): Promise<unknown>;
 }
 
 export interface BackendSchedulerConfig {
@@ -256,6 +263,11 @@ export function createBackendScheduler(
       intervalMs: DOCUMENT_CLEANUP_INTERVAL_MS,
       run: () => dependencies.runDocumentCleanup(outbox),
     },
+    {
+      name: 'data_retention',
+      intervalMs: DATA_RETENTION_INTERVAL_MS,
+      run: () => dependencies.runDataRetention(outbox),
+    },
   ];
   // Optional: the synthetic workspace/registry entry is provisioned
   // separately (docs/RUNBOOKS/alerts.md). Its absence must never take down
@@ -298,6 +310,7 @@ export function createDefaultSchedulerDependencies(): BackendSchedulerDependenci
   const synthetic = createDefaultSyntheticCheckRouteDependencies();
   const alerts = createOwnerAlertChannelFromEnv();
   const documents = createDocumentServiceFromEnv();
+  const abandonedLeads = new DatabaseAbandonedLeadPruner();
   let queueHealth = INITIAL_QUEUE_HEALTH_STATE;
   let catalogueFailing = false;
   return {
@@ -320,7 +333,30 @@ export function createDefaultSchedulerDependencies(): BackendSchedulerDependenci
       ),
     runSyntheticCheck: (input) => synthetic.run(input),
     runDocumentCleanup: (input) => runDocumentCleanup(documents, input),
+    runDataRetention: (input) => runDataRetention({ abandonedLeads }, input, new Date()),
   };
+}
+
+export interface DataRetentionDependencies {
+  abandonedLeads: Pick<DatabaseAbandonedLeadPruner, 'restrictAbandoned'>;
+}
+
+/** One pass per authorized workspace; returns counts only, never row data. */
+export async function runDataRetention(
+  dependencies: DataRetentionDependencies,
+  input: SchedulerRunInput,
+  now: Date,
+): Promise<{ restrictedLeads: number }> {
+  const totals = { restrictedLeads: 0 };
+  for (const workspaceId of new Set(input.authorizedWorkspaceIds)) {
+    const leads = await dependencies.abandonedLeads.restrictAbandoned({
+      workspaceId,
+      actorId: input.actorId,
+      now,
+    });
+    totals.restrictedLeads += leads.restrictedLeads;
+  }
+  return totals;
 }
 
 /**

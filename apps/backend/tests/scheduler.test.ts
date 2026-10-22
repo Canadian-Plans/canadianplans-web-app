@@ -7,6 +7,7 @@ import {
   SchedulerConfigurationError,
   type SchedulerTask,
   runCatalogueSyncWithAlert,
+  runDataRetention,
   runDocumentCleanup,
   runOutboxWithQueueMonitor,
 } from '../src/scheduler.js';
@@ -303,6 +304,7 @@ describe('createBackendScheduler', () => {
       runCatalogueSync: vi.fn(async () => undefined),
       runSyntheticCheck: vi.fn(async () => undefined),
       runDocumentCleanup: vi.fn(async () => undefined),
+      runDataRetention: vi.fn(async () => undefined),
     };
   }
 
@@ -348,6 +350,8 @@ describe('createBackendScheduler', () => {
     expect(deps.runCatalogueSync).toHaveBeenCalledWith(expected);
     // REL-18: the upload sweep runs with the outbox identity.
     expect(deps.runDocumentCleanup).toHaveBeenCalledWith(expected);
+    // SEC-12 / REL-19: daily retention runs with the same identity.
+    expect(deps.runDataRetention).toHaveBeenCalledWith(expected);
     await scheduler?.stop();
   });
 
@@ -412,5 +416,22 @@ describe('runDocumentCleanup (REL-18)', () => {
     expect(
       await runDocumentCleanup(undefined, { actorId: 'actor', authorizedWorkspaceIds: ['w1'] }),
     ).toEqual({ skipped: 'feature_not_ready' });
+  });
+});
+
+describe('runDataRetention (SEC-12)', () => {
+  it('restricts abandoned order forms once per authorized workspace', async () => {
+    const now = new Date('2026-10-22T00:00:00.000Z');
+    const restrictAbandoned = vi.fn(async ({ workspaceId }: { workspaceId: string }) => ({
+      restrictedLeads: workspaceId === 'w1' ? 3 : 1,
+    }));
+    const result = await runDataRetention(
+      { abandonedLeads: { restrictAbandoned } },
+      { actorId: 'actor', authorizedWorkspaceIds: ['w1', 'w2', 'w1'] },
+      now,
+    );
+    expect(restrictAbandoned).toHaveBeenCalledTimes(2);
+    expect(restrictAbandoned).toHaveBeenCalledWith({ workspaceId: 'w1', actorId: 'actor', now });
+    expect(result).toEqual({ restrictedLeads: 4 });
   });
 });

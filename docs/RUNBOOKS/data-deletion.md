@@ -67,6 +67,16 @@ from recreating erased email rows. Keyed suppression/opt-out evidence remains to
 prevent sending from resuming; unrelated records are not erased by contact hash.
 Processor-held messages require the processor's separate deletion procedure.
 
+## Automatic erasure of abandoned order forms
+
+Owner decision 22 Oct 2026 (SEC-12). Once a day the backend scheduler finds
+leads still `incomplete` 90 days after their last change and erases their
+name, email, phone, country and form answers, deletes their resume links and
+sets `customer_data_restricted_at`. The row stays as an anonymous count with its
+source and offer. Submitted leads are never touched. Each restricted lead gets a
+`lead.abandoned_draft_restricted` audit event; at most 1,000 leads per workspace
+are handled per run. No request is needed and nothing is queued.
+
 ## Backup and retry safety
 
 Migration `0024_backup_reference_barrier` makes database cleanup acquire the
