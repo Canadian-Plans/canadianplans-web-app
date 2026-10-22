@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next';
 
-import { isIndexable, siteBaseUrl } from '../lib/seo';
+import { guideArticles } from '@content/guides';
+
+import { INDEXABLE_PATHS, STOREFRONT_INDEXING_OPEN, isIndexable, siteBaseUrl } from '../lib/seo';
 import { getLegalPage, type LegalSlug } from '../lib/legal';
 
 /**
@@ -8,8 +10,10 @@ import { getLegalPage, type LegalSlug } from '../lib/legal';
  * and not-yet-published dynamic plan pages are excluded. Empty on non-production
  * deployments so previews are not advertised for indexing.
  */
-// Design fixtures and private order/lookup pages remain noindex until publication.
-const PUBLIC_ROUTES = ['/accessibility'] as const;
+// Private order/lookup pages are never listed; commercial pages join once 6.1 opens indexing.
+const publicRoutes: readonly string[] = STOREFRONT_INDEXING_OPEN
+  ? [...INDEXABLE_PATHS, ...guideArticles.map((article) => `/guides/${article.slug}`)]
+  : ['/accessibility'];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   if (!isIndexable()) return [];
@@ -21,7 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       return page.source === 'test_placeholder' ? null : `/${slug}`;
     }),
   );
-  const routes = [...PUBLIC_ROUTES, ...legal.filter((route): route is string => route !== null)];
+  const routes = [...publicRoutes, ...legal.filter((route): route is string => route !== null)];
   return routes.map((route) => ({
     url: `${base}${route}`,
     changeFrequency: 'weekly',

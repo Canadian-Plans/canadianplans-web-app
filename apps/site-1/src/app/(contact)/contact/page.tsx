@@ -1,4 +1,5 @@
 import { pageMetadata } from '@/lib/page-metadata';
+import { publicRobots } from '@/lib/seo';
 import type { Metadata } from 'next';
 import { SkipLink } from '@canadian-plans/ui';
 import { CpAsset, CpBreadcrumb, CpImageSlot } from '@canadian-plans/ui/canadian-plans';
@@ -17,7 +18,7 @@ import {
 export const metadata: Metadata = pageMetadata('/contact', {
   title: contactCopy.title,
   description: contactCopy.description,
-  robots: { index: false, follow: false },
+  robots: publicRobots('/contact'),
 });
 
 /** Electric Blue alignment (15 October 2026): site header/footer, breadcrumb; forms unchanged. */

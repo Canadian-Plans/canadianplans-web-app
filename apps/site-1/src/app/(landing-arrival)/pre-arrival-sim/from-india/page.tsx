@@ -7,6 +7,7 @@ import { PlanPicker } from '@/components/pre-arrival/interactive';
 import { componentAssets } from '@content/components';
 import { LandingPage } from '@/components/landing/landing-page';
 import { pageMetadata } from '@/lib/page-metadata';
+import { publicRobots } from '@/lib/seo';
 
 const siteFooterBrand = 'Canadian Plans';
 const page = fromIndiaLanding;
@@ -14,7 +15,7 @@ const page = fromIndiaLanding;
 export const metadata: Metadata = pageMetadata(page.path, {
   title: page.title,
   description: page.description,
-  robots: { index: false, follow: false },
+  robots: publicRobots('/pre-arrival-sim/from-india'),
 });
 
 export default function FromIndiaPage() {

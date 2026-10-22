@@ -1,5 +1,6 @@
 import { chromeAccessibility } from '@content/metadata';
 import { pageMetadata } from '@/lib/page-metadata';
+import { publicRobots } from '@/lib/seo';
 import type { Metadata } from 'next';
 import { CpSectionHeading } from '@canadian-plans/ui/canadian-plans';
 import { mobileCopy as copy, mobileChrome, mobileChromeAssets } from '@content/mobile-plans';
@@ -12,7 +13,7 @@ import { CategoryTemplate } from '@/components/category-redesign/template';
 
 export const metadata: Metadata = pageMetadata('/mobile-plans', {
   title: copy.title,
-  robots: { index: false, follow: false },
+  robots: publicRobots('/mobile-plans'),
 });
 
 /** Electric Blue category template (14 October 2026) with the catalogue's three BYOD plans. */

@@ -1,4 +1,5 @@
 import { pageMetadata } from '@/lib/page-metadata';
+import { publicRobots } from '@/lib/seo';
 import type { Metadata } from 'next';
 import { SkipLink } from '@canadian-plans/ui';
 import { CpBreadcrumb, CpCtaBand } from '@canadian-plans/ui/canadian-plans';
@@ -12,7 +13,7 @@ import { GuideIndexCard } from '@/components/guides-index/guide-card';
 export const metadata: Metadata = pageMetadata('/guides', {
   title: guidesIndexCopy.title,
   description: guidesIndexCopy.description,
-  robots: { index: false, follow: false },
+  robots: publicRobots('/guides'),
 });
 export default function GuidesPage() {
   const featured = guideList.find((guide) => guide.featured);

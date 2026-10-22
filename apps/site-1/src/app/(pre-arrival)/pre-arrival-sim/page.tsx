@@ -1,4 +1,5 @@
 import { pageMetadata } from '@/lib/page-metadata';
+import { publicRobots } from '@/lib/seo';
 import type { Metadata } from 'next';
 import { CpSectionHeading } from '@canadian-plans/ui/canadian-plans';
 import { arrivalCopy, arrivalChrome, arrivalChromeAssets } from '@content/pre-arrival';
@@ -11,7 +12,7 @@ import { CategoryTemplate } from '@/components/category-redesign/template';
 
 export const metadata: Metadata = pageMetadata('/pre-arrival-sim', {
   title: arrivalCopy.title,
-  robots: { index: false, follow: false },
+  robots: publicRobots('/pre-arrival-sim'),
 });
 
 /** Electric Blue category template (14 October 2026); plan picker and comparison unchanged. */

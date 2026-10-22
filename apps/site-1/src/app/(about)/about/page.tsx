@@ -7,11 +7,12 @@ import { Footer } from '@/components/shared/chrome';
 import { SiteHeader } from '@/components/shared/site-header';
 import { LandingPage } from '@/components/landing/landing-page';
 import { pageMetadata } from '@/lib/page-metadata';
+import { publicRobots } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata(page.path, {
   title: page.title,
   description: page.description,
-  robots: { index: false, follow: false },
+  robots: publicRobots('/about'),
 });
 
 /** Electric Blue landing kit (15 October 2026). */
