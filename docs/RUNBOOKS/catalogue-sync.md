@@ -1,8 +1,26 @@
 # Catalogue sync and price-error handling
 
-Owner: Takib. Required access: backend environment variables, Sanity project,
-and the restricted runtime database credential. Do not paste secrets or CMS
+Owner: Takib. Required access: backend environment variables, the repository
+(site-1 plans live in the repo catalogue until Sanity is connected; see below),
+the Sanity project once connected, and the restricted runtime database credential. Do not paste secrets or CMS
 payloads into tickets or logs.
+
+## Where site-1's plans come from today (repo catalogue, ADR 0005)
+
+Sanity is not connected yet. site-1's plans, prices and promotions are written in
+`packages/adapters/src/static-catalogue/site-1-plans.ts` and published by the
+backend's catalogue sync for the workspace named in
+`SITE_1_STATIC_CATALOGUE_WORKSPACE_ID`. To change a plan or price:
+
+1. Edit `site-1-plans.ts` in a pull request and let CI pass.
+2. Merge and deploy the backend (Railway). The next 300-second sync tick
+   publishes a new immutable offer version; existing orders keep their snapshot.
+3. Confirm in admin at `/w/<workspace>/settings/catalogue` that the product shows
+   the new offer version and the last sync has no error, then open `/order`.
+
+A price error is fixed the same way (correct the file, deploy). The Sanity steps
+below apply once a Sanity registry entry exists for the workspace, which always
+takes precedence over the repo catalogue.
 
 ## Safe manual invocation
 
@@ -60,7 +78,9 @@ Open `/w/<workspace>/settings/catalogue` and confirm:
 3. The storefront revalidation endpoint succeeded (a failure leaves the sync
    event failed so it can be retried).
 
-If Sanity cannot be read, priced quote creation returns
+If the catalogue provider cannot be read (Sanity unreachable, or
+`SITE_1_STATIC_CATALOGUE_WORKSPACE_ID` unset or wrong for the repo catalogue —
+the owner now gets a `catalogue_sync_failed` alert), priced quote creation returns
 `unpriced_lead_required`; keep the lead as an incomplete/unpriced callback and
 do not confirm an order. If version integrity is uncertain, stop priced
 checkout and escalate to the owner. Never edit `offer_versions` or restore
