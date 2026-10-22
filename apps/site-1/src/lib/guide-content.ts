@@ -23,8 +23,8 @@ export function articleSchema(article: GuideArticle, origin: string) {
     headline: article.title,
     description: article.description,
     articleSection: article.category,
-    author: { '@type': 'Person', name: article.author.name },
-    reviewedBy: { '@type': 'Person', name: article.reviewer.name },
+    // Credited to the team (owner decision 22 Oct 2026, SEC-18), so no Person.
+    author: { '@type': 'Organization', name: article.author.name },
     publisher: { '@type': 'Organization', name: siteChrome.brand },
     dateModified: article.updated,
     inLanguage: 'en-CA',

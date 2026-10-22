@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: article.description,
     alternates: { canonical: `/guides/${article.slug}` },
     robots: publicRobots(`/guides/${article.slug}`),
-    openGraph: { type: 'article', modifiedTime: article.updated, authors: [article.author.name] },
+    openGraph: { type: 'article', modifiedTime: article.updated },
   });
 }
 export default async function GuidePage({ params }: Props) {
@@ -64,7 +64,7 @@ export default async function GuidePage({ params }: Props) {
               <p className="cp-guide-description">{article.description}</p>
               <div className="cp-guide-byline">
                 {[article.author, article.reviewer].map((person) => (
-                  <div key={person.name} className="cp-guide-person">
+                  <div key={person.label} className="cp-guide-person">
                     <CpAsset asset={person.avatar} />
                     <div>
                       <p>{person.label}</p>
