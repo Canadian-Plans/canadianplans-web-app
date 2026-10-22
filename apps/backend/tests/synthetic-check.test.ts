@@ -79,6 +79,20 @@ function baseDependencies(): SyntheticCheckDependencies {
 }
 
 describe('runSyntheticOrderCheck', () => {
+  it('creates the synthetic lead without a contact address so no email is ever queued', async () => {
+    const dependencies = baseDependencies();
+    const contacts: unknown[] = [];
+    const createLead = dependencies.leads.createLead;
+    dependencies.leads = {
+      createLead: async (input) => {
+        contacts.push(input.contact);
+        return createLead(input);
+      },
+    };
+    await runSyntheticOrderCheck(dependencies, { actorId: ACTOR, requestId: REQUEST });
+    expect(contacts).toEqual([{}]);
+  });
+
   it('reports ok after lead -> quote -> order -> cancel all succeed', async () => {
     const result = await runSyntheticOrderCheck(baseDependencies(), {
       actorId: ACTOR,

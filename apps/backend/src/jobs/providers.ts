@@ -208,6 +208,21 @@ export function createOutboxJobHandlers(
   // deleting customer data must work even when no other provider is configured,
   // and it fails closed when the ledger itself is not configured.
   const handlers = new Map(base);
+  // The synthetic order check (REQ 40) runs every 15 minutes in its own
+  // workspace; its leads/orders are not conversions, so their analytics jobs
+  // complete without a provider call instead of piling up as failed/uncertain.
+  const syntheticWorkspaceId = env.SYNTHETIC_WORKSPACE_ID?.trim();
+  if (syntheticWorkspaceId) {
+    for (const jobType of ['analytics_order_submitted', 'analytics_lead_saved'] as const) {
+      const original = handlers.get(jobType);
+      if (!original) continue;
+      handlers.set(jobType, async (job, signal) =>
+        job.workspaceId === syntheticWorkspaceId
+          ? { status: 'completed', providerId: 'skipped:synthetic_workspace' }
+          : original(job, signal),
+      );
+    }
+  }
   let cleanupR2;
   try {
     cleanupR2 = createR2DocumentStoreFromEnv(env);

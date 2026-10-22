@@ -56,6 +56,26 @@ describe('outbox provider configuration', () => {
       ),
     ).rejects.toMatchObject({ code: 'provider_not_configured', retryable: false });
   });
+  it('completes synthetic-workspace analytics jobs without a provider call', async () => {
+    const synthetic = '10000000-0000-4000-8000-000000000901';
+    const handlers = createOutboxJobHandlers(
+      { NODE_ENV: 'test', SYNTHETIC_WORKSPACE_ID: synthetic },
+      alwaysEligible,
+    );
+    const analytics = (workspaceId: string) =>
+      job({
+        workspaceId,
+        jobType: 'analytics_lead_saved',
+        payload: { leadId: '33333333-3333-4333-8333-333333333333' },
+      });
+    expect(await handlers.get('analytics_lead_saved')?.(analytics(synthetic))).toEqual({
+      status: 'completed',
+      providerId: 'skipped:synthetic_workspace',
+    });
+    await expect(handlers.get('analytics_lead_saved')?.(analytics(WORKSPACE))).rejects.toMatchObject(
+      { code: 'provider_not_configured' },
+    );
+  });
   it('keeps suppression publication durable and fails closed without a configured ledger', async () => {
     const entry = job({
       jobType: 'suppression_ledger_publish',
