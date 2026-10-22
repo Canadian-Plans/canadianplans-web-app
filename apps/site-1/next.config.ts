@@ -12,6 +12,16 @@ import type { NextConfig } from 'next';
  */
 const isProduction = process.env.NODE_ENV === 'production';
 
+// A production build without a public origin would ship localhost canonicals and
+// noindex everywhere (REQ 10); fail the build instead of silently losing SEO.
+if (
+  process.env.VERCEL_ENV === 'production' &&
+  !process.env.NEXT_PUBLIC_SITE_URL &&
+  !process.env.VERCEL_PROJECT_PRODUCTION_URL
+) {
+  throw new Error('NEXT_PUBLIC_SITE_URL must be set for a production build.');
+}
+
 function originOf(raw: string | undefined): string | undefined {
   const value = raw?.trim();
   if (!value) return undefined;

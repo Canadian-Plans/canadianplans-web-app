@@ -10,9 +10,15 @@ const DEFAULT_BASE_URL = 'http://localhost:3001';
 /** Absolute origin used for canonical URLs, the sitemap and robots. No trailing slash. */
 export function siteBaseUrl(): string {
   const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (!raw) return DEFAULT_BASE_URL;
+  // Production safety net: Vercel exposes the project's production host, so a
+  // missing NEXT_PUBLIC_SITE_URL no longer silently emits localhost canonicals.
+  const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  const candidate =
+    raw ||
+    (process.env.VERCEL_ENV === 'production' && vercelHost ? `https://${vercelHost}` : undefined);
+  if (!candidate) return DEFAULT_BASE_URL;
   try {
-    const url = new URL(raw);
+    const url = new URL(candidate);
     const local = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
     if (
       (url.protocol !== 'https:' && !(local && url.protocol === 'http:')) ||
