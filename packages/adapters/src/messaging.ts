@@ -225,7 +225,24 @@ export class ResendEmailAdapter implements EmailAdapter {
   }
 }
 
+/**
+ * Sender identification on every email (CASL s.6(2) requires it in each
+ * commercial message; transactional mail carries it too). These are the
+ * owner-confirmed details already published in the Terms.
+ */
+const SENDER_FOOTER =
+  '\n\nCanadian Plans · 9981 Whalley Blvd, Surrey, BC V3T 0A8 · info@canadianplans.com · +1 778-682-3771';
+
 function renderTemplate(message: EmailMessage): { subject: string; text: string; html?: string } {
+  const rendered = renderTemplateBody(message);
+  return { ...rendered, text: rendered.text + SENDER_FOOTER };
+}
+
+function renderTemplateBody(message: EmailMessage): {
+  subject: string;
+  text: string;
+  html?: string;
+} {
   const ref = message.reference ?? message.variables?.reference ?? '';
   switch (message.template) {
     case 'tracking_otp':
@@ -236,7 +253,7 @@ function renderTemplate(message: EmailMessage): { subject: string; text: string;
     case 'order_acknowledgement':
       return {
         subject: `We received your order ${ref}`,
-        text: `Thanks — we received your order ${ref}. We'll email you as it progresses.`,
+        text: `Thanks — we received your order ${ref}. Nothing has been charged. An advisor will contact you (Monday to Saturday, 9am–9pm Pacific time) to confirm your plan. Track your order at https://canadianplans.com/track with this reference. Didn't place this order? Reply to this email and we will cancel it.`,
       };
     case 'order_status':
       return {

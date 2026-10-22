@@ -34,6 +34,39 @@ describe('Resend send correlation', () => {
   });
 });
 
+describe('sender identification', () => {
+  it.each([
+    'order_acknowledgement',
+    'order_status',
+    'order_awaiting_customer',
+    'order_dispatch',
+    'order_activation',
+    'tracking_otp',
+    'abandoned_form_marketing',
+  ] as const)('every %s email names the sender and its mailing address', async (template) => {
+    const send = vi.fn<typeof fetch>(async () => Response.json({ id: 'provider-email-id' }));
+    vi.stubGlobal('fetch', send);
+    const adapter = new ResendEmailAdapter({
+      apiKey: 'synthetic-key',
+      sender: { fromAddress: 'sender@example.test', fromName: 'Test' },
+    });
+    await adapter.send({
+      workspaceId: '11111111-1111-4111-8111-111111111111',
+      messageId: '22222222-2222-4222-8222-222222222222',
+      template,
+      toAddress: 'customer@example.test',
+      reference: 'CP-TEST',
+      unsubscribeUrl: 'https://canadianplans.com/unsubscribe/token',
+    });
+    const body = z
+      .object({ text: z.string() })
+      .parse(JSON.parse(String(send.mock.calls[0]?.[1]?.body)));
+    expect(body.text).toContain('Canadian Plans · 9981 Whalley Blvd, Surrey, BC V3T 0A8');
+    if (template === 'order_acknowledgement')
+      expect(body.text).toContain('Nothing has been charged');
+  });
+});
+
 describe('order_dispatch copy', () => {
   async function sentBody(variables?: Record<string, string>) {
     const send = vi.fn<typeof fetch>(async () => Response.json({ id: 'provider-email-id' }));
