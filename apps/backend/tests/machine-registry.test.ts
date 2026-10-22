@@ -50,7 +50,8 @@ const config: MachineRegistryConfig = {
 const NOW_MS = Date.parse('2026-09-16T00:00:00.000Z');
 const registry = new MachineRegistry(config, () => NOW_MS);
 const rawBody = JSON.stringify({ event: 'offer.published', id: 'offer_1' });
-const timestamp = String(NOW_MS / 1_000);
+// Sanity signs with a millisecond Unix timestamp.
+const timestamp = String(NOW_MS);
 const sign = (secret: string, body = rawBody) =>
   `t=${timestamp},v1=${createHmac('sha256', secret)
     .update(`${timestamp}.${body}`)
