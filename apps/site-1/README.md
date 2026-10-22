@@ -187,6 +187,8 @@ Create the disposable database once (the harness migrates and seeds it):
 createdb canadian_plans_e2e_test
 ```
 
+The harness truncates tenant tables and resets the `app_runtime` password, so it refuses any database that is not on localhost or whose name does not end in `_test` / `_e2e` (override only for a remote throwaway database with `E2E_ALLOW_REMOTE_DATABASE=yes-i-understand`).
+
 ### Transactional email design previews
 
 Open `/dev/emails` locally, then select Order received, eSIM ready or Install
