@@ -20,7 +20,7 @@ export const metadata: Metadata = pageMetadata('/business-internet', {
 
 /**
  * Business Internet design preview (Electric Blue category template, 14 October 2026).
- * No plan list exists yet ([PRICE] is an open input), so the plan slot is a UI-only quote form.
+ * No business plans are sold yet, so the plan slot is a UI-only quote form and no price is shown.
  */
 export default function BusinessInternetPage() {
   const page = categoryPages.business;

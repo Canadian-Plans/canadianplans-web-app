@@ -359,7 +359,7 @@ export const homeRedesign = {
       {
         key: 'business',
         title: 'Business Internet',
-        price: 'From [PRICE]/mo',
+        price: 'Get a quote',
         icon: 'picker-business',
       },
     ],
@@ -667,9 +667,9 @@ export const homeRedesign = {
         eyebrow: 'Business Internet',
         title: 'Internet that keeps your business open.',
         action: 'Get a business quote',
-        pricePrefix: 'from',
-        price: '[PRICE]',
-        priceSuffix: '/mo',
+        pricePrefix: '',
+        price: 'Quote',
+        priceSuffix: ' for your business',
         photo: 'PHOTO · small shop or office owner at the counter, laptop open',
       },
       who: {

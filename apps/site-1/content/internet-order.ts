@@ -22,7 +22,7 @@ export const internetOrderCopy = {
   eyebrow: 'Home internet · one short form',
   heading: 'Get connected',
   intro:
-    'Send your details and an advisor will call or WhatsApp you, usually within 2 hours, to confirm and book your install.',
+    'Send your details and an advisor will call or WhatsApp you, usually the same day, to confirm and book your install.',
   personal: 'Your details',
   address: 'Install address',
   optional: '(optional)',

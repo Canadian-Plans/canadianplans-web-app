@@ -16,10 +16,10 @@ export const emailCopy = {
     name: 'Order received',
     nodeId: '309:3',
     subject: (reference: string) => `We got your order, ${reference}`,
-    preheader: 'An advisor will contact you within 2 hours. You haven’t been charged.',
+    preheader: 'An advisor will contact you the same day. You haven’t been charged.',
     title: (name: string) => `Thanks, ${name}. We got your order.`,
     intro:
-      'An advisor will call or WhatsApp you within 2 hours (Mon–Sat, 9am–9pm Pacific) to check your details. You haven’t been charged anything.',
+      'An advisor will call or WhatsApp you the same day (Mon–Sat, 9am–9pm Pacific) to check your details. You haven’t been charged anything.',
     caption:
       'Canadian Plans advisor at the Surrey office, headset on, checking a customer order on a laptop',
     stepsTitle: 'What happens next',

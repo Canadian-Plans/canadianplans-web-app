@@ -60,8 +60,7 @@ export const businessFaq: readonly FaqItemContent[] = [
   {
     id: 'business-faq-price',
     question: 'How much does business internet cost?',
-    answer:
-      'Plans start from [PRICE]/mo. An advisor confirms the exact price for your address before anything is set up.',
+    answer: 'An advisor quotes the exact price for your address before anything is set up.',
   },
   {
     id: 'business-faq-install',
