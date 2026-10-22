@@ -16,6 +16,7 @@ import { emailCommon as copy } from '@content/emails';
 import { emailTokens as t } from './tokens.generated';
 import { emailStyles as s, emailText, px } from './styles';
 import { emailAssetOrigin, type EmailResources } from './data';
+import { BRAND_ICON_SRC } from '@/components/shared/brand-mark';
 
 export function EmailSpacer({ height }: { height: number }) {
   return (
@@ -184,11 +185,15 @@ export function EmailFrame(props: EmailFrameProps) {
                   <Row>
                     <Column style={s.header}>
                       <Row>
-                        <Column
-                          width={t.s28}
-                          height={t.s28}
-                          style={{ backgroundColor: t.blue, borderRadius: t.logoRadius }}
-                        />
+                        <Column width={t.s32} valign="middle">
+                          <Img
+                            src={new URL(BRAND_ICON_SRC, origin).href}
+                            width={t.s32}
+                            height={t.s32}
+                            alt=""
+                            style={{ display: 'block' }}
+                          />
+                        </Column>
                         <Column width={t.s10} />
                         <Column valign="middle">
                           <Text style={emailText(t.t20, t.line25, t.white, t.bold)}>
