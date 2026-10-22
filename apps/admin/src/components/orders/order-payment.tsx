@@ -10,6 +10,12 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   Input,
   Label,
   Select,
@@ -41,6 +47,7 @@ export function OrderPayment({ workspaceId, accessToken, order, write }: Payment
   const [method, setMethod] = useState('');
   const [reference, setReference] = useState('');
   const [amount, setAmount] = useState('');
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const amountMinor = amount.trim() === '' ? undefined : Math.round(Number(amount) * 100);
   const amountValid =
@@ -146,25 +153,62 @@ export function OrderPayment({ workspaceId, accessToken, order, write }: Payment
             <Button
               type="button"
               disabled={write.busy || !amountValid}
-              onClick={async () => {
-                const result = await write.run(() =>
-                  recordOrderPayment(accessToken, workspaceId, order.id, {
-                    paymentState,
-                    ...(method.trim() ? { method: method.trim() } : {}),
-                    ...(reference.trim() ? { reference: reference.trim() } : {}),
-                    ...(amountMinor !== undefined ? { amountMinor } : {}),
-                    expectedVersion: order.recordVersion,
-                  }),
-                );
-                if (result) {
-                  setMethod('');
-                  setReference('');
-                  setAmount('');
-                }
-              }}
+              onClick={() => setConfirmOpen(true)}
             >
               Record payment
             </Button>
+            <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Record payment</DialogTitle>
+                  <DialogDescription>
+                    This writes a payment record and changes the order&apos;s payment state.
+                  </DialogDescription>
+                </DialogHeader>
+                <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+                  <dt className="text-muted-foreground">Payment state</dt>
+                  <dd>{PAYMENT_STATE_LABELS[paymentState]}</dd>
+                  <dt className="text-muted-foreground">Amount</dt>
+                  <dd>
+                    {amountMinor !== undefined
+                      ? formatMoney({ amountMinor, currency: order.snapshot.currency })
+                      : 'Not recorded'}
+                  </dd>
+                  <dt className="text-muted-foreground">Method</dt>
+                  <dd>{method.trim() || 'Not recorded'}</dd>
+                  <dt className="text-muted-foreground">Reference</dt>
+                  <dd>{reference.trim() || 'Not recorded'}</dd>
+                </dl>
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={() => setConfirmOpen(false)}>
+                    Close
+                  </Button>
+                  <Button
+                    type="button"
+                    disabled={write.busy || !amountValid}
+                    onClick={async () => {
+                      const result = await write.run(() =>
+                        recordOrderPayment(accessToken, workspaceId, order.id, {
+                          paymentState,
+                          ...(method.trim() ? { method: method.trim() } : {}),
+                          ...(reference.trim() ? { reference: reference.trim() } : {}),
+                          ...(amountMinor !== undefined ? { amountMinor } : {}),
+                          expectedVersion: order.recordVersion,
+                        }),
+                      );
+                      if (result) {
+                        setConfirmOpen(false);
+                        setMethod('');
+                        setReference('');
+                        setAmount('');
+                      }
+                    }}
+                  >
+                    Confirm payment record
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         ) : (
           <p className="text-sm text-muted-foreground">
