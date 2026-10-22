@@ -126,7 +126,7 @@ export const faqGroups: readonly HelpFaqGroup[] = [
       site(
         'official-carrier',
         'Is Canadian Plans an official carrier?',
-        'No. We are an independent authorized dealer for Rogers, Fido and Chatr. Your plan and bill come from the carrier you choose, at the carrier’s own prices.',
+        'No. We are an independent authorized dealer for Rogers, Fido and Chatr pre-arrival plans, and an authorized sales agent for home internet and mobile providers. Your plan and bill come from the provider, at the provider’s own prices.',
         ['dealer', 'authorized'],
       ),
     ],

@@ -6,7 +6,7 @@ export const emailCommon = {
   previewLabel: 'Preview:',
   footer: [
     'Questions? Reply to this email, WhatsApp us, or call +1 778-682-3771 (Mon–Sat, 9am–9pm Pacific).',
-    'Canadian Plans · Authorized Rogers, Fido and Chatr dealer · 9981 Whalley Blvd, Surrey, BC',
+    'Canadian Plans · Authorized dealer · 9981 Whalley Blvd, Surrey, BC',
     'You’re getting this email because you placed an order with us. We will never ask for your password or card number by email.',
   ],
   image: { src: '/design/components/312-2-imgIcon.svg', width: 32, height: 32, nodeId: '312:3' },
@@ -63,7 +63,7 @@ export const emailCopy = {
       `A technician will arrive between ${window}. Here’s how to get ready.`,
     title: 'Your install is booked.',
     intro: (date: string, window: string, address: string) =>
-      `A Rogers technician will arrive on ${date}, between ${window}, at ${address}. The visit usually takes about 2 hours.`,
+      `A technician will arrive on ${date}, between ${window}, at ${address}. The visit usually takes about 2 hours.`,
     caption: 'Technician setting up a Wi-Fi modem on a living-room shelf in an apartment',
     stepsTitle: 'Before the technician arrives',
     steps: [

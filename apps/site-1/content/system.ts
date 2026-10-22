@@ -175,8 +175,7 @@ export const searchItems: readonly SearchItem[] = [
     label: 'CITY',
     crumb: 'canadianplans.com › internet › vancouver',
     title: 'Home internet in Vancouver',
-    description:
-      'Rogers-network internet for apartments and student housing, installed in about 3 days.',
+    description: 'Home internet for apartments and student housing, installed in about 3 days.',
     href: '/home-internet/vancouver',
     keywords: ['student sim card', 'internet', 'vancouver', 'housing'],
   },

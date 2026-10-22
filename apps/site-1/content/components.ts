@@ -98,7 +98,7 @@ export const componentAssets = {
 /** Figma examples only. The dev route keeps every link/action inside the showcase. */
 export const chromeContent: ChromeContent = {
   brand: 'Canadian Plans',
-  dealer: 'Authorized Rogers, Fido & Chatr dealer · Surrey, BC',
+  dealer: 'Authorized dealer · Surrey, BC',
   moving: "I'm moving to Canada",
   living: 'I already live here',
   phone: { label: '+1 778-682-3771', href: '#contact' },
@@ -166,7 +166,7 @@ export interface FooterContent {
 
 export const footerContent: FooterContent = {
   description:
-    'Canadian Plans is an authorized Rogers, Fido and Chatr dealer in Surrey, BC. We help newcomers and Canadians set up SIM cards, phone plans and home internet.',
+    'Canadian Plans, in Surrey, BC, is an authorized Rogers, Fido and Chatr dealer for pre-arrival plans, and an authorized sales agent for home internet and mobile. We help newcomers and Canadians set up SIM cards, phone plans and home internet.',
   address: '9981 Whalley Blvd, Surrey, BC',
   contactLine: '+1 778-682-3771 · info@canadianplans.com',
   groups: [

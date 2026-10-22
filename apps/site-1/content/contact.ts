@@ -30,7 +30,7 @@ export const contactCopy = {
     title: 'Talk to a real person',
     description:
       "No bots, no call-centre maze. You'll reach the same advisors who confirm every order, Mon–Sat, 9am–9pm Pacific.",
-    trust: 'Authorized Rogers, Fido and Chatr dealer in Surrey, BC',
+    trust: 'Authorized dealer in Surrey, BC',
   },
   options: [
     {

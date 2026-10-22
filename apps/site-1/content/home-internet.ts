@@ -29,7 +29,7 @@ export const internetCopy = {
     price: 'From $50/mo',
     priceNote: 'CAD, plus tax. Pay $0 to order.',
     features: [
-      '✓ Authorized Rogers dealer in Surrey, BC',
+      '✓ Authorized dealer in Surrey, BC',
       '✓ WiFi modem included',
       "✓ No Canadian credit history? We'll explain your options",
     ],
@@ -91,7 +91,7 @@ export const internetCopy = {
     eyebrow: 'Add TV & streaming',
     title: 'Your shows from home, on one bill.',
     description:
-      'Add Rogers TV with live channels and streaming apps to any internet plan. We’ll explain the packages in plain words when we call.',
+      'Add TV with live channels and streaming apps to any internet plan. We’ll explain the packages in plain words when we call.',
     caption: 'Family on the sofa watching a hockey game on the living-room TV',
     button: 'See TV bundles →',
   },

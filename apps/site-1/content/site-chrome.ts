@@ -42,7 +42,7 @@ export const siteChromeWithPromo = (
 export const siteFooter: FooterContent = {
   ...footerContent,
   description:
-    'Authorized Rogers, Fido & Chatr dealer. We help you pick the right plan and stay your contact afterwards.',
+    'Authorized Rogers, Fido & Chatr dealer for pre-arrival plans, and an authorized sales agent for home internet and mobile. We help you pick the right plan and stay your contact afterwards.',
   contactLines: ['+1 778-682-3771', 'info@canadianplans.com', '9981 Whalley Blvd, Surrey, BC'],
   social: [{ label: 'WhatsApp', short: 'wa', href: '/contact' }],
   groups: [
