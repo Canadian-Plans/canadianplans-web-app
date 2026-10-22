@@ -248,13 +248,18 @@ function renderTemplate(message: EmailMessage): { subject: string; text: string;
         subject: `Action needed on your order ${ref}`,
         text: `We need more information on order ${ref} to keep moving. Please respond when you can.`,
       };
-    case 'order_dispatch':
+    case 'order_dispatch': {
+      // Canadian Plans ships nothing (OPEN_INPUTS #5, 22 Oct 2026): "dispatch"
+      // is the handoff to the provider, whose confirmation number is the
+      // reference staff record, so it is shown only when present.
+      const providerReference = message.variables?.trackingReference?.trim();
       return {
-        subject: `Your order ${ref} has shipped`,
-        text: `Order ${ref} was dispatched via ${message.variables?.courier ?? 'courier'}. Tracking: ${
-          message.variables?.trackingReference ?? 'n/a'
-        }.`,
+        subject: `Your order ${ref} has been handed to your provider`,
+        text: `Order ${ref} has been passed to your service provider for activation. They will contact you directly with the next steps. Reply to this email if you have questions.${
+          providerReference ? `\n\nReference from the provider: ${providerReference}.` : ''
+        }`,
       };
+    }
     case 'order_activation':
       return {
         subject: `Your service for order ${ref} is active`,
