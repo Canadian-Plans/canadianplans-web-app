@@ -18,6 +18,8 @@ export const ownerAlertKinds = [
   'backup_stale',
   'job_queue_stuck',
   'error_rate_spike',
+  'catalogue_sync_failed',
+  'scheduler_not_started',
 ] as const;
 export type OwnerAlertKind = (typeof ownerAlertKinds)[number];
 
@@ -63,6 +65,10 @@ function alertSubject(kind: OwnerAlertKind): string {
       return 'Canadian Plans: failed job queue is not draining';
     case 'error_rate_spike':
       return 'Canadian Plans: error rate spike detected';
+    case 'catalogue_sync_failed':
+      return 'Canadian Plans: catalogue sync is failing';
+    case 'scheduler_not_started':
+      return 'Canadian Plans: background scheduler did not start';
   }
 }
 

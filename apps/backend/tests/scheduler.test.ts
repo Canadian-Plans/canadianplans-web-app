@@ -6,6 +6,7 @@ import {
   createScheduler,
   SchedulerConfigurationError,
   type SchedulerTask,
+  runCatalogueSyncWithAlert,
   runOutboxWithQueueMonitor,
 } from '../src/scheduler.js';
 import { INITIAL_QUEUE_HEALTH_STATE, type QueueHealthState } from '../src/jobs/queueMonitor.js';
@@ -46,6 +47,45 @@ it('alerts for a persisted failed queue even when later runs process nothing', a
     );
   } finally {
     vi.useRealTimers();
+  }
+});
+
+it('alerts once when catalogue sync starts failing, and again only after a clean run', async () => {
+  let failing = false;
+  const failures = [{ stage: 'reconcile', errorCode: 'provider_unavailable' }];
+  const catalogue = { run: vi.fn(async () => ({ failures })) };
+  const alerts = { send: vi.fn(async () => {}) };
+  const input = { authorizedWorkspaceIds: [WORKSPACE], actorId: ACTOR };
+  const tick = () =>
+    runCatalogueSyncWithAlert(
+      catalogue,
+      alerts,
+      input,
+      (next) => {
+        failing = next;
+      },
+      () => failing,
+    );
+  const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+  try {
+    await tick();
+    await tick();
+    expect(alerts.send).toHaveBeenCalledOnce();
+    expect(alerts.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        kind: 'catalogue_sync_failed',
+        detail: 'reconcile:provider_unavailable',
+      }),
+    );
+    expect(logged).toHaveBeenCalledTimes(2);
+
+    catalogue.run.mockResolvedValueOnce({ failures: [] });
+    await tick();
+    expect(failing).toBe(false);
+    await tick();
+    expect(alerts.send).toHaveBeenCalledTimes(2);
+  } finally {
+    logged.mockRestore();
   }
 });
 
