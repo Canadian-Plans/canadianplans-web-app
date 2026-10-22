@@ -11,6 +11,11 @@ export interface HomeExplorerNavItem {
  * Sticky category nav with scroll-spy (final homepage design). The active link gets the
  * "→" marker; below 900px it becomes a sticky, swipeable chip row.
  */
+
+function prefersReducedMotion(): boolean {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 export function HomeExplorerNav({
   items,
   label,
@@ -47,7 +52,7 @@ export function HomeExplorerNav({
     if (nav && chip && nav.scrollWidth > nav.clientWidth) {
       nav.scrollTo({
         left: chip.offsetLeft - nav.clientWidth / 2 + chip.clientWidth / 2,
-        behavior: 'smooth',
+        behavior: prefersReducedMotion() ? 'auto' : 'smooth',
       });
     }
   }, [active]);
@@ -63,9 +68,15 @@ export function HomeExplorerNav({
           aria-current={active === item.id ? 'true' : undefined}
           onClick={(event) => {
             event.preventDefault();
-            document
-              .getElementById(item.id)
-              ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const section = document.getElementById(item.id);
+            section?.scrollIntoView({
+              behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+              block: 'start',
+            });
+            // Keyboard and screen-reader users land in the section they chose,
+            // and the URL reflects it, as a normal in-page link would.
+            section?.focus({ preventScroll: true });
+            history.replaceState(null, '', `#${item.id}`);
             lockUntil.current = Date.now() + 900;
             setActive(item.id);
           }}

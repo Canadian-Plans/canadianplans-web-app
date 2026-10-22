@@ -61,7 +61,13 @@ function CategoryBlock({ category }: { category: RedesignCategory }) {
   const cards = category.cards;
   const cardsAside = 'aside' in cards ? cards.aside : undefined;
   return (
-    <div className="cp-hd-catsec" id={sectionId(category.key)} data-tone={category.tone}>
+    <div
+      className="cp-hd-catsec"
+      id={sectionId(category.key)}
+      data-tone={category.tone}
+      // Programmatic focus target for the category nav (not in the tab order).
+      tabIndex={-1}
+    >
       <div className="cp-hd-feature">
         <div className="cp-hd-feature-art" data-category={category.key}>
           <HomeArt name={category.art} />

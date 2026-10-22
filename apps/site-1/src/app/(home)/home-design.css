@@ -861,6 +861,11 @@
     gap: var(--cp-hd-catsec-gap-sm);
   }
 }
+/* Focused programmatically by the category nav; the section itself is not a control. */
+.cp-hd-catsec:focus {
+  outline: none;
+}
+
 .cp-hd-catsec {
   display: flex;
   flex-direction: column;
