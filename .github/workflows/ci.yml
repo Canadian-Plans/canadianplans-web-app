@@ -70,6 +70,8 @@ jobs:
             echo 'Supabase service-role usage is forbidden in application code.' >&2
             exit 1
           fi
+      - name: Integration suites must not be skipped
+        run: test -n "$TEST_MIGRATION_DATABASE_URL" && test "$DB_TEST_ALLOW_DESTRUCTIVE" = '1'
       - run: pnpm run test
       - name: Verify generated API contract is current
         run: |

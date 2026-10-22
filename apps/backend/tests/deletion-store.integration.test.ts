@@ -36,7 +36,7 @@ import { DatabaseEmailStore } from '../src/email/store.js';
 import { hashContact } from '../src/email/hash.js';
 
 const databaseUrl = process.env.TEST_MIGRATION_DATABASE_URL;
-if (databaseUrl || process.env.DB_TEST_ALLOW_DESTRUCTIVE) {
+if (databaseUrl || process.env.DB_TEST_ALLOW_DESTRUCTIVE || process.env.CI) {
   if (
     !databaseUrl ||
     process.env.DB_TEST_ALLOW_DESTRUCTIVE !== '1' ||

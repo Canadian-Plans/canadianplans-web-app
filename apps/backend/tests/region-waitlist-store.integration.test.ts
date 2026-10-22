@@ -9,7 +9,7 @@ function getDisposableTestDatabaseUrl(): string | undefined {
   const migrationUrl = process.env.TEST_MIGRATION_DATABASE_URL;
   const destructiveTestsEnabled = process.env.DB_TEST_ALLOW_DESTRUCTIVE === '1';
 
-  if (!migrationUrl && !destructiveTestsEnabled) return undefined;
+  if (!migrationUrl && !destructiveTestsEnabled && !process.env.CI) return undefined;
   if (!migrationUrl || !destructiveTestsEnabled) {
     throw new Error(
       'Database integration tests require TEST_MIGRATION_DATABASE_URL and DB_TEST_ALLOW_DESTRUCTIVE=1 together.',

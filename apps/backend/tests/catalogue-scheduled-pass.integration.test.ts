@@ -12,7 +12,7 @@ import { CatalogueSyncRunner } from '../src/catalogue/runner.js';
 function disposableDatabaseUrl(): string | undefined {
   const url = process.env.TEST_MIGRATION_DATABASE_URL;
   const enabled = process.env.DB_TEST_ALLOW_DESTRUCTIVE === '1';
-  if (!url && !enabled) return undefined;
+  if (!url && !enabled && !process.env.CI) return undefined;
   if (!url || !enabled) throw new Error('Both disposable database test settings are required.');
   if (!decodeURIComponent(new URL(url).pathname).endsWith('_test')) {
     throw new Error('The disposable database name must end in _test.');

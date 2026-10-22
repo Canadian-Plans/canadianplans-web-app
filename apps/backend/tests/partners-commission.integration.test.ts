@@ -11,7 +11,7 @@ import { DatabasePartnerStore } from '../src/partners/store.js';
 function disposableDatabaseUrl(): string | undefined {
   const url = process.env.TEST_MIGRATION_DATABASE_URL;
   const allowed = process.env.DB_TEST_ALLOW_DESTRUCTIVE === '1';
-  if (!url && !allowed) return undefined;
+  if (!url && !allowed && !process.env.CI) return undefined;
   if (!url || !allowed) throw new Error('Both disposable database test settings are required.');
   if (!decodeURIComponent(new URL(url).pathname).endsWith('_test')) {
     throw new Error('The disposable database name must end in _test.');

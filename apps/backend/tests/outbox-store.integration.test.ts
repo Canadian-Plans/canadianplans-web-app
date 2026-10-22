@@ -8,7 +8,7 @@ import { DatabaseOutboxStore } from '../src/jobs/store.js';
 function disposableDatabaseUrl(): string | undefined {
   const url = process.env.TEST_MIGRATION_DATABASE_URL;
   const enabled = process.env.DB_TEST_ALLOW_DESTRUCTIVE === '1';
-  if (!url && !enabled) return undefined;
+  if (!url && !enabled && !process.env.CI) return undefined;
   if (!url || !enabled) throw new Error('Outbox DB tests require both destructive-test variables.');
   if (!decodeURIComponent(new URL(url).pathname).endsWith('_test')) {
     throw new Error('Outbox DB tests require a disposable database ending in _test.');
