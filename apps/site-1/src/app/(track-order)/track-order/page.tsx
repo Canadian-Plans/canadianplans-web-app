@@ -1,5 +1,6 @@
 import { pageMetadata } from '@/lib/page-metadata';
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import { SkipLink } from '@canadian-plans/ui';
 import { CpBreadcrumb } from '@canadian-plans/ui/canadian-plans';
 import { trackingCopy as copy, trackingAssets, trackingFixtures } from '@content/track-order';
@@ -18,6 +19,9 @@ export default async function Page({
 }: {
   searchParams: Promise<{ state?: string | string[] }>;
 }) {
+  // Owner decision (22 Oct 2026): design previews 404 in production; Vercel
+  // previews and local builds keep them for design checks.
+  if (process.env.VERCEL_ENV === 'production') notFound();
   const { state } = await searchParams;
   const selected = parseTrackingState(state);
   // Site header (15 Oct 2026); the tracking result and lookup states are unchanged.

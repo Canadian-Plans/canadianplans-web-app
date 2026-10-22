@@ -11,7 +11,7 @@ export const pageDescriptions: Readonly<Record<string, string>> = {
   '/guides': 'Browse practical guides to mobile plans, eSIMs and connectivity in Canada.',
   '/order/home-internet': 'Preview the home internet order form.',
   '/order/pre-arrival': 'Preview the pre-arrival SIM order form.',
-  '/track-order': 'Look up a Canadian Plans order and review its status.',
+  '/track-order': 'Preview the order tracking design.',
   '/privacy': 'Read the Canadian Plans privacy policy and cookie information.',
   '/terms': 'Read the Canadian Plans terms and conditions.',
   '/accessibility': 'Read the Canadian Plans accessibility statement and find support options.',
