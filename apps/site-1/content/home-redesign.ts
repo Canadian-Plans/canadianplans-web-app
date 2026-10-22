@@ -290,6 +290,9 @@ export interface HomeTestimonial {
   readonly meta: string;
 }
 
+/** Empty until the owner supplies real, consented customer reviews. */
+const homeTestimonials: readonly HomeTestimonial[] = [];
+
 export const categoryHrefs: Readonly<Record<CategoryKey, string>> = {
   'pre-arrival': '/pre-arrival-sim',
   'home-internet': '/home-internet',
@@ -776,7 +779,7 @@ export const homeRedesign = {
     title: "People we've helped get connected",
     more: { label: 'Read more reviews', href: '#stories' },
     /** Real reviews used with permission only; never invent quotes. Empty hides the section. */
-    items: [] as readonly HomeTestimonial[],
+    items: homeTestimonials,
   },
   faq: {
     eyebrow: 'FAQ',
