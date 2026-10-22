@@ -128,7 +128,8 @@ export const internetOrderCopy = {
 export function internetOrderSummaryFor(plan: InternetPlan) {
   return {
     ...internetOrderCopy.summary,
-    compactTitle: `${internetOrderCopy.summary.category} · ${plan.allowance} ${plan.unit}`,
+    // `unit` is optional on plan cards; never print the word "undefined".
+    compactTitle: `${internetOrderCopy.summary.category} · ${plan.allowance}${plan.unit ? ` ${plan.unit}` : ''}`,
     compactPrice: `${plan.amount}${plan.period} + tax · $0 due today`,
     monthlyValue: `${plan.amount}${plan.period} + tax`,
   };
