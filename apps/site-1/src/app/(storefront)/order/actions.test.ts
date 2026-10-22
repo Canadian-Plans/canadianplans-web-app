@@ -66,7 +66,6 @@ function input() {
     productId: PRODUCT_ID,
     attribution: {},
     turnstileToken: 'synthetic-first-token',
-    consentVersion: 'TEST-disclosure-v1',
   };
 }
 
@@ -95,6 +94,16 @@ beforeEach(() => {
 });
 
 describe('saveDetails draft lifecycle', () => {
+  it("records the server's disclosure version, whatever the browser sends", async () => {
+    leadsCreate.mockResolvedValue({ lead: { id: LEAD_A }, draftGrant: { token: 'grant-a' } });
+    // A tampered request body still carries a consentVersion field.
+    await saveDetails({ ...input(), ...{ consentVersion: 'forged-by-browser' } });
+    expect(leadsCreate).toHaveBeenCalledWith(
+      expect.objectContaining({ consentVersion: 'privacy-2026-10-v2' }),
+      expect.anything(),
+    );
+  });
+
   it('reuses the same lead and idempotency key while the draft is still editable', async () => {
     leadsCreate.mockResolvedValue({ lead: { id: LEAD_A }, draftGrant: { token: 'grant-a' } });
     leadsUpdate.mockResolvedValue({ lead: { id: LEAD_A } });

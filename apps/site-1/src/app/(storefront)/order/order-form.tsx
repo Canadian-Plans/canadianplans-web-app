@@ -61,8 +61,6 @@ export interface OrderFormProps {
   /** The plan type chosen on the plan step, if any. */
   category: OrderCategory | undefined;
   attribution: RawAttribution;
-  /** Disclosure version recorded with the saved draft (REQ 17). */
-  consentVersion: string;
   restoredDetails: OrderDetailsInput | undefined;
 }
 
@@ -97,7 +95,6 @@ export function OrderForm({
   province,
   category,
   attribution,
-  consentVersion,
   restoredDetails,
 }: OrderFormProps) {
   const human = useHumanChallenge();
@@ -212,7 +209,6 @@ export function OrderForm({
         documentKeys,
         productId: selected.productId,
         attribution,
-        consentVersion,
       }),
     );
     if (!result.ok && result.code === 'retry_fresh_draft') {
@@ -222,7 +218,6 @@ export function OrderForm({
           documentKeys,
           productId: selected.productId,
           attribution,
-          consentVersion,
           turnstileToken,
         }),
       );

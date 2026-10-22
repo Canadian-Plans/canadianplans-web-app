@@ -269,7 +269,8 @@ export async function saveDetails(
         form,
         productId: productId.data,
         attribution: input.attribution,
-        consentVersion: input.consentVersion,
+        // The server's own disclosure version: never trusted from the browser.
+        consentVersion: siteConfig.legal.consentVersion,
       },
       { turnstileToken: input.turnstileToken },
     );
