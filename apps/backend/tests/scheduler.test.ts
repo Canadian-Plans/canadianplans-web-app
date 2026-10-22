@@ -7,6 +7,7 @@ import {
   SchedulerConfigurationError,
   type SchedulerTask,
   runCatalogueSyncWithAlert,
+  runDocumentCleanup,
   runOutboxWithQueueMonitor,
 } from '../src/scheduler.js';
 import { INITIAL_QUEUE_HEALTH_STATE, type QueueHealthState } from '../src/jobs/queueMonitor.js';
@@ -301,6 +302,7 @@ describe('createBackendScheduler', () => {
       runOutbox: vi.fn(async () => undefined),
       runCatalogueSync: vi.fn(async () => undefined),
       runSyntheticCheck: vi.fn(async () => undefined),
+      runDocumentCleanup: vi.fn(async () => undefined),
     };
   }
 
@@ -344,6 +346,8 @@ describe('createBackendScheduler', () => {
     const expected = { actorId: ACTOR, authorizedWorkspaceIds: [WORKSPACE] };
     expect(deps.runOutbox).toHaveBeenCalledWith(expected);
     expect(deps.runCatalogueSync).toHaveBeenCalledWith(expected);
+    // REL-18: the upload sweep runs with the outbox identity.
+    expect(deps.runDocumentCleanup).toHaveBeenCalledWith(expected);
     await scheduler?.stop();
   });
 
@@ -386,5 +390,27 @@ describe('createBackendScheduler', () => {
       expect.objectContaining({ actorId: ACTOR }),
     );
     await scheduler?.stop();
+  });
+});
+
+describe('runDocumentCleanup (REL-18)', () => {
+  it('sweeps each authorized workspace once and totals the result', async () => {
+    const sweepExpired = vi.fn(async ({ workspaceId }: { workspaceId: string }) =>
+      workspaceId === 'w1'
+        ? { expiredIntents: 2, deletedObjects: 3, failedDeletes: 1 }
+        : { expiredIntents: 1, deletedObjects: 1, failedDeletes: 0 },
+    );
+    const result = await runDocumentCleanup(
+      { sweepExpired },
+      { actorId: 'actor', authorizedWorkspaceIds: ['w1', 'w2', 'w1'] },
+    );
+    expect(sweepExpired).toHaveBeenCalledTimes(2);
+    expect(result).toEqual({ expiredIntents: 3, deletedObjects: 4, failedDeletes: 1 });
+  });
+
+  it('does nothing when document storage is not configured', async () => {
+    expect(
+      await runDocumentCleanup(undefined, { actorId: 'actor', authorizedWorkspaceIds: ['w1'] }),
+    ).toEqual({ skipped: 'feature_not_ready' });
   });
 });

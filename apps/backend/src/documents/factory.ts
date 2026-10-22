@@ -1,4 +1,5 @@
 import { createR2DocumentStoreFromEnv } from '@canadian-plans/adapters';
+import { isBackupInProgress } from '@canadian-plans/db';
 
 import { DatabaseDocumentContextResolver } from './resolver.js';
 import { DatabaseDocumentStore } from './store.js';
@@ -22,5 +23,7 @@ export function createDocumentServiceFromEnv(): DocumentService | undefined {
     new DatabaseDocumentStore(),
     r2,
     new DatabaseDocumentContextResolver(),
+    // REL-18: the expired-upload sweep waits while a backup is copying objects.
+    { backupLease: { isActive: isBackupInProgress } },
   );
 }

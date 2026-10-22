@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { InMemoryR2DocumentStore } from '@canadian-plans/adapters';
 
@@ -16,7 +16,10 @@ const resolver: DocumentContextResolver = {
  * so it cannot race the backup's referenced-object manifest/copy step.
  */
 describe('DocumentService.runCleanup backup-lease gate', () => {
-  it('withholds cleanedObjects while a backup lease is active, without losing the DB-side expiry', async () => {
+  // REL-18: the sweep used to expire the rows during a backup and drop their
+  // keys, so those objects could never be deleted. Now nothing changes during
+  // a backup and the same intent is expired, with its keys, once it ends.
+  it('leaves expired intents untouched during a backup and expires them, with keys, afterwards', async () => {
     const store = new InMemoryDocumentRecordStore();
     const r2 = new InMemoryR2DocumentStore();
     let active = true;
@@ -43,31 +46,44 @@ describe('DocumentService.runCleanup backup-lease gate', () => {
     });
 
     const whileLeased = await expiredService.runCleanup({ workspaceId: 'w1', actorId: 'a1' });
-    expect(whileLeased.expiredIntents).toBe(1);
-    expect(whileLeased.cleanedObjects).toEqual([]);
+    expect(whileLeased).toEqual({ expiredIntents: 0, cleanedObjects: [] });
 
     active = false;
-    const store2 = new InMemoryDocumentRecordStore();
-    const service2 = new DocumentService(store2, r2, resolver, { backupLease });
-    const intent2 = await service2.createIntent({
-      workspaceId: 'w1',
-      actorId: 'a1',
-      requestId: 'r2',
-      recordType: 'order',
-      recordId: 'order-2',
-      documentType: 'passport',
-      declaredContentType: 'application/pdf',
-      declaredSizeBytes: 10,
-    });
-    expect(intent2.status).toBe('created');
-    const expiredService2 = new DocumentService(store2, r2, resolver, {
-      backupLease,
+    const afterBackup = await expiredService.runCleanup({ workspaceId: 'w1', actorId: 'a1' });
+    expect(afterBackup.expiredIntents).toBe(1);
+    expect(afterBackup.cleanedObjects.length).toBeGreaterThan(0);
+  });
+
+  it('sweepExpired deletes each abandoned object and counts a failed delete', async () => {
+    const store = new InMemoryDocumentRecordStore();
+    const r2 = new InMemoryR2DocumentStore();
+    const service = new DocumentService(store, r2, resolver);
+    for (const recordId of ['order-1', 'order-2']) {
+      const intent = await service.createIntent({
+        workspaceId: 'w1',
+        actorId: 'a1',
+        requestId: recordId,
+        recordType: 'order',
+        recordId,
+        documentType: 'passport',
+        declaredContentType: 'application/pdf',
+        declaredSizeBytes: 10,
+      });
+      expect(intent.status).toBe('created');
+    }
+    const deleteObject = vi
+      .spyOn(r2, 'deleteObject')
+      .mockRejectedValueOnce(new Error('r2 unavailable'))
+      .mockResolvedValue(undefined);
+    const expiredService = new DocumentService(store, r2, resolver, {
       now: () => new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
       cleanupGraceSeconds: 0,
     });
-    const withoutLease = await expiredService2.runCleanup({ workspaceId: 'w1', actorId: 'a1' });
-    expect(withoutLease.expiredIntents).toBe(1);
-    expect(withoutLease.cleanedObjects.length).toBeGreaterThan(0);
+    const swept = await expiredService.sweepExpired({ workspaceId: 'w1', actorId: 'a1' });
+    expect(swept).toEqual({ expiredIntents: 2, deletedObjects: 1, failedDeletes: 1 });
+    expect(deleteObject).toHaveBeenCalledWith(
+      expect.objectContaining({ workspaceId: 'w1', objectKey: expect.any(String) }),
+    );
   });
 
   it('defaults to no-op (never withholds) when no backup lease is configured', async () => {
