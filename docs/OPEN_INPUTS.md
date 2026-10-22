@@ -84,3 +84,13 @@ Move rows here once decided, with the date. Don't delete them; a decided input t
 | — | Recovery baseline | Proceed with standard backups, separate encrypted archive, alerts and tested restore; exact recovery-time/loss objectives deferred | 14 Sep 2026 |
 | — | Company / umbrella brand | Canadian Plans. Individual storefront names/domains and registered billing identity remain separate inputs | 14 Sep 2026 |
 | 22 | Staging setup | Single live environment — no separate staging Supabase org/project | 14 Sep 2026 |
+| — | Credit check on pre-arrival postpaid plans | Owner confirmed: the Rogers/Fido pre-arrival postpaid plans need no credit check and no Canadian credit history. Recorded in the catalogue's arrival terms; add to Terms §7 at the next legal version | 22 Oct 2026 |
+| — | WhatsApp channel | A WhatsApp Business number is planned but not ready. Until the owner supplies it, the site promises phone and email only | 22 Oct 2026 |
+| — | "No contract" claim | Owner confirmed: no term commitment on any plan (pre-arrival, BYOD mobile, home internet including the 2-year price lock) | 22 Oct 2026 |
+| — | Provider named on the site | Home internet/TV and BYOD mobile do not name the provider ("authorised sales agent"; the advisor confirms the provider), matching the catalogue and Terms. Rogers, Fido and Chatr are named only for pre-arrival plans | 22 Oct 2026 |
+| — | Guide author / reviewer | Guides are credited to the Canadian Plans team, not to named individuals | 22 Oct 2026 |
+| — | Lead contact details in admin | Only roles with `order.manage` or `financial.read` (Orders, Finance, Owner) see a lead's name, email and phone; other roles see leads without contact details | 22 Oct 2026 |
+| — | MFA for individually granted privileged permissions | Every privileged action needs a verified MFA (aal2) session, whoever holds the permission, not only Owner/Finance roles | 22 Oct 2026 |
+| — | Design-preview routes | `/order/pre-arrival`, `/order/home-internet` and `/track-order` return 404 in production and stay available on preview builds | 22 Oct 2026 |
+| — | Contact page forms | Interim: the tracking panel links to `/track` and the message option opens email to info@canadianplans.com; a real message form is a later task | 22 Oct 2026 |
+| — | Pre-arrival SIM type | Pre-arrival plans are eSIM only; tighten Terms §7 ("eSIM or physical SIM") at the next legal version | 22 Oct 2026 |
