@@ -7,10 +7,13 @@ permissions:
   contents: read
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # PR pushes supersede each other; every main push must finish, because
+  # build:affected only diffs the newest push (github.event.before).
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   verify:
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     env:
       MIGRATION_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/canadian_plans_test
       MIGRATION_DATABASE_SSL_MODE: disable
