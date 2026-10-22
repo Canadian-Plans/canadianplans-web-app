@@ -78,16 +78,35 @@ export interface WebsiteRouteDependencies {
 
 export function createDefaultWebsiteRouteDependencies(): WebsiteRouteDependencies {
   const registry = loadMachineRegistry();
+  const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
+  const turnstileHosts = (process.env.TURNSTILE_HOSTNAMES ?? process.env.TURNSTILE_HOSTNAME ?? '')
+    .split(',')
+    .map((host) => host.trim())
+    .filter(Boolean);
+  // Every protected write fails closed without these, so say so once at boot
+  // instead of leaving the owner to discover it from customer 403s.
+  if (!turnstileSecret || turnstileHosts.length === 0) {
+    logRequestError({
+      requestId: 'startup',
+      route: 'website:turnstile',
+      code: 'bot_check_unconfigured',
+      flag: 'not_retryable',
+    });
+  }
   const verifiers = new Map(
     websiteBotActions.map((action) => [
       action,
       createTurnstileVerifier({
-        secret: process.env.TURNSTILE_SECRET_KEY,
-        hostnames: (process.env.TURNSTILE_HOSTNAMES ?? process.env.TURNSTILE_HOSTNAME ?? '')
-          .split(',')
-          .map((host) => host.trim())
-          .filter(Boolean),
+        secret: turnstileSecret,
+        hostnames: turnstileHosts,
         action,
+        onFailure: (code) =>
+          logRequestError({
+            requestId: 'turnstile',
+            route: `website:${action}`,
+            code: `bot_check_${code}`,
+            flag: 'not_retryable',
+          }),
       }),
     ]),
   );
