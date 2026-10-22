@@ -49,8 +49,10 @@ export async function seedDatabase(options: SeedDatabaseOptions): Promise<void> 
           (${STAFF_SEED_IDS.siteWorkspace}, 'site-1', 'Northern Arrival Mobile'),
           (${STAFF_SEED_IDS.demoWorkspace}, 'demo-2', 'Maple Demo Sandbox')
         -- Never rename an existing workspace: production site-1 was created
-        -- from this seed id and has since been renamed by the owner.
-        on conflict (id) do nothing
+        -- from this seed id and has since been renamed by the owner. No conflict
+        -- target, so a concurrent seed racing on the id *or* the slug unique key
+        -- (parallel integration suites share one database) is skipped too.
+        on conflict do nothing
       `;
 
       for (const workspaceId of [STAFF_SEED_IDS.siteWorkspace, STAFF_SEED_IDS.demoWorkspace]) {
