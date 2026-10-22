@@ -853,7 +853,7 @@ export const homeRedesignFaq: readonly FaqItemContent[] = [
     id: 'contract',
     question: 'Is there a contract?',
     answer:
-      'There is no contract with Canadian Plans. Your service agreement is with the provider, and an advisor explains its terms before anything is activated.',
+      'No. None of our plans has a contract, including home internet with a 2-year price lock. Your service agreement is with the provider, and an advisor explains its terms before anything is activated.',
   },
   {
     id: 'install',

@@ -118,7 +118,7 @@ export const internetCopy = {
         id: 'internet-faq-0',
         question: 'Is there a contract?',
         answer:
-          'Your service agreement is with the provider, and an advisor explains it before anything is booked. In Manitoba, British Columbia and Alberta your monthly price is locked for 2 years.',
+          'No. There is no contract, including with the 2-year price lock in Manitoba, British Columbia and Alberta. Your service agreement is with the provider, and an advisor explains it before anything is booked.',
       },
       {
         id: 'internet-faq-1',
