@@ -7,7 +7,7 @@ import { categoryPages, redesignCategory } from '@content/category-redesign';
 import { Footer } from '@/components/shared/chrome';
 import { SiteHeader } from '@/components/shared/site-header';
 import { siteChrome, siteFooter } from '@content/site-chrome';
-import { MobilePlansProvider, MobilePlanBrowser } from '@/components/mobile-plans/interactive';
+import { MobilePlanBrowser } from '@/components/mobile-plans/interactive';
 import { CategoryTemplate } from '@/components/category-redesign/template';
 
 export const metadata: Metadata = pageMetadata('/mobile-plans', {
@@ -15,11 +15,11 @@ export const metadata: Metadata = pageMetadata('/mobile-plans', {
   robots: { index: false, follow: false },
 });
 
-/** Electric Blue category template (14 October 2026); plan browser and brand comparison unchanged. */
+/** Electric Blue category template (14 October 2026) with the catalogue's three BYOD plans. */
 export default function MobilePlansPage() {
   const page = categoryPages.mobile;
   return (
-    <MobilePlansProvider>
+    <>
       <a className="cp-mobile-skip" href={`#${page.mainId}`}>
         {copy.skip}
       </a>
@@ -67,9 +67,9 @@ export default function MobilePlansPage() {
                   <span role="columnheader" className="cp-mobile-brand-label">
                     <span className="sr-only">{chromeAccessibility.comparisonFeature}</span>
                   </span>
-                  {copy.comparison.brands.map((brand) => (
-                    <strong role="columnheader" key={brand}>
-                      {brand}
+                  {copy.comparison.columns.map((column) => (
+                    <strong role="columnheader" key={column}>
+                      {column}
                     </strong>
                   ))}
                 </div>
@@ -97,6 +97,6 @@ export default function MobilePlansPage() {
         assets={mobileChromeAssets}
         brandHref="/"
       />
-    </MobilePlansProvider>
+    </>
   );
 }

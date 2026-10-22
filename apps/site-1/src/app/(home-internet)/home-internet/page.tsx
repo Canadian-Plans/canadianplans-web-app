@@ -6,12 +6,7 @@ import { categoryPages, redesignCategory } from '@content/category-redesign';
 import { Footer } from '@/components/shared/chrome';
 import { SiteHeader } from '@/components/shared/site-header';
 import { siteChrome, siteFooter } from '@content/site-chrome';
-import {
-  InternetPreviewProvider,
-  AddressCheckForm,
-  SpeedFinder,
-  InternetSpeedCards,
-} from '@/components/home-internet/interactive';
+import { InternetProvinceCards } from '@/components/home-internet/interactive';
 import { CategoryTemplate } from '@/components/category-redesign/template';
 
 export const metadata: Metadata = pageMetadata('/home-internet', {
@@ -20,19 +15,19 @@ export const metadata: Metadata = pageMetadata('/home-internet', {
 });
 
 /**
- * Electric Blue category template (14 October 2026). The address check, speed finder,
- * speed cards and comparison keep their existing behaviour and preview data.
+ * Electric Blue category template (14 October 2026). One card per province opens that
+ * province's plans in /order; the speed comparison explains what each speed feels like.
  */
 export default function HomeInternetPage() {
   const copy = internetCopy;
   const page = categoryPages['home-internet'];
   return (
-    <InternetPreviewProvider>
+    <>
       <a href={`#${page.mainId}`} className="cp-internet-skip">
         {copy.skip}
       </a>
       <SiteHeader
-        planHref="#speed-finder"
+        planHref="#internet-plans"
         content={{
           ...siteChrome,
           promo: internetChrome.promo,
@@ -61,16 +56,14 @@ export default function HomeInternetPage() {
                   ))}
                 </ul>
               </div>
-              <AddressCheckForm />
             </section>
-            <SpeedFinder />
             <section id="internet-plans" className="cp-internet-plans cp-internet-section">
               <div className="cp-container">
                 <div className="cp-internet-plans-heading">
                   <CpSectionHeading content={copy.plans.heading} />
                   <p className="cp-internet-note">{copy.plans.date}</p>
                 </div>
-                <InternetSpeedCards />
+                <InternetProvinceCards />
                 <div className="cp-internet-includes">
                   <strong>{copy.plans.includesTitle}</strong>
                   <ul>
@@ -124,6 +117,6 @@ export default function HomeInternetPage() {
         assets={internetChromeAssets}
         brandHref="/"
       />
-    </InternetPreviewProvider>
+    </>
   );
 }

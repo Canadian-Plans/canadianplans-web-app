@@ -1,6 +1,6 @@
 import type { FigmaAsset } from '@canadian-plans/ui/canadian-plans';
 import { mobilePlans } from './mobile-plans';
-import { internetPlans, internetCopy } from './home-internet';
+import { internetOrderHref, internetPlansByProvince, internetProvinces } from './home-internet';
 export interface FinderAnswers {
   location: 'canada' | 'arrival';
   need: 'phone' | 'internet';
@@ -72,6 +72,8 @@ export interface FinderMatch {
   readonly description: string;
   readonly price: string;
   readonly comparison?: string;
+  /** The plan in the order form. */
+  readonly href: string;
   readonly features: readonly string[];
 }
 export const finderCopy = {
@@ -1238,83 +1240,87 @@ export const finderAssets = {
 } satisfies Record<string, FigmaAsset>;
 export const finderArrivalMatches: readonly FinderMatch[] = [
   {
-    id: 'finder-preview-rogers-100',
+    id: 'prearrival-rogers-plus-100',
     previewOnly: true,
-    title: 'Rogers · 100 GB',
+    title: 'Rogers Plus · 100 GB',
     carrier: 'Rogers',
     symbol: 'R',
     tone: 'rogers',
     description: 'Our most popular plan. Lots of data, and your number works the day you land.',
     price: '$40/mo',
     comparison: '$80/mo if bought in Canada',
+    href: '/order?plan=prearrival-rogers-plus-100&category=sim',
     features: [
-      '100 GB 5G data',
-      'Unlimited Canada calls & texts',
+      '100 GB at up to 1 Gbps',
+      'Unlimited Canada-wide calling',
       '1,000 international minutes',
       'eSIM ready',
       'Pay $0 today',
     ],
   },
   {
-    id: 'finder-preview-fido-75',
+    id: 'prearrival-fido-essential-75',
     previewOnly: true,
-    title: 'Fido · 75 GB',
+    title: 'Fido Essential · 75 GB',
     carrier: 'Fido',
     symbol: 'F',
     tone: 'fido',
     description: 'A little less data for a lower monthly bill.',
     price: '$35/mo',
     comparison: '$60/mo if bought in Canada',
+    href: '/order?plan=prearrival-fido-essential-75&category=sim',
     features: [
       '75 GB 5G data',
-      'Unlimited Canada calls & texts',
+      'Unlimited Canada-wide calling',
       '1,000 international minutes',
       'Pay $0 today',
     ],
   },
 ];
 
-export const finderResidentCatalog: Record<FinderAnswers['need'], readonly FinderMatch[]> = {
-  phone: mobilePlans.map((plan) => ({
+/** Each match is a real plan in /order, with the numbers the ranking uses. */
+export interface FinderCatalogMatch extends FinderMatch {
+  readonly priceCad: number;
+  readonly speedRank: number;
+  readonly popular: boolean;
+}
+const strip = (feature: string) => feature.replace(/^✓\s*/, '');
+
+export const finderPhoneMatches: readonly FinderCatalogMatch[] = mobilePlans.map((plan) => ({
+  id: plan.id,
+  previewOnly: true,
+  title: `${plan.carrier} · ${plan.allowance}`,
+  carrier: plan.carrier,
+  symbol: plan.carrier.slice(0, 1),
+  tone: 'blue',
+  description: plan.goodFor ?? plan.finePrint,
+  price: plan.amount + plan.period,
+  href: `/order?plan=${plan.id}&category=mobile`,
+  features: plan.features.map(strip),
+  priceCad: plan.priceCad,
+  speedRank: plan.priceCad,
+  popular: plan.featured,
+}));
+
+/** Internet matches for the province chosen in the finder; none where internet is not sold. */
+export function finderInternetMatches(
+  province: FinderAnswers['province'] | undefined,
+): readonly FinderCatalogMatch[] {
+  const code = internetProvinces.find((item) => item.toLowerCase() === province);
+  const plans = code ? internetPlansByProvince[code] : [];
+  return plans.map((plan) => ({
     id: plan.id,
     previewOnly: true,
     title: `${plan.carrier} · ${plan.allowance}`,
     carrier: plan.carrier,
-    symbol: plan.carrier.slice(0, 1),
-    tone: plan.brand,
+    symbol: plan.allowance.slice(0, 1),
+    tone: 'mint',
     description: plan.goodFor ?? plan.finePrint,
     price: plan.amount + plan.period,
-    features: plan.features.map((feature) => feature.replace(/^✓\s*/, '')),
-  })),
-  internet: internetPlans.map((plan) => ({
-    id: plan.id,
-    previewOnly: true,
-    title: plan.resultLabel,
-    carrier: 'Rogers',
-    symbol: 'R',
-    tone: 'rogers',
-    description: plan.goodFor ?? plan.finePrint,
-    price: plan.resultPrice,
-    features: internetCopy.plans.includes.map((feature) => feature.replace(/^✓\s*/, '')),
-  })),
-};
-export const finderMatchPriorities: Record<FinderAnswers['priority'], readonly string[]> = {
-  price: [
-    'preview-mobile-chatr-20',
-    'preview-mobile-fido-60',
-    'preview-internet-150',
-    'preview-internet-500',
-  ],
-  value: [
-    'preview-mobile-fido-60',
-    'preview-mobile-rogers-100',
-    'preview-internet-500',
-    'preview-internet-150',
-  ],
-  speed: [
-    'preview-mobile-rogers-150',
-    'preview-mobile-rogers-100',
-    'preview-internet-1500',
-    'preview-internet-1000',
-  ],
-};
+    href: internetOrderHref(plan.province, plan),
+    features: plan.features.map(strip),
+    priceCad: plan.priceCad,
+    speedRank: plan.mbps,
+    popular: plan.badge !== undefined,
+  }));
+}

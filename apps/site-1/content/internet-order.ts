@@ -1,6 +1,7 @@
 import { componentAssets } from './components';
-import { internetPlans, type InternetPlan } from './home-internet';
-export const internetOrderPlan = internetPlans.find((plan) => plan.id === 'preview-internet-500');
+import { internetPlansByProvince, type InternetPlan } from './home-internet';
+const internetPlans: readonly InternetPlan[] = Object.values(internetPlansByProvince).flat();
+export const internetOrderPlan = internetPlans.find((plan) => plan.id === 'internet-bc-1000');
 
 /** Only known local fixtures may enter the preview checkout; query values never set prices. */
 export function selectInternetOrderPlan(value: string | string[] | undefined) {

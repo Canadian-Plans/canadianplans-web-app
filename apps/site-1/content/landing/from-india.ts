@@ -222,7 +222,6 @@ export const fromIndiaLanding: LandingPageContent = {
         title: 'Compare and learn',
         links: [
           { label: 'All pre-arrival plans', href: '/pre-arrival-sim' },
-          { label: 'Rogers vs Fido', href: '/compare/rogers-vs-fido' },
           {
             label: 'Best SIM for students from India',
             href: '/guides/best-sim-for-students-from-india',

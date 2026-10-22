@@ -121,6 +121,8 @@ export interface CpPlanCardProps {
   selected?: boolean;
   variant?: 'default' | 'pre-arrival' | 'internet' | 'mobile';
   onSelect?: () => void;
+  /** When set, the button is a link, e.g. straight to the plan in the order form. */
+  href?: string;
 }
 
 export function CpPlanCard({
@@ -129,6 +131,7 @@ export function CpPlanCard({
   selected = false,
   variant = 'default',
   onSelect,
+  href,
 }: CpPlanCardProps) {
   return (
     <Card
@@ -177,20 +180,31 @@ export function CpPlanCard({
           ))}
         </ul>
       ) : null}
-      <CpButton
-        tone={(variant !== 'pre-arrival' && featured) || selected ? 'primary' : 'outline'}
-        scale="large"
-        aria-pressed={selected}
-        aria-label={
-          variant === 'pre-arrival'
-            ? `${selected ? content.selectedLabel : content.buttonLabel}: ${content.carrier}, ${content.allowance}`
-            : undefined
-        }
-        onClick={onSelect}
-        className="cp-plan-select"
-      >
-        {selected ? content.selectedLabel : content.buttonLabel}
-      </CpButton>
+      {href ? (
+        <CpButton
+          asChild
+          tone={featured ? 'primary' : 'outline'}
+          scale="large"
+          className="cp-plan-select"
+        >
+          <a href={href}>{content.buttonLabel}</a>
+        </CpButton>
+      ) : (
+        <CpButton
+          tone={(variant !== 'pre-arrival' && featured) || selected ? 'primary' : 'outline'}
+          scale="large"
+          aria-pressed={selected}
+          aria-label={
+            variant === 'pre-arrival'
+              ? `${selected ? content.selectedLabel : content.buttonLabel}: ${content.carrier}, ${content.allowance}`
+              : undefined
+          }
+          onClick={onSelect}
+          className="cp-plan-select"
+        >
+          {selected ? content.selectedLabel : content.buttonLabel}
+        </CpButton>
+      )}
     </Card>
   );
 }

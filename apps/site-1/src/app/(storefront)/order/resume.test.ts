@@ -123,6 +123,11 @@ describe('saved order restoration', () => {
       details: undefined,
     });
     expect(selectOrderDraft({ ...base, requestedPlan: 'missing' }).selected).toBeUndefined();
+    // Static marketing pages link by the stable catalogue productKey.
+    expect(selectOrderDraft({ ...base, requestedPlan: 'test-mobile' }).selected).toBe(mobile);
+    expect(
+      selectOrderDraft({ ...base, requestedPlan: 'test-mobile', category: 'internet' }).selected,
+    ).toBeUndefined();
     expect(selectOrderDraft({ ...base, province: 'BC' })).toMatchObject({
       details: undefined,
       province: 'BC',

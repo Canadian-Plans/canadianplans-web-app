@@ -37,9 +37,24 @@ describe('global finder flow', () => {
       'Best value',
     ]);
     expect(finderMatches(final).map((plan) => plan.id)).toEqual([
-      'preview-mobile-fido-60',
-      'preview-mobile-rogers-100',
+      'mobile-can-us-100',
+      'mobile-can-us-mex-150',
     ]);
+  });
+  it('recommends the chosen province’s internet plans, and none where internet is not sold', () => {
+    const result = (province: 'bc' | 'on', priority: 'speed' | 'price') =>
+      finderMatches({
+        step: 'result',
+        history: [],
+        answers: { location: 'canada', need: 'internet', province, priority },
+      });
+    expect(result('bc', 'speed').map((plan) => plan.id)).toEqual([
+      'internet-bc-1000',
+      'internet-streamsaver-bc-1000',
+    ]);
+    expect(result('bc', 'price').map((plan) => plan.price)).toEqual(['$70/mo', '$80/mo']);
+    expect(result('on', 'price')).toEqual([]);
+    for (const plan of result('bc', 'speed')) expect(plan.href).toMatch(/^\/order\?plan=/);
   });
   it('Back returns to the actual previous step and retains its answer', () => {
     const final = finish(initialFinderState);
@@ -80,21 +95,17 @@ describe('global finder flow', () => {
     expect(finderMatches(empty)).toEqual([]);
   });
   it.each([
-    ['price', ['preview-mobile-chatr-20', 'preview-mobile-fido-60']],
-    ['speed', ['preview-mobile-rogers-150', 'preview-mobile-rogers-100']],
+    ['price', ['mobile-can-us-100', 'mobile-can-us-mex-150']],
+    ['speed', ['mobile-5g-plus-complete-unlimited', 'mobile-can-us-mex-150']],
   ] as const)('uses the configured %s ordering', (priority, ids) => {
     let state = backFinder(finish(selectFinderAnswer(initialFinderState, 'location', 'canada')));
     state = selectFinderAnswer(state, 'priority', priority);
     expect(finderMatches(continueFinder(state)).map((plan) => plan.id)).toEqual(ids);
   });
-  it('uses internet fixtures without inferring live availability', () => {
+  it('offers no internet plan for Ontario, the default province', () => {
     let state = continueFinder(selectFinderAnswer(initialFinderState, 'location', 'canada'));
     state = selectFinderAnswer(state, 'need', 'internet');
     const matches = finderMatches(finish(state));
-    expect(matches.map((plan) => plan.id)).toEqual([
-      'preview-internet-500',
-      'preview-internet-150',
-    ]);
-    expect(matches.every((plan) => plan.previewOnly)).toBe(true);
+    expect(matches).toEqual([]);
   });
 });

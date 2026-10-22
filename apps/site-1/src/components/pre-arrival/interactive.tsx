@@ -16,11 +16,15 @@ import {
   CpSectionHeading,
   type SectionHeadingContent,
 } from '@canadian-plans/ui/canadian-plans';
-import { arrivalCopy, arrivalPlans, type ArrivalAudience } from '@content/pre-arrival';
-import { preArrivalOrderCopy } from '@content/pre-arrival-order';
+import {
+  arrivalCopy,
+  arrivalPlans,
+  preArrivalProductKeys,
+  type ArrivalAudience,
+} from '@content/pre-arrival';
 
 /**
- * One owner for the audience and chosen plan; checkout receives only fixture IDs.
+ * One owner for the audience and chosen plan; Continue opens that catalogue plan in /order.
  * Landing pages reuse it with their own heading and starting audience.
  */
 export function PlanPicker({
@@ -147,7 +151,7 @@ export function PlanPicker({
             </div>
             <CpButton asChild>
               <a
-                href={`${preArrivalOrderCopy.destinations.order}?plan=${encodeURIComponent(selected.id)}&audience=${audience}`}
+                href={`/order?plan=${encodeURIComponent(preArrivalProductKeys[selected.id] ?? selected.id)}&category=sim`}
               >
                 {copy.continue}
               </a>

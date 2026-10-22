@@ -2,10 +2,11 @@ import { landingBreadcrumb, landingFaqIntro, landingSkip } from './shared';
 import type { LandingBlock, LandingFaqItem, LandingPageContent } from './types';
 
 /**
- * Home internet city/region pages (/home-internet/vancouver, /home-internet/ontario).
+ * Home internet region pages (/home-internet/vancouver, /home-internet/ontario).
  * Primary keywords: home internet <region>, internet for renters <region>, internet
- * installation <region>. Coverage, speeds and install times are the 5 Oct 2026 preview
- * examples, unverified; the address check is a local fixture.
+ * installation <region>. Plans and prices are the British Columbia catalogue plans
+ * (content/home-internet.ts); internet is not sold in Ontario yet, so that page offers
+ * the region wish list in /order.
  */
 const steps = (region: string): LandingBlock => ({
   kind: 'steps',
@@ -17,23 +18,23 @@ const steps = (region: string): LandingBlock => ({
     {
       id: 'check',
       marker: '1',
-      meta: 'About 2 minutes',
-      title: 'Check your address',
-      body: 'Enter your postal code and pick a speed.',
+      meta: 'Online',
+      title: 'Choose your plan',
+      body: 'Pick a plan and send your details. Nothing is paid online.',
     },
     {
       id: 'call',
       marker: '2',
       meta: 'Same day',
       title: 'An advisor calls you',
-      body: 'We confirm your plan, price and install date. Nothing is charged before this call.',
+      body: 'We confirm availability at your address, your price and your install date.',
     },
     {
       id: 'install',
       marker: '✓',
       meta: 'About 3 days',
       title: 'A technician installs it',
-      body: 'Usually within about 3 days of your call. Your WiFi modem is included.',
+      body: 'Usually within about 3 days of your call. Your WiFi router and modem are included.',
       done: true,
     },
   ],
@@ -55,25 +56,25 @@ const homeTypes: LandingBlock = {
     {
       id: 'basement',
       title: 'Basement suite',
-      body: 'Share a line with upstairs? We can set up your own account and WiFi.',
+      body: 'Share a line with upstairs? Ask your advisor about your own account and WiFi.',
       icon: 'feature-hi-moving',
     },
     {
       id: 'house',
       title: 'House',
-      body: 'We test the signal in every room and can add WiFi pods for large homes.',
+      body: 'A professional install puts the WiFi router where it covers your home best.',
       icon: 'feature-hi-install',
     },
     {
       id: 'student',
       title: 'Student housing',
-      body: 'Short lease? Ask about month-to-month and we will explain the options.',
+      body: 'Short lease? Ask your advisor which options fit before you book.',
       icon: 'feature-hi-unlimited',
     },
   ],
 };
 
-const guide = (region: string): LandingBlock => ({
+const guide = (region: string, facts: { price: string; speed: string }): LandingBlock => ({
   kind: 'article',
   id: 'guide',
   eyebrow: 'Renter’s guide',
@@ -82,7 +83,7 @@ const guide = (region: string): LandingBlock => ({
     {
       title: 'What internet speed do I need?',
       body: [
-        'For 1 or 2 people, 150 Mbps covers streaming and work. Most shared apartments are happiest on 500 Mbps. Gamers and creators should look at 1 Gbps or more.',
+        'For 1 or 2 people, 500 Mbps covers streaming and work with room to spare. Busy shared homes, gamers and creators should look at 1 Gbps or more.',
       ],
     },
     {
@@ -94,21 +95,20 @@ const guide = (region: string): LandingBlock => ({
     {
       title: 'Fibre or cable: what is the difference?',
       body: [
-        'Fibre gives equally fast upload and download speeds and is available in many newer towers. Cable is widely available and fine for streaming. Your address check shows what your building supports.',
+        'Fibre gives equally fast upload and download speeds and is available in many newer towers. Cable is widely available and fine for streaming. Your advisor confirms what your building supports.',
       ],
     },
   ],
   facts: {
     title: 'Key facts',
     items: [
-      { label: 'Price range', value: '$55–$105/mo, CAD + tax' },
+      { label: 'Price range', value: facts.price },
       { label: 'Typical install', value: 'About 3 days after your call' },
-      { label: 'Top speed', value: 'Up to 1.5 Gbps' },
+      { label: 'Top speed', value: facts.speed },
       { label: 'Data', value: 'Unlimited on every plan' },
-      { label: 'Equipment', value: 'WiFi modem included' },
-      { label: 'Network', value: 'Rogers' },
+      { label: 'Equipment', value: 'WiFi router and modem included' },
     ],
-    note: 'Updated 5 October 2026',
+    note: 'Updated 22 October 2026',
   },
 });
 
@@ -131,18 +131,10 @@ const faq = (region: string, installAnswer: string): readonly LandingFaqItem[] =
       'It depends on the exact building. Your advisor confirms what is available at your address on the call.',
   },
   {
-    id: 'suite',
-    question: 'Do you install in basement suites?',
-    answer:
-      'This answer is awaiting approved content. An advisor confirms the wiring and account options for your address.',
-    pending: true,
-  },
-  {
     id: 'move',
     question: 'What happens if I move?',
     answer:
-      'This answer is awaiting approved content. Transfer options depend on the new address; ask an advisor before you move.',
-    pending: true,
+      'Talk to an advisor before you move. They check whether service is available at your new address and what it costs there.',
   },
 ];
 
@@ -168,16 +160,16 @@ const related = (other: { label: string; href: string }) => ({
       ],
     },
   ],
-  note: 'Prices in Canadian dollars, before tax, as of October 2026. Coverage, speeds and install times are typical examples; your address check and advisor confirm what applies to you.',
+  note: 'Prices in Canadian dollars, before tax, as of October 2026. Availability depends on your exact address; your advisor confirms it before installation.',
 });
 
-const highlights = ['Free professional install', 'Unlimited data', 'Nothing to pay until we call'];
+const highlights = ['Free professional install', 'Unlimited data', 'No upfront payment'];
 
 export const vancouverInternetLanding: LandingPageContent = {
   path: '/home-internet/vancouver',
-  title: 'Home Internet in Vancouver: Plans from $55, Installed in ~3 Days | Canadian Plans',
+  title: 'Home Internet in Vancouver: Plans from $70, Installed in ~3 Days | Canadian Plans',
   description:
-    'Home internet in Vancouver for apartments, condos and basement suites. Unlimited data, WiFi modem and free install on the Rogers network, from $55/month.',
+    'Home internet in Vancouver for apartments, condos and basement suites. Unlimited data, a free WiFi router and modem and free install, from $70/month.',
   mainId: 'vancouver-main',
   skip: landingSkip,
   tone: 'mint',
@@ -193,20 +185,19 @@ export const vancouverInternetLanding: LandingPageContent = {
     eyebrow: 'Home internet · Vancouver, BC',
     title: 'Home internet in Vancouver, installed in about 3 days',
     description:
-      'Rogers-network internet for apartments, condos and basement suites. Unlimited data, a WiFi modem and free professional install.',
-    action: { label: 'Check my address', href: '#plans' },
+      'Internet for apartments, condos and basement suites. Unlimited data, a free WiFi router and modem, free professional install and a 2-year price lock.',
+    action: { label: 'See BC plans', href: '#plans' },
     pricePrefix: 'from',
-    price: '$55',
+    price: '$70',
     priceSuffix: '/mo',
     photo: 'PHOTO · technician connecting a WiFi modem in a Vancouver apartment',
     highlights,
   },
-  byline: 'Updated 5 October 2026 · Reviewed by a Canadian Plans plan advisor',
+  byline: 'Updated 22 October 2026 · Reviewed by a Canadian Plans plan advisor',
   onThisPage: {
     label: 'On this page',
     links: [
-      { label: 'Check your address', href: '#plans' },
-      { label: 'Coverage', href: '#coverage' },
+      { label: 'Plans', href: '#plans' },
       { label: 'Renter’s guide', href: '#guide' },
       { label: 'FAQ', href: '#faq' },
     ],
@@ -215,54 +206,22 @@ export const vancouverInternetLanding: LandingPageContent = {
     eyebrow: 'Quick answer',
     title: 'How much is home internet in Vancouver?',
     answer:
-      'With us, Rogers-network home internet in Vancouver starts at $55 a month for 150 Mbps (CAD, plus tax), with unlimited data, a WiFi modem and free professional installation. Most homes are installed within about 3 days of your call.',
+      'With us, home internet in British Columbia starts at $70 a month for 500 Mbps, or $80 for 1 Gbps (CAD, plus tax), with unlimited data, a free WiFi router and modem, free professional installation and a 2-year price lock. Internet + TV starts at $115.',
   },
   facts: {
     label: 'Vancouver internet facts',
     items: [
       { label: 'Typical install', value: '3 days', detail: 'After your call' },
-      { label: 'Top speed', value: '1.5 Gbps', detail: 'In most buildings' },
-      { label: 'Starting price', value: '$55/mo', detail: 'CAD, plus tax' },
-      { label: 'Neighbourhoods', value: '8 listed', detail: 'See coverage below' },
+      { label: 'Top speed', value: '1 Gbps', detail: 'British Columbia plans' },
+      { label: 'Starting price', value: '$70/mo', detail: 'CAD, plus tax' },
+      { label: 'Price lock', value: '2 years', detail: 'No upfront payment' },
     ],
   },
   blocks: [
     steps('Vancouver'),
     { kind: 'slot', id: 'plans' },
-    {
-      kind: 'table',
-      id: 'coverage',
-      eyebrow: 'Coverage',
-      title: 'Vancouver internet coverage by neighbourhood',
-      description:
-        'Typical availability. Your exact building is confirmed by the address check and your advisor.',
-      caption: 'Typical internet speed, network type and install time by Vancouver neighbourhood',
-      columns: ['Neighbourhood', 'Postal codes', 'Top speed', 'Network', 'Typical install'],
-      rows: [
-        {
-          label: 'Downtown and West End',
-          values: ['V6B, V6E, V6G', '1.5 Gbps', 'Fibre, cable', '2–3 days'],
-        },
-        {
-          label: 'Yaletown and False Creek',
-          values: ['V6Z, V6H', '1.5 Gbps', 'Fibre', '2–3 days'],
-        },
-        {
-          label: 'Kitsilano and Fairview',
-          values: ['V6K, V6J', '1 Gbps', 'Fibre, cable', '3 days'],
-        },
-        { label: 'Mount Pleasant and Main', values: ['V5T, V5V', '1 Gbps', 'Cable', '3–4 days'] },
-        {
-          label: 'East Vancouver',
-          values: ['V5L, V5N, V5K', '1 Gbps', 'Fibre, cable', '3–4 days'],
-        },
-        { label: 'Kerrisdale and Marpole', values: ['V6M, V6P', '500 Mbps', 'Cable', '3–5 days'] },
-        { label: 'UBC area', values: ['V6T', '1 Gbps', 'Fibre', '3 days'] },
-        { label: 'South Vancouver', values: ['V5P, V5X', '500 Mbps', 'Cable', '3–5 days'] },
-      ],
-    },
     homeTypes,
-    guide('Vancouver'),
+    guide('Vancouver', { price: '$70–$140/mo, CAD + tax', speed: 'Up to 1 Gbps' }),
   ],
   faq: {
     intro: landingFaqIntro({
@@ -278,8 +237,8 @@ export const vancouverInternetLanding: LandingPageContent = {
   related: related({ label: 'Home internet in Ontario', href: '/home-internet/ontario' }),
   cta: {
     title: 'Online on move-in day in Vancouver',
-    subtitle: 'Check your address in about 2 minutes. An advisor confirms it the same day.',
-    primary: { label: 'Check my address →', href: '#plans' },
+    subtitle: 'Choose a plan and send your details. An advisor confirms it the same day.',
+    primary: { label: 'See BC plans →', href: '#plans' },
     secondary: { label: 'Talk to an advisor ›', href: '/contact' },
     icon: 'cta-home-internet',
   },
@@ -287,9 +246,9 @@ export const vancouverInternetLanding: LandingPageContent = {
 
 export const ontarioInternetLanding: LandingPageContent = {
   path: '/home-internet/ontario',
-  title: 'Home Internet in Ontario: Toronto, Ottawa & More from $55 | Canadian Plans',
+  title: 'Home Internet in Ontario: Coming Soon, Join the Wish List | Canadian Plans',
   description:
-    'Home internet across Ontario, from Toronto and Ottawa to Hamilton and London. Unlimited data, WiFi modem and free install on the Rogers network, from $55/month.',
+    'Home internet from Canadian Plans is not available in Ontario yet. Leave your email and we tell you when Ontario plans open.',
   mainId: 'ontario-main',
   skip: landingSkip,
   tone: 'mint',
@@ -303,66 +262,32 @@ export const ontarioInternetLanding: LandingPageContent = {
   },
   hero: {
     eyebrow: 'Home internet · Ontario',
-    title: 'Home internet in Ontario, city by city',
+    title: 'Home internet in Ontario is coming soon',
     description:
-      'Rogers-network internet in Toronto, Ottawa, Mississauga and more. Unlimited data, a WiFi modem and free professional install.',
-    action: { label: 'Check my address', href: '#plans' },
-    pricePrefix: 'from',
-    price: '$55',
-    priceSuffix: '/mo',
+      'We sell home internet in British Columbia, Alberta, Manitoba and Saskatchewan today. Join the wish list and we tell you when Ontario plans open.',
+    action: { label: 'Join the wish list', href: '/order?category=internet&province=ON' },
     photo: 'PHOTO · technician connecting a WiFi modem in a Toronto condo',
-    highlights,
+    highlights: ['One email when Ontario opens', 'No payment', 'No spam'],
   },
-  byline: 'Updated 5 October 2026 · Reviewed by a Canadian Plans plan advisor',
+  byline: 'Updated 22 October 2026',
   onThisPage: {
     label: 'On this page',
     links: [
-      { label: 'Check your address', href: '#plans' },
-      { label: 'Cities', href: '#coverage' },
+      { label: 'Wish list', href: '#plans' },
       { label: 'Renter’s guide', href: '#guide' },
       { label: 'FAQ', href: '#faq' },
     ],
   },
   quick: {
     eyebrow: 'Quick answer',
-    title: 'How much is home internet in Ontario?',
+    title: 'Can I get home internet from Canadian Plans in Ontario?',
     answer:
-      'With us, home internet across Ontario starts at $55 a month for 150 Mbps (CAD, plus tax), with unlimited data, a WiFi modem and free professional install. Most addresses are installed within about 3 days of your call.',
-  },
-  facts: {
-    label: 'Ontario internet facts',
-    items: [
-      { label: 'Typical install', value: '3 days', detail: 'After your call' },
-      { label: 'Top speed', value: '1.5 Gbps', detail: 'In most buildings' },
-      { label: 'Starting price', value: '$55/mo', detail: 'CAD, plus tax' },
-      { label: 'Cities', value: '8 listed', detail: 'See the city list below' },
-    ],
+      'Not yet. Home internet is sold in British Columbia, Alberta, Manitoba and Saskatchewan today. Join the wish list and we email you when Ontario plans and prices are available.',
   },
   blocks: [
-    steps('Ontario'),
     { kind: 'slot', id: 'plans' },
-    {
-      kind: 'table',
-      id: 'coverage',
-      eyebrow: 'Cities',
-      title: 'Home internet in Ontario cities',
-      description:
-        'Coverage and pricing vary by city. Your exact address is confirmed by the address check and your advisor.',
-      caption: 'Starting price and network type by Ontario city',
-      columns: ['City', 'Postal codes', 'Plans from', 'Network'],
-      rows: [
-        { label: 'Toronto', values: ['M4, M5, M6', '$55/mo', 'Fibre, cable'] },
-        { label: 'Ottawa', values: ['K1, K2', '$55/mo', 'Fibre'] },
-        { label: 'Mississauga', values: ['L4, L5', '$55/mo', 'Fibre, cable'] },
-        { label: 'Hamilton', values: ['L8, L9', '$58/mo', 'Cable'] },
-        { label: 'London', values: ['N5, N6', '$58/mo', 'Cable'] },
-        { label: 'Kitchener', values: ['N2', '$55/mo', 'Fibre'] },
-        { label: 'Windsor', values: ['N8, N9', '$60/mo', 'Cable'] },
-        { label: 'Vaughan', values: ['L4, L6', '$55/mo', 'Fibre'] },
-      ],
-    },
     homeTypes,
-    guide('Ontario'),
+    guide('Ontario', { price: 'Not sold in Ontario yet', speed: 'Announced when Ontario opens' }),
   ],
   faq: {
     intro: landingFaqIntro({
@@ -371,28 +296,43 @@ export const ontarioInternetLanding: LandingPageContent = {
       description:
         'Advisors are available Monday to Saturday, 9am–9pm Pacific (noon to midnight Eastern).',
     }),
-    items: faq(
-      'Ontario',
-      'Most addresses are installed within about 3 days of your call. Tell us your move-in date and we book the first slot after you get the keys.',
-    ),
+    items: [
+      {
+        id: 'when',
+        question: 'When will home internet be available in Ontario?',
+        answer:
+          'We have no date yet. Join the wish list and we email you as soon as Ontario plans open.',
+      },
+      {
+        id: 'mobile',
+        question: 'Can I get a mobile plan in Ontario?',
+        answer: 'Yes. Our mobile plans are sold in every province.',
+      },
+    ],
   },
   related: related({ label: 'Home internet in Vancouver', href: '/home-internet/vancouver' }),
   cta: {
-    title: 'Online on move-in day in Ontario',
-    subtitle: 'Check your address in about 2 minutes. An advisor confirms it the same day.',
-    primary: { label: 'Check my address →', href: '#plans' },
-    secondary: { label: 'Talk to an advisor ›', href: '/contact' },
+    title: 'Be first to know when Ontario opens',
+    subtitle: 'One short form. No payment and no spam.',
+    primary: { label: 'Join the wish list →', href: '/order?category=internet&province=ON' },
+    secondary: { label: 'See mobile plans ›', href: '/mobile-plans' },
     icon: 'cta-home-internet',
   },
 };
 
-/** Address check + speed cards heading on the region pages. */
+/** Plan section heading on the region pages. */
 export const internetLandingPlans = {
-  eyebrow: 'Check your address',
-  title: 'Is internet available at your address?',
-  price: 'From $55/mo',
-  priceNote: 'CAD, plus tax. Pay $0 to order.',
-  speedsEyebrow: 'Internet plans',
-  speedsTitle: 'Pick your internet speed',
+  eyebrow: 'Internet plans',
   date: 'Prices as of October 2026 · CAD, taxes extra',
+  vancouver: {
+    title: 'British Columbia plans and prices',
+    price: 'From $70/mo',
+    priceNote: 'CAD, plus tax. Pay $0 to order.',
+  },
+  ontario: {
+    title: 'Not available in Ontario yet',
+    body: 'Leave your email on the order page and we tell you when Ontario plans open.',
+    action: 'Join the wish list →',
+    href: '/order?category=internet&province=ON',
+  },
 };
