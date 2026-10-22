@@ -455,6 +455,7 @@ const arrivalTerms = [
   'Prices are in Canadian dollars and exclude applicable taxes.',
   'Bring your own unlocked, eSIM-capable phone.',
   'Nothing is due today.',
+  'No Canadian credit history or credit check is needed.',
 ];
 
 interface ArrivalPlanInput {
