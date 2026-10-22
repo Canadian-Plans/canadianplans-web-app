@@ -66,7 +66,8 @@ export const preArrivalOrderCopy = {
   stepTwo: {
     eyebrow: 'Step 2 of 2',
     title: 'Documents & eSIM',
-    intro: 'Rogers requires ID to activate a Canadian number. A clear phone photo is fine.',
+    intro:
+      'If the provider needs ID to activate your number, an advisor will ask. You can add it here now if you prefer.',
     privacyTitle: 'Your ID is private',
     privacy:
       'Preview files stay on this device and are never uploaded. Reselect files after 24 hours. Read our ',

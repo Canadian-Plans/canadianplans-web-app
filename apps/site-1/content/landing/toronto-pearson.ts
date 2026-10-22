@@ -75,13 +75,14 @@ export const torontoPearsonLanding: LandingPageContent = {
       id: 'documents',
       eyebrow: 'Before you fly',
       title: 'What to have ready before you land',
-      description: 'Send each one as a photo or PDF when you order.',
+      description:
+        'You do not upload anything to order. Have these ready in case your advisor asks for them.',
       mark: '✓',
       items: [
         { title: 'Passport', body: 'The photo page, with your name and photo.' },
         {
           title: 'Study or work permit, or PR confirmation',
-          body: 'A clear photo or PDF.',
+          body: 'The document you are travelling on.',
         },
         { title: 'Arrival date and city', body: 'So your plan starts the day you land.' },
         { title: 'Email address', body: 'We send your eSIM QR code here.' },

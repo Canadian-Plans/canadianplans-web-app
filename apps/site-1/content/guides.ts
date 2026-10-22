@@ -273,7 +273,7 @@ export const studentIndiaGuide: GuideArticle = {
       title: 'How to order from India',
       items: [
         'Pick your plan on our pre-arrival page.',
-        'Add your passport, study permit or visa, and arrival date.',
+        'Add your arrival date and city. An advisor asks for documents only if needed.',
         'An advisor calls or messages you on WhatsApp to confirm. You don’t pay anything online.',
         'Land, switch on, and you’re online before baggage claim.',
       ],

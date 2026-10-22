@@ -77,13 +77,14 @@ export const fromIndiaLanding: LandingPageContent = {
       id: 'documents',
       eyebrow: 'Before you order',
       title: 'What you need to order from India',
-      description: 'Send each one as a photo or PDF.',
+      description:
+        'You do not upload anything to order. Have these ready in case your advisor asks for them.',
       mark: '✓',
       items: [
         { title: 'Indian passport', body: 'The photo page. Your name should match your permit.' },
         {
           title: 'Study or work permit, visa or COPR',
-          body: 'A clear photo or PDF of the document you are travelling on.',
+          body: 'The document you are travelling on.',
         },
         { title: 'Arrival date and city', body: 'So your plan starts the day you land.' },
         { title: 'Email address', body: 'We send your eSIM QR code here.' },

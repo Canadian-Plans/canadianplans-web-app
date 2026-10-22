@@ -75,13 +75,14 @@ export const studentsLanding: LandingPageContent = {
       id: 'documents',
       eyebrow: 'Before you order',
       title: 'What you need to order a student SIM',
-      description: 'Four things, and you can send them as photos or PDFs.',
+      description:
+        'You do not upload anything to order. Have these ready in case your advisor asks for them.',
       mark: '✓',
       items: [
         { title: 'Passport', body: 'The photo page. Your name should match your study permit.' },
         {
           title: 'Study permit or letter of introduction',
-          body: 'A clear photo or PDF. You can order before the permit itself arrives.',
+          body: 'Your study permit or letter of introduction. You can order before the permit itself arrives.',
         },
         { title: 'Arrival date and city', body: 'So your plan starts the day you land.' },
         { title: 'Email address', body: 'We send your eSIM QR code here.' },

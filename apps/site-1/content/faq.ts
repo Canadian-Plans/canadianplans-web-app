@@ -103,7 +103,7 @@ export const faqGroups: readonly HelpFaqGroup[] = [
       site(
         'sin',
         'Do I need a SIN to sign up?',
-        'No. To order you need your passport, your study or work permit (or letter of introduction, visa or COPR), your arrival date and city, and an email address.',
+        'No. You order with your name, email, phone, arrival date and city. An advisor asks for your passport or permit only if the provider needs it.',
       ),
       site(
         'before-arrival',
@@ -114,7 +114,7 @@ export const faqGroups: readonly HelpFaqGroup[] = [
       site(
         'identification',
         'What ID do I need to order?',
-        'Your passport photo page and your study or work permit, letter of introduction, visa or PR confirmation (COPR). A clear photo or PDF of each is enough.',
+        'Nothing is uploaded when you order. If asked, your passport photo page and your study or work permit, letter of introduction, visa or PR confirmation (COPR). A clear photo or PDF of each is enough.',
         ['documents', 'passport', 'permit'],
       ),
       pending('english', 'What if my English isn’t perfect?'),
