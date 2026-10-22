@@ -253,8 +253,9 @@ search index. `/studio` is `noindex` (via `next-sanity`) and disallowed in
 GitHub Environment secrets, one environment per role (names only; the
 exact commands are in [restore.md](RUNBOOKS/restore.md)):
 
-- **backup** (`backup.yml`, list + write only): `BACKUP_SOURCE_DATABASE_URL`,
-  `BACKUP_LEASE_DATABASE_URL`, `BACKUP_SUPABASE_PROJECT_REF`, `BACKUP_R2_*` (read-only
+- **backup** (`backup.yml`, list + write only): `BACKUP_SOURCE_DATABASE_URL`
+  (connect as `backup_reader`), `BACKUP_LEASE_DATABASE_URL` (connect as
+  `backup_lease_writer`; never use the `postgres` owner role for either), `BACKUP_SUPABASE_PROJECT_REF`, `BACKUP_R2_*` (read-only
   source), optional `BACKUP_SANITY_PROJECT_ID` / `BACKUP_SANITY_AUTH_TOKEN`,
   `RECOVERY_AGE_RECIPIENT` (public key only), `B2_ARCHIVE_ENDPOINT`, `B2_ARCHIVE_REGION`,
   `B2_ARCHIVE_BUCKET`, `B2_ARCHIVE_WRITER_KEY_ID`, `B2_ARCHIVE_WRITER_APPLICATION_KEY`.

@@ -44,6 +44,14 @@ verified SHA, and running against real B2/Supabase/Sanity/`age`).
 
 - Supabase source and isolated target projects, their direct/session-pooler
   connection strings on port 5432, and project-owner dashboard access.
+- Two least-privilege source logins from migration 0025, never the `postgres`
+  owner role: `backup_reader` for `BACKUP_SOURCE_DATABASE_URL` (read-only,
+  bypasses RLS so dumps are complete) and `backup_lease_writer` for
+  `BACKUP_LEASE_DATABASE_URL` (only `app.backup_leases`). Set each password
+  in the SQL editor with `ALTER ROLE ... PASSWORD`. If the migration warned that
+  it could not grant `BYPASSRLS` or `pg_read_all_data`, grant them as an
+  administrator. Before switching the secret, run the five `supabase db dump`
+  commands below as `backup_reader` and confirm each finishes with data.
 - A read-only Cloudflare R2 token scoped to each source bucket.
 - A Sanity export token and a separate import token scoped to an isolated target
   project/dataset.
