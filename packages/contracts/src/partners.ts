@@ -128,8 +128,16 @@ export type ListPartnersResponse = z.infer<typeof listPartnersResponseSchema>;
  */
 export const partnerDetailResponseSchema = z.object({
   partner: partnerSchema,
+  /** Newest first, capped at 200; `referredOrderTotal` counts them all. */
   referredOrders: z.array(partnerReferredOrderSchema),
+  /**
+   * Optional only so an admin build tolerates a backend from before PERF-02;
+   * current backends always send both totals.
+   */
+  referredOrderTotal: z.int().nonnegative().optional(),
+  /** Newest first, capped at 200; `commissionTotal` counts them all. */
   commissions: z.array(partnerCommissionViewSchema),
+  commissionTotal: z.int().nonnegative().optional(),
   canViewPayouts: z.boolean(),
   canMarkCarrierPaid: z.boolean(),
   partnerPaidEnabled: z.literal(false),

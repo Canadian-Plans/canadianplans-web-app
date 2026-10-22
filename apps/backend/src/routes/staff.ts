@@ -1550,7 +1550,9 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
       res.json({
         partner: detail.partner,
         referredOrders: detail.referredOrders,
+        referredOrderTotal: detail.referredOrderTotal,
         commissions,
+        commissionTotal: detail.commissionTotal,
         canViewPayouts,
         canMarkCarrierPaid: canViewPayouts,
         partnerPaidEnabled: false,

@@ -13523,6 +13523,11 @@
                         "additionalProperties": false
                       }
                     },
+                    "referredOrderTotal": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
                     "commissions": {
                       "type": "array",
                       "items": {
@@ -13594,6 +13599,11 @@
                         ],
                         "additionalProperties": false
                       }
+                    },
+                    "commissionTotal": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
                     },
                     "canViewPayouts": { "type": "boolean" },
                     "canMarkCarrierPaid": { "type": "boolean" },

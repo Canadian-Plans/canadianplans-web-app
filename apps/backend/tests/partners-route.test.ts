@@ -87,6 +87,7 @@ function detail(): PartnerDetail {
     referredOrders: [
       { id: ORDER, reference: 'CP-PARTNER-1', fulfilmentStatus: 'activated', submittedAt: NOW },
     ],
+    referredOrderTotal: 340,
     commissions: [
       {
         id: COMMISSION,
@@ -99,6 +100,7 @@ function detail(): PartnerDetail {
         updatedAt: NOW,
       },
     ],
+    commissionTotal: 215,
   };
 }
 
@@ -279,6 +281,9 @@ describe('partner directory role matrix (T19)', () => {
     const body = partnerDetailResponseSchema.parse(await (await getDetail()).json());
     expect(body.partner.referralCode).toBe('MAPLE10');
     expect(body.referredOrders).toHaveLength(1);
+    // PERF-02: the store caps the lists; the route passes the full totals through.
+    expect(body.referredOrderTotal).toBe(340);
+    expect(body.commissionTotal).toBe(215);
   });
 });
 

@@ -1,4 +1,4 @@
-import { and, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import {
   auditEvents,
   commissionLineEvents,
@@ -27,10 +27,17 @@ import { validateCommissionStateTransition } from './commission-state.js';
 type PartnerDatabase = Pick<import('@canadian-plans/db').DatabaseClient, 'withTenantTx'>;
 const defaultDatabase: PartnerDatabase = { withTenantTx };
 
+/** Rows returned per list on the partner page; older rows are reached through the orders list. */
+export const PARTNER_DETAIL_ROW_LIMIT = 200;
+
 export interface PartnerDetail {
   partner: Partner;
+  /** Newest first, at most {@link PARTNER_DETAIL_ROW_LIMIT}. */
   referredOrders: PartnerReferredOrder[];
+  referredOrderTotal: number;
+  /** Newest first, at most {@link PARTNER_DETAIL_ROW_LIMIT}. */
   commissions: PartnerCommissionView[];
+  commissionTotal: number;
 }
 
 export interface ChangeCommissionStateInput {
@@ -163,6 +170,12 @@ export class DatabasePartnerStore implements PartnerStore {
         .limit(1);
       if (!partnerRow) return undefined;
 
+      // PERF-02: a busy partner refers thousands of orders, so the page gets the
+      // newest rows plus totals instead of every row.
+      const referredWhere = and(
+        eq(orders.workspaceId, workspaceId),
+        eq(orders.partnerId, partnerId),
+      );
       const referredOrderRows = await tx
         .select({
           id: orders.id,
@@ -171,8 +184,18 @@ export class DatabasePartnerStore implements PartnerStore {
           submittedAt: orders.submittedAt,
         })
         .from(orders)
-        .where(and(eq(orders.workspaceId, workspaceId), eq(orders.partnerId, partnerId)))
-        .orderBy(orders.submittedAt);
+        .where(referredWhere)
+        .orderBy(desc(orders.submittedAt), desc(orders.id))
+        .limit(PARTNER_DETAIL_ROW_LIMIT);
+      const [referredCount] = await tx
+        .select({ total: sql<number>`count(*)::int` })
+        .from(orders)
+        .where(referredWhere);
+
+      const commissionWhere = and(
+        eq(commissionLines.workspaceId, workspaceId),
+        eq(commissionLines.partnerId, partnerId),
+      );
 
       const commissionRows = await tx
         .select({
@@ -194,13 +217,13 @@ export class DatabasePartnerStore implements PartnerStore {
             eq(orders.id, commissionLines.orderId),
           ),
         )
-        .where(
-          and(
-            eq(commissionLines.workspaceId, workspaceId),
-            eq(commissionLines.partnerId, partnerId),
-          ),
-        )
-        .orderBy(commissionLines.earnedAt);
+        .where(commissionWhere)
+        .orderBy(desc(commissionLines.earnedAt), desc(commissionLines.id))
+        .limit(PARTNER_DETAIL_ROW_LIMIT);
+      const [commissionCount] = await tx
+        .select({ total: sql<number>`count(*)::int` })
+        .from(commissionLines)
+        .where(commissionWhere);
 
       const referredOrders: PartnerReferredOrder[] = referredOrderRows.map((row) => ({
         id: row.id,
@@ -219,7 +242,13 @@ export class DatabasePartnerStore implements PartnerStore {
         updatedAt: row.updatedAt.toISOString(),
       }));
 
-      return { partner: toPartner(partnerRow), referredOrders, commissions };
+      return {
+        partner: toPartner(partnerRow),
+        referredOrders,
+        referredOrderTotal: referredCount?.total ?? referredOrders.length,
+        commissions,
+        commissionTotal: commissionCount?.total ?? commissions.length,
+      };
     });
   }
 

@@ -39,6 +39,13 @@ const COMMISSION_STATE_LABELS: Readonly<Record<CommissionState, string>> = {
   partner_paid: 'Partner paid',
 };
 
+/** "Showing newest N of M" when the backend capped a list (PERF-02). */
+export function cappedListNote(shown: number, total: number | undefined): string | undefined {
+  return total !== undefined && total > shown
+    ? `Showing the newest ${shown} of ${total}.`
+    : undefined;
+}
+
 function payoutAmount(commission: PartnerCommissionView, canViewPayouts: boolean): string {
   if (!canViewPayouts) return 'Hidden';
   return commission.amount ? formatMoney(commission.amount) : '—';
@@ -145,6 +152,15 @@ export function PartnerDetail({
           <CardTitle asChild>
             <h2 className="text-base">Referred orders</h2>
           </CardTitle>
+          <CardDescription>
+            {cappedListNote(detail.referredOrders.length, detail.referredOrderTotal)}{' '}
+            <Link
+              className="underline underline-offset-2"
+              href={`/w/${workspaceSlug}/orders?partnerCode=${encodeURIComponent(detail.partner.referralCode)}`}
+            >
+              All referred orders
+            </Link>
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {detail.referredOrders.length === 0 ? (
@@ -189,6 +205,9 @@ export function PartnerDetail({
             {detail.canViewPayouts
               ? ' Finance can mark a line carrier-paid once the carrier has paid Canadian Plans.'
               : ' Payout amounts are visible only to Finance.'}
+            {cappedListNote(detail.commissions.length, detail.commissionTotal)
+              ? ` ${cappedListNote(detail.commissions.length, detail.commissionTotal)}`
+              : null}
           </CardDescription>
         </CardHeader>
         <CardContent>
