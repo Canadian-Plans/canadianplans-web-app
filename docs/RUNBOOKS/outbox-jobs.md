@@ -77,7 +77,9 @@ selector or `CRON_SECRET` is wrong, the service still boots, still passes its
 health check and still serves the API — it just never runs a job. Order
 acknowledgement emails and analytics events then stop silently. This is
 deliberate: a job-configuration fault must not take order intake down with it.
-The cost is that nothing alerts on it yet, so an operator must confirm it.
+A start-up failure now also sends the owner a "background scheduler did not
+start" alert with the bounded code as its detail. Keep the check below anyway:
+the alert is silent when `OWNER_ALERT_EMAIL`/Resend are unconfigured.
 
 After every deploy that changes `ENABLE_SCHEDULER`, `CRON_SECRET`,
 either selector, or `MACHINE_REGISTRY_JSON`, check the service logs:

@@ -135,10 +135,10 @@ When `ENABLE_SCHEDULER=1` but the scheduler cannot resolve a valid identity, the
 process logs a bounded `scheduler_*` code and continues serving HTTP without a
 scheduler. This is deliberate: a job-scheduling misconfiguration must not take
 order intake down with it. The trade is that the service looks healthy while no
-jobs run, and nothing alerts on that today.
-
-Detection is currently a manual post-deploy log check
-(`docs/RUNBOOKS/outbox-jobs.md`). T25 must replace it with an alert. The
+jobs run. Since 22 October 2026 the start-up failure also sends a
+`scheduler_not_started` owner alert (fire-and-forget, never blocking boot); the
+manual post-deploy log check (`docs/RUNBOOKS/outbox-jobs.md`) remains as the
+fallback when the alert channel itself is unconfigured. The
 alternative — surfacing scheduler state on `/api/v1/health` — was rejected for
 now because the health response is contract-bound and Railway restarts on a
 failing health check, which would turn a job-config error into a restart loop.
