@@ -280,7 +280,8 @@ databaseDescribe('catalogue sync convergence', () => {
       () => NOW_MS,
     );
     const body = JSON.stringify({ documentId: DOCUMENT });
-    const timestamp = String(NOW_MS / 1_000);
+    // Sanity signs with a millisecond Unix timestamp.
+    const timestamp = String(NOW_MS);
     const signature = `t=${timestamp},v1=${createHmac('sha256', WEBHOOK_SECRET)
       .update(`${timestamp}.${body}`)
       .digest('base64url')}`;
