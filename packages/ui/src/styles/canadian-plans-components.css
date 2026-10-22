@@ -1605,6 +1605,7 @@
 .cp-brand {
   gap: var(--cp-space-9);
 }
+/* Owner's logo (22 Oct 2026): blue signal icon, then "Canadian" over "Plans" in one colour. */
 .cp-brand-mark {
   flex: none;
   width: var(--cp-brand-mark-size);
@@ -1612,37 +1613,28 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--cp-radius-10);
-  background: var(--cp-color-blue);
 }
-.cp-brand-mark svg {
-  width: var(--cp-brand-mark-icon);
-  height: var(--cp-brand-mark-icon);
-  stroke: var(--cp-color-white);
-  stroke-width: var(--cp-brand-mark-stroke);
-  stroke-linecap: round;
-}
-.cp-brand-mark circle {
-  fill: var(--cp-color-white);
-  stroke: none;
+.cp-brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 .cp-brand .cp-brand-word {
-  font-size: var(--cp-brand-word-size);
+  display: inline-flex;
+  flex-direction: column;
+  font-size: calc(var(--cp-brand-mark-size) * 0.47);
   font-weight: var(--cp-weight-extra-bold);
   letter-spacing: var(--cp-brand-word-tracking);
-  line-height: var(--cp-leading-title);
+  line-height: 0.98;
   color: var(--cp-color-ink);
 }
 .cp-brand .cp-brand-word span {
   font: inherit;
   letter-spacing: inherit;
-  color: var(--cp-color-blue);
+  color: inherit;
 }
 .cp-brand-inverse .cp-brand-word {
   color: var(--cp-color-white);
-}
-.cp-brand-inverse .cp-brand-word span {
-  color: var(--cp-color-mint-strong);
 }
 .cp-nav-links {
   @variant cp-chrome {

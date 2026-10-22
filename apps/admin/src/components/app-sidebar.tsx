@@ -39,11 +39,15 @@ export function AppSidebar({ workspace }: { workspace: string }) {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <div className="flex h-8 items-center overflow-hidden whitespace-nowrap px-2 text-sm font-semibold">
-          <span className="group-data-[collapsible=icon]:hidden">Canadian Plans</span>
-          <span className="hidden group-data-[collapsible=icon]:inline" aria-label="Canadian Plans">
-            CP
-          </span>
+        <div className="flex h-8 items-center gap-2 overflow-hidden whitespace-nowrap px-2 text-sm font-semibold">
+          <img
+            src="/brand/canadian-plans-icon.png"
+            alt=""
+            width={20}
+            height={20}
+            className="size-5 shrink-0 object-contain"
+          />
+          <span className="group-data-[collapsible=icon]:sr-only">Canadian Plans</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
