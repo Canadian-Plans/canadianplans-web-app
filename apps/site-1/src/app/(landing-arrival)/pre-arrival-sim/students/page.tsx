@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { arrivalChrome } from '@content/pre-arrival';
 import { siteChromeWithPromo, siteFooter } from '@content/site-chrome';
 import { studentsLanding, studentsPlanHeading } from '@content/landing/students';
 import { Footer } from '@/components/shared/chrome';
@@ -26,7 +27,7 @@ export default function StudentsPage() {
       </a>
       <SiteHeader
         planHref="#plans"
-        content={siteChromeWithPromo('Moving in? Add home internet from $55/mo.', {
+        content={siteChromeWithPromo(arrivalChrome.promo, {
           label: 'See home internet →',
           href: '/home-internet',
         })}
