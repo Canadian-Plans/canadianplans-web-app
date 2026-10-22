@@ -395,7 +395,7 @@ export const homeRedesign = {
         icon: 'column-pre-arrival',
         features: [
           'Canadian number before you land',
-          'eSIM or physical SIM',
+          'eSIM, ready before you fly',
           'Works the moment you arrive',
         ],
       },
@@ -449,7 +449,7 @@ export const homeRedesign = {
       art: 'art-pre-arrival',
       feature: {
         title: 'Land in Canada already connected',
-        body: "Get your number before you fly, as an eSIM or physical SIM. Turn on your phone when you land and you're online: no airport kiosk, no line-up.",
+        body: "Get your number before you fly, as an eSIM. Turn on your phone when you land and you're online: no airport kiosk, no line-up.",
       },
       banner: {
         eyebrow: 'Pre-arrival Plan',

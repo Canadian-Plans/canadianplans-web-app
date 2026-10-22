@@ -26,7 +26,7 @@ export const MOBILE_PROVIDERS = [
 
 export const SIM_TYPE_OPTIONS = [
   { value: 'esim', label: 'eSIM (digital, no card to wait for)' },
-  { value: 'physical', label: 'Physical SIM card (we send it to you)' },
+  { value: 'physical', label: 'Physical SIM card (the provider sends it to you)' },
 ] as const;
 
 export const KEEP_NUMBER_OPTIONS = [
