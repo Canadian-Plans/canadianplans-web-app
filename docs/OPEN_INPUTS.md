@@ -94,3 +94,9 @@ Move rows here once decided, with the date. Don't delete them; a decided input t
 | — | Design-preview routes | `/order/pre-arrival`, `/order/home-internet` and `/track-order` return 404 in production and stay available on preview builds | 22 Oct 2026 |
 | — | Contact page forms | Interim: the tracking panel links to `/track` and the message option opens email to info@canadianplans.com; a real message form is a later task | 22 Oct 2026 |
 | — | Pre-arrival SIM type | Pre-arrival plans are eSIM only; tighten Terms §7 ("eSIM or physical SIM") at the next legal version | 22 Oct 2026 |
+| — | Abandoned order forms (SEC-12) | Leads still `incomplete` 90 days after their last change have name, email, phone and answers erased (restricted); the row stays as an anonymous count. Submitted leads are never touched | 22 Oct 2026 |
+| — | Operational record retention (REL-19) | Completed outbox jobs and resolved alerts after 30 days; used or expired tracking codes after 7 days; expired unused quotes after 90 days; finished CMS webhook events after 90 days; applied email provider events after 180 days. Orders, leads, audit events and commissions are never pruned. Switched on only after the first verified backup | 22 Oct 2026 |
+| — | Backup clean-up (REL-24) | Stays report-only until a real backup has been run and restored; the owner then reviews one dry-run report before scheduled runs delete | 22 Oct 2026 |
+| — | Backup memory (PERF-03) | Interim size guard: the backup stops with a clear error above about 2 GB; the streaming rewrite waits until data nears that size | 22 Oct 2026 |
+| — | Website CSP (SEC-22) | Keep the current policy through launch; move to a nonce-based policy after launch | 22 Oct 2026 |
+| — | Admin browser tests (CQ-01) | Build Playwright tests for the admin order screens before launch | 22 Oct 2026 |
