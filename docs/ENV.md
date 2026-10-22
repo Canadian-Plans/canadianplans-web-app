@@ -249,10 +249,22 @@ search index. `/studio` is `noindex` (via `next-sanity`) and disallowed in
 
 ## Backblaze B2 backups
 
-- `B2_APPLICATION_KEY_ID`
-- `B2_APPLICATION_KEY`
-- `B2_BUCKET`
-- `B2_ENDPOINT`
+GitHub Environment secrets, one environment per role (names only; the
+exact commands are in [restore.md](RUNBOOKS/restore.md)):
+
+- **backup** (`backup.yml`, list + write only): `BACKUP_SOURCE_DATABASE_URL`,
+  `BACKUP_LEASE_DATABASE_URL`, `BACKUP_SUPABASE_PROJECT_REF`, `BACKUP_R2_*` (read-only
+  source), optional `BACKUP_SANITY_PROJECT_ID` / `BACKUP_SANITY_AUTH_TOKEN`,
+  `RECOVERY_AGE_RECIPIENT` (public key only), `B2_ARCHIVE_ENDPOINT`, `B2_ARCHIVE_REGION`,
+  `B2_ARCHIVE_BUCKET`, `B2_ARCHIVE_WRITER_KEY_ID`, `B2_ARCHIVE_WRITER_APPLICATION_KEY`.
+- **backup-monitor** (read-only): `B2_ARCHIVE_READER_KEY_ID`,
+  `B2_ARCHIVE_READER_APPLICATION_KEY`, `B2_ARCHIVE_ENDPOINT`, `B2_ARCHIVE_REGION`,
+  `B2_ARCHIVE_BUCKET`, plus the owner-alert `OWNER_ALERT_*` / `RESEND_*` values.
+- **backup-retention** (list + delete; never holds the recovery private key):
+  `B2_ARCHIVE_RETENTION_KEY_ID`, `B2_ARCHIVE_RETENTION_APPLICATION_KEY`,
+  `B2_ARCHIVE_ENDPOINT`, `B2_ARCHIVE_REGION`, `B2_ARCHIVE_BUCKET`.
+- **restore** (owner-run): `B2_ARCHIVE_READER_*` and the escrowed recovery private key
+  supplied as a file path (`RECOVERY_PRIVATE_KEY_PATH`) at restore time only.
 
 ### Customer-requested physical document cleanup
 
