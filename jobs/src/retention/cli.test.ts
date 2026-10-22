@@ -47,9 +47,8 @@ it('runs retention with the default dry-run and never needs the recovery private
   vi.stubEnv('RECOVERY_PRIVATE_KEY_PATH', '');
   await import('./cli.js');
   await vi.waitFor(() => expect(runRetention).toHaveBeenCalled());
-  const options = runRetention.mock.calls[0]?.[0] as Record<string, unknown>;
-  expect(options).toMatchObject({ dryRun: true });
-  expect(options).not.toHaveProperty('decryptor');
+  expect(runRetention).toHaveBeenCalledWith(expect.objectContaining({ dryRun: true }));
+  expect(runRetention.mock.calls[0]?.[0]).not.toHaveProperty('decryptor');
   expect(captureException).not.toHaveBeenCalled();
 });
 
