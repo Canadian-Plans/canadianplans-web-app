@@ -39,7 +39,12 @@ import {
   requestSubjectDeletionResponseSchema,
 } from './deletion';
 import { healthResponseSchema } from './health';
-import { listWorkspaceJobsResponseSchema, retryWorkspaceJobResponseSchema } from './jobs';
+import {
+  listWorkspaceJobsResponseSchema,
+  resolveUncertainJobRequestSchema,
+  resolveUncertainJobResponseSchema,
+  retryWorkspaceJobResponseSchema,
+} from './jobs';
 import {
   inviteStaffRequestSchema,
   inviteStaffResponseSchema,
@@ -286,6 +291,17 @@ export const endpoints: readonly EndpointDef[] = [
     auth: 'staff',
     successStatus: 200,
     response: retryWorkspaceJobResponseSchema,
+  },
+  {
+    operationId: 'resolveUncertainWorkspaceJob',
+    method: 'POST',
+    path: '/api/v1/staff/workspaces/{workspaceId}/jobs/{jobId}/resolve',
+    summary:
+      'Record whether an uncertain outbox job reached the provider (integration management).',
+    auth: 'staff',
+    successStatus: 200,
+    request: resolveUncertainJobRequestSchema,
+    response: resolveUncertainJobResponseSchema,
   },
 
   // Staff — order processing

@@ -65,10 +65,14 @@ export {
   adminJobSchema,
   adminJobStatusSchema,
   listWorkspaceJobsResponseSchema,
+  resolveUncertainJobRequestSchema,
+  resolveUncertainJobResponseSchema,
   retryWorkspaceJobResponseSchema,
   type AdminJob,
   type AdminJobStatus,
   type ListWorkspaceJobsResponse,
+  type ResolveUncertainJobRequest,
+  type ResolveUncertainJobResponse,
   type RetryWorkspaceJobResponse,
 } from './jobs';
 

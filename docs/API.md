@@ -433,15 +433,25 @@ offer version. Catalogue editing happens in Sanity once a workspace has a Sanity
 ### `GET /api/v1/staff/workspaces/{workspaceId}/jobs`
 
 Staff with `workspace.read` can view pending, processing, failed, and uncertain
-outbox deliveries for that workspace. The response includes `canRetry`, derived
-from the same live `integration.manage` authorization decision used by the
-mutation endpoint.
+outbox deliveries for that workspace, most recently updated first and capped at
+500 rows; `total` counts every active job. The response includes `canRetry`,
+derived from the same live `integration.manage` authorization decision used by
+the mutation endpoints.
 
 ### `POST /api/v1/staff/workspaces/{workspaceId}/jobs/{jobId}/retry`
 
 Requires `integration.manage` (the `integration_management` individual
 permission or an allowed role, with explicit deny winning). Only definitively
 failed jobs can be requeued; uncertain deliveries must be reconciled first.
+
+### `POST /api/v1/staff/workspaces/{workspaceId}/jobs/{jobId}/resolve`
+
+Requires `integration.manage`. Body `{ "delivered": boolean }`, sent after
+staff check the provider's own log for an uncertain job. `true` closes the job
+as `completed`; `false` marks it `failed` so the retry endpoint accepts it.
+Either way the job's open alerts are resolved, its provider evidence is kept and
+an `outbox_job.uncertain_resolved` audit event is written. A job that is not
+uncertain returns 409 `job_not_uncertain`.
 
 ### `GET /api/v1/staff/workspaces/{workspaceId}/reports/sources`
 

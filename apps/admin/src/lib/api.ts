@@ -46,6 +46,7 @@ import {
   type ResolveOrderChangeRequestRequest,
   type ResolveOrderChangeRequestResponse,
   type RetryWorkspaceJobResponse,
+  type ResolveUncertainJobResponse,
   type RevokeServiceCredentialResponse,
   type RevokeStaffResponse,
   type SourceReportQuery,
@@ -160,6 +161,15 @@ export async function retryWorkspaceJob(
   jobId: string,
 ): Promise<RetryWorkspaceJobResponse> {
   return client(accessToken).staff.retryJob(workspaceId, jobId);
+}
+
+export async function resolveUncertainWorkspaceJob(
+  accessToken: string,
+  workspaceId: string,
+  jobId: string,
+  delivered: boolean,
+): Promise<ResolveUncertainJobResponse> {
+  return client(accessToken).staff.resolveUncertainJob(workspaceId, jobId, { delivered });
 }
 
 // ---- Customer-data deletion (C3). Owner/Finance with verified MFA only; the

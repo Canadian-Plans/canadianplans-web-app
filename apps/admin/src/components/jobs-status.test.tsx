@@ -6,6 +6,7 @@ import { JobsStatus } from './jobs-status';
 const mocks = vi.hoisted(() => ({
   listWorkspaceJobs: vi.fn(),
   retryWorkspaceJob: vi.fn(),
+  resolveUncertainWorkspaceJob: vi.fn(),
 }));
 
 vi.mock('../lib/api', () => ({
@@ -67,5 +68,41 @@ describe('JobsStatus', () => {
     render(<JobsStatus workspaceSlug="site-1" />);
     expect(await screen.findByText('order_acknowledgement_email')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Retry' })).toBeNull();
+  });
+
+  it('lets integration managers mark an uncertain job delivered or not (REL-20)', async () => {
+    mocks.listWorkspaceJobs.mockResolvedValue({
+      jobs: [{ ...failedJob, status: 'uncertain', lastErrorCode: 'provider_timeout' }],
+      canRetry: true,
+      requestId: '90000000-0000-4000-8000-000000000001',
+    });
+    mocks.resolveUncertainWorkspaceJob.mockResolvedValue({
+      jobId: failedJob.id,
+      status: 'completed',
+      requestId: '90000000-0000-4000-8000-000000000004',
+    });
+    render(<JobsStatus workspaceSlug="site-1" />);
+    expect(await screen.findByText(/Check the provider.s log first/)).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Retry' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Mark delivered' }));
+    expect(mocks.resolveUncertainWorkspaceJob).toHaveBeenCalledWith(
+      'staff-token',
+      '10000000-0000-4000-8000-000000000001',
+      failedJob.id,
+      true,
+    );
+  });
+
+  it('says how many jobs are shown when the list is capped', async () => {
+    mocks.listWorkspaceJobs.mockResolvedValue({
+      jobs: [failedJob],
+      total: 612,
+      canRetry: true,
+      requestId: '90000000-0000-4000-8000-000000000001',
+    });
+    render(<JobsStatus workspaceSlug="site-1" />);
+    expect(
+      await screen.findByText('Showing the 1 most recently updated of 612 active jobs.'),
+    ).toBeTruthy();
   });
 });

@@ -19,6 +19,7 @@ import {
   patchWorkspaceOrderRequestSchema,
   recordOrderPaymentRequestSchema,
   resolveOrderChangeRequestRequestSchema,
+  resolveUncertainJobRequestSchema,
   reviewFileRequestSchema,
   sourceReportQuerySchema,
   type OrderCapabilities,
@@ -542,7 +543,10 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         sendStaffAuthError(res, req.id, 'internal_error', 500);
         return;
       }
-      const jobs = await dependencies.jobStore.listActive(workspaceId.data, actor.actorId);
+      const { jobs, total } = await dependencies.jobStore.listActive(
+        workspaceId.data,
+        actor.actorId,
+      );
       const retryDecision = await authorize({
         actorId: actor.actorId,
         workspaceId: workspaceId.data,
@@ -556,6 +560,7 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
           createdAt: job.createdAt.toISOString(),
           updatedAt: job.updatedAt.toISOString(),
         })),
+        total,
         canRetry: retryDecision.allowed,
         requestId: req.id,
       });
@@ -606,6 +611,56 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         return;
       }
       res.json({ jobId: jobId.data, status: 'pending', requestId: req.id });
+    } catch (error) {
+      reportFailure(req, error);
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  // REL-20: staff record whether an uncertain job reached the provider.
+  router.post('/workspaces/:workspaceId/jobs/:jobId/resolve', async (req, res) => {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    const jobId = z.uuid().safeParse(req.params['jobId']);
+    const body = resolveUncertainJobRequestSchema.safeParse(req.body);
+    if (!workspaceId.success || !jobId.success || !body.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const actor = session(req);
+      const authorize = createAuthorize({
+        accessStore: dependencies.store,
+        assuranceLevel: actor.assuranceLevel,
+      });
+      const decision = await authorize({
+        actorId: actor.actorId,
+        workspaceId: workspaceId.data,
+        action: 'integration.manage',
+      });
+      if (!decision.allowed) {
+        sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+        return;
+      }
+      if (!dependencies.jobStore) {
+        sendStaffAuthError(res, req.id, 'internal_error', 500);
+        return;
+      }
+      const outcome = await dependencies.jobStore.resolveUncertain({
+        workspaceId: workspaceId.data,
+        actorId: actor.actorId,
+        jobId: jobId.data,
+        requestId: req.id,
+        delivered: body.data.delivered,
+      });
+      if (outcome === 'not_found') {
+        sendDomainError(res, req.id, 'job_not_found', 404);
+        return;
+      }
+      if (outcome === 'not_uncertain') {
+        sendDomainError(res, req.id, 'job_not_uncertain', 409);
+        return;
+      }
+      res.json({ jobId: jobId.data, status: outcome, requestId: req.id });
     } catch (error) {
       reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);

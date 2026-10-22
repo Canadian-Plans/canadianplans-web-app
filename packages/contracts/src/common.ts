@@ -70,6 +70,7 @@ export const domainErrorCodeSchema = z.enum([
   'order_not_found',
   'job_not_found',
   'job_not_retryable',
+  'job_not_uncertain',
   'version_conflict',
   'illegal_transition',
   'cancellation_reason_required',

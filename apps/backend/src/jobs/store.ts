@@ -7,7 +7,7 @@ import {
   type TenantTransaction,
 } from '@canadian-plans/db';
 import type { ClaimedJob, JobOutcome, OutboxStore } from '@canadian-plans/jobs';
-import { and, asc, eq, inArray, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 
 interface ClaimedRow {
   [key: string]: unknown;
@@ -33,14 +33,24 @@ export interface AdminJob {
   updatedAt: Date;
 }
 
+/** Jobs returned per Jobs page load; `total` reports how many are active (REL-20). */
+export const ACTIVE_JOB_LIST_LIMIT = 500;
+
 export interface JobAdminStore {
-  listActive(workspaceId: string, actorId: string): Promise<AdminJob[]>;
+  listActive(workspaceId: string, actorId: string): Promise<{ jobs: AdminJob[]; total: number }>;
   retry(input: {
     workspaceId: string;
     actorId: string;
     jobId: string;
     requestId: string;
   }): Promise<'retried' | 'not_found' | 'not_failed'>;
+  resolveUncertain(input: {
+    workspaceId: string;
+    actorId: string;
+    jobId: string;
+    requestId: string;
+    delivered: boolean;
+  }): Promise<'completed' | 'failed' | 'not_found' | 'not_uncertain'>;
 }
 
 function adminJobStatus(value: string): AdminJob['status'] {
@@ -254,8 +264,17 @@ export class DatabaseOutboxStore implements OutboxStore, JobAdminStore {
     );
   }
 
-  async listActive(workspaceId: string, actorId: string): Promise<AdminJob[]> {
+  async listActive(
+    workspaceId: string,
+    actorId: string,
+  ): Promise<{ jobs: AdminJob[]; total: number }> {
     return this.database.withTenantTx({ workspaceId, actorId }, async (tx) => {
+      const active = and(
+        eq(outboxJobs.workspaceId, workspaceId),
+        inArray(outboxJobs.status, ['pending', 'processing', 'failed', 'uncertain']),
+      );
+      // REL-20: a provider outage can leave hundreds of rows, so the page gets
+      // the most recently changed ones and a total instead of all of them.
       const rows = await tx
         .select({
           id: outboxJobs.id,
@@ -269,15 +288,91 @@ export class DatabaseOutboxStore implements OutboxStore, JobAdminStore {
           updatedAt: outboxJobs.updatedAt,
         })
         .from(outboxJobs)
-        .where(
-          and(
-            eq(outboxJobs.workspaceId, workspaceId),
-            inArray(outboxJobs.status, ['pending', 'processing', 'failed', 'uncertain']),
-          ),
-        )
-        .orderBy(asc(outboxJobs.status), asc(outboxJobs.availableAt));
-      return rows.map((row) => ({ ...row, status: adminJobStatus(row.status) }));
+        .where(active)
+        .orderBy(desc(outboxJobs.updatedAt), desc(outboxJobs.id))
+        .limit(ACTIVE_JOB_LIST_LIMIT);
+      const [count] = await tx
+        .select({ total: sql<number>`count(*)::int` })
+        .from(outboxJobs)
+        .where(active);
+      return {
+        jobs: rows.map((row) => ({ ...row, status: adminJobStatus(row.status) })),
+        total: count?.total ?? rows.length,
+      };
     });
+  }
+
+  /**
+   * REL-20: an `uncertain` job may or may not have reached the provider, so it
+   * is never retried automatically. Once staff have checked the provider's own
+   * log they record the answer: delivered closes the job as completed; not
+   * delivered marks it failed, which offers the normal Retry. Either way its
+   * open alerts are resolved and the provider evidence is kept.
+   */
+  async resolveUncertain(input: {
+    workspaceId: string;
+    actorId: string;
+    jobId: string;
+    requestId: string;
+    delivered: boolean;
+  }): Promise<'completed' | 'failed' | 'not_found' | 'not_uncertain'> {
+    return this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: input.actorId },
+      async (tx) => {
+        const now = new Date();
+        const status = input.delivered ? 'completed' : 'failed';
+        const updated = await tx
+          .update(outboxJobs)
+          .set({
+            status,
+            completedAt: input.delivered ? now : null,
+            lastErrorCode: input.delivered
+              ? 'staff_confirmed_delivered'
+              : 'staff_confirmed_not_delivered',
+            updatedAt: now,
+          })
+          .where(
+            and(
+              eq(outboxJobs.workspaceId, input.workspaceId),
+              eq(outboxJobs.id, input.jobId),
+              eq(outboxJobs.status, 'uncertain'),
+            ),
+          )
+          .returning({ id: outboxJobs.id });
+        if (updated.length === 0) {
+          const existing = await tx
+            .select({ id: outboxJobs.id })
+            .from(outboxJobs)
+            .where(
+              and(eq(outboxJobs.workspaceId, input.workspaceId), eq(outboxJobs.id, input.jobId)),
+            )
+            .limit(1);
+          return existing[0] ? 'not_uncertain' : 'not_found';
+        }
+        await tx
+          .update(outboxJobAlerts)
+          .set({ resolvedAt: now })
+          .where(
+            and(
+              eq(outboxJobAlerts.workspaceId, input.workspaceId),
+              eq(outboxJobAlerts.jobId, input.jobId),
+              sql`${outboxJobAlerts.resolvedAt} is null`,
+            ),
+          );
+        await tx.insert(auditEvents).values({
+          workspaceId: input.workspaceId,
+          actorId: input.actorId,
+          actorLabel: 'staff',
+          action: 'outbox_job.uncertain_resolved',
+          entity: 'outbox_job',
+          entityId: input.jobId,
+          before: { status: 'uncertain' },
+          after: { status, delivered: input.delivered },
+          requestId: input.requestId,
+        });
+        return status;
+      },
+    );
   }
 
   async retry(input: {
