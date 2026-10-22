@@ -119,27 +119,26 @@ export const arrivalCopy = {
       {
         id: 'arrival-faq-1',
         question: 'How do I know if my phone supports eSIM?',
-        answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
+        answer:
+          'On an iPhone, go to Settings → General → About and look for “EID” or “Digital SIM”. On Samsung and Android, go to Settings → Connections → SIM manager and look for “Add eSIM”. Not sure? Send us your phone model and we will check.',
       },
       {
         id: 'arrival-faq-2',
         question: 'Does my phone need to be unlocked?',
-        answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
+        answer:
+          'Yes. Your phone must be unlocked and support eSIM. If it is locked to another carrier, ask that carrier to unlock it before you order.',
       },
       {
         id: 'arrival-faq-3',
         question: 'Can I order from any country?',
-        answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
+        answer:
+          'Yes. Order online from any country 1 to 3 weeks before your flight. We confirm your order, then email your eSIM QR code; it switches on when you land.',
       },
       {
         id: 'arrival-faq-4',
         question: 'When will I be charged for my plan?',
-        answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
-      },
-      {
-        id: 'arrival-faq-5',
-        question: 'Can I switch to a postpaid plan later?',
-        answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
+        answer:
+          'Nothing is paid on this website. Your first bill comes from the provider once your number is active, and an advisor walks you through the date before anything is billed.',
       },
     ],
   },
