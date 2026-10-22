@@ -327,16 +327,20 @@ Depends on Stage 1 findings and the Stage 2 answers.
 - ☐ **6.1 Open to search engines** _(Claude)_ — production robots/sitemap allow indexing;
   only `/business-internet` stays noindex.
 - ☐ **6.2 Analytics** _(Both)_ — Umami (or chosen tool) recording visits and order starts.
-- ☐ **6.3 Announce** _(You)_ — first customers usually come from people you can reach
+- ◐ **6.3 Announce** _(You)_ — first customers usually come from people you can reach _22 Oct: skipped for now (owner)._
   directly: newcomer and student groups, WhatsApp/Facebook communities, friends and
-  partners. Claude can draft posts and a short launch message.
+  partners. Claude can draft posts and a short launch message. _22 Oct: drafts for every channel in
+  [marketing/launch-posts.md](marketing/launch-posts.md) (English, no offer); post after
+  `/order` lists plans._
 
 ## Stage 7 — The first real order (You, Claude on call)
 
 - ☐ **7.1 Order arrives** — alert/email received, order visible in admin.
 - ☐ **7.2 Check documents** — approve or request re-upload.
 - ☐ **7.3 Payment** — collect as decided in 2.4 and record it.
-- ☐ **7.4 Dispatch or activate** — book courier / activate with Rogers, update status.
+- ☐ **7.4 Dispatch or activate** — book courier / activate with Rogers, update status. _22 Oct:
+  `ORDER_OPERATIONAL_TRANSITIONS=1` set on Railway (owner approved), live with the next backend
+  deploy; without it Dispatch and Activate return `feature_not_ready`._
 - ☐ **7.5 Customer confirmed** — customer has a working SIM; note anything that was
   awkward and turn it into a fix or a runbook change.
 

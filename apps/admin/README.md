@@ -12,3 +12,8 @@ In production this points at the Railway-hosted backend
 (`https://backend-production-ebbb6.up.railway.app`). The backend's
 `ADMIN_ORIGIN` variable must match this app's public origin so its CORS policy
 admits requests from here.
+
+Errors go to the Sentry project `canadian-plans-admin` through `NEXT_PUBLIC_SENTRY_DSN`
+(set in Vercel production on 22 October 2026; `src/lib/error-tracking.ts` posts scrubbed
+events without the Sentry SDK). The value is read at build time, so a change needs a new
+admin build; a redeploy of the same commit is skipped by the `affected-builds` ignore step.
