@@ -15,13 +15,35 @@ _(unverified)_ come from 23 September notes and must be re-checked in step 1.
 
 ## Stage 1 — Find out what production really looks like (Claude, ~1 session)
 
-- ☐ **1.1 Re-check production config** _(Claude, read-only)_. Confirm or rule out the
+- ☑ **1.1 Re-check production config** _(Claude, read-only)_. Confirm or rule out the
   23 September gaps: site-1 service credential missing, scheduler off, Sanity
   `production` dataset empty, `SITE_1_NAME_PLACEHOLDER` still showing. Also read which of
   `QUOTE_WITHDRAWAL_POLICY`, `EMAIL_PROVIDER`, `ENABLE_SCHEDULER`, `NEXT_PUBLIC_SITE_URL`
-  are set on Railway/Vercel. Output: an updated status column in this file.
-- ☐ **1.2 Confirm `main` is green** _(Claude)_. CI on merge commit `b688b0c`, and Vercel
-  production deploys of backend, admin and site-1 from that commit.
+  are set on Railway/Vercel. Output: an updated status column in this file. _Re-checked
+  22 Oct, see the table below._
+- ◐ **1.2 Confirm `main` is green** _(Claude)_. CI on the newest `main` commit, and
+  production deploys of backend, admin and site-1 from that commit. _22 Oct: CI green on
+  `5fc4397`; admin and site-1 run it; the Railway backend is still on `6a76a1d`._
+
+### Production status (22 October 2026)
+
+Read-only checks through the connected Railway, Vercel, Supabase and GitHub tools and
+plain HTTP requests to the live site. Labels as below.
+
+| Area                      | Finding                                                                                                                                                                                                                                                                                                                                                   | Label                     |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| CI on `main`              | CI passed on `5fc4397` (PR #18 merge). The scheduled Backup and Backup monitor workflows keep failing, expected while no real backup exists (4.1).                                                                                                                                                                                                        | verified                  |
+| Vercel site-1 / admin     | Both production deployments are `READY` on `5fc4397`, team "Canadian Plans".                                                                                                                                                                                                                                                                              | verified                  |
+| Railway backend           | Running deployment `4267deeb` from `6a76a1d` (20 Oct). No deployment since: PRs #16, #17 and #18 are not on the backend. `/api/v1/health` returns `{"ok":true}`.                                                                                                                                                                                          | verified                  |
+| Live `/order`             | `https://canadianplans.com/order` returns 200 but shows "Plans are unavailable". Inferred cause: the backend predates the repo catalogue (ADR 0005) and the read-without-Turnstile fix, both on `main`.                                                                                                                                                   | verified · inferred cause |
+| Domain                    | `canadianplans.com` serves site-1 (`/`, `/terms`, `/privacy` all 200). Home title "Canadian phone & internet plans, with real prices."                                                                                                                                                                                                                    | verified                  |
+| robots.txt                | `Disallow: /` for all agents (6.1 still open).                                                                                                                                                                                                                                                                                                            | verified                  |
+| Railway variables         | Set: `ENABLE_SCHEDULER`, `MACHINE_REGISTRY_JSON`, `QUOTE_WITHDRAWAL_POLICY`, `EMAIL_PROVIDER`, `ADMIN_ORIGIN`, `NODE_ENV`, `RESEND_ACCOUNT_ID`, `SITE_1_STATIC_CATALOGUE_WORKSPACE_ID`, `TURNSTILE_SECRET_KEY`, `TURNSTILE_HOSTNAMES`. Not set: `SENTRY_DSN`. Values not read, so the Resend webhook entry inside `MACHINE_REGISTRY_JSON` is unconfirmed. | verified (names)          |
+| Vercel site-1 variables   | Production has `SITE_1_SERVICE_CREDENTIAL`, `SITE_1_BACKEND_URL`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`. Not set: `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_UMAMI_WEBSITE_ID`, `NEXT_PUBLIC_SENTRY_DSN`, `NEXT_PUBLIC_SANITY_DATASET`.                                                                                                                              | verified                  |
+| Production migrations     | All 25 journal entries recorded, `0021`–`0024` included.                                                                                                                                                                                                                                                                                                  | verified                  |
+| Workspace site-1          | DB `name` still "Northern Arrival Mobile" (3.6).                                                                                                                                                                                                                                                                                                          | verified                  |
+| site-1 service credential | 1 active, 0 revoked.                                                                                                                                                                                                                                                                                                                                      | verified                  |
+| Catalogue / orders        | 0 `offer_versions`, 0 `catalogue_sync_events`, 0 orders for site-1.                                                                                                                                                                                                                                                                                       | verified                  |
 
 ### Production status (20 October 2026)
 
@@ -231,8 +253,9 @@ Depends on Stage 1 findings and the Stage 2 answers.
   machine registry entries for `outbox:run` / `reconcile:run` for site-1. Without it, no
   catalogue sync and no customer emails. _20 Oct: scheduler runs; catalogue sync still
   needs a Sanity integration in the registry (`provider_unavailable`)._
-- ☐ **3.5 site-1 service credential** _(You, needs MFA)_ — create in admin → Settings,
-  Claude sets `SITE_1_SERVICE_CREDENTIAL` on Vercel site-1 and redeploys.
+- ☑ **3.5 site-1 service credential** _(You, needs MFA)_ — create in admin → Settings,
+  Claude sets `SITE_1_SERVICE_CREDENTIAL` on Vercel site-1 and redeploys. _22 Oct: one
+  active credential, and the Vercel production variable is set._
 - ☐ **3.6 Site name** _(Claude)_ — replace `SITE_1_NAME_PLACEHOLDER` with "Canadian Plans".
 - ☐ **3.7 Real plans in Sanity `production`** _(Both)_ — siteSettings + the launch offers
   from 2.2–2.6, published. Claude prepares the documents, you review and publish.
