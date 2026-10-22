@@ -174,6 +174,51 @@ describe('createBackendClient transport', () => {
     const { client } = harness(500, { unexpected: true });
     await expect(client.health()).rejects.toBeInstanceOf(BackendError);
   });
+
+  /** A client whose fetch answers with a raw (non-JSON) body. */
+  function rawClient(response: () => Response) {
+    return createBackendClient({
+      baseUrl: 'https://api.example.test',
+      credential: 'cplsk_test',
+      fetch: async () => response(),
+    });
+  }
+
+  it('turns an HTML 404 into a BackendError with the real status, not a SyntaxError', async () => {
+    const client = rawClient(
+      () =>
+        new Response('<html>Cannot GET /api/v1/health</html>', {
+          status: 404,
+          headers: { 'content-type': 'text/html' },
+        }),
+    );
+    const error: unknown = await client.health().catch((cause: unknown) => cause);
+    expect(error).toBeInstanceOf(BackendError);
+    expect(error).toMatchObject({ code: 'internal_error', status: 404 });
+  });
+
+  it('turns an empty edge 502 into a BackendError carrying the sent request id', async () => {
+    const client = rawClient(() => new Response('', { status: 502 }));
+    const error: unknown = await client.health().catch((cause: unknown) => cause);
+    expect(error).toBeInstanceOf(BackendError);
+    expect(error).toMatchObject({
+      status: 502,
+      requestId: expect.stringMatching(/^[0-9a-f-]{36}$/),
+    });
+  });
+
+  it('keeps transport failures distinct from HTTP answers so callers can retry safely', async () => {
+    const client = createBackendClient({
+      baseUrl: 'https://api.example.test',
+      credential: 'cplsk_test',
+      fetch: async () => {
+        throw new TypeError('fetch failed');
+      },
+    });
+    const error: unknown = await client.health().catch((cause: unknown) => cause);
+    expect(error).toBeInstanceOf(TypeError);
+    expect(error).not.toBeInstanceOf(BackendError);
+  });
 });
 
 /**
