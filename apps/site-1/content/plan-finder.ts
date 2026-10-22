@@ -550,8 +550,8 @@ export const finderSteps = {
     defaultValue: 'student',
     progress: 'Step 1 of 2',
     title: 'Welcome! How are you coming to Canada?',
-    description: 'Some plans have special newcomer pricing.',
-    mobileDescription: 'Some plans have special newcomer\npricing.',
+    description: 'We show the plans that fit how you are arriving.',
+    mobileDescription: 'We show the plans that fit\nhow you are arriving.',
     layout: 'arrival',
     routes: [
       {
@@ -595,7 +595,6 @@ export const finderSteps = {
             nodeId: '305:349',
           },
         },
-        badge: 'SAVE UP TO 50%',
         description: 'Study permit · college or university',
         mobileDescription: 'Study permit · college or\nuniversity',
       },
@@ -1248,7 +1247,6 @@ export const finderArrivalMatches: readonly FinderMatch[] = [
     tone: 'rogers',
     description: 'Our most popular plan. Lots of data, and your number works the day you land.',
     price: '$40/mo',
-    comparison: '$80/mo if bought in Canada',
     href: '/order?plan=prearrival-rogers-plus-100&category=sim',
     features: [
       '100 GB at up to 1 Gbps',
@@ -1267,7 +1265,6 @@ export const finderArrivalMatches: readonly FinderMatch[] = [
     tone: 'fido',
     description: 'A little less data for a lower monthly bill.',
     price: '$35/mo',
-    comparison: '$60/mo if bought in Canada',
     href: '/order?plan=prearrival-fido-essential-75&category=sim',
     features: [
       '75 GB 5G data',

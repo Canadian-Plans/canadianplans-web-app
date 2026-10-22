@@ -127,6 +127,29 @@ describe('runBackup', () => {
     await expect(runBackup(deps)).resolves.toMatchObject({ referencedObjectCount: 1 });
     expect(calls).toBe(1);
   });
+  it('backs up the database and documents without a Sanity project and records the omission', async () => {
+    const { backend, privateKeyBase64, deps } = baseDeps();
+    const { sanity: _unused, ...withoutSanity } = deps;
+    void _unused;
+    const summary = await runBackup(withoutSanity);
+    expect(summary.artifactCount).toBeGreaterThanOrEqual(5);
+
+    const reader = backend.asReader();
+    expect(await reader.getObject('run-2026-09-14/sanity-export.tar.gz.enc')).toBeUndefined();
+    expect((await readLatestHeartbeat(reader)).status).toBe('ok');
+
+    const decryptor = new TestEnvelopeDecryptor(privateKeyBase64);
+    const manifestCiphertext = await reader.getObject('run-2026-09-14/manifest.json.enc');
+    const manifest = backupManifestSchema.parse(
+      JSON.parse(new TextDecoder().decode(await decryptor.decrypt(manifestCiphertext!))),
+    );
+    expect(manifest.exclusions).toContain('sanity_dataset_not_configured');
+    expect(manifest.counts).toMatchObject({ sanityDocuments: 0, sanityAssets: 0 });
+    expect(manifest.artifacts.map((artifact) => artifact.name)).not.toContain(
+      'sanity-export.tar.gz',
+    );
+  });
+
   it('encrypts, uploads and verifies every artifact, then publishes a heartbeat', async () => {
     const { backend, privateKeyBase64, deps } = baseDeps();
     const summary = await runBackup(deps);

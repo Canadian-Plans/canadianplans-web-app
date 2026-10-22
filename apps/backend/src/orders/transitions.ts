@@ -3,12 +3,15 @@ import { lockCustomerLeadForOrder } from '../deletion/restriction.js';
 import {
   auditEvents,
   dispatchRecords,
+  leads,
   orderStatusHistory,
   orders,
+  outboxJobs,
   withTenantTx,
 } from '@canadian-plans/db';
 import { orderFulfilmentStatusSchema, type OrderFulfilmentStatus } from '@canadian-plans/contracts';
 
+import { hashContact, normalizeEmail, requireContactHashSecret } from '../email/hash.js';
 import type { CommissionActivationHook } from '../partners/activation.js';
 import {
   findUnsatisfiedDocuments,
@@ -189,6 +192,8 @@ export class DatabaseOrderTransitionStore implements OrderTransitionStore {
             version: orders.version,
             partnerId: orders.partnerId,
             snapshot: orders.snapshot,
+            reference: orders.reference,
+            leadId: orders.leadId,
           })
           .from(orders)
           .where(
@@ -319,6 +324,42 @@ export class DatabaseOrderTransitionStore implements OrderTransitionStore {
               : {}),
           },
         });
+        // The customer-facing email for this transition is an outbox row in
+        // the same transaction (invariant 7); the runner sends it after commit.
+        // Orders whose lead recorded no address have nothing to send.
+        const jobType = customerEmailJobFor(input.toStatus);
+        if (jobType) {
+          const [lead] = await tx
+            .select({ email: leads.email })
+            .from(leads)
+            .where(and(eq(leads.workspaceId, input.workspaceId), eq(leads.id, current.leadId)))
+            .limit(1);
+          if (lead?.email) {
+            const variables: Record<string, string> = {};
+            if (input.toStatus === 'dispatched' && input.dispatch) {
+              variables['courier'] = input.dispatch.courier.trim();
+              const tracking = input.dispatch.trackingReference?.trim();
+              if (tracking) variables['trackingReference'] = tracking;
+            }
+            if (input.toStatus === 'cancelled') variables['status'] = 'cancelled';
+            await tx.insert(outboxJobs).values({
+              workspaceId: input.workspaceId,
+              jobType,
+              // One email per order version: a retried transition is a
+              // version conflict, never a duplicate send.
+              dedupeKey: `${input.orderId}:${nextVersion}`,
+              payload: {
+                orderId: input.orderId,
+                reference: current.reference,
+                toAddress: lead.email,
+                contactHash: hashContact(normalizeEmail(lead.email), requireContactHashSecret()),
+                ...(Object.keys(variables).length > 0 ? { variables } : {}),
+              },
+              availableAt: changedAt,
+              updatedAt: changedAt,
+            });
+          }
+        }
         return {
           status: 'transitioned',
           orderId: input.orderId,
@@ -327,6 +368,29 @@ export class DatabaseOrderTransitionStore implements OrderTransitionStore {
         };
       },
     );
+  }
+}
+
+/** Outbox job type for the customer email that announces a transition, if any. */
+function customerEmailJobFor(
+  toStatus: OrderFulfilmentStatus,
+):
+  | 'order_awaiting_customer_email'
+  | 'order_dispatch_email'
+  | 'order_activation_email'
+  | 'order_status_email'
+  | undefined {
+  switch (toStatus) {
+    case 'awaiting_customer':
+      return 'order_awaiting_customer_email';
+    case 'dispatched':
+      return 'order_dispatch_email';
+    case 'activated':
+      return 'order_activation_email';
+    case 'cancelled':
+      return 'order_status_email';
+    default:
+      return undefined;
   }
 }
 

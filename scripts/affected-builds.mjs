@@ -90,6 +90,12 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const apps = affectedApps(projects, changedFiles(base));
   console.info(`Affected apps: ${apps.map((app) => app.name).join(', ') || 'none'}`);
   if (args[0] === '--vercel') {
+    // A Vercel "Redeploy" of the current commit has an empty diff, which would
+    // otherwise cancel the build and leave changed NEXT_PUBLIC_* values unapplied.
+    if (process.env['VERCEL_FORCE_BUILD'] === '1') {
+      console.info('VERCEL_FORCE_BUILD=1: building regardless of changed files');
+      process.exit(1);
+    }
     const selected = projects.find((project) => project.directory === `apps/${args[1]}`);
     process.exit(selected && !apps.includes(selected) ? 0 : 1);
   }

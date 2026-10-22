@@ -15,7 +15,6 @@ import type { OrderTransitionStore } from '../orders/transitions.js';
  * is a faithful check of the backend logic those endpoints call.
  */
 
-export const SYNTHETIC_CONTACT_EMAIL = 'synthetic-check@canadianplans.internal';
 const SYNTHETIC_TERMS_VERSION = 'synthetic-check-v1';
 const SYNTHETIC_CONSENT_VERSION = 'synthetic-check-v1';
 const CANCEL_REASON = 'Automated synthetic order check cleanup.';
@@ -85,7 +84,10 @@ async function runSteps(
     workspaceId: dependencies.workspaceId,
     actorId: input.actorId,
     requestId: input.requestId,
-    contact: { email: SYNTHETIC_CONTACT_EMAIL },
+    // No contact address on purpose: order submission only queues the
+    // acknowledgement email when the lead recorded one, so the check never
+    // sends mail (or bounces) from a fake address every 15 minutes.
+    contact: {},
     productId: dependencies.productId,
     consentVersion: SYNTHETIC_CONSENT_VERSION,
   });

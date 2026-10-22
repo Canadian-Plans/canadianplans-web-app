@@ -278,6 +278,21 @@ export type RedesignAssetKey = keyof typeof redesignAssets;
 
 export type CategoryKey = 'pre-arrival' | 'home-internet' | 'mobile' | 'business';
 
+export interface HomeTestimonial {
+  readonly id: string;
+  readonly photo: string;
+  readonly alt: string;
+  readonly photoHint: string;
+  readonly category: string;
+  readonly tone: 'amber' | 'mint' | 'navy';
+  readonly quote: string;
+  readonly name: string;
+  readonly meta: string;
+}
+
+/** Empty until the owner supplies real, consented customer reviews. */
+const homeTestimonials: readonly HomeTestimonial[] = [];
+
 export const categoryHrefs: Readonly<Record<CategoryKey, string>> = {
   'pre-arrival': '/pre-arrival-sim',
   'home-internet': '/home-internet',
@@ -312,7 +327,7 @@ export const homeRedesign = {
         description:
           'Get your Canadian phone number before you fly, then set up home internet when you move in.',
         price: 'From $35/mo + tax',
-        chips: ['✓ Pay $0 today', '✓ Save up to $40/mo vs in-store'],
+        chips: ['✓ Pay $0 today', '✓ No credit history needed'],
         needs: ['A number before I arrive', 'Home internet when I move in', 'Both'],
         fieldLabel: 'Arrival date',
         fieldHint: 'e.g. Jan 15, 2027',
@@ -323,9 +338,6 @@ export const homeRedesign = {
       },
     },
     needLabel: 'I need',
-    stars: '★★★★★',
-    ratingScore: '4.8',
-    ratingText: '· 1,200+ Google reviews',
     assurances: ['No credit check options', 'Pay $0 until we confirm'],
     carousel: { previous: 'Previous slide', next: 'Next slide', slide: 'Show slide' },
     badgeSuffix: '/mo · CAD',
@@ -766,45 +778,8 @@ export const homeRedesign = {
     eyebrow: 'Customer stories',
     title: "People we've helped get connected",
     more: { label: 'Read more reviews', href: '#stories' },
-    /** Placeholders only. Replace with real reviews used with permission; never invent quotes. */
-    items: [
-      {
-        id: 't1',
-        photo: '',
-        alt: 'Customer photo',
-        photoHint: 'PHOTO · customer (with consent)',
-        category: 'Pre-arrival Plan',
-        tone: 'amber',
-        quote:
-          'Real customer quote goes here. One or two sentences about their experience, used with permission.',
-        name: 'Customer name',
-        meta: 'City · Customer since 20XX',
-      },
-      {
-        id: 't2',
-        photo: '',
-        alt: 'Customer photo',
-        photoHint: 'PHOTO · customer at home (with consent)',
-        category: 'Home Internet',
-        tone: 'mint',
-        quote:
-          'Real customer quote goes here. One or two sentences about their experience, used with permission.',
-        name: 'Customer name',
-        meta: 'City · Customer since 20XX',
-      },
-      {
-        id: 't3',
-        photo: '',
-        alt: 'Customer photo',
-        photoHint: 'PHOTO · business owner in store (with consent)',
-        category: 'Business Internet',
-        tone: 'navy',
-        quote:
-          'Real customer quote goes here. One or two sentences about their experience, used with permission.',
-        name: 'Customer name',
-        meta: 'Business name · City',
-      },
-    ],
+    /** Real reviews used with permission only; never invent quotes. Empty hides the section. */
+    items: homeTestimonials,
   },
   faq: {
     eyebrow: 'FAQ',
@@ -867,7 +842,7 @@ export const homeRedesignFaq: readonly FaqItemContent[] = [
     id: 'before',
     question: 'Can I get a Canadian number before I arrive?',
     answer:
-      'Yes. With a pre-arrival plan you can order from abroad and get your Canadian number ready before you fly. [Confirm how far ahead people can order.]',
+      'Yes. Order a pre-arrival plan 1 to 3 weeks before your flight, from any country, and your Canadian number is ready before you fly.',
   },
   {
     id: 'keep',
@@ -878,13 +853,13 @@ export const homeRedesignFaq: readonly FaqItemContent[] = [
     id: 'contract',
     question: 'Is there a contract?',
     answer:
-      'No contract on any of our plans. [Confirm any device financing terms if you sell phones.]',
+      'There is no contract with Canadian Plans. Your service agreement is with the provider, and an advisor explains its terms before anything is activated.',
   },
   {
     id: 'install',
     question: 'How fast can I get home internet installed?',
     answer:
-      '[Add your typical install timeline.] We book the install for you and keep you updated.',
+      'Most installs happen within about 3 days of your call with us. We book the install for you and keep you updated.',
   },
 ];
 

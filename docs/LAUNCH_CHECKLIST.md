@@ -303,7 +303,9 @@ Depends on Stage 1 findings and the Stage 2 answers.
 ## Stage 6 — Go live (Both)
 
 - ☐ **6.1 Open to search engines** _(Claude)_ — production robots/sitemap allow indexing;
-  only `/business-internet` stays noindex.
+  only `/business-internet` stays noindex. One switch: flip `STOREFRONT_INDEXING_OPEN`
+  in `apps/site-1/src/lib/seo.ts` to `true` and deploy; the commercial pages and the
+  sitemap follow it (`publicRobots()` / `INDEXABLE_PATHS`).
 - ☐ **6.2 Analytics** _(Both)_ — Umami (or chosen tool) recording visits and order starts.
 - ☐ **6.3 Announce** _(You)_ — first customers usually come from people you can reach
   directly: newcomer and student groups, WhatsApp/Facebook communities, friends and

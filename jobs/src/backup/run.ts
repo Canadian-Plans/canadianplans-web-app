@@ -45,7 +45,8 @@ export interface BackupRunDependencies {
   database: DatabaseExporter;
   referencedObjects: ReferencedObjectManifestSource;
   r2Source: R2SourceReader;
-  sanity: SanityExporter;
+  /** Absent until a Sanity project is connected; the manifest records the omission. */
+  sanity?: SanityExporter;
   sourceIds: Record<string, string>;
   toolVersions: Record<string, string>;
   /** Lease held for the whole run plus a safety margin past expected duration. */
@@ -109,8 +110,9 @@ export async function runBackup(deps: BackupRunDependencies): Promise<BackupRunS
     }
     if (problems.length > 0) throw new BackupIncompleteError(problems);
 
-    // 4. Sanity content/assets export.
-    const sanity = await deps.sanity.exportDataset();
+    // 4. Sanity content/assets export (only once a project is connected; the
+    // database and documents must never wait on a CMS that is not in use).
+    const sanity = deps.sanity ? await deps.sanity.exportDataset() : undefined;
 
     // 5. Canonical artifact set and manifest.
     const namedArtifacts = new Map<string, Uint8Array>([
@@ -119,7 +121,7 @@ export async function runBackup(deps: BackupRunDependencies): Promise<BackupRunS
       ['data.sql', db.data],
       ...(db.historySchema ? ([['history_schema.sql', db.historySchema]] as const) : []),
       ...(db.historyData ? ([['history_data.sql', db.historyData]] as const) : []),
-      ['sanity-export.tar.gz', sanity.archive],
+      ...(sanity ? ([['sanity-export.tar.gz', sanity.archive]] as const) : []),
       ...r2Artifacts,
     ]);
 
@@ -133,10 +135,11 @@ export async function runBackup(deps: BackupRunDependencies): Promise<BackupRunS
       ),
       counts: {
         referencedObjects: referenced.length,
-        sanityDocuments: sanity.documentCount,
-        sanityAssets: sanity.assetCount,
+        sanityDocuments: sanity?.documentCount ?? 0,
+        sanityAssets: sanity?.assetCount ?? 0,
       },
       exclusions: [
+        ...(sanity ? [] : ['sanity_dataset_not_configured']),
         'supabase_project_settings',
         'jwt_and_api_keys',
         'database_and_role_passwords',

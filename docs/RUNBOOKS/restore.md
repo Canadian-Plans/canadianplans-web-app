@@ -205,6 +205,10 @@ age -r "$RECOVERY_AGE_RECIPIENT" -o manifest.json.age manifest.json
 The first two key-generation commands are an owner ceremony, not a daily job.
 Immediately move the private key into owner-controlled offline escrow and
 remove it from the runner. Daily jobs receive only `RECOVERY_AGE_RECIPIENT`.
+The weekly retention job never holds the private key either: it prunes from
+the archive listing (run prefix plus the manifest object's upload time) and
+decrypts nothing, so no GitHub Environment contains both a delete-capable
+archive credential and the means to read a backup.
 T24 must pin and record the `age` version.
 
 Upload the encrypted files with a B2 archive-writer application key scoped to

@@ -64,9 +64,12 @@ deployment on either platform.
    the fastest rollback path and requires no rebuild.
 4. If the bad release also requires a Vercel environment variable revert
    (e.g. a `NEXT_PUBLIC_*` value), update it in Project Settings →
-   Environment Variables before or immediately after promoting, since the
-   promoted deployment's server-rendered output can still read the
-   _current_ environment variables for anything not baked in at build time.
+   Environment Variables. `NEXT_PUBLIC_*` values are baked in at build time,
+   and a plain **Redeploy** of the same commit is cancelled by the Ignored
+   Build Step (`scripts/affected-builds.mjs`). To apply a changed value
+   without a code change, set the project env var `VERCEL_FORCE_BUILD=1`
+   (Production scope), Redeploy, then remove it; or deploy from the CLI
+   (`vercel deploy --prod`), which does not run the Ignored Build Step.
 
 ## Coordinating a rollback across backend and frontend together
 

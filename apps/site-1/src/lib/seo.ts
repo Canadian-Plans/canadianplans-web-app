@@ -7,12 +7,49 @@
 
 const DEFAULT_BASE_URL = 'http://localhost:3001';
 
+/**
+ * Launch step 6.1 switch: while false every commercial page stays noindex and
+ * off the sitemap; flip to true (one deploy) to open the storefront to search.
+ * Order, tracking, search, dev, Studio, legacy plan and business pages are never
+ * listed regardless of this flag.
+ */
+export const STOREFRONT_INDEXING_OPEN = false;
+
+export const INDEXABLE_PATHS: readonly string[] = [
+  '/',
+  '/about',
+  '/contact',
+  '/faq',
+  '/guides',
+  '/home-internet',
+  '/home-internet/vancouver',
+  '/home-internet/ontario',
+  '/mobile-plans',
+  '/pre-arrival-sim',
+  '/pre-arrival-sim/students',
+  '/pre-arrival-sim/from-india',
+  '/pre-arrival-sim/toronto-pearson',
+  '/accessibility',
+];
+
+/** Per-page robots metadata: undefined lets the root layout decide once indexing is open. */
+export function publicRobots(path: string): { index: boolean; follow: boolean } | undefined {
+  const listed = INDEXABLE_PATHS.includes(path) || path.startsWith('/guides/');
+  return STOREFRONT_INDEXING_OPEN && listed ? undefined : { index: false, follow: false };
+}
+
 /** Absolute origin used for canonical URLs, the sitemap and robots. No trailing slash. */
 export function siteBaseUrl(): string {
   const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (!raw) return DEFAULT_BASE_URL;
+  // Production safety net: Vercel exposes the project's production host, so a
+  // missing NEXT_PUBLIC_SITE_URL no longer silently emits localhost canonicals.
+  const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  const candidate =
+    raw ||
+    (process.env.VERCEL_ENV === 'production' && vercelHost ? `https://${vercelHost}` : undefined);
+  if (!candidate) return DEFAULT_BASE_URL;
   try {
-    const url = new URL(raw);
+    const url = new URL(candidate);
     const local = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
     if (
       (url.protocol !== 'https:' && !(local && url.protocol === 'http:')) ||

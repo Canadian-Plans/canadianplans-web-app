@@ -1,6 +1,19 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 import { affectedApps, changedFiles, readProjects } from './affected-builds.mjs';
+
+const script = fileURLToPath(new URL('./affected-builds.mjs', import.meta.url));
+const vercelExit = (env) =>
+  spawnSync(process.execPath, [script, '--vercel', 'site-1'], {
+    env: { ...process.env, VERCEL_GIT_PREVIOUS_SHA: 'HEAD', ...env },
+    encoding: 'utf8',
+  }).status;
+test('Vercel redeploy of the same commit is skipped by default', () =>
+  assert.equal(vercelExit({ VERCEL_FORCE_BUILD: '' }), 0));
+test('VERCEL_FORCE_BUILD=1 builds the same commit again', () =>
+  assert.equal(vercelExit({ VERCEL_FORCE_BUILD: '1' }), 1));
 
 const projects = readProjects();
 const names = (changes) =>

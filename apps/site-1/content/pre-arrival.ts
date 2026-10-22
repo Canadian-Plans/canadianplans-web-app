@@ -101,7 +101,7 @@ export const arrivalCopy = {
         values: ['None needed', 'None', 'Often, for postpaid'],
       },
     ],
-    note: 'VERIFY before publishing: kiosk and carrier-store claims must be checked against current airport and store offers (YVR, YYZ, YUL, YYC).',
+    note: 'Airport kiosk and carrier-store details are general observations, checked October 2026. Prices and availability vary by location.',
   },
   faq: {
     heading: {
@@ -119,27 +119,26 @@ export const arrivalCopy = {
       {
         id: 'arrival-faq-1',
         question: 'How do I know if my phone supports eSIM?',
-        answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
+        answer:
+          'On an iPhone, go to Settings → General → About and look for “EID” or “Digital SIM”. On Samsung and Android, go to Settings → Connections → SIM manager and look for “Add eSIM”. Not sure? Send us your phone model and we will check.',
       },
       {
         id: 'arrival-faq-2',
         question: 'Does my phone need to be unlocked?',
-        answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
+        answer:
+          'Yes. Your phone must be unlocked and support eSIM. If it is locked to another carrier, ask that carrier to unlock it before you order.',
       },
       {
         id: 'arrival-faq-3',
         question: 'Can I order from any country?',
-        answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
+        answer:
+          'Yes. Order online from any country 1 to 3 weeks before your flight. We confirm your order, then email your eSIM QR code; it switches on when you land.',
       },
       {
         id: 'arrival-faq-4',
         question: 'When will I be charged for my plan?',
-        answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
-      },
-      {
-        id: 'arrival-faq-5',
-        question: 'Can I switch to a postpaid plan later?',
-        answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
+        answer:
+          'Nothing is paid on this website. Your first bill comes from the provider once your number is active, and an advisor walks you through the date before anything is billed.',
       },
     ],
   },
@@ -173,8 +172,7 @@ const internationalMinutes = '✓ 1,000 min to India, China, Bangladesh, Mexico 
 export const arrivalPlans: readonly ArrivalPlan[] = [
   {
     id: 'preview-fido-essential',
-    originalPrice: '$60/mo',
-    finePrint: 'in store · $0 due today',
+    finePrint: 'Pre-arrival price · $0 due today',
     audiences: longTerm,
     summaryName: 'Fido',
     previewOnly: true,
@@ -198,8 +196,7 @@ export const arrivalPlans: readonly ArrivalPlan[] = [
   },
   {
     id: 'preview-rogers-plus',
-    originalPrice: '$80/mo',
-    finePrint: 'in store · $0 due today',
+    finePrint: 'Pre-arrival price · $0 due today',
     audiences: longTerm,
     summaryName: 'Rogers',
     previewOnly: true,
@@ -273,8 +270,7 @@ export const arrivalPlans: readonly ArrivalPlan[] = [
   },
   {
     id: 'preview-chatr-90',
-    originalPrice: '$67',
-    finePrint: 'in store · $0 due today',
+    finePrint: 'Pre-arrival price · $0 due today',
     audiences: ['visitor'],
     summaryName: 'Chatr 30-day',
     previewOnly: true,

@@ -1,4 +1,5 @@
 import { pageMetadata } from '@/lib/page-metadata';
+import { publicRobots } from '@/lib/seo';
 import type { Metadata } from 'next';
 import { homeCopy } from '@content/home';
 import { siteChrome, siteFooter } from '@content/site-chrome';
@@ -15,7 +16,7 @@ import { HomeFinalCta } from '@/components/home/design/final-cta';
 
 export const metadata: Metadata = pageMetadata('/', {
   title: homeCopy.title,
-  robots: { index: false, follow: false },
+  robots: publicRobots('/'),
 });
 
 /**

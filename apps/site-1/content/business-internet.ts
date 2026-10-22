@@ -66,13 +66,12 @@ export const businessFaq: readonly FaqItemContent[] = [
     id: 'business-faq-install',
     question: 'How soon can you install?',
     answer:
-      'Usually [typical business install timeline]. We book the visit around your opening hours.',
+      'Usually within a few business days of your quote. We book the visit around your opening hours.',
   },
   {
     id: 'business-faq-static-ip',
     question: 'Can I get a static IP?',
-    answer:
-      'Static IP options are available on [confirm which business plans]. Ask your advisor when you request a quote.',
+    answer: 'Static IP options depend on the plan. Ask your advisor when you request a quote.',
   },
   {
     id: 'business-faq-phones',

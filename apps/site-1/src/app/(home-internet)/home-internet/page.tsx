@@ -1,4 +1,5 @@
 import { pageMetadata } from '@/lib/page-metadata';
+import { publicRobots } from '@/lib/seo';
 import type { Metadata } from 'next';
 import { CpSectionHeading } from '@canadian-plans/ui/canadian-plans';
 import { internetCopy, internetChrome, internetChromeAssets } from '@content/home-internet';
@@ -11,7 +12,7 @@ import { CategoryTemplate } from '@/components/category-redesign/template';
 
 export const metadata: Metadata = pageMetadata('/home-internet', {
   title: internetCopy.title,
-  robots: { index: false, follow: false },
+  robots: publicRobots('/home-internet'),
 });
 
 /**

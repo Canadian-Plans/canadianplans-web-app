@@ -1,4 +1,5 @@
 import { pageMetadata } from '@/lib/page-metadata';
+import { publicRobots } from '@/lib/seo';
 import type { Metadata } from 'next';
 import { SkipLink } from '@canadian-plans/ui';
 import { CpBreadcrumb, CpButton, CpCtaBand } from '@canadian-plans/ui/canadian-plans';
@@ -19,7 +20,7 @@ import {
 export const metadata: Metadata = pageMetadata('/faq', {
   title: faqCopy.title,
   description: faqCopy.description,
-  robots: { index: false, follow: false },
+  robots: publicRobots('/faq'),
 });
 
 export default function FaqPage() {

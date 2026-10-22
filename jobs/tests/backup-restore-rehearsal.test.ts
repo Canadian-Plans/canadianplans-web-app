@@ -123,7 +123,6 @@ describe('A4 backup/restore rehearsal (synthetic data, local isolated harness)',
     // Retention dry-run over a single run changes nothing and retains it.
     const retentionReport = await runRetention({
       admin: backend.asRetentionAdmin(),
-      decryptor: new TestEnvelopeDecryptor(privateKeyBase64),
       now: () => new Date('2026-09-14T04:00:00.000Z'),
       dryRun: true,
     });

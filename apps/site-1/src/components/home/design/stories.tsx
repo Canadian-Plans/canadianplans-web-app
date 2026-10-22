@@ -2,6 +2,7 @@ import { homeRedesign } from '@content/home-redesign';
 
 /** Customer stories on the warm band: three cards, each with a photo slot and tag. */
 export function HomeStories() {
+  if (homeRedesign.testimonials.items.length === 0) return null;
   const t = homeRedesign.testimonials;
   return (
     <section className="cp-hd-section cp-hd-stories" id="stories" aria-labelledby="stories-title">

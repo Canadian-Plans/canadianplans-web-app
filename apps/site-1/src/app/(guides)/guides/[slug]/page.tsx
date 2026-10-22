@@ -8,7 +8,7 @@ import { siteChrome, siteFooter } from '@content/site-chrome';
 import { SiteHeader } from '@/components/shared/site-header';
 import { categoryAsset } from '@/components/category-redesign/support';
 import { findGuide, guideContents, serializeArticleSchema } from '@/lib/guide-content';
-import { siteBaseUrl } from '@/lib/seo';
+import { publicRobots, siteBaseUrl } from '@/lib/seo';
 import { Footer } from '@/components/shared/chrome';
 import { GuideContents, GuideHelpful, GuideShare } from '@/components/guides/interactions';
 import { ArticleBodyBlock, GuidePromotion, GuideText } from '@/components/guides/article-body';
@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: article.title,
     description: article.description,
     alternates: { canonical: `/guides/${article.slug}` },
-    robots: { index: false, follow: false },
+    robots: publicRobots(`/guides/${article.slug}`),
     openGraph: { type: 'article', modifiedTime: article.updated, authors: [article.author.name] },
   });
 }

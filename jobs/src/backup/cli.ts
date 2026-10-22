@@ -39,7 +39,9 @@ async function main(): Promise<void> {
   const b2Bucket = requiredEnv('B2_ARCHIVE_BUCKET');
   const b2AccessKeyId = requiredEnv('B2_ARCHIVE_WRITER_KEY_ID');
   const b2SecretAccessKey = requiredEnv('B2_ARCHIVE_WRITER_APPLICATION_KEY');
-  const sanityProjectId = requiredEnv('SANITY_PROJECT_ID');
+  // Optional until Sanity is connected: the storefront runs on the repo
+  // catalogue today, and the database/document backup must not depend on it.
+  const sanityProjectId = process.env.SANITY_PROJECT_ID?.trim();
   const sanityDataset = process.env.SANITY_DATASET?.trim() || 'production';
   const sanitySiteFilter = process.env.SANITY_SITE_FILTER?.trim() || 'site-1';
   const supabaseProjectRef = requiredEnv('SUPABASE_PROJECT_REF');
@@ -63,12 +65,23 @@ async function main(): Promise<void> {
     // Phase A has exactly one website/bucket; Phase B's per-site buckets need
     // a bucket→credentials map here before website 2/3 onboard (REQ 45).
     r2Source: new S3R2SourceReader(() => requiredR2Config()),
-    sanity: new SanityCliExporter(
-      { siteFilter: sanitySiteFilter, projectId: sanityProjectId, dataset: sanityDataset },
-      nodeRunCommand,
-    ),
-    sourceIds: { supabaseProjectRef, sanityProjectId, sanityDataset },
-    toolVersions: { age: 'pinned-by-runner-image', supabaseCli: 'pinned-by-runner-image' },
+    ...(sanityProjectId
+      ? {
+          sanity: new SanityCliExporter(
+            { siteFilter: sanitySiteFilter, projectId: sanityProjectId, dataset: sanityDataset },
+            nodeRunCommand,
+          ),
+        }
+      : {}),
+    sourceIds: {
+      supabaseProjectRef,
+      ...(sanityProjectId ? { sanityProjectId, sanityDataset } : {}),
+    },
+    // Recorded by the workflow from the installed binaries; never a placeholder.
+    toolVersions: {
+      age: process.env.AGE_VERSION?.trim() || 'unknown',
+      supabaseCli: process.env.SUPABASE_CLI_VERSION?.trim() || 'unknown',
+    },
   });
 
   // Never log secrets/document bytes — only counts and identifiers.

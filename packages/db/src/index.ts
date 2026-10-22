@@ -72,9 +72,11 @@ function createClient(options: DatabaseClientOptions) {
 }
 
 /**
- * Creates the serverless runtime client. Supavisor transaction mode does not
- * support named prepared statements, so `prepare` is always disabled. A warm
- * Vercel instance shares this small application-side pool.
+ * Creates the runtime client. The backend is a long-lived Railway process
+ * (HTTP server plus the in-process scheduler) that shares one small
+ * application-side pool, sized by `DATABASE_POOL_MAX` (see `runtimePoolMax`),
+ * through the Supabase transaction-mode pooler. Supavisor transaction mode does
+ * not support named prepared statements, so `prepare` is always disabled.
  */
 export function createDatabaseClient(options: DatabaseClientOptions): DatabaseClient {
   const sqlClient = createClient(options);
@@ -155,11 +157,29 @@ function runtimeSsl(): 'require' | false {
   throw new Error('DATABASE_SSL_MODE must be either "require" or "disable"');
 }
 
+const DEFAULT_POOL_MAX = 8;
+
+/**
+ * Shared-pool size for the long-lived backend. `DATABASE_POOL_MAX` must be an
+ * integer from 1 to 50; anything else falls back to 8, which stays well below
+ * the Supabase pooler's per-project client limit for one replica.
+ */
+export function runtimePoolMax(env: NodeJS.ProcessEnv = process.env): number {
+  const raw = env.DATABASE_POOL_MAX?.trim();
+  if (!raw) return DEFAULT_POOL_MAX;
+  const value = Number(raw);
+  return Number.isInteger(value) && value >= 1 && value <= 50 ? value : DEFAULT_POOL_MAX;
+}
+
 function getDefaultClient(): DatabaseClient {
   if (defaultClient) return defaultClient;
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) throw new Error('DATABASE_URL is required');
-  defaultClient = createDatabaseClient({ connectionString, ssl: runtimeSsl() });
+  defaultClient = createDatabaseClient({
+    connectionString,
+    ssl: runtimeSsl(),
+    maxConnections: runtimePoolMax(),
+  });
   return defaultClient;
 }
 
