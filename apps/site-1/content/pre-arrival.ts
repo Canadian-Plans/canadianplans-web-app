@@ -173,8 +173,7 @@ const internationalMinutes = '✓ 1,000 min to India, China, Bangladesh, Mexico 
 export const arrivalPlans: readonly ArrivalPlan[] = [
   {
     id: 'preview-fido-essential',
-    originalPrice: '$60/mo',
-    finePrint: 'in store · $0 due today',
+    finePrint: 'Pre-arrival price · $0 due today',
     audiences: longTerm,
     summaryName: 'Fido',
     previewOnly: true,
@@ -198,8 +197,7 @@ export const arrivalPlans: readonly ArrivalPlan[] = [
   },
   {
     id: 'preview-rogers-plus',
-    originalPrice: '$80/mo',
-    finePrint: 'in store · $0 due today',
+    finePrint: 'Pre-arrival price · $0 due today',
     audiences: longTerm,
     summaryName: 'Rogers',
     previewOnly: true,
@@ -273,8 +271,7 @@ export const arrivalPlans: readonly ArrivalPlan[] = [
   },
   {
     id: 'preview-chatr-90',
-    originalPrice: '$67',
-    finePrint: 'in store · $0 due today',
+    finePrint: 'Pre-arrival price · $0 due today',
     audiences: ['visitor'],
     summaryName: 'Chatr 30-day',
     previewOnly: true,

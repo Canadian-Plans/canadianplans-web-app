@@ -312,7 +312,7 @@ export const homeRedesign = {
         description:
           'Get your Canadian phone number before you fly, then set up home internet when you move in.',
         price: 'From $35/mo + tax',
-        chips: ['✓ Pay $0 today', '✓ Save up to $40/mo vs in-store'],
+        chips: ['✓ Pay $0 today', '✓ No credit history needed'],
         needs: ['A number before I arrive', 'Home internet when I move in', 'Both'],
         fieldLabel: 'Arrival date',
         fieldHint: 'e.g. Jan 15, 2027',
