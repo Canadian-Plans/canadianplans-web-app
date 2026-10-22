@@ -152,8 +152,8 @@ export function createQuoteRouter(dependencies: WebsiteRouteDependencies): Route
   if (!quoteDependencies) return router;
   router.post(
     '/quotes',
-    requireHumanProof(dependencies.auth, 'quote-create'),
     requireWebsiteCredential(dependencies.auth),
+    requireHumanProof(dependencies.auth, 'quote-create'),
     requireScope('quotes:create'),
     requireEndpointRateLimit(dependencies.auth, 'quotes', endpointRateLimits.quotes),
     async (req, res) => {
@@ -230,8 +230,8 @@ export function createOrderRouter(dependencies: WebsiteRouteDependencies): Route
   if (!orderDependencies) return router;
   router.post(
     '/orders',
-    requireHumanProof(dependencies.auth, 'order-submit'),
     requireWebsiteCredential(dependencies.auth),
+    requireHumanProof(dependencies.auth, 'order-submit'),
     requireScope('orders:create'),
     requireEndpointRateLimit(dependencies.auth, 'orders', endpointRateLimits.orders),
     async (req, res) => {
@@ -364,9 +364,11 @@ function requireDraftGrant(req: Request): string | undefined {
 export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Router {
   const router = Router();
   const authenticate = requireWebsiteCredential(dependencies.auth);
+  // Credential (and its rate limits) first: an unauthenticated caller must never
+  // make the backend call Cloudflare, and every write still proves a human once.
   const admit = (action: WebsiteBotAction) => [
-    requireHumanProof(dependencies.auth, action),
     authenticate,
+    requireHumanProof(dependencies.auth, action),
   ];
 
   /**
@@ -805,8 +807,8 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
 
   router.post(
     '/tracking/otp',
-    requireHumanProof(dependencies.auth, 'tracking-request'),
     requireWebsiteCredential(dependencies.auth),
+    requireHumanProof(dependencies.auth, 'tracking-request'),
     requireScope('tracking:otp'),
     requireEndpointRateLimit(dependencies.auth, 'tracking', endpointRateLimits.tracking),
     async (req, res) => {
@@ -864,8 +866,8 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
 
   router.post(
     '/tracking/verify',
-    requireHumanProof(dependencies.auth, 'tracking-verify'),
     requireWebsiteCredential(dependencies.auth),
+    requireHumanProof(dependencies.auth, 'tracking-verify'),
     requireScope('tracking:otp'),
     requireEndpointRateLimit(dependencies.auth, 'tracking', endpointRateLimits.tracking),
     async (req, res) => {

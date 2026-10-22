@@ -60,7 +60,11 @@ function context(req: Request): WebsiteContext {
   return value;
 }
 
-/** Human admission is run once at each protected write, before tenant DB work. */
+/**
+ * Human admission is run once at each protected write, after the service
+ * credential (and its rate limits) and before tenant DB work, so an
+ * unauthenticated caller can never make the backend call the provider.
+ */
 export function requireHumanProof(
   deps: WebsiteAuthDependencies,
   action: WebsiteBotAction,
