@@ -2,7 +2,7 @@
 
 **Escalation owner:** Takib. Customers' personal records and accepted documents
 remain until they request deletion; there is no automatic six-month deletion.
-`record.delete` requires Owner/Finance permission and a verified `aal2` session.
+`record.delete` requires the Owner role or an individual `deletion` grant, and always a verified `aal2` session.
 A deny override wins. Orders staff may approve missing-document exceptions with
 a reason; that does not grant customer-data deletion permission.
 

@@ -140,8 +140,10 @@ export function createAuthorize(options: {
       return { allowed: false, reason: 'permission_denied' };
     }
 
-    const mfaRole = access.roles.some((role) => role === 'owner' || role === 'finance');
-    if (mfaRole && privilegedActions.has(input.action) && options.assuranceLevel !== 'aal2') {
+    // Owner decision (22 Oct 2026): every privileged action needs an MFA-verified
+    // session, whoever holds it — including an individually granted permission
+    // on an Orders/Viewer/Content/Partners member, not only Owner/Finance roles.
+    if (privilegedActions.has(input.action) && options.assuranceLevel !== 'aal2') {
       return { allowed: false, reason: 'mfa_required' };
     }
 
