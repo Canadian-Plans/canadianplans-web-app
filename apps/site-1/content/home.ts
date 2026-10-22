@@ -24,7 +24,7 @@ export const homeCopy = {
     circleLabel: 'SIM plans from',
     circleAmount: '$35',
     circleSuffix: '/mo · CAD',
-    sticker: 'eSIM in 5 minutes',
+    sticker: '$0 to order',
   },
   trust: [
     {
@@ -151,7 +151,7 @@ export const homeCopy = {
   how: {
     eyebrow: 'HOW IT WORKS',
     title: 'How to get a Canadian phone plan with us',
-    description: 'Four simple steps. Most people finish in under 5 minutes.',
+    description: 'Four simple steps, and nothing to pay online.',
     steps: [
       {
         number: '01',
@@ -172,7 +172,7 @@ export const homeCopy = {
       {
         number: '03',
         title: 'We call to confirm',
-        description: 'An advisor checks your plan and documents with you, usually within 2 hours.',
+        description: 'An advisor checks your plan and documents with you, usually the same day.',
         asset: '0-imgFrame2',
         tone: 'violet',
       },

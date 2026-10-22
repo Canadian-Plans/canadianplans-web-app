@@ -75,7 +75,7 @@ export const trackingCopy = {
   help: {
     title: 'Status not moving?',
     description:
-      'If we haven’t called within 2 hours (Mon–Sat, 9am–9pm PT), message us and the same advisor will pick it up.',
+      'If we haven’t called by the end of the day (Mon–Sat, 9am–9pm PT), message us and the same advisor will pick it up.',
     caption: 'Two of our Surrey advisors at the shop counter, replying to WhatsApp messages',
     button: 'Chat on WhatsApp',
   },
@@ -106,7 +106,7 @@ export const trackingCopy = {
   action: {
     title: 'We need a clearer photo of your study permit',
     description:
-      'The photo you sent was blurry, so Rogers can’t verify it. Upload a new one and we’ll continue within 2 hours. Your plan and price stay the same.',
+      'The photo you sent was blurry, so Rogers can’t verify it. Upload a new one and we’ll continue the same day. Your plan and price stay the same.',
     caption: 'Example of a clear photo: study permit flat, all four corners in frame, no glare',
     drop: 'Drop your file here',
     mobileDrop: 'Take a photo or pick a file',
@@ -182,7 +182,7 @@ export const trackingCopy = {
     newEmailLabel: 'New email',
     noteLabel: 'Anything else we should know?',
     notePlaceholder: 'e.g. moving next week, please hold the SIM',
-    note: 'Priya will confirm this change with you, usually within 2 hours. Changes are free until your plan is active.',
+    note: 'Priya will confirm this change with you, usually the same day. Changes are free until your plan is active.',
     send: 'Send request →',
     pending: 'Checking preview…',
     cancel: 'Cancel',

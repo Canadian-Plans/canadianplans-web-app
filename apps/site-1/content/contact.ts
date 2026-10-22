@@ -2,7 +2,7 @@ import type { CpButtonTone } from '@canadian-plans/ui/canadian-plans';
 import { componentAssets } from './components';
 
 export type ContactTopic = 'general' | 'sim' | 'mobile' | 'internet' | 'documents' | 'verification';
-export type ContactPreviewKind = 'whatsapp' | 'call' | 'directions';
+export type ContactPreviewKind = 'whatsapp';
 interface ContactOption {
   readonly id: 'whatsapp' | 'call' | 'email';
   readonly label: string;
@@ -37,7 +37,7 @@ export const contactCopy = {
       id: 'whatsapp',
       label: 'WhatsApp',
       title: 'Fastest reply',
-      description: 'Usually within 15 minutes during opening hours.',
+      description: 'Usually the same day during opening hours.',
       action: 'Chat on WhatsApp',
       tone: 'mint',
       buttonTone: 'primary',
@@ -46,7 +46,7 @@ export const contactCopy = {
       id: 'call',
       label: 'Call us',
       title: '+1 778-682-3771',
-      description: 'Toll-free in Canada. International callers: use WhatsApp.',
+      description: 'Mon–Sat, 9am–9pm Pacific. International callers: use WhatsApp.',
       action: 'Call now',
       tone: 'sky',
       buttonTone: 'outline',
@@ -80,6 +80,8 @@ export const contactCopy = {
     caption: 'Our advisors outside the shop on Whalley Blvd, Surrey, with the sign in view',
     address: ['9981 Whalley Blvd', 'Surrey, BC'],
     directions: 'Get directions →',
+    directionsHref:
+      'https://www.google.com/maps/search/?api=1&query=9981+Whalley+Blvd%2C+Surrey%2C+BC+V3T+0A8',
     hours: [
       { day: 'Mon–Fri', time: '9am – 9pm PT' },
       { day: 'Saturday', time: '9am – 9pm PT' },
@@ -133,11 +135,9 @@ export const contactCopy = {
     descriptions: {
       whatsapp:
         'WhatsApp is a UI preview. A verified business number is needed before live chat can open. No chat or message was started.',
-      call: 'The phone number shown is a Figma placeholder. Calling will be enabled after the business confirms its number.',
-      directions:
-        'The office address shown is a Figma placeholder. Directions will be enabled after the business confirms its location.',
     } satisfies Record<ContactPreviewKind, string>,
   },
+  callHref: 'tel:+17786823771',
 } as const;
 
 /** Topic choices are a reversible UI proposal; the Figma dropdown is closed. */

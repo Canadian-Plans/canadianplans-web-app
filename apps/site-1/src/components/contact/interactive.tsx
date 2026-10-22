@@ -93,6 +93,13 @@ export function ContactOptionAction({
   tone: CpButtonTone;
 }) {
   const preview = useContactPreview();
+  if (id === 'call') {
+    return (
+      <CpButton asChild tone={tone}>
+        <a href={contactCopy.callHref}>{label}</a>
+      </CpButton>
+    );
+  }
   return (
     <CpButton tone={tone} onClick={() => (id === 'email' ? focusMessage() : preview(id))}>
       {label}
@@ -100,11 +107,15 @@ export function ContactOptionAction({
   );
 }
 export function ContactDirections() {
-  const preview = useContactPreview();
   return (
-    <button type="button" className="cp-contact-directions" onClick={() => preview('directions')}>
+    <a
+      className="cp-contact-directions"
+      href={contactCopy.office.directionsHref}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       {contactCopy.office.directions}
-    </button>
+    </a>
   );
 }
 
