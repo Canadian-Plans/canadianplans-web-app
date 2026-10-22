@@ -90,6 +90,29 @@ it('reads only published legal content even with a preview credential and older 
   }
 });
 
+it('shows a Sanity legal page only when its version equals the repo release', async () => {
+  vi.stubEnv('NEXT_PUBLIC_SANITY_PROJECT_ID', 'test-project');
+  vi.stubEnv('NEXT_PUBLIC_SANITY_DATASET', 'production');
+  const doc = (version: number) => ({
+    title: 'Terms from Sanity',
+    version,
+    effectiveDate: '2026-10-01',
+    body: [{ _type: 'block', children: [{ text: 'Copy' }] }],
+  });
+  try {
+    clientMocks.fetch.mockResolvedValueOnce(doc(3));
+    expect(await getLegalPage('terms')).toMatchObject({ source: 'repo', version: 2 });
+    clientMocks.fetch.mockResolvedValueOnce(doc(2));
+    expect(await getLegalPage('terms')).toMatchObject({ source: 'sanity', version: 2 });
+    clientMocks.fetch.mockResolvedValueOnce(doc(1));
+    expect(await getLegalPage('terms')).toMatchObject({ source: 'repo', version: 2 });
+  } finally {
+    vi.unstubAllEnvs();
+    clientMocks.fetch.mockReset();
+    clientMocks.createClient.mockClear();
+  }
+});
+
 describe('getLegalPage without Sanity', () => {
   it('shows the legal text kept in the repo, with a real version, never the placeholder', async () => {
     for (const slug of ['privacy', 'terms'] as const) {

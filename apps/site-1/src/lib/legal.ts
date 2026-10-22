@@ -11,7 +11,10 @@ import { publishedLegal } from '@content/legal-published';
  * version accepted at submission and leads record the consent version at save.
  * Without a Sanity document the page shows the legal text kept in the repo
  * (`content/legal-published.ts`, ADR 0005), so the route never 500s and orders
- * still record a real version.
+ * still record a real version. A Sanity document is shown only when its version
+ * equals the repo release: the catalogue terms version and the site's consent
+ * versions are pinned to that release, so a customer must never read a newer
+ * (or older) text than the one their order records.
  */
 
 export type LegalSlug = 'privacy' | 'terms';
@@ -110,7 +113,9 @@ export async function getLegalPage(slug: LegalSlug): Promise<LegalPage> {
     });
     const doc: unknown = await client.fetch(LEGAL_PAGE_QUERY, { slug });
     const parsed = parseLegalDoc(doc);
-    if (!parsed || parsed.version < publishedLegal[slug].version) return repoLegalPage(slug);
+    // The catalogue TERMS_VERSION and site.config consent versions are pinned to
+    // the repo release; a different Sanity version must be released together with them.
+    if (!parsed || parsed.version !== publishedLegal[slug].version) return repoLegalPage(slug);
     return { ...parsed, source: 'sanity' };
   } catch {
     return repoLegalPage(slug);
