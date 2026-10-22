@@ -72,9 +72,9 @@ describe('outbox provider configuration', () => {
       status: 'completed',
       providerId: 'skipped:synthetic_workspace',
     });
-    await expect(handlers.get('analytics_lead_saved')?.(analytics(WORKSPACE))).rejects.toMatchObject(
-      { code: 'provider_not_configured' },
-    );
+    await expect(
+      handlers.get('analytics_lead_saved')?.(analytics(WORKSPACE)),
+    ).rejects.toMatchObject({ code: 'provider_not_configured' });
   });
   it('keeps suppression publication durable and fails closed without a configured ledger', async () => {
     const entry = job({
