@@ -23,6 +23,7 @@ import {
   sourceReportQuerySchema,
   type OrderCapabilities,
 } from '@canadian-plans/contracts';
+import { rateLimitHit } from '@canadian-plans/db';
 import { z } from 'zod';
 
 import { createDocumentServiceFromEnv } from '../documents/factory.js';
@@ -32,6 +33,7 @@ import { toStaffFile } from '../documents/summary.js';
 import {
   requireStaffSession,
   SupabaseStaffSessionVerifier,
+  type StaffRateLimit,
   type StaffSessionVerifier,
   type VerifiedStaffSession,
 } from '../auth/session.js';
@@ -74,6 +76,8 @@ import {
 
 export interface StaffRouteDependencies {
   sessionVerifier: StaffSessionVerifier;
+  /** Per-IP limit applied before any session check; omitted in route tests. */
+  rateLimit?: StaffRateLimit;
   store: StaffStore;
   credentialStore: WebsiteCredentialStore;
   leadStore: LeadStore;
@@ -96,6 +100,7 @@ export function createDefaultStaffRouteDependencies(): StaffRouteDependencies {
   const operationalTransitionsEnabled = loadOperationalTransitionsEnabled();
   return {
     sessionVerifier: new SupabaseStaffSessionVerifier(),
+    rateLimit: rateLimitHit,
     store: new DatabaseStaffStore(),
     credentialStore: new DatabaseWebsiteCredentialStore(),
     leadStore: new DatabaseLeadStore(),
@@ -142,7 +147,7 @@ function isUniqueViolation(error: unknown): boolean {
 
 export function createStaffRouter(dependencies: StaffRouteDependencies): Router {
   const router = Router();
-  router.use(requireStaffSession(dependencies.sessionVerifier));
+  router.use(requireStaffSession(dependencies.sessionVerifier, dependencies.rateLimit));
 
   const operationalTransitionsEnabled = () =>
     dependencies.operationalTransitionsEnabled ?? loadOperationalTransitionsEnabled();

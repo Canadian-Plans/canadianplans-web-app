@@ -35,6 +35,10 @@ the human-readable reference for the currently implemented (T5/T6) routes.
   the current assurance level for that exact token, then reads membership,
   roles and individual permissions from Postgres. Client role/AAL headers and
   user-editable metadata are ignored.
+  Before that, each client IP is limited to 300 staff requests a minute
+  (`429` `rate_limited` with `Retry-After`; staff and `/api/v1/email/staff`
+  routes), and a token that is not a three-part JWT is rejected without a
+  call to Supabase.
 - Browser access is allowed only from the exact `ADMIN_ORIGIN`. Staff request
   bodies are capped at 64 KiB.
 
