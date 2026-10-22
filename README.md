@@ -36,7 +36,7 @@ Use Node **22.19.0** and pnpm **9.15.0**. Dependency versions are pinned in mani
 pnpm install --frozen-lockfile
 pnpm --filter backend dev
 pnpm --filter admin dev
-pnpm --filter @canadian-plans/db db:seed
+DB_SEED_ALLOW_SYNTHETIC=1 pnpm --filter @canadian-plans/db db:seed   # local disposable DB only
 ```
 
 The backend listens on port 4000; admin defaults to 3000. The health endpoint needs no credentials. Staff routes require the Supabase Auth and restricted database variables documented in [docs/ENV.md](docs/ENV.md). The admin starts at `/login`; authenticated workspace routes begin at `/w/site-1/orders`.
