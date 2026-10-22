@@ -65,7 +65,12 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.BACKUP_R2_READ_ONLY_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.BACKUP_R2_READ_ONLY_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.BACKUP_R2_BUCKET }}
+          # Sanity export is optional until a project is connected: leave
+          # BACKUP_SANITY_PROJECT_ID unset and the manifest records
+          # "sanity_dataset_not_configured". The read-only token is what the
+          # Sanity CLI needs on a fresh runner once it is connected.
           SANITY_PROJECT_ID: ${{ secrets.BACKUP_SANITY_PROJECT_ID }}
+          SANITY_AUTH_TOKEN: ${{ secrets.BACKUP_SANITY_AUTH_TOKEN }}
           SANITY_DATASET: production
           SANITY_SITE_FILTER: site-1
           # Public recovery recipient only — never the private decryption key.
