@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { LeadSummary, OrderSummary, Quote } from '@canadian-plans/contracts';
 
 import { runSyntheticOrderCheck, type SyntheticCheckDependencies } from '../src/synthetic/check.js';
+import { createSyntheticCatalogueProvider } from '../src/synthetic/provider.js';
 
 const WORKSPACE = '10000000-0000-4000-8000-000000000901';
 const PRODUCT = '90000000-0000-4000-8000-000000000901';
@@ -163,5 +164,14 @@ describe('runSyntheticOrderCheck', () => {
       code: 'connection_refused',
       durationMs: expect.any(Number),
     });
+  });
+});
+
+describe('synthetic catalogue provider', () => {
+  it('serves the offer under whatever product_key the synthetic workspace provisioned', async () => {
+    const provider = createSyntheticCatalogueProvider();
+    const offer = await provider.catalogue.fetchPublishedByProductKey('anything-else');
+    expect(offer?.commercial.productKey).toBe('anything-else');
+    expect(offer?.commercial.paymentRequired).toBe(false);
   });
 });
