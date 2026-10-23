@@ -46,7 +46,7 @@ export class PgBackupLease implements BackupLease {
       const result = await this.run('psql', args);
       if (result.exitCode === 0) return;
       if (!result.stderr.includes('document_cleanup_active') || attempt === 24)
-        throw new CommandFailedError('psql', result.exitCode, 'backup_lease_unavailable');
+        throw new CommandFailedError('psql', result.exitCode, leaseFailureCode(result.stderr));
       await this.pause(2000);
     }
   }
@@ -61,6 +61,24 @@ export class PgBackupLease implements BackupLease {
       `delete from app.backup_leases where run_id = '${sqlEscape(runId)}';`,
     ]);
   }
+}
+
+/**
+ * SEC-14: names the likely cause of a failed lease (wrong role, missing
+ * policy, bad password) without copying psql's own text, which can carry
+ * host and user details, into the run log.
+ */
+export function leaseFailureCode(stderr: string): string {
+  const text = stderr.toLowerCase();
+  if (text.includes('document_cleanup_active')) return 'backup_lease_unavailable:cleanup_active';
+  if (text.includes('row-level security')) return 'backup_lease_unavailable:row_level_security';
+  if (text.includes('permission denied')) return 'backup_lease_unavailable:permission_denied';
+  if (text.includes('password authentication failed'))
+    return 'backup_lease_unavailable:authentication_failed';
+  if (text.includes('does not exist')) return 'backup_lease_unavailable:missing_object';
+  if (text.includes('could not connect') || text.includes('connection to server'))
+    return 'backup_lease_unavailable:connection_failed';
+  return 'backup_lease_unavailable';
 }
 
 function sqlEscape(value: string): string {

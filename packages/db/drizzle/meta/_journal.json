@@ -176,6 +176,20 @@
       "when": 1792599376759,
       "tag": "0024_backup_reference_barrier",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1792690755148,
+      "tag": "0025_backup_roles",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1792716813680,
+      "tag": "0026_operational_retention",
+      "breakpoints": true
     }
   ]
 }

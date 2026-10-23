@@ -8,13 +8,18 @@ The redacted [deployment inventory](DEPLOYMENT_INVENTORY.json) records which
 credential names are present in each preview deployment and maps each one to a
 non-production resource using a SHA-256 fingerprint of the provider-issued
 immutable resource ID. Display names are not accepted as isolation evidence.
-Preview deployments are currently recorded as not provisioned; update the
-inventory in the same reviewed change that provisions any preview credential.
+On 2026-10-22 admin and site-1 previews were recorded as `credential_free`:
+Vercel builds them for each PR, but every variable is scoped to Production
+only, so a preview gets no backend URL and no credentials. The backend has no
+preview deployments (Railway deploys only production). Never add a
+Preview-scoped variable or enable Railway PR environments without updating the
+inventory with an isolated preview resource in the same reviewed change.
 Provisioned inventory entries must declare `emailProvider: fake` and
 `authSmtp: fake_sink`; customer email configuration does not configure Auth SMTP.
 The check validates the committed inventory, not live provider configuration.
 Read-only provider observation on 2026-09-14 found no Vercel projects in the
-Canadian Plans team and one Supabase project in `us-west-2`. Do not use that
+Canadian Plans team and one Supabase project in `us-west-2`; on 2026-10-22 the
+team had three Vercel projects (admin, site-1, Umami). Do not use that
 project as evidence of Canadian staging compliance (required: `ca-central-1`).
 
 Protected website writes validate a fresh `X-Turnstile-Token` with their fixed
@@ -34,7 +39,8 @@ visitor's address if another proxy sits in front of Vercel.
 - `NODE_ENV`
 - `PORT`
 - `DEPLOYMENT_ENV` — backend-only platform-neutral deployment environment: `production`, `preview` or `development`. Railway has no `VERCEL_ENV`, so this is set explicitly per service; `VERCEL_ENV` remains a fallback during the Vercel-to-Railway cutover (ADR 0004). An unknown or unset value resolves to no environment and is never treated as production. `preview` makes the internal job routes and the in-process scheduler refuse to run.
-- `ENABLE_SCHEDULER` — backend-only opt-in for the in-process scheduler. Exactly `1` enables the 60s outbox and 300s catalogue-sync timers; unset disables scheduling. It must not be set on a preview environment. Railway cron has a five-minute floor and no minute-level precision, which is why the schedule is in-process (ADR 0004).
+- `ENABLE_SCHEDULER` — backend-only opt-in for the in-process scheduler. Exactly `1` enables the 60s outbox and 300s catalogue-sync timers, the hourly expired-upload sweep and the daily retention pass (abandoned order forms are erased after 90 days); unset disables scheduling. It must not be set on a preview environment. Railway cron has a five-minute floor and no minute-level precision, which is why the schedule is in-process (ADR 0004).
+- `OPERATIONAL_RETENTION_ENABLED` — backend-only, off by default. Exactly `1` lets the daily retention pass delete old operational rows through `app.prune_operational_rows` (migration 0026): completed jobs and resolved alerts after 30 days, used or expired tracking codes after 7, expired unused quotes and finished CMS webhook events after 90, applied email provider events after 180. Set it only after the first verified backup (docs/OPEN_INPUTS.md); the deletes cannot be undone.
 - `RAILWAY_DEPLOYMENT_DRAINING_SECONDS` — Railway service variable (Railway default `0`). Set to `30` so Railway waits between `SIGTERM` and `SIGKILL`, giving graceful shutdown time to drain an in-flight run.
 - `API_BASE_URL`
 - `NEXT_PUBLIC_API_BASE_URL`
@@ -253,11 +259,15 @@ search index. `/studio` is `noindex` (via `next-sanity`) and disallowed in
 GitHub Environment secrets, one environment per role (names only; the
 exact commands are in [restore.md](RUNBOOKS/restore.md)):
 
-- **backup** (`backup.yml`, list + write only): `BACKUP_SOURCE_DATABASE_URL`,
-  `BACKUP_LEASE_DATABASE_URL`, `BACKUP_SUPABASE_PROJECT_REF`, `BACKUP_R2_*` (read-only
+- **backup** (`backup.yml`, list + write only): `BACKUP_SOURCE_DATABASE_URL`
+  (connect as `backup_reader`), `BACKUP_LEASE_DATABASE_URL` (connect as
+  `backup_lease_writer`; never use the `postgres` owner role for either), `BACKUP_SUPABASE_PROJECT_REF`, `BACKUP_R2_*` (read-only
   source), optional `BACKUP_SANITY_PROJECT_ID` / `BACKUP_SANITY_AUTH_TOKEN`,
   `RECOVERY_AGE_RECIPIENT` (public key only), `B2_ARCHIVE_ENDPOINT`, `B2_ARCHIVE_REGION`,
   `B2_ARCHIVE_BUCKET`, `B2_ARCHIVE_WRITER_KEY_ID`, `B2_ARCHIVE_WRITER_APPLICATION_KEY`.
+  Optional `BACKUP_MAX_SNAPSHOT_BYTES` overrides the 2 GiB in-memory snapshot guard
+  (PERF-03); a run above it fails with `backup_snapshot_too_large_for_runner`
+  before copying anything, and the missing heartbeat raises the usual alert.
 - **backup-monitor** (read-only): `B2_ARCHIVE_READER_KEY_ID`,
   `B2_ARCHIVE_READER_APPLICATION_KEY`, `B2_ARCHIVE_ENDPOINT`, `B2_ARCHIVE_REGION`,
   `B2_ARCHIVE_BUCKET`, plus the owner-alert `OWNER_ALERT_*` / `RESEND_*` values.

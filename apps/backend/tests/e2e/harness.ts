@@ -37,8 +37,8 @@
  * and prove the retry returns the same reference, and so the `/__e2e__/*`
  * control plane can drive the seams above.
  *
- * This module is never imported by the deployed handler: tsup bundles only
- * `src/vercelHandler.ts` and `src/server.ts`.
+ * This module is never imported by the deployed server: tsup bundles only
+ * `src/server.ts`.
  */
 import http from 'node:http';
 import { createApp } from '../../src/app.js';

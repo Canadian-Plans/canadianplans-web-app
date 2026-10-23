@@ -46,12 +46,22 @@ export default function MfaEnrollPage() {
           return;
         }
       }
+      // BUG-05: an abandoned attempt (reload, closed tab, QR that did not scan)
+      // leaves an unverified factor behind, and Supabase rejects a second factor
+      // with the same name. Remove those leftovers first; `totp` lists only
+      // verified factors, so they are found in `all`.
+      for (const stale of factors.data.all) {
+        if (stale.factor_type === 'totp' && stale.status === 'unverified') {
+          await auth.mfa.unenroll({ factorId: stale.id });
+        }
+      }
       const result = await auth.mfa.enroll({
         factorType: 'totp',
-        friendlyName: 'Canadian Plans Admin',
+        // A unique name as well, so one failed clean-up cannot block enrolment.
+        friendlyName: `Canadian Plans Admin ${new Date().toISOString().slice(0, 16)}`,
       });
       if (result.error || result.data.type !== 'totp') {
-        setMessage('Multi-factor enrollment could not be started.');
+        setMessage('Multi-factor enrollment could not be started. Reload the page to try again.');
         return;
       }
       setEnrollment({

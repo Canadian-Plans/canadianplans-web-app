@@ -85,6 +85,12 @@ jobs:
       # only backend changed. This is test setup, not a deployment selection.
       - name: Ensure admin build exists for browser tests
         run: test -f apps/admin/.next/BUILD_ID || pnpm --filter admin build
+      - name: Prove the admin browser-test session seam is not in the normal build
+        run: |
+          if grep -rqE 'E2E_STAFF|e2e-staff' apps/admin/.next/static; then
+            echo 'The e2e staff session seam leaked into the normal admin build.' >&2
+            exit 1
+          fi
       - run: pnpm --filter admin exec playwright install --with-deps chromium
       - name: Create the disposable e2e database
         run: PGPASSWORD=postgres createdb -h localhost -U postgres canadian_plans_e2e_test

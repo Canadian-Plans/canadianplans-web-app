@@ -12,6 +12,7 @@ import { InMemoryBackupLease } from './lease.js';
 import { verifyManifestArtifacts, backupManifestSchema } from './manifest.js';
 import {
   BackupIncompleteError,
+  BackupTooLargeError,
   BackupUploadVerificationError,
   createBackupRunId,
   runBackup,
@@ -21,6 +22,7 @@ import {
   FakeReferencedObjectManifestSource,
   FakeSanityExporter,
   type DatabaseExporter,
+  type R2SourceReader,
 } from './sources.js';
 
 const fakeDatabase: DatabaseExporter = {
@@ -227,5 +229,43 @@ describe('runBackup', () => {
       listObjects: async (prefix: string) => (await writer.listObjects(prefix)).slice(0, -1),
     };
     await expect(runBackup(deps)).rejects.toBeInstanceOf(BackupUploadVerificationError);
+  });
+});
+
+describe('runBackup snapshot size guard (PERF-03)', () => {
+  it('stops before copying any document when the snapshot would not fit', async () => {
+    const { backend, deps, lease } = baseDeps();
+    let r2Reads = 0;
+    const counting: R2SourceReader = {
+      getObject: async (bucket: string, key: string) => {
+        r2Reads += 1;
+        return deps.r2Source.getObject(bucket, key);
+      },
+    };
+    // The fake database dumps total 41 bytes and the document 23.
+    const error = await runBackup({ ...deps, r2Source: counting, maxSnapshotBytes: 60 }).catch(
+      (caught: unknown) => caught,
+    );
+    expect(error).toBeInstanceOf(BackupTooLargeError);
+    expect(String(error)).toContain('backup_snapshot_too_large_for_runner');
+    expect(r2Reads).toBe(0);
+    expect(await backend.asWriter().listObjects('run-2026-09-14/')).toEqual([]);
+    expect((await readLatestHeartbeat(backend.asReader())).status).toBe('missing');
+    expect(lease.isAnyActive()).toBe(false);
+  });
+
+  it('counts the Sanity export too', async () => {
+    const { deps } = baseDeps();
+    // Database 41 + document 23 = 64 bytes fits; the 14-byte Sanity archive does not.
+    await expect(runBackup({ ...deps, maxSnapshotBytes: 75 })).rejects.toBeInstanceOf(
+      BackupTooLargeError,
+    );
+  });
+
+  it('runs normally under the limit', async () => {
+    const { deps } = baseDeps();
+    await expect(runBackup({ ...deps, maxSnapshotBytes: 1000 })).resolves.toMatchObject({
+      heartbeatPublished: true,
+    });
   });
 });

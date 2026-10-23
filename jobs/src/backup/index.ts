@@ -56,7 +56,9 @@ export {
 
 export {
   BackupIncompleteError,
+  BackupTooLargeError,
   BackupUploadVerificationError,
+  DEFAULT_MAX_SNAPSHOT_BYTES,
   runBackup,
   type BackupRunDependencies,
   type BackupRunSummary,

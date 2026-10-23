@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
-  "reviewedAt": "2026-09-14",
+  "reviewedAt": "2026-10-22",
   "providerObservation": {
-    "observedAt": "2026-09-14",
-    "method": "Read-only connected Supabase list_projects and Vercel list_projects",
+    "observedAt": "2026-10-22",
+    "method": "Read-only Vercel list_projects and per-project environment variable scopes (names and targets only, no values), Railway project/environment listing, and GitHub deployment history",
     "vercelTeam": "Canadian Plans",
-    "vercelProjectCount": 0,
+    "vercelProjectCount": 3,
     "supabaseProjectCount": 1,
     "supabaseRegion": "us-west-2",
     "requiredSupabaseRegion": "ca-central-1",
     "foundationInfrastructureReady": false
   },
-  "notes": "Redacted configuration inventory. Fingerprints are SHA-256 hashes of provider-issued immutable resource identifiers, never resource names or credentials. Preview deployment credentials are not provisioned yet.",
+  "notes": "Redacted configuration inventory. Fingerprints are SHA-256 hashes of provider-issued immutable resource identifiers, never resource names or credentials. Observed 22 Oct 2026 (SEC-15): Vercel builds a preview of admin and site-1 for each PR, but every variable in both projects is scoped to Production only, so previews receive no backend URL and no credentials. Railway deploys only the production environment from main; GitHub shows no backend PR environments. Adding any Preview-scoped variable, or enabling Railway PR environments, requires isolated preview resources recorded here first.",
   "productionResourceFingerprints": [],
   "resources": [],
   "credentialCatalog": [
@@ -120,13 +120,17 @@
     },
     {
       "deployment": "admin",
-      "status": "not_provisioned",
-      "credentialNames": []
+      "status": "credential_free",
+      "credentialNames": [],
+      "previewScopedVariableCount": 0,
+      "observedAt": "2026-10-22"
     },
     {
       "deployment": "site-1",
-      "status": "not_provisioned",
-      "credentialNames": []
+      "status": "credential_free",
+      "credentialNames": [],
+      "previewScopedVariableCount": 0,
+      "observedAt": "2026-10-22"
     }
   ],
   "previewCredentialBindings": []

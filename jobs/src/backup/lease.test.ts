@@ -50,6 +50,26 @@ describe('PgBackupLease', () => {
     expect(run).toHaveBeenCalledTimes(1);
     expect(pause).not.toHaveBeenCalled();
   });
+  it('names the cause of a lease failure without the raw psql text (SEC-14)', async () => {
+    const failing = (stderr: string) =>
+      new PgBackupLease(
+        'postgres://runner@host/db',
+        vi.fn<RunCommand>().mockResolvedValue({ stdout: new Uint8Array(), stderr, exitCode: 1 }),
+        vi.fn(async () => {}),
+      ).acquire('run-1', 60);
+    await expect(
+      failing('ERROR:  new row violates row-level security policy for table "backup_leases"'),
+    ).rejects.toThrow('backup_lease_unavailable:row_level_security');
+    await expect(failing('ERROR:  permission denied for table backup_leases')).rejects.toThrow(
+      'backup_lease_unavailable:permission_denied',
+    );
+    const error = await failing(
+      'psql: error: connection to server at "db.example.test" failed: FATAL:  password authentication failed for user "backup_lease_writer"',
+    ).catch((caught: unknown) => caught);
+    expect(String(error)).toContain('backup_lease_unavailable:authentication_failed');
+    expect(String(error)).not.toContain('db.example.test');
+    expect(String(error)).not.toContain('backup_lease_writer');
+  });
   it('upserts a lease row scoped to the run id via psql', async () => {
     const run = vi.fn<RunCommand>(async () => ({
       stdout: new Uint8Array(),

@@ -7,9 +7,12 @@ import {
   SchedulerConfigurationError,
   type SchedulerTask,
   runCatalogueSyncWithAlert,
+  runDataRetention,
+  runDocumentCleanup,
   runOutboxWithQueueMonitor,
 } from '../src/scheduler.js';
 import { INITIAL_QUEUE_HEALTH_STATE, type QueueHealthState } from '../src/jobs/queueMonitor.js';
+import { operationalRetentionEnabled } from '../src/retention/operational.js';
 
 const WORKSPACE = '10000000-0000-4000-8000-000000000901';
 const ACTOR = '20000000-0000-4000-8000-000000000901';
@@ -301,6 +304,8 @@ describe('createBackendScheduler', () => {
       runOutbox: vi.fn(async () => undefined),
       runCatalogueSync: vi.fn(async () => undefined),
       runSyntheticCheck: vi.fn(async () => undefined),
+      runDocumentCleanup: vi.fn(async () => undefined),
+      runDataRetention: vi.fn(async () => undefined),
     };
   }
 
@@ -344,6 +349,10 @@ describe('createBackendScheduler', () => {
     const expected = { actorId: ACTOR, authorizedWorkspaceIds: [WORKSPACE] };
     expect(deps.runOutbox).toHaveBeenCalledWith(expected);
     expect(deps.runCatalogueSync).toHaveBeenCalledWith(expected);
+    // REL-18: the upload sweep runs with the outbox identity.
+    expect(deps.runDocumentCleanup).toHaveBeenCalledWith(expected);
+    // SEC-12 / REL-19: daily retention runs with the same identity.
+    expect(deps.runDataRetention).toHaveBeenCalledWith(expected);
     await scheduler?.stop();
   });
 
@@ -386,5 +395,68 @@ describe('createBackendScheduler', () => {
       expect.objectContaining({ actorId: ACTOR }),
     );
     await scheduler?.stop();
+  });
+});
+
+describe('runDocumentCleanup (REL-18)', () => {
+  it('sweeps each authorized workspace once and totals the result', async () => {
+    const sweepExpired = vi.fn(async ({ workspaceId }: { workspaceId: string }) =>
+      workspaceId === 'w1'
+        ? { expiredIntents: 2, deletedObjects: 3, failedDeletes: 1 }
+        : { expiredIntents: 1, deletedObjects: 1, failedDeletes: 0 },
+    );
+    const result = await runDocumentCleanup(
+      { sweepExpired },
+      { actorId: 'actor', authorizedWorkspaceIds: ['w1', 'w2', 'w1'] },
+    );
+    expect(sweepExpired).toHaveBeenCalledTimes(2);
+    expect(result).toEqual({ expiredIntents: 3, deletedObjects: 4, failedDeletes: 1 });
+  });
+
+  it('does nothing when document storage is not configured', async () => {
+    expect(
+      await runDocumentCleanup(undefined, { actorId: 'actor', authorizedWorkspaceIds: ['w1'] }),
+    ).toEqual({ skipped: 'feature_not_ready' });
+  });
+});
+
+describe('runDataRetention (SEC-12)', () => {
+  it('restricts abandoned order forms once per authorized workspace', async () => {
+    const now = new Date('2026-10-22T00:00:00.000Z');
+    const restrictAbandoned = vi.fn(async ({ workspaceId }: { workspaceId: string }) => ({
+      restrictedLeads: workspaceId === 'w1' ? 3 : 1,
+    }));
+    const result = await runDataRetention(
+      { abandonedLeads: { restrictAbandoned } },
+      { actorId: 'actor', authorizedWorkspaceIds: ['w1', 'w2', 'w1'] },
+      now,
+    );
+    expect(restrictAbandoned).toHaveBeenCalledTimes(2);
+    expect(restrictAbandoned).toHaveBeenCalledWith({ workspaceId: 'w1', actorId: 'actor', now });
+    expect(result).toEqual({ restrictedLeads: 4, prunedRows: 'disabled' });
+  });
+
+  it('prunes operational rows only when the pruner is configured (REL-19)', async () => {
+    const now = new Date('2026-10-22T00:00:00.000Z');
+    const restrictAbandoned = vi.fn(async () => ({ restrictedLeads: 0 }));
+    const prune = vi.fn(async ({ workspaceId }: { workspaceId: string }) => [
+      { tableName: 'outbox_jobs', deleted: workspaceId === 'w1' ? 5 : 2 },
+      { tableName: 'quotes', deleted: 1 },
+    ]);
+    const result = await runDataRetention(
+      { abandonedLeads: { restrictAbandoned }, operational: { prune } },
+      { actorId: 'actor', authorizedWorkspaceIds: ['w1', 'w2'] },
+      now,
+    );
+    expect(prune).toHaveBeenCalledWith({ workspaceId: 'w2', actorId: 'actor', now });
+    expect(result).toEqual({ restrictedLeads: 0, prunedRows: { outbox_jobs: 7, quotes: 2 } });
+  });
+});
+
+describe('operationalRetentionEnabled (REL-19)', () => {
+  it('is off unless OPERATIONAL_RETENTION_ENABLED is exactly 1', () => {
+    expect(operationalRetentionEnabled({})).toBe(false);
+    expect(operationalRetentionEnabled({ OPERATIONAL_RETENTION_ENABLED: 'true' })).toBe(false);
+    expect(operationalRetentionEnabled({ OPERATIONAL_RETENTION_ENABLED: '1' })).toBe(true);
   });
 });

@@ -1,3 +1,4 @@
+import type { RateLimitInput, RateLimitResult } from '@canadian-plans/db';
 import { createClient } from '@supabase/supabase-js';
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 
@@ -31,8 +32,15 @@ function authClient() {
   }).auth;
 }
 
+/** A Supabase access token is always a three-segment base64url JWT. */
+export function isJwtShaped(token: string): boolean {
+  return /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(token);
+}
+
 export class SupabaseStaffSessionVerifier implements StaffSessionVerifier {
   async verify(accessToken: string): Promise<VerifiedStaffSession | undefined> {
+    // REL-17: a token that cannot be a Supabase JWT never costs two Auth calls.
+    if (!isJwtShaped(accessToken)) return undefined;
     // A fresh stateless client is created for each request. Identity and AAL
     // both come from Supabase Auth server calls for this exact bearer token.
     const auth = authClient();
@@ -60,8 +68,40 @@ function bearerToken(req: Request): string | undefined {
   return match?.[1];
 }
 
-export function requireStaffSession(verifier: StaffSessionVerifier): RequestHandler {
+export type StaffRateLimit = (input: RateLimitInput) => Promise<RateLimitResult>;
+
+/** Per client IP; generous for a small staff team (REL-17). */
+export const STAFF_RATE_LIMIT = { windowSeconds: 60, maxCount: 300 } as const;
+
+export function requireStaffSession(
+  verifier: StaffSessionVerifier,
+  rateLimit?: StaffRateLimit,
+): RequestHandler {
   return async (req: Request, res: Response, next: NextFunction) => {
+    if (rateLimit) {
+      let limit: RateLimitResult | undefined;
+      try {
+        limit = await rateLimit({
+          bucketKey: `staff:ip:${req.ip ?? req.socket.remoteAddress ?? 'unknown'}`,
+          ...STAFF_RATE_LIMIT,
+        });
+      } catch {
+        // The limiter shares the database every staff route needs; failing
+        // closed here would turn a limiter fault into a staff lockout.
+        limit = undefined;
+      }
+      if (limit && !limit.allowed) {
+        res.setHeader('retry-after', String(limit.retryAfterSeconds));
+        res.status(429).json({
+          error: {
+            code: 'rate_limited',
+            message: 'Too many requests. Try again shortly.',
+            requestId: req.id,
+          },
+        });
+        return;
+      }
+    }
     const token = bearerToken(req);
     if (!token) {
       sendStaffAuthError(res, req.id, 'missing_session', 401);

@@ -68,6 +68,11 @@ then a URL change, not a redeploy, and no data migration is involved. The Vercel
 files (`vercel.json`, `src/vercelHandler.ts`, `api/index.ts`) are deliberately
 retained until a separate post-cutover change removes them.
 
+_Update 22 October 2026 (SEC-11):_ removed. No Vercel project builds
+`apps/backend` any more (the team has only site-1, admin and Umami), so the
+Vercel entry files, the `sfo1` pin and the hand-written `.d.ts` build step are
+gone. Rollback is now a Railway redeploy of an earlier image.
+
 ## Residency — DECIDED (option a), 18 September 2026
 
 **The owner accepts non-Canadian backend compute.** Recorded in this session;

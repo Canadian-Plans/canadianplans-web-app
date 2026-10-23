@@ -346,19 +346,44 @@ export class DocumentService {
     workspaceId: string;
     actorId: string;
   }): Promise<{ expiredIntents: number; cleanedObjects: string[] }> {
-    const result = await this.store.cleanupExpired({
+    // REL-18: check the lease before touching any row. Marking rows rejected
+    // and then withholding their keys would lose those keys for good: a later
+    // pass only finds rows still uploading/verifying. Skipping the whole pass
+    // leaves them for the next one, after the backup.
+    if (await this.backupLease.isActive()) return { expiredIntents: 0, cleanedObjects: [] };
+    return this.store.cleanupExpired({
       workspaceId: input.workspaceId,
       actorId: input.actorId,
       now: this.now(),
       graceSeconds: this.cleanupGraceSeconds,
     });
-    // The DB rows are already marked rejected/expired regardless, so nothing
-    // user-visible changes; only the physical R2 delete is deferred to a later
-    // cleanup pass once the backup lease clears.
-    if (result.cleanedObjects.length > 0 && (await this.backupLease.isActive())) {
-      return { expiredIntents: result.expiredIntents, cleanedObjects: [] };
+  }
+
+  /**
+   * The scheduled sweep: expires abandoned upload intents, then deletes their
+   * staging/candidate objects from R2. Deletes are best-effort, so one R2 error
+   * never aborts the sweep; a failed object is counted, never retried blindly.
+   */
+  async sweepExpired(input: {
+    workspaceId: string;
+    actorId: string;
+  }): Promise<{ expiredIntents: number; deletedObjects: number; failedDeletes: number }> {
+    const result = await this.runCleanup(input);
+    let deletedObjects = 0;
+    let failedDeletes = 0;
+    for (const objectKey of result.cleanedObjects) {
+      try {
+        await this.r2.deleteObject({
+          workspaceId: input.workspaceId,
+          bucket: this.bucket,
+          objectKey,
+        });
+        deletedObjects += 1;
+      } catch {
+        failedDeletes += 1;
+      }
     }
-    return result;
+    return { expiredIntents: result.expiredIntents, deletedObjects, failedDeletes };
   }
 }
 

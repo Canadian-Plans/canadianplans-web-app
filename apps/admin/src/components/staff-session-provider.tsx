@@ -13,6 +13,7 @@ import {
 import type { StaffWorkspace } from '@canadian-plans/contracts';
 
 import { BackendError, getStaffWorkspaces } from '../lib/api';
+import { e2eStaffBearer } from '../lib/e2e-session';
 import { getStaffAuth, isStaffAuthConfigured } from '../lib/supabase-auth';
 
 type SessionStatus = 'loading' | 'signed_out' | 'signed_in' | 'configuration_missing' | 'error';
@@ -69,6 +70,12 @@ export function StaffSessionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // CQ-01: only the separate e2e build has this; see lib/e2e-session.ts.
+    const e2eBearer = e2eStaffBearer();
+    if (e2eBearer) {
+      void load(e2eBearer);
+      return () => invalidate();
+    }
     if (!isStaffAuthConfigured()) {
       setStatus('configuration_missing');
       return;

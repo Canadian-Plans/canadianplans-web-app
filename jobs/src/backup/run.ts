@@ -36,6 +36,26 @@ export class BackupUploadVerificationError extends Error {
   }
 }
 
+/**
+ * PERF-03 interim guard (owner decision 22 Oct 2026): the runner still holds
+ * the whole snapshot, plus its ciphertext, in memory. Above this size it stops
+ * with a clear error before copying any document, instead of crashing out of
+ * memory part-way. The streaming rewrite replaces this when data nears it.
+ */
+export const DEFAULT_MAX_SNAPSHOT_BYTES = 2 * 1024 ** 3;
+
+export class BackupTooLargeError extends Error {
+  constructor(
+    readonly snapshotBytes: number,
+    readonly maxSnapshotBytes: number,
+  ) {
+    super(
+      `backup_snapshot_too_large_for_runner:${Math.ceil(snapshotBytes / 1024 ** 2)}MiB>${Math.floor(maxSnapshotBytes / 1024 ** 2)}MiB`,
+    );
+    this.name = 'BackupTooLargeError';
+  }
+}
+
 export interface BackupRunDependencies {
   runId: string;
   now?: () => Date;
@@ -51,6 +71,8 @@ export interface BackupRunDependencies {
   toolVersions: Record<string, string>;
   /** Lease held for the whole run plus a safety margin past expected duration. */
   leaseTtlSeconds?: number;
+  /** PERF-03: largest snapshot this runner may hold in memory; default 2 GiB. */
+  maxSnapshotBytes?: number;
 }
 
 export interface BackupRunSummary {
@@ -87,6 +109,18 @@ export async function runBackup(deps: BackupRunDependencies): Promise<BackupRunS
     // 2. Referenced-object manifest, built while the lease blocks cleanup.
     const referenced = await deps.referencedObjects.listReferencedObjects();
 
+    // PERF-03: stop before copying anything if the snapshot cannot fit.
+    const maxSnapshotBytes = deps.maxSnapshotBytes ?? DEFAULT_MAX_SNAPSHOT_BYTES;
+    const databaseBytes = [db.roles, db.schema, db.data, db.historySchema, db.historyData].reduce(
+      (total, bytes) => total + (bytes?.byteLength ?? 0),
+      0,
+    );
+    let snapshotBytes =
+      databaseBytes + referenced.reduce((total, object) => total + object.sizeBytes, 0);
+    if (snapshotBytes > maxSnapshotBytes) {
+      throw new BackupTooLargeError(snapshotBytes, maxSnapshotBytes);
+    }
+
     // 3. Copy every referenced R2 object; a snapshot is usable only when every
     // referenced object is present and its checksum matches (REQ 42) — never
     // accept a partial copy.
@@ -113,6 +147,10 @@ export async function runBackup(deps: BackupRunDependencies): Promise<BackupRunS
     // 4. Sanity content/assets export (only once a project is connected; the
     // database and documents must never wait on a CMS that is not in use).
     const sanity = deps.sanity ? await deps.sanity.exportDataset() : undefined;
+    snapshotBytes += sanity?.archive.byteLength ?? 0;
+    if (snapshotBytes > maxSnapshotBytes) {
+      throw new BackupTooLargeError(snapshotBytes, maxSnapshotBytes);
+    }
 
     // 5. Canonical artifact set and manifest.
     const namedArtifacts = new Map<string, Uint8Array>([

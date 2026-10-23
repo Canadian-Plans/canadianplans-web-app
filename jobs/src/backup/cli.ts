@@ -27,6 +27,16 @@ function requiredEnv(name: string): string {
   return value;
 }
 
+function optionalPositiveInteger(name: string): number | undefined {
+  const value = process.env[name]?.trim();
+  if (!value) return undefined;
+  const parsed = Number(value);
+  if (!Number.isSafeInteger(parsed) || parsed <= 0) {
+    throw new Error(`${name} must be a positive whole number of bytes`);
+  }
+  return parsed;
+}
+
 async function main(): Promise<void> {
   const now = new Date();
   const runId = process.env.BACKUP_RUN_ID?.trim() || createBackupRunId(now);
@@ -45,6 +55,8 @@ async function main(): Promise<void> {
   const sanityDataset = process.env.SANITY_DATASET?.trim() || 'production';
   const sanitySiteFilter = process.env.SANITY_SITE_FILTER?.trim() || 'site-1';
   const supabaseProjectRef = requiredEnv('SUPABASE_PROJECT_REF');
+  // PERF-03: optional override of the 2 GiB in-memory snapshot guard.
+  const maxSnapshotBytes = optionalPositiveInteger('BACKUP_MAX_SNAPSHOT_BYTES');
 
   // A full database dump is one PUT; the 30-second library default would fail
   // it as the data grows. Bounded well inside the workflow's 30-minute limit.
@@ -62,6 +74,7 @@ async function main(): Promise<void> {
 
   const summary = await runBackup({
     runId,
+    ...(maxSnapshotBytes ? { maxSnapshotBytes } : {}),
     now: () => now,
     encryptor: new AgeCliEncryptor(ageRecipient, nodeRunCommand),
     archiveWriter,

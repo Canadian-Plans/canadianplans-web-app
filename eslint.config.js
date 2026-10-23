@@ -7,6 +7,7 @@ export default [
       '**/node_modules/**',
       '**/dist/**',
       '**/.next/**',
+      '**/.next-e2e/**',
       '**/coverage/**',
       '**/playwright-report/**',
       '**/test-results/**',

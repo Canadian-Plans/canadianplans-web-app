@@ -15,9 +15,17 @@ cancel-without-reason block — is covered by Vitest component tests in
 components against a stubbed typed client and a stateful test double of the
 backend's transition map.
 
-A live Playwright journey is blocked in CI for the same reason as every other
-authenticated admin page: it needs a real Supabase Auth staff session, and no
-Supabase credentials are available to CI or preview deployments (PLATFORM_CONTEXT
-invariant 13). Add it to the staging run once staff Auth and SMTP are configured:
-seed one order with an approved `ORDER_OPERATIONAL_TRANSITIONS` flag, sign in as
-an `orders` actor, and repeat the steps above in the browser.
+`orders.spec.ts` (CQ-01, 22 Oct 2026) runs the screens in a real browser against
+the real backend harness (`apps/backend/tests/e2e/harness.ts`). It places an
+order through the public API, opens the list and the detail, moves the order to
+`in_progress`, and proves a stale second tab gets the version-conflict reload
+prompt. CI has no Supabase, so the run uses a separate admin build
+(`.next-e2e`) with a browser-test session seam: the harness's stub verifier
+accepts one fixed token for its seeded owner. The seam is compiled out of every
+normal build (CI greps for it), and `next.config.ts` refuses to build it on
+Vercel.
+
+Run it with a local Postgres and the disposable `canadian_plans_e2e_test`
+database: `pnpm --filter admin test:e2e:orders` (the root `pnpm run test:e2e`
+includes it). A live journey with real Supabase sign-in still belongs in the
+staging run once staff Auth and SMTP are configured.

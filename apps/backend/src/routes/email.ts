@@ -1,10 +1,12 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { Router, type Request, type Response } from 'express';
+import { rateLimitHit } from '@canadian-plans/db';
 import { z } from 'zod';
 
 import {
   requireStaffSession,
   SupabaseStaffSessionVerifier,
+  type StaffRateLimit,
   type StaffSessionVerifier,
 } from '../auth/session.js';
 import { DatabaseEmailStore, type EmailStore } from '../email/store.js';
@@ -16,6 +18,8 @@ import { loadMachineRegistry, type MachineRegistry } from '../machines/registry.
 export interface EmailRouteDependencies {
   store: EmailStore;
   sessionVerifier: StaffSessionVerifier;
+  /** Per-IP limit applied before any session check; omitted in route tests. */
+  rateLimit?: StaffRateLimit;
   /**
    * Read lazily (only when a request actually needs it), not at app
    * construction — so a deployment/test that never exercises an email route
@@ -39,6 +43,7 @@ export function createDefaultEmailRouteDependencies(
   return {
     store: new DatabaseEmailStore(),
     sessionVerifier: new SupabaseStaffSessionVerifier(),
+    rateLimit: rateLimitHit,
     contactHashSecret: () => requireContactHashSecret(),
     unsubscribeConsentVersion: process.env.MARKETING_CONSENT_VERSION ?? '1',
     registry: loadMachineRegistry(),
@@ -215,7 +220,7 @@ export function createEmailRouter(dependencies: EmailRouteDependencies): Router 
     res.status(200).json({ status: 'unsubscribed' });
   });
 
-  router.use('/staff', requireStaffSession(dependencies.sessionVerifier));
+  router.use('/staff', requireStaffSession(dependencies.sessionVerifier, dependencies.rateLimit));
   router.get('/staff/workspaces/:workspaceId/delivery', async (req, res) => {
     const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
     const actor = req.staffSession;
