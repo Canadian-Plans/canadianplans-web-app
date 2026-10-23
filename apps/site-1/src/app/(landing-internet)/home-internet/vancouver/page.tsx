@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { vancouverInternetLanding } from '@content/landing/internet';
+import { provinceInternetPlans, vancouverInternetLanding } from '@content/landing/internet';
 import { InternetLanding } from '@/components/landing/internet-landing';
 import { pageMetadata } from '@/lib/page-metadata';
 import { publicRobots } from '@/lib/seo';
@@ -13,5 +13,5 @@ export const metadata: Metadata = pageMetadata(page.path, {
 });
 
 export default function VancouverInternetPage() {
-  return <InternetLanding page={page} region="Vancouver" />;
+  return <InternetLanding page={page} region="Vancouver" plans={provinceInternetPlans('BC')} />;
 }

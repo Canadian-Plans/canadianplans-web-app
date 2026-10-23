@@ -290,26 +290,63 @@ export const internetOrderHref = (province: string, plan?: InternetPlan) =>
   plan
     ? `/order?plan=${plan.id}&category=internet&province=${plan.province}`
     : `/order?category=internet&province=${province}`;
-/** One summary card per province for /home-internet; each opens that province in /order. */
-export const internetProvinceCards: readonly (PlanCardContent & {
+/** URL slug for each province page, e.g. /home-internet/british-columbia. */
+export const internetProvinceSlugs: Record<InternetProvince, string> = {
+  SK: 'saskatchewan',
+  MB: 'manitoba',
+  BC: 'british-columbia',
+  AB: 'alberta',
+};
+export const internetProvinceHref = (province: InternetProvince) =>
+  `/home-internet/${internetProvinceSlugs[province]}`;
+export const internetProvinceFromSlug = (slug: string): InternetProvince | undefined =>
+  internetProvinces.find((province) => internetProvinceSlugs[province] === slug);
+
+export interface InternetProvinceSummary {
   readonly province: InternetProvince;
-})[] = internetProvinces.map((province) => {
-  const plans = internetPlansByProvince[province];
-  const from = Math.min(...plans.map((plan) => plan.priceCad));
-  const top = plans.reduce((best, plan) => (plan.mbps > best.mbps ? plan : best));
-  return {
-    id: `internet-${province.toLowerCase()}`,
-    province,
-    carrier: internetProvinceNames[province],
-    allowance: `Up to ${top.allowance}`,
-    amount: `$${from}`,
-    period: '/mo',
-    finePrint: `From · CAD · taxes extra · ${internetPromotions[province].toLowerCase()}`,
-    features: plans.map((plan) => `✓ ${plan.carrier}, ${plan.allowance}: ${plan.amount}/mo`),
-    buttonLabel: `See ${province} plans`,
-    selectedLabel: 'Selected ✓',
-  };
-});
+  readonly name: string;
+  readonly href: string;
+  /** Lowest monthly price in the province, in dollars. */
+  readonly fromCad: number;
+  readonly topSpeed: string;
+  readonly highlights: readonly string[];
+}
+/**
+ * One summary card per province for /home-internet (owner request, 23 October 2026): the
+ * lowest price, the headline facts, and a link to that province's own page. Derived from the
+ * plan list so it can never disagree with it.
+ */
+export const internetProvinceSummaries: readonly InternetProvinceSummary[] = internetProvinces.map(
+  (province) => {
+    const plans = internetPlansByProvince[province];
+    const from = Math.min(...plans.map((plan) => plan.priceCad));
+    const top = plans.reduce((best, plan) => (plan.mbps > best.mbps ? plan : best));
+    const tv = plans.some((plan) => plan.id.includes('streamsaver'))
+      ? 'Optional TV or StreamSaver bundle'
+      : 'Optional TV bundle, 120+ channels';
+    return {
+      province,
+      name: internetProvinceNames[province],
+      href: internetProvinceHref(province),
+      fromCad: from,
+      topSpeed: top.allowance,
+      highlights: [
+        `Up to ${top.allowance}`,
+        internetPromotions[province],
+        'Unlimited data',
+        'Free WiFi router & modem',
+        tv,
+      ],
+    };
+  },
+);
+export const internetProvinceCardCopy = {
+  from: 'From',
+  period: '/mo',
+  action: 'View plans & offers',
+  arrow: '→',
+  label: 'Home internet by province',
+} as const;
 export const internetAssets = {
   '106-34-imgEllipse': {
     src: '/design/home-internet/106-34-imgEllipse.svg',

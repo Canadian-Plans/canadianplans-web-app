@@ -23,6 +23,7 @@ import {
   continueFinder,
   backFinder,
   editFinder,
+  finderProgress,
   finderSummary,
   finderMatches,
 } from '@/lib/plan-finder-flow';
@@ -68,8 +69,11 @@ export function PlanFinderModal({
     title.current?.focus({ preventScroll: true });
     body.current?.scrollTo({ top: 0 });
   }, [state.step, view]);
-  const progress = current?.progress ?? copy.allDone;
-  const ratios = current?.progressRatio ?? { desktop: 1, mobile: 1 };
+  const { ordinal, total } = finderProgress(state);
+  const progress = current ? (current.progress ?? copy.step(ordinal, total - 1)) : copy.allDone;
+  const ratio = current ? ordinal / total : 1;
+  const needsInternet = state.answers.need === 'internet' || state.answers.need === 'tv';
+  const provinceCode = (state.answers.province ?? '').toUpperCase();
   function resultBack() {
     setView('flow');
     setState(backFinder(state));
@@ -116,17 +120,11 @@ export function PlanFinderModal({
               aria-label={copy.progressLabel}
               aria-valuemin={0}
               aria-valuemax={100}
-              aria-valuenow={Math.round(ratios.desktop * 100)}
+              aria-valuenow={Math.round(ratio * 100)}
               aria-valuetext={progress}
             >
-              <span
-                className="cp-finder-desktop-progress"
-                style={{ width: `${ratios.desktop * 100}%` }}
-              />
-              <span
-                className="cp-finder-mobile-progress"
-                style={{ width: `${ratios.mobile * 100}%` }}
-              />
+              <span className="cp-finder-desktop-progress" style={{ width: `${ratio * 100}%` }} />
+              <span className="cp-finder-mobile-progress" style={{ width: `${ratio * 100}%` }} />
             </div>
           </div>
           <DialogClose asChild>
@@ -273,7 +271,9 @@ export function PlanFinderModal({
                   />
                 </span>
                 <DialogTitle ref={title} tabIndex={-1}>
-                  {copy.resultPrefix} {matches.length} {copy.resultSuffix}
+                  {matches.length === 0 && needsInternet
+                    ? copy.noPlansTitle
+                    : `${copy.resultPrefix} ${matches.length} ${copy.resultSuffix}`}
                 </DialogTitle>
                 <DialogDescription>{copy.resultDescription}</DialogDescription>
                 <div className="cp-finder-answer-chips">
@@ -285,6 +285,20 @@ export function PlanFinderModal({
                   </CpButton>
                 </div>
               </div>
+              {matches.length === 0 && needsInternet ? (
+                <div className="cp-finder-noplans">
+                  <h3>{copy.noPlansTitle}</h3>
+                  <p>{copy.noPlansBody}</p>
+                  <CpButton asChild>
+                    <a
+                      href={`${copy.noPlansHref}${provinceCode === 'OTHER' ? '' : provinceCode}`}
+                      onClick={onClose}
+                    >
+                      {copy.noPlansAction}
+                    </a>
+                  </CpButton>
+                </div>
+              ) : null}
               <div className="cp-finder-matches">
                 {matches.map((match, index) => (
                   <article key={match.id} className="cp-finder-match" data-best={index === 0}>
@@ -342,7 +356,7 @@ export function PlanFinderModal({
                   href={
                     state.answers.location === 'arrival'
                       ? '/pre-arrival-sim'
-                      : state.answers.need === 'internet'
+                      : needsInternet
                         ? '/home-internet'
                         : '/mobile-plans'
                   }
@@ -366,6 +380,11 @@ export function PlanFinderModal({
         {view === 'flow' && current ? (
           <div className="cp-finder-footer" data-intro={current.id === 'location'}>
             {current.id === 'location' ? <p>{copy.privacy}</p> : null}
+            {!state.answers[current.id] ? (
+              <p id="finder-unselected" className="cp-finder-unselected">
+                {copy.unselected}
+              </p>
+            ) : null}
             <div>
               {state.history.length ? (
                 <CpButton tone="outline" onClick={() => setState(backFinder(state))}>
@@ -374,6 +393,7 @@ export function PlanFinderModal({
               ) : null}
               <CpButton
                 disabled={!state.answers[current.id]}
+                aria-describedby={state.answers[current.id] ? undefined : 'finder-unselected'}
                 onClick={() => setState(continueFinder(state))}
               >
                 {current.routes.some((route) => route.to === 'result')

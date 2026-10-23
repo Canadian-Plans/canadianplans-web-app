@@ -318,7 +318,8 @@
   text-transform: uppercase;
 }
 .cp-mobile-plan-cards .cp-plan-allowance {
-  font-size: min(var(--cp-text-56), calc((100vw - var(--cp-space-64) * 2) * 0.22));
+  /* 9vw keeps "Unlimited" inside a 390px card; the cap applies from tablets up. */
+  font-size: min(var(--cp-text-56), 9vw);
   white-space: nowrap;
   @variant cp-chrome {
     font-size: var(--cp-text-56);

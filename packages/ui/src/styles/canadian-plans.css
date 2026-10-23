@@ -167,6 +167,7 @@
 :root {
   /* Guide article: 133:2 and 247:39. */
   --cp-guide-title-width: 60rem;
+  --cp-guide-table-min: 34rem;
   --cp-guide-intro-width: 47.5rem;
   --cp-guide-toc-width: 13.75rem;
   --cp-guide-aside-width: 16.25rem;

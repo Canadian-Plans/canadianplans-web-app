@@ -1,6 +1,6 @@
 import { CpButton, CpSectionHeading } from '@canadian-plans/ui/canadian-plans';
 import { componentAssets } from '@content/components';
-import { internetCopy } from '@content/home-internet';
+import { internetCopy, type InternetProvince } from '@content/home-internet';
 import { internetLandingPlans as copy } from '@content/landing/internet';
 import type { LandingPageContent } from '@content/landing/types';
 import { siteChromeWithPromo, siteFooter } from '@content/site-chrome';
@@ -9,18 +9,25 @@ import { SiteHeader } from '@/components/shared/site-header';
 import { InternetPlanCards } from '@/components/home-internet/interactive';
 import { LandingPage } from './landing-page';
 
+export interface InternetLandingPlans {
+  readonly province: InternetProvince;
+  readonly title: string;
+  readonly price: string;
+}
+
 /**
  * Region page for home internet: the landing kit plus the province's plans from the
- * catalogue. Ontario has no internet plans yet, so it links to the /order wish list.
+ * catalogue. A region with no plans yet (Ontario) links to the /order wish list instead.
  */
 export function InternetLanding({
   page,
   region,
+  plans,
 }: {
   page: LandingPageContent;
-  region: 'Vancouver' | 'Ontario';
+  region: string;
+  plans?: InternetLandingPlans;
 }) {
-  const sold = region === 'Vancouver';
   return (
     <>
       <a href={`#${page.mainId}`} className="cp-internet-skip">
@@ -29,10 +36,10 @@ export function InternetLanding({
       <SiteHeader
         planHref="#plans"
         content={siteChromeWithPromo(
-          sold
+          plans
             ? `Moving in ${region}? Book your install before you get the keys.`
             : `Home internet in ${region} is coming soon.`,
-          sold
+          plans
             ? { label: 'See plans →', href: '#plans' }
             : { label: copy.ontario.action, href: copy.ontario.href },
         )}
@@ -40,18 +47,16 @@ export function InternetLanding({
       <LandingPage
         content={page}
         slots={{
-          plans: sold ? (
+          plans: plans ? (
             <section id="plans" className="cp-internet-plans cp-internet-section">
               <div className="cp-container">
                 <div className="cp-internet-plans-heading">
-                  <CpSectionHeading
-                    content={{ eyebrow: copy.eyebrow, title: [copy.vancouver.title] }}
-                  />
+                  <CpSectionHeading content={{ eyebrow: copy.eyebrow, title: [plans.title] }} />
                   <p className="cp-internet-note">
-                    <strong>{copy.vancouver.price}</strong> {copy.vancouver.priceNote} {copy.date}
+                    <strong>{plans.price}</strong> {copy.priceNote} {copy.date}
                   </p>
                 </div>
-                <InternetPlanCards province="BC" />
+                <InternetPlanCards province={plans.province} />
                 <div className="cp-internet-includes">
                   <strong>{internetCopy.plans.includesTitle}</strong>
                   <ul>
