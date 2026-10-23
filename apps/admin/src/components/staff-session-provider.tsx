@@ -30,7 +30,7 @@ interface StaffSessionState {
 const StaffSessionContext = createContext<StaffSessionState | undefined>(undefined);
 
 export function StaffSessionProvider({ children }: { children: ReactNode }) {
-  const [status, setStatus] = useState<SessionStatus>('loading');
+  const [status, setStatusState] = useState<SessionStatus>('loading');
   const [accessToken, setAccessToken] = useState<string>();
   const [workspaces, setWorkspaces] = useState<readonly StaffWorkspace[]>([]);
   const [reason, setReason] = useState<string>();
@@ -38,36 +38,42 @@ export function StaffSessionProvider({ children }: { children: ReactNode }) {
   // The signed-in user, so a token refresh for the same person only swaps the
   // token instead of reloading (and resetting) every screen.
   const signedInUser = useRef<string | undefined>(undefined);
+  // Mirrored synchronously (not in an effect) so an auth event that fires
+  // before React flushes effects still sees the status that was just set.
   const statusRef = useRef<SessionStatus>('loading');
-  useEffect(() => {
-    statusRef.current = status;
-  }, [status]);
+  const setStatus = useCallback((next: SessionStatus) => {
+    statusRef.current = next;
+    setStatusState(next);
+  }, []);
   const invalidate = useCallback(() => {
     ++generation.current;
   }, []);
 
-  const load = useCallback(async (token: string, userId?: string) => {
-    const requestGeneration = ++generation.current;
-    signedInUser.current = undefined;
-    setAccessToken(undefined);
-    setWorkspaces([]);
-    setStatus('loading');
-    try {
-      const result = await getStaffWorkspaces(token);
-      if (requestGeneration !== generation.current) return;
-      setAccessToken(token);
-      setWorkspaces(result.workspaces);
-      setReason(undefined);
-      signedInUser.current = userId;
-      setStatus('signed_in');
-    } catch (error) {
-      if (requestGeneration !== generation.current) return;
+  const load = useCallback(
+    async (token: string, userId?: string) => {
+      const requestGeneration = ++generation.current;
+      signedInUser.current = undefined;
       setAccessToken(undefined);
       setWorkspaces([]);
-      setReason(error instanceof BackendError ? error.code : 'internal_error');
-      setStatus('error');
-    }
-  }, []);
+      setStatus('loading');
+      try {
+        const result = await getStaffWorkspaces(token);
+        if (requestGeneration !== generation.current) return;
+        setAccessToken(token);
+        setWorkspaces(result.workspaces);
+        setReason(undefined);
+        signedInUser.current = userId;
+        setStatus('signed_in');
+      } catch (error) {
+        if (requestGeneration !== generation.current) return;
+        setAccessToken(undefined);
+        setWorkspaces([]);
+        setReason(error instanceof BackendError ? error.code : 'internal_error');
+        setStatus('error');
+      }
+    },
+    [setStatus],
+  );
 
   useEffect(() => {
     // CQ-01: only the separate e2e build has this; see lib/e2e-session.ts.
@@ -114,7 +120,7 @@ export function StaffSessionProvider({ children }: { children: ReactNode }) {
       invalidate();
       listener.data.subscription.unsubscribe();
     };
-  }, [load, invalidate]);
+  }, [load, invalidate, setStatus]);
 
   const refreshWorkspaces = useCallback(async () => {
     if (accessToken) await load(accessToken, signedInUser.current);
@@ -127,7 +133,7 @@ export function StaffSessionProvider({ children }: { children: ReactNode }) {
     setReason(undefined);
     setStatus('signed_out');
     if (isStaffAuthConfigured()) await getStaffAuth().signOut();
-  }, []);
+  }, [setStatus]);
   const value = useMemo<StaffSessionState>(
     () => ({ status, accessToken, workspaces, reason, refreshWorkspaces, signOut }),
     [status, accessToken, workspaces, reason, refreshWorkspaces, signOut],
