@@ -57,6 +57,10 @@ jobs:
           # Real tool versions recorded in every manifest so a restore can match them.
           AGE_VERSION: ${{ env.AGE_VERSION }}
           SUPABASE_CLI_VERSION: ${{ env.SUPABASE_CLI_VERSION }}
+          # supabase db dump runs pg_dump in a Postgres image. Its default registry
+          # (public.ecr.aws) rate-limits GitHub runners ("toomanyrequests", 23 Oct
+          # 2026), so pull the same supabase/postgres image from GitHub's registry.
+          SUPABASE_INTERNAL_IMAGE_REGISTRY: ghcr.io
           # Read/export source credentials (never delete-capable).
           SOURCE_DATABASE_URL: ${{ secrets.BACKUP_SOURCE_DATABASE_URL }}
           BACKUP_LEASE_DATABASE_URL: ${{ secrets.BACKUP_LEASE_DATABASE_URL }}
