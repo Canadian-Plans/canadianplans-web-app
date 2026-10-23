@@ -57,7 +57,7 @@ Move rows here once decided, with the date. Don't delete them; a decided input t
 | # | Input | Answer | Decided |
 |---|---|---|---|
 | 1 | Website 1 name | Canadian Plans; public code configuration and Studio title updated. Technical identifier remains `site-1`; domain and legal billing identity remain separate inputs | 12 Oct 2026 |
-| — | Website 1 visual design and service sequence | Owner-supplied Canadian Plans Figma reference; mobility first, internet and TV later. Implementation follows DESIGN_TO_CODE_PLAN.md and existing platform invariants | 12 Oct 2026 |
+| — | Website 1 visual design and service sequence | Owner-supplied Canadian Plans Figma reference; mobility first, internet and TV later (superseded 20 Oct 2026: all Canada Wide plans from launch, see `LAUNCH_PLANS.md`). Implementation followed `apps/site-1/docs/DESIGN_TO_CODE_PLAN.md` and the platform invariants | 12 Oct 2026 |
 | — | Region for data and functions | Canada preferred; superseded 14 Sep 2026 — Supabase project provisioned in us-west-2 is acceptable | 9 Sep 2026 |
 | — | Analytics tool | Umami | 9 Sep 2026 |
 | — | Malware scanning on uploads | Not at launch — deliberate; signature verification only | 9 Sep 2026 |
@@ -100,3 +100,4 @@ Move rows here once decided, with the date. Don't delete them; a decided input t
 | — | Backup memory (PERF-03) | Interim size guard: the backup stops with a clear error above about 2 GB; the streaming rewrite waits until data nears that size | 22 Oct 2026 |
 | — | Website CSP (SEC-22) | Keep the current policy through launch; move to a nonce-based policy after launch | 22 Oct 2026 |
 | — | Admin browser tests (CQ-01) | Build Playwright tests for the admin order screens before launch | 22 Oct 2026 |
+| — | Admin workspace list | The admin `WorkspaceSwitcher` lists the signed-in staff member's workspaces from the backend (`getStaffWorkspaces`, the §4b staff bootstrap lookup); the T2 hardcoded placeholder list is gone. Previously flagged in a root `OPEN_INPUTS.md` note, merged here | recorded 23 Oct 2026 |

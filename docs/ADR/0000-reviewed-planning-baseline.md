@@ -51,7 +51,7 @@ Keep the eight planning files at the root so current paths resolve. Generated en
 
 OPEN_INPUTS retains actual business decisions, sender/provider approval, staging billing and data-retention periods. These are not invented by this review. Exact recovery objectives remain deferred as requested. Security/capacity/provider tests in the tasks are required future evidence, not tests claimed to have passed during this document edit.
 
-References: [platform context](../../PLATFORM_CONTEXT.md), [requirements](../../REQUIREMENTS.md), [implementation plan](../../IMPLEMENTATION_PLAN.md), [build tasks](../../BUILD_TASKS.md), [open inputs](../../OPEN_INPUTS.md).
+References: [platform context](../../PLATFORM_CONTEXT.md), [requirements](../REQUIREMENTS.md), [implementation plan](../IMPLEMENTATION_PLAN.md), [build tasks](../BUILD_TASKS.md), [open inputs](../OPEN_INPUTS.md).
 
 ## Documentation validation
 

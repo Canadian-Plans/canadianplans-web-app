@@ -16,9 +16,9 @@ The owner is the sole production deployer. AI maintenance does not remove provid
 
 ## 2. Start with T0 and T1
 
-1. Create the private repository and preserve the eight planning files at its root. Implementation artifacts go under docs/. Read PLATFORM_CONTEXT.md, then the relevant task.
-2. Use local development and eligible free services. Set up Vercel Pro before commercial hosting or deployed minute-level cron tests. Budget production Supabase Pro. Staging uses either an eligible separate Free organization or an additional paid project.
-3. Start domain/DNS verification, the conditional SES production-access request, Auth SMTP configuration, R2 test storage and the separate B2 recovery account early. Record pending approvals; do not wait until launch day.
+1. Create the private repository. The planning files (REQUIREMENTS, IMPLEMENTATION_PLAN, BUILD_TASKS, OWNER_PLAYBOOK, OPEN_INPUTS) live under docs/ beside the implementation artifacts; PLATFORM_CONTEXT.md and AGENTS.md stay at the root. Read PLATFORM_CONTEXT.md, then the relevant task.
+2. Use local development and eligible free services. Admin and the storefront run on Vercel and the backend on Railway with its in-process scheduler (ADR 0004); upgrade plans when quotas require it. Budget production Supabase Pro. Staging uses either an eligible separate Free organization or an additional paid project.
+3. Start domain/DNS verification, email-provider domain verification (Resend; SES deferred, OPEN_INPUTS #23), Auth SMTP configuration, R2 test storage and the separate B2 recovery account early. Record pending approvals; do not wait until launch day.
 4. Store secrets in a password manager and isolated environment settings, not chats or source files. Recovery decryption material and restore access must remain available independently of production.
 5. Fill OPEN_INPUTS.md as information becomes available. TEST placeholders let development continue; they cannot authorize real prices, dispatch, activation or payouts.
 

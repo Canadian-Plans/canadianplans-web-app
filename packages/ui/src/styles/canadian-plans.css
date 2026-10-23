@@ -1,7 +1,7 @@
 /**
  * Canadian Plans Figma foundation: Website 60:2, Home 60:3 / 195:2.
  * Source values: get_variable_defs + full get_design_context, 12 October 2026.
- * Lengths use rem (Figma px / 16). See apps/site-1/DESIGN_NOTES.md.
+ * Lengths use rem (Figma px / 16). See apps/site-1/docs/DESIGN_NOTES.md.
  * cp-* names are additive; .cp-design activates the storefront theme per page.
  * Shared/admin defaults are retained. No page is opted in by this foundation.
  */

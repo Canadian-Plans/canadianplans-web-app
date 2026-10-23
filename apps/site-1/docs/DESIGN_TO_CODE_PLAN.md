@@ -3,7 +3,7 @@
 Prepared: 12 October 2026. Updated: 13 October 2026. Subsequent authorized tasks
 implemented the storefront design previews, supporting screens, transactional
 email previews and seven category templates listed in
-[category review evidence](EVIDENCE/category-review/README.md). The owner
+[category review evidence](../../../docs/EVIDENCE/category-review/README.md). The owner
 confirmed **mobility first; internet and TV later** for live integration.
 Internet category pages are isolated design previews. Live content, commercial
 verification and backend/CMS integration remain separate work; the original
@@ -23,7 +23,7 @@ screens match the desktop and mobile Figma references.
 - Keep Next.js App Router, strict TypeScript, Tailwind v4, the shared shadcn
   primitives, the Express API and the site's own Sanity project.
 - Launch with mobility and the two audiences already recorded in
-  [CHECKPOINT.md](CHECKPOINT.md): newcomers and Canadians. Internet, TV, address
+  [the CMS handoff](CMS.md#sanity-driven-storefront-handoff-27-september-2026): newcomers and Canadians. Internet, TV, address
   availability, installation and bundles remain later milestones. Their Figma
   frames are recorded so they can be implemented later.
 - This task prepares the plan and applies the local display name. It does not
@@ -178,11 +178,11 @@ later slices remain milestones until the owner reviews the preview.
 | 6. Content and supporting screens | Guides/article templates, about/contact/FAQ, legal/accessibility, 404/search and relevant failure states.                                                                            | Sanity owns content; correct metadata/headings; safe search; no personal data in URLs; policy versions remain recorded. Avoid publishing repetitive template pages without distinct content.                       |
 | 7. Complete launch verification   | Verify the assembled mobility storefront and all existing Phase A gates. Production configuration and release remain owner actions.                                                  | Visual/asset review, accessibility, performance, type/boundary checks, regression journeys and launch evidence. Clear unresolved business/config inputs before accepting real orders.                              |
 
-For each actual build task, fill [TASK_TEMPLATE.md](TASK_TEMPLATE.md): REQ IDs,
+For each actual build task, fill [TASK_TEMPLATE.md](../../../docs/TASK_TEMPLATE.md): REQ IDs,
 app/package, contracts/schema, negative tests, evidence and rollback. Principal
 requirements are REQ 06–10 (independent CMS, previews, SEO/accessibility) and the
 existing order/lead/document/tracking requirements for the changed journey.
-Follow [BUILD_TASKS.md](BUILD_TASKS.md) dependencies; this visual plan supplements
+Follow [BUILD_TASKS.md](../../../docs/BUILD_TASKS.md) dependencies; this visual plan supplements
 Phase A rather than replacing its operational gates.
 
 Critical path: theme → approved home/chrome preview → CMS renderer → mobility

@@ -97,4 +97,8 @@ The config package now has its own strict tsconfig, source entry and typecheck c
 
 The detailed planning documents remain under `docs/`. Root forwarding files restore the paths used by existing prompts without duplicating content; README links both preserved OPEN_INPUTS files explicitly. This corrects discoverability without changing owner decisions or ADR 0000.
 
+_Update 23 October 2026:_ the root forwarding files and the root `OPEN_INPUTS.md` note were
+removed in the documentation consolidation; the planning files live only under `docs/`, and
+the single business-input register is `docs/OPEN_INPUTS.md`.
+
 See [review evidence](../EVIDENCE/T1-T2-review.md). The earlier T1 evidence is historical; this review's output describes the current checkout. No deployed Vercel selection/promotion was tested or performed.

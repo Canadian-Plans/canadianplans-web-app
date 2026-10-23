@@ -217,7 +217,7 @@ Structured JSON logs with request ID, workspace ID, actor ID, and route; never l
 
 # 11 Design system and UI approach
 
-Admin and storefront UI are built on shadcn/ui through the shadcn MCP and its template catalogue. On 12 October 2026 the owner selected Canadian Plans as site-1's brand and supplied its Figma visual reference, replacing the previous no-Figma choice for that storefront. Follow the [design-to-code plan](DESIGN_TO_CODE_PLAN.md) before visual implementation:
+Admin and storefront UI are built on shadcn/ui through the shadcn MCP and its template catalogue. On 12 October 2026 the owner selected Canadian Plans as site-1's brand and supplied its Figma visual reference, replacing the previous no-Figma choice for that storefront. Follow the [design-to-code plan](../apps/site-1/docs/DESIGN_TO_CODE_PLAN.md) before visual implementation:
 
 - The admin starts from a shadcn dashboard template with sidebar navigation per workspace, and uses design tokens (colour, radius, spacing) set once and pulled from `@canadian-plans/ui`.
 - Shared primitives live in `@canadian-plans/ui` as shadcn-based components without brand or content; each website applies its own tokens, fonts, and hero imagery from Sanity.

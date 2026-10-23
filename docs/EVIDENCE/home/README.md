@@ -29,7 +29,7 @@ The gallery regression script also passed after optional chrome props were
 added. No storefront route other than Home was redesigned.
 
 Remaining source ambiguities and intentional preview/contrast adaptations are
-in [DESIGN_NOTES.md](../../../apps/site-1/DESIGN_NOTES.md). Small browser text/dash
+in [DESIGN_NOTES.md](../../../apps/site-1/docs/DESIGN_NOTES.md). Small browser text/dash
 rounding differs from Figma. Internet/TV, sample business facts and closed FAQ
 answers still require the separate approval/integration work recorded there.
 The existing font fallback-metrics warning is unchanged.

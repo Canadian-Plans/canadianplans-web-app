@@ -30,7 +30,7 @@ Source assets and mobile/desktop specimen geometry were compared with Figma.
 The gallery's section arrangement is for inspection and is not a Home page.
 
 Remaining differences/ambiguities are documented in
-[DESIGN_NOTES.md](../../../apps/site-1/DESIGN_NOTES.md): browser fractional text
+[DESIGN_NOTES.md](../../../apps/site-1/docs/DESIGN_NOTES.md): browser fractional text
 rounding and dashed-border rendering, font fallback-metrics warning, unspecified
 interactive states, and unapproved illustrative business content. The Next.js
 dev indicator is hidden only for evidence screenshots.

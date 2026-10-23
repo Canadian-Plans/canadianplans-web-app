@@ -20,3 +20,6 @@ docs/OPEN_INPUTS.md
 docs/OWNER_PLAYBOOK.md
 docs/REQUIREMENTS.md
 docs/ADR/0000-reviewed-planning-baseline.md
+
+# Point-in-time external audit report, kept verbatim
+docs/EVIDENCE/audit/codebase-audit-2026-10-22.md
