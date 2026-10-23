@@ -28,6 +28,8 @@ const databaseTest = migrationUrl ? describe : describe.skip;
 const WORKSPACE = '11000000-0000-4000-8000-000000000d19';
 const OTHER_WORKSPACE = '11000000-0000-4000-8000-000000000d20';
 const ACTOR = '21000000-0000-4000-8000-000000000d19';
+const LEAD = '51000000-0000-4000-8000-000000000d19';
+const ORDER = '82000000-0000-4000-8000-000000000d19';
 const NOW = new Date('2026-10-22T12:00:00.000Z');
 const DAY = 24 * 60 * 60 * 1000;
 const daysAgo = (days: number) => new Date(NOW.getTime() - days * DAY);
@@ -68,6 +70,34 @@ databaseTest('operational retention (migration 0026)', () => {
     `;
     await job(OTHER_WORKSPACE, 'retention:other-old-completed', 'completed', daysAgo(40));
 
+    // A tracking code needs an order; the erasure guard covers tracking_challenges,
+    // so clearing a previous run's rows uses the same transaction-local flag.
+    await admin.begin(async (tx) => {
+      await tx`select pg_catalog.set_config('app.operational_prune', 'on', true)`;
+      await tx`delete from app.tracking_challenges where workspace_id = ${WORKSPACE}`;
+      await tx`delete from app.orders where workspace_id = ${WORKSPACE}`;
+      await tx`delete from app.leads where workspace_id = ${WORKSPACE}`;
+    });
+    await admin`
+      insert into app.leads (id, workspace_id, status, consent_version)
+      values (${LEAD}, ${WORKSPACE}, 'submitted', 'terms-1')
+    `;
+    await admin`
+      insert into app.orders (
+        id, workspace_id, reference, lead_id, status, payment_state, delivery_state,
+        version, snapshot, payload, submitted_at
+      ) values (
+        ${ORDER}, ${WORKSPACE}, 'CP-RETENTION-1', ${LEAD}, 'submitted', 'not_required', 'none',
+        1, '{}'::jsonb, '{}'::jsonb, ${daysAgo(30)}
+      )
+    `;
+    const challenge = (codeHash: string, expiresAt: Date) => admin`
+      insert into app.tracking_challenges (workspace_id, order_id, email_hash, code_hash, expires_at)
+      values (${WORKSPACE}, ${ORDER}, 'synthetic-email-hash', ${codeHash}, ${expiresAt})
+    `;
+    await challenge('retention-old-code', daysAgo(10));
+    await challenge('retention-live-code', daysAgo(-1));
+
     const runtimeUrl = new URL(migrationUrl);
     runtimeUrl.username = 'app_runtime';
     runtimeUrl.password = TEST_RUNTIME_PASSWORD;
@@ -86,6 +116,12 @@ databaseTest('operational retention (migration 0026)', () => {
       now: NOW,
     });
     expect(result).toContainEqual({ tableName: 'outbox_jobs', deleted: 1 });
+    // Passes the customer-erasure guard only inside the prune function.
+    expect(result).toContainEqual({ tableName: 'tracking_challenges', deleted: 1 });
+    const codes = await admin<{ code_hash: string }[]>`
+      select code_hash from app.tracking_challenges where workspace_id = ${WORKSPACE}
+    `;
+    expect(codes.map((row) => row.code_hash)).toEqual(['retention-live-code']);
     expect(result.map((row) => row.tableName).sort()).toEqual(
       [
         'catalogue_sync_events',
@@ -112,6 +148,21 @@ databaseTest('operational retention (migration 0026)', () => {
       database.withTenantTx({ workspaceId: WORKSPACE, actorId: ACTOR }, (tx) =>
         tx.execute(sql`select * from app.prune_operational_rows(${OTHER_WORKSPACE}::uuid, now())`),
       ),
-    ).rejects.toThrow(/workspace_context_mismatch/);
+    ).rejects.toMatchObject({
+      cause: expect.objectContaining({ message: 'workspace_context_mismatch' }),
+    });
+  });
+
+  test('the runtime role cannot switch the guard off by itself', async () => {
+    await expect(
+      database.withTenantTx({ workspaceId: WORKSPACE, actorId: ACTOR }, async (tx) => {
+        await tx.execute(sql`select pg_catalog.set_config('app.operational_prune', 'on', true)`);
+        await tx.execute(
+          sql`delete from app.tracking_challenges where workspace_id = ${WORKSPACE}`,
+        );
+      }),
+    ).rejects.toMatchObject({
+      cause: expect.objectContaining({ message: 'customer_erasure_requires_acknowledgement' }),
+    });
   });
 });

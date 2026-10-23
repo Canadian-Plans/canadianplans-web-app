@@ -5,7 +5,7 @@ import { auditEvents, draftGrants, leads, withTenantTx } from '@canadian-plans/d
 /**
  * SEC-12, owner decision (22 Oct 2026, docs/OPEN_INPUTS.md): an order form
  * that is still `incomplete` 90 days after its last change has the visitor's
- * name, email, phone, country and answers erased and its resume links deleted.
+ * name, email, phone, country and answers erased and its resume links revoked.
  * The row stays, restricted, as an anonymous count (source and offer kept).
  * Submitted leads are never touched; they belong to an order.
  */
@@ -43,10 +43,18 @@ export class DatabaseAbandonedLeadPruner {
         if (candidates.length === 0) return { restrictedLeads: 0 };
         const ids = candidates.map((row) => row.id);
 
+        // Revoked, not deleted: a grant holds only a token hash, and deleting
+        // one is reserved for an acknowledged customer erasure (migration 0023's
+        // guard_customer_erasure).
         await tx
-          .delete(draftGrants)
+          .update(draftGrants)
+          .set({ revokedAt: input.now })
           .where(
-            and(eq(draftGrants.workspaceId, input.workspaceId), inArray(draftGrants.leadId, ids)),
+            and(
+              eq(draftGrants.workspaceId, input.workspaceId),
+              inArray(draftGrants.leadId, ids),
+              isNull(draftGrants.revokedAt),
+            ),
           );
         // The same conditions again: a lead submitted since the select is skipped.
         const restricted = await tx

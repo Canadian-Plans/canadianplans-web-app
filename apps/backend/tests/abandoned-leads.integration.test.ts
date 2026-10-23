@@ -125,8 +125,10 @@ databaseTest('abandoned order forms (SEC-12)', () => {
       restricted: false,
     });
 
-    const grants = await admin`select id from app.draft_grants where lead_id = ${OLD_DRAFT}`;
-    expect(grants).toHaveLength(0);
+    const grants = await admin<{ revoked: boolean }[]>`
+      select revoked_at is not null as revoked from app.draft_grants where lead_id = ${OLD_DRAFT}
+    `;
+    expect(grants).toEqual([{ revoked: true }]);
     const audits = await admin<{ entity_id: string; action: string }[]>`
       select entity_id, action from app.audit_events where workspace_id = ${WORKSPACE}
     `;

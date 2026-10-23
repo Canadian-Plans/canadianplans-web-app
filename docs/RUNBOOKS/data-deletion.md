@@ -71,7 +71,7 @@ Processor-held messages require the processor's separate deletion procedure.
 
 Owner decision 22 Oct 2026 (SEC-12). Once a day the backend scheduler finds
 leads still `incomplete` 90 days after their last change and erases their
-name, email, phone, country and form answers, deletes their resume links and
+name, email, phone, country and form answers, revokes their resume links and
 sets `customer_data_restricted_at`. The row stays as an anonymous count with its
 source and offer. Submitted leads are never touched. Each restricted lead gets a
 `lead.abandoned_draft_restricted` audit event; at most 1,000 leads per workspace
