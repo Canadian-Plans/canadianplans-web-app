@@ -135,16 +135,19 @@ The owner requires request-only deletion of retained customer records and accept
   and requested a design-to-code plan before visual implementation. This
   supersedes the previous no-Figma choice for this storefront; shadcn primitives,
   the existing stack and the §4 invariants still apply.
-- See [the design-to-code plan](docs/DESIGN_TO_CODE_PLAN.md). Broader service scope
+- See [the design-to-code plan](apps/site-1/docs/DESIGN_TO_CODE_PLAN.md). Broader service scope
   and business behavior shown in the design require explicit decisions; supplying
   a visual reference does not resolve those inputs.
 - The owner reconfirmed **mobility first; internet and TV later** on the same
   date. The Figma internet/TV screens remain future design references.
+- Superseded on 20 October 2026: the owner decided to launch with all Canada Wide
+  plans — internet, internet + TV and mobile — priced by province; see
+  [docs/LAUNCH_PLANS.md](docs/LAUNCH_PLANS.md) and ADR 0005.
 
 ## 8. How to decide when the task is ambiguous
 
 1. Does it conflict with a §4 invariant? → Stop, name the invariant, don't work around it.
-2. Is it a business rule (price, commission, document requirement, policy)? → Don't invent it. Check `OPEN_INPUTS.md`; if missing, use a clearly named TEST-only placeholder, log it there, and continue independent work. Real publishing, dispatch, activation and payout remain disabled until their required inputs are validated.
+2. Is it a business rule (price, commission, document requirement, policy)? → Don't invent it. Check `docs/OPEN_INPUTS.md`; if missing, use a clearly named TEST-only placeholder, log it there, and continue independent work. Real publishing, dispatch, activation and payout remain disabled until their required inputs are validated.
 3. Is it a Phase B thing (§6)? → Build the interface/flag only, say you're doing so.
 4. Is it a technical choice in §3? → Use the current baseline. Propose cost/maintenance improvements with a recorded rationale; do not silently migrate.
 5. Anything left genuinely open and technical? → Pick the option that best preserves the invariants, state your assumption, proceed.
@@ -174,13 +177,12 @@ canadian-plans/
     ui/               @canadian-plans/ui — shared shadcn primitives + design tokens.
     adapters/         Backend-only provider adapters; browser-safe CMS schemas live in contracts/cms.
     config/           @canadian-plans/config — shared tsconfig, eslint, vitest, prettier presets.
+    observability/    @canadian-plans/observability — browser-safe log-record builder and PII scrubber shared by every app.
   jobs/               Outbox handlers invoked by backend cron; offline backup/restore/retention tooling runs separately.
-  REQUIREMENTS.md     Product requirements (root planning file).
-  IMPLEMENTATION_PLAN.md  Architecture and technical contracts (root planning file).
-  BUILD_TASKS.md       Task prompts and dependency order (root planning file).
-  OWNER_PLAYBOOK.md    Owner's workflow (root planning file).
-  OPEN_INPUTS.md       Business inputs and confirmed decisions (root planning file).
-  docs/               API.md, SCHEMA_HISTORY.md, ENV.md, ADR/, RUNBOOKS/, EVIDENCE/ (implementation artifacts)
+  docs/               Planning (REQUIREMENTS, IMPLEMENTATION_PLAN, BUILD_TASKS, OWNER_PLAYBOOK, OPEN_INPUTS,
+                      LAUNCH_CHECKLIST, LAUNCH_PLANS, RETENTION_POLICY), reference (API, ENV, SCHEMA_HISTORY,
+                      ADR/, legal/), RUNBOOKS/ and EVIDENCE/. docs/README.md is the index.
+  AGENTS.md           Shared AI session instructions; CLAUDE.md points here.
   CLAUDE.md           Read automatically every session.
   PLATFORM_CONTEXT.md This file. Read in full every session.
 ```

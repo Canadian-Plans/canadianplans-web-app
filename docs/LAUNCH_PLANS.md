@@ -24,8 +24,8 @@ Prices are CAD. Feeds OPEN_INPUTS #3 and #4, tasks 2.2–2.6 and 3.7–3.9 of
 - **No payment on the website, on any plan.** `paymentRequired = false` and
   `amountPayableToday = 0` everywhere; customers submit a request and are not charged.
 - **Terms and privacy** start from the Canada Wide texts: drafts in
-  [legal/terms-v1-draft.md](legal/terms-v1-draft.md) and
-  [legal/privacy-v1-draft.md](legal/privacy-v1-draft.md).
+  [legal/terms-v1.md](legal/terms-v1.md) and
+  [legal/privacy-v1.md](legal/privacy-v1.md).
 - Sanity is **not** used for now. Plan data is hardcoded in the repo.
 - A region we do not serve yet gets an **easy wish-list lead**, and we **count which
   regions and plans people look at**, so we know where to add data next.

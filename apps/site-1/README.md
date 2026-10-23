@@ -28,12 +28,12 @@ build time, so changing it needs a new site-1 build; a plain redeploy of the sam
 skipped by the `affected-builds` ignore step.
 
 The owner supplied the Figma design on 12 October 2026. See the
-[design-to-code plan](../../docs/DESIGN_TO_CODE_PLAN.md) for the desktop/mobile
+[design-to-code plan](docs/DESIGN_TO_CODE_PLAN.md) for the desktop/mobile
 frame map, CMS rendering approach, implementation order and review gates.
 The Home design preview and shared component gallery are implemented.
 
 The Figma foundation is ready: [design instructions](AGENTS.md),
-[tokens and ambiguities](DESIGN_NOTES.md), a scoped Tailwind theme exported by
+[tokens and ambiguities](docs/DESIGN_NOTES.md), a scoped Tailwind theme exported by
 `@canadian-plans/ui/canadian-plans.css`, Google Sans Flex via `next/font` and
 typed app-root `content/` files using `@content/*`. Existing ESLint/Prettier
 configuration and shadcn primitives are reused. New designs opt into `.cp-design`

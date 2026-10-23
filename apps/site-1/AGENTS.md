@@ -3,7 +3,7 @@
 These instructions apply to Figma foundation and page implementation work in
 this app. Keep the repository architecture and tenant/security invariants from
 [PLATFORM_CONTEXT.md](../../PLATFORM_CONTEXT.md). For a named page, read
-[DESIGN_NOTES.md](DESIGN_NOTES.md) before coding.
+[DESIGN_NOTES.md](docs/DESIGN_NOTES.md) before coding.
 
 1. **Scope.** Build only the page named in the prompt. Leave every other page
    implementation unchanged. Modify shared infrastructure only when that page

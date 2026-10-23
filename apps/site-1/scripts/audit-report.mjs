@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 const evidence = resolve('../../docs/EVIDENCE/audit');
-const report = resolve('../../docs/AUDIT_REPORT.md');
+const report = resolve('../../docs/EVIDENCE/audit/page-audit-2026-10-13.md');
 const pages = JSON.parse(await readFile(resolve(evidence, 'final/pages.json'), 'utf8'));
 const diffs = JSON.parse(await readFile(resolve(evidence, 'final/diffs/summary.json'), 'utf8'));
 const scores = JSON.parse(

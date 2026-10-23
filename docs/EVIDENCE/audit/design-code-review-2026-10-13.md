@@ -44,15 +44,15 @@ The primary improvement is less serialized page data. JavaScript size remains
 approximately unchanged; no JavaScript execution-speed or Lighthouse-score
 improvement is claimed. The small new controls add code, so this is not a claim
 that every resource got smaller. Final byte measurements are in
-[payload evidence](EVIDENCE/audit/design-review-final/payload.json), with the
-[baseline](EVIDENCE/audit/review-baseline/payload.json) kept separately.
+[payload evidence](design-review-final/payload.json), with the
+[baseline](review-baseline/payload.json) kept separately.
 
 ## Verification
 
 The optimized production build uses Webpack, consistent with the earlier
 workaround for stale development Turbopack output. Local runtime preview mode
 allows the guarded component/email previews to be inspected without publishing
-them. The final [page records](EVIDENCE/audit/design-review-final/pages.json)
+them. The final [page records](design-review-final/pages.json)
 and screenshots cover all 78 desktop/mobile cases. Focused browser verifiers
 also cover 320/390/768/1024/1440, desktop/mobile plan handoff, sorting, keyboard
 focus, multi-open FAQs, address failure states and preview summaries. No real
@@ -62,7 +62,7 @@ Site typecheck, full site lint, shared UI typecheck, production build and
 changed-file formatting passed. Tests: site 162, shared UI 28, audit validator 11.
 The validator checks all final records, including expected HTTP 404 semantics.
 Visual cleanup comparisons are in
-[refactor evidence](EVIDENCE/audit/design-review-final/refactor-visuals.json).
+[refactor evidence](design-review-final/refactor-visuals.json).
 
 ## Remaining scope
 
@@ -72,4 +72,4 @@ the existing separate work. Native controls, font rendering and dashed strokes
 can differ from Figma. This review does not claim pixel-perfect parity for
 every source frame, complete live order/backend testing, an exhaustive security
 audit, or new performance scores for every route. The earlier 32-case
-[Lighthouse audit](AUDIT_REPORT.md) remains historical evidence.
+[Lighthouse audit](page-audit-2026-10-13.md) remains historical evidence.

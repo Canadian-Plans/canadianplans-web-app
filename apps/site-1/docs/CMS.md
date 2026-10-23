@@ -174,3 +174,58 @@ fixtures do not authorize real publishing, dispatch, activation or payout
   not set the Next.js draft-mode cookie; signed into Studio, using the
   Presentation tool's preview does. A `redirectTo` outside the allowlist
   (e.g. `/order`) is rejected with `403` regardless of session.
+
+## Sanity-driven storefront handoff (27 September 2026)
+
+Historical handoff, recorded when the owner paused CMS work to design the UI. The owner
+then supplied the Figma design (12 October 2026) and the storefront shipped as coded
+pages fed by the repo catalogue (ADR 0005); Sanity is **not connected at launch**. The
+decisions below describe how the CMS integration is meant to work when it resumes. They
+do not describe the live pages, and the mobility-only launch assumption they carried was
+superseded on 20 October 2026 by the owner's decision to sell internet, internet + TV and
+mobile from launch (`docs/LAUNCH_PLANS.md`); the `offer.service` field already covers
+`mobility | internet | tv`.
+
+### Decisions recorded for the integration
+
+- Content is Sanity-driven (page-builder style): editors add pages at any time and link
+  them anywhere.
+- Brand is hybrid: logo, primary/accent colour and site name live in
+  `siteSettings.brand`; the design system stays in `@canadian-plans/ui`.
+- Page model: `page` documents rendered by a section renderer through a catch-all
+  `/[slug]` route, home being slug `home`. `/order`, `/track`, `/plans`, `/privacy`,
+  `/terms`, `/studio` and `/api/*` stay as app routes.
+- Navigation: each item is _simple_ (one link) or _mega_ (columns of links plus an
+  optional promo box). One reusable link picker (internal page reference or external URL)
+  is used everywhere.
+- Plans are one central list referenced from pages, never recreated per page. The plan
+  grid block either hand-picks offers or lists them automatically by service and
+  audience; provinces are separate plans per province, made manageable with tags,
+  duplicate and auto-listing.
+- Deferred entirely: combos and bundles (curated combos versus build-your-own, and typed
+  bundle totals versus a discount rule).
+
+### Done — increment 1, content model (verified 27 September 2026)
+
+In `packages/contracts/src/cms/schema-types.ts` (exports through `cms/index.ts`): the
+reusable `link` object with the cast-free `readStringField` helper; the mega-menu
+`navigation` (`style` simple|mega, `link`, `columns[]`, `promo`); the page sections
+`sectionSteps`, `sectionFeatures`, `sectionLogos` and `sectionStats`;
+`siteSettings.brand` (logo, logoAlt, hex-validated primary/accent colours);
+`offer.service` (`SERVICE_VALUES`, default mobility) and `offer.audiences`
+(`AUDIENCE_VALUES` newcomer|canadian); `sectionPlanGrid` with `mode` pick|auto, `offers`,
+`filterService` and `filterAudiences`. Contracts typecheck, lint and tests passed; nothing
+was deployed.
+
+### Not started — increments 2 to 4
+
+- Increment 2, rendering: a read-only Sanity client with GROQ readers (site settings,
+  navigation, page, page slugs) in `lib/cms.ts`, one component per section block under
+  `src/components/sections/`, the catch-all `/[slug]` route plus home, an async layout
+  reading navigation and brand, a theming hook applying `brand.primaryColor` over the
+  `@canadian-plans/ui` tokens, and plan-grid cards.
+- Increment 3, preview with the owner.
+- Increment 4, go-live wiring to the real order path. The production gaps recorded with
+  this handoff on 23 September 2026 (missing site-1 service credential, scheduler off,
+  empty production dataset, placeholder site name) were re-checked and are tracked in
+  `docs/LAUNCH_CHECKLIST.md` stage 1; do not rely on the September findings.

@@ -31,7 +31,7 @@ records them, it does not re-open them.
 works. The outbox already claims jobs under a database lease and catalogue sync
 already serializes on `app.catalogue_sync_leases`, so a single service is
 concurrency-safe. A dedicated worker is a later upgrade, not a launch
-requirement (see the migration plan §19).
+requirement (see "Upgrade path" below).
 
 **D2 — In-process scheduler, not Railway cron.** Railway cron has a
 **five-minute floor** with no minute-level precision guarantee. T15's outbox
@@ -153,9 +153,35 @@ is shorter than a runner's own 120s deadline, so a long run is still cut off at
 shutdown. That is safe rather than graceful — the outbox claims work under a
 lease which simply expires and is reclaimed — but it is not a full drain.
 
+## Operational gotchas
+
+Carried over from the step-by-step migration plan (`docs/MIGRATION/RAILWAY_BACKEND.md`,
+17 September 2026), which was executed and removed on 23 October 2026:
+
+- `postgres` is a dependency of `packages/db`, not `apps/backend`. Any attempt to prune
+  `node_modules` in the image must verify it still resolves.
+- `ADMIN_ORIGIN` must match exactly. `adminCors()` in `app.ts` compares strings; a trailing
+  slash or the wrong scheme silently breaks admin.
+- Never let the scheduler run in a preview environment. The HTTP routes guard this; the
+  scheduler must too.
+- The Sanity webhook route uses `express.raw` and is mounted _before_ `express.json`.
+  Signature verification depends on the raw body — do not reorder middleware in `app.ts`.
+- Railway cron cannot do minute-level work. Moving the outbox onto Railway cron would turn
+  the one-minute cadence into five minutes or worse; this is why D2 exists.
+- `pnpm run format` can fail on a Windows checkout over line endings alone (CRLF working
+  copy, LF in the repository); CI on Linux is authoritative.
+
+## Upgrade path — a separate worker service
+
+Not needed at launch. When job volume starts competing with request handling:
+
+1. Add a second Railway service from the same repo and image with start command
+   `node dist/src/scheduler-worker.js` and `ENABLE_SCHEDULER=1`.
+2. Set `ENABLE_SCHEDULER=0` on the web service.
+3. The outbox lease design already makes the handover safe; the runners do not change.
+
 ## References
 
-[Migration plan](../MIGRATION/RAILWAY_BACKEND.md) §3, §8–§13 ·
 [ADR 0001](0001-split-architecture.md) · [PLATFORM_CONTEXT.md](../../PLATFORM_CONTEXT.md)
 §3, §7 · [ENV](../ENV.md) · [Outbox runbook](../RUNBOOKS/outbox-jobs.md) ·
 [Catalogue sync runbook](../RUNBOOKS/catalogue-sync.md)

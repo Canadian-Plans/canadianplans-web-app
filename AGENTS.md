@@ -56,12 +56,14 @@ selectively instead of restarting the review.
 
 - [README.md](README.md): setup and verification; check package scripts and CI for
   exact current commands.
+- [docs/README.md](docs/README.md): index of every planning, reference, runbook and
+  evidence document.
 - [docs/BUILD_TASKS.md](docs/BUILD_TASKS.md): dependencies, not numerical task order.
 - [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) and
   [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md): relevant requirements
-  and design sections. Root planning files are forwarding pointers.
-- [docs/OPEN_INPUTS.md](docs/OPEN_INPUTS.md): business decisions and open questions.
-  Root [OPEN_INPUTS.md](OPEN_INPUTS.md) is an admin placeholder note; preserve both.
+  and design sections. The planning files live only under `docs/`; there are no root copies.
+- [docs/OPEN_INPUTS.md](docs/OPEN_INPUTS.md): business decisions and open questions, the
+  only such register.
 - [docs/TASK_TEMPLATE.md](docs/TASK_TEMPLATE.md): acceptance and evidence fields.
 - `docs/ADR/`, API docs, schema history and runbooks: read those affected by the task.
 
@@ -74,3 +76,5 @@ Do not invent business decisions or deploy to production.
 For site-1 Figma foundation or page implementation, also follow
 [the storefront design instructions](apps/site-1/AGENTS.md). They define page
 scope, desktop/mobile context, token/content ownership and visual verification.
+The storefront design notes, design-to-code plan and CMS reference live in
+`apps/site-1/docs/`.

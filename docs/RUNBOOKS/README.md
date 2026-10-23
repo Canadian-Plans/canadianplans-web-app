@@ -29,8 +29,3 @@ production recovery rehearsal.
 | [Release rollback](release-rollback.md) | T1 CI/Vercel setup, expanded post-Railway-cutover |
 | [Monthly cost review](monthly-cost-review.md) | T28 |
 
-## Release rollback
-
-Superseded by the full runbook: [release-rollback.md](release-rollback.md),
-covering both the Railway-hosted backend and the two Vercel-hosted
-frontends post-cutover.

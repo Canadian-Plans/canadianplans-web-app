@@ -26,7 +26,7 @@ font glyph-width differences and the existing font fallback warning remain.
 The legal note requires a Canadian lawyer to review Privacy (PIPEDA, BC PIPA,
 CASL) and Terms before launch, and replacement of all bracketed items. The exact
 placeholder checklist and implementation details are in
-[DESIGN_NOTES.md](../../../apps/site-1/DESIGN_NOTES.md).
+[DESIGN_NOTES.md](../../../apps/site-1/docs/DESIGN_NOTES.md).
 Cookie preference integration is also pending; its control truthfully says no
 preference is saved or changed in this preview.
 

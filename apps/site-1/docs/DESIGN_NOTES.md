@@ -13,7 +13,7 @@ The app now exposes format scripts alongside its existing lint/type/build script
 
 ## Ownership and use
 
-[canadian-plans.css](../../packages/ui/src/styles/canadian-plans.css) is the
+[canadian-plans.css](../../../packages/ui/src/styles/canadian-plans.css) is the
 single source for values. Its package export is
 `@canadian-plans/ui/canadian-plans.css`; the storefront stylesheet imports it
 after the shared defaults. `cp-*` theme names are additive. A future named
@@ -27,7 +27,7 @@ Use `bg-cp-blue`, `text-cp-body-m`, `rounded-cp-24`,
 The complete CSS token file includes the exact scaled mobile values as well.
 
 The font is loaded with `Google_Sans_Flex` from `next/font/google` in
-[src/lib/fonts.ts](src/lib/fonts.ts), exposing `--font-google-sans-flex` on
+[src/lib/fonts.ts](../src/lib/fonts.ts), exposing `--font-google-sans-flex` on
 the root layout. The installed Next.js definitions support this exact family
 and its variable weight, GRAD, ROND and wdth axes. Next lacks automatic fallback
 metrics for this family; the loader explicitly uses `adjustFontFallback: false`
@@ -35,7 +35,7 @@ and the token keeps a normal system fallback stack. The new theme uses GRAD 0,
 ROND 0 and wdth 100, matching the frame context. Optical sizing was not exposed
 by the Figma context and remains a visual-verification question.
 
-New typed copy/plan files belong in this app's [/content](content/site.ts),
+New typed copy/plan files belong in this app's [/content](../content/site.ts),
 using the `@content/*` alias. Only the existing brand name is populated now.
 The plan-fixture array is empty; `PreviewPlan` wraps the shared
 `WebsiteOffer` contract and requires `previewOnly: true`.
@@ -234,7 +234,7 @@ total page height is not a layout token: text and sections flow naturally.
   exports under `public/design/components/`, with no temporary URLs in code.
 - The source has internet/TV, WhatsApp, sample prices/reviews/office details and
   a simplified checkout/tracking model. The owner confirmed mobility first.
-  Follow the adaptations in [the design plan](../../docs/DESIGN_TO_CODE_PLAN.md);
+  Follow the adaptations in [the design plan](DESIGN_TO_CODE_PLAN.md);
   design content does not establish approved live business facts.
 - New design-preview forms use typed stubs; existing integrated order/tracking
   flows remain operational code. The gallery search now uses a validated stub.
@@ -281,7 +281,7 @@ from Figma's dash pattern. Source colors, width and corner geometry are retained
 All 16 downloaded SVG exports are preserved unchanged. Repeated desktop/mobile
 logo and avatar exports have identical hashes and reuse the exact same artwork.
 The placeholder variants use the original 32×32 image icons; no photograph is
-invented. The component inventory and usage are in [README.md](README.md).
+invented. The component inventory and usage are in [README.md](../README.md).
 
 Figma does not specify the mobile menu, search result, disabled/hover/focus states
 or most closed FAQ answers. The gallery supplies accessible preview states,
@@ -291,9 +291,9 @@ they are not approved live business content. Mobility-first scope still applies.
 Real search/checkout integration and other storefront pages are future named tasks.
 
 Visual and interaction evidence:
-[390 screenshot](../../docs/EVIDENCE/shared-components/components-390.png),
-[1440 screenshot](../../docs/EVIDENCE/shared-components/components-1440.png),
-[verification details](../../docs/EVIDENCE/shared-components/verification.json).
+[390 screenshot](../../../docs/EVIDENCE/shared-components/components-390.png),
+[1440 screenshot](../../../docs/EVIDENCE/shared-components/components-1440.png),
+[verification details](../../../docs/EVIDENCE/shared-components/verification.json).
 The Next.js dev indicator is hidden only during screenshot capture.
 
 ## Home — 12 October 2026
@@ -302,7 +302,7 @@ Home `/` now has an isolated `(home)` layout. Desktop `60:3` and mobile `195:2`
 were re-read with full design context and screenshots before coding, with exact
 hero, journey and internet contexts inspected separately. Original 1440/390
 Figma references and rendered full-page/section screenshots are saved in
-[Home evidence](../../docs/EVIDENCE/home/README.md).
+[Home evidence](../../../docs/EVIDENCE/home/README.md).
 
 Home composes the existing chrome, buttons, badges, image slots, plan cards,
 section heading, review cards, FAQ and price circles. No shared UI React component
@@ -348,7 +348,7 @@ The existing Google Sans Flex fallback-metrics warning remains.
 `/pre-arrival-sim` uses an isolated `(pre-arrival)` layout. Desktop `106:3`,
 mobile `207:2` and selected mobile sticky context `365:2796` were read before
 coding, including all visible child contexts and full-resolution screenshots.
-See [page evidence and remaining ambiguities](../../docs/EVIDENCE/pre-arrival/README.md).
+See [page evidence and remaining ambiguities](../../../docs/EVIDENCE/pre-arrival/README.md).
 
 New central tokens preserve the QR illustration's native fractional geometry;
 pre-arrival text/slot/card measurements; the 12/32 ink selection-bar shadow;
@@ -388,7 +388,7 @@ mobile `212:51`, and all six address results `308:3/73`, `308:38/108`,
 exports are local under `public/design/home-internet`; repeated desktop/mobile
 icons share exact verified hashes and retain native dimensions. Full source and
 implementation screenshots and browser checks are in
-[page evidence](../../docs/EVIDENCE/home-internet/README.md).
+[page evidence](../../../docs/EVIDENCE/home-internet/README.md).
 
 The existing foundation provides colours, Google Sans Flex, spacing, typography,
 1200 container and radii. Additive central tokens cover the 440 address form,
@@ -437,7 +437,7 @@ with page-only client widgets for forms, recommendations, navigation and dialogs
 screenshots were read for desktop `106:65`, mobile `214:2`, and mobile filter
 sheet `367:2760`. Source SVG exports are local under `public/design/mobile-plans`;
 desktop/mobile duplicates share exact verified hashes and native dimensions.
-[Screenshots and verification](../../docs/EVIDENCE/mobile-plans/README.md) cover
+[Screenshots and verification](../../../docs/EVIDENCE/mobile-plans/README.md) cover
 both page sizes and the bottom sheet.
 
 The page reuses the foundation palette, Google Sans Flex, 1200 container, type
@@ -489,7 +489,7 @@ Nav, with Step 0 branching to A (already in Canada) or B (newcomer/traveling),
 then converging on results. Full desktop and mobile context was read for
 `291:3/62/109`, `292:3/91/145`, `293:3/73`, and
 `305:2/64/114/201/292/349/419/492`. All source screenshots and rendered states
-are in [finder evidence](../../docs/EVIDENCE/plan-finder/README.md).
+are in [finder evidence](../../../docs/EVIDENCE/plan-finder/README.md).
 
 The root layout owns one PlanFinderProvider; the modal is loaded when opened.
 Both desktop Nav and the mobile menu launch it. The existing integrated
@@ -1209,12 +1209,12 @@ examples to checkout.
 
 All pages are noindex design previews, excluded from sitemap, with no provider
 requests or real order creation. Existing live order/tracking behavior remains
-intact. See [category review evidence](../../docs/EVIDENCE/category-review/README.md)
+intact. See [category review evidence](../../../docs/EVIDENCE/category-review/README.md)
 for source frames, verification and remaining production content/integration work.
 
 ## Design and code review — 13 October 2026
 
-The [review report](../../docs/DESIGN_CODE_REVIEW.md) covers 39 route/state cases,
+The [review report](../../../docs/EVIDENCE/audit/design-code-review-2026-10-13.md) covers 39 route/state cases,
 source verification of the Pearson FAQ, corrected single/multi-open disclosures,
 desktop/mobile category checkout handoff, focus restoration, valid navigation
 targets and removal of 49 obsolete CSS rules. Address/plan client widgets now
@@ -1340,8 +1340,8 @@ layouts and behaviour; only clashes with the new style were changed (page CSS on
 ## Page-by-page Electric Blue redesign — 15 October 2026
 
 Owner request: bring every page in line with the home page, rewrite copy for clarity and
-SEO without inventing facts. Tracker, decisions and open placeholders:
-[docs/REDESIGN_PROGRESS.md](docs/REDESIGN_PROGRESS.md).
+SEO without inventing facts. The page-by-page tracker that drove this work is merged into
+this section (it previously lived in `docs/REDESIGN_PROGRESS.md`).
 
 - **Landing kit** (`src/components/landing/*`, `src/app/landing.css`, `content/landing/*`):
   banner hero, quick answer, facts strip, steps, checklist, cards, pros/cons, data table,
@@ -1356,6 +1356,83 @@ SEO without inventing facts. Tracker, decisions and open placeholders:
   system pages: home-style headings, navy instead of ink panels, CTA band.
 - New shared React components in `@canadian-plans/ui`: none. New app components:
   `LandingPage`, `InternetLanding`, `SiteHeader`.
+
+### Tracker — decisions, status and open placeholders (15–16 October 2026)
+
+Owner decisions (15 October): rewrite titles, meta descriptions, headings and body for
+clarity and keywords, with FAQ structured data where it helps; never invent prices,
+timelines, ratings or claims, and keep bracketed/awaiting-approval placeholders visible.
+The order flow (`/plans`, `/order`, `/track`) was restyled only; submission, validation and
+tracking behaviour are unchanged. One commit per finished page on `redesign/electric-blue`
+(PR #15). Visual reference is the home page (`src/components/home/redesign/*`), not Figma,
+the exception the owner approved on 14 October. All pages stayed `noindex` during the work.
+
+Per-page routine: screenshot before (390 + 1440); rebuild on the landing kit and rewrite
+copy in `content/`; typecheck, lint, format, unit tests and the page verify script or e2e;
+screenshot after and check for horizontal scroll at 320; update the tracker, commit, push.
+Verification used a production build (`pnpm build && npx next start --port 3127`) because
+the dev server's HMR websocket did not work in the cloud container; `verify-landing.mjs`
+checks one h1, no horizontal scroll at 320/390/1440, in-page anchors, JSON-LD without
+pending answers, axe serious/critical findings and page errors, saving captures to
+`docs/EVIDENCE/landing/`.
+
+Status: all nineteen page groups are **done** — the seven SEO landing pages (students,
+from-india, rogers, toronto-pearson, rogers-vs-fido, ontario, vancouver; old
+category-sim/rogers/airport-compare/internet route groups removed), `/about`, `/contact`,
+`/faq` (10 answers filled from existing site copy), `/guides` and `/guides/[slug]`,
+`/order/pre-arrival` and `/order/home-internet` (already matched; minimal checkout header
+kept on purpose), `/track-order`, the `/plans`, `/order` and `/track` layout restyle,
+`/privacy` and `/terms` (chrome and headings only; legal wording untouched),
+`/accessibility`, `/search` and 404, and the polish pass on `/pre-arrival-sim`,
+`/home-internet`, `/mobile-plans` and `/business-internet`.
+
+Final audit (15 October): production build, 28 routes × 320/390/1440 — one h1, no
+horizontal scroll, no broken in-page anchors, no serious/critical axe findings, no page
+errors; all 23 internal link targets returned 200. Not run in that environment:
+`order.spec.ts` and `a2-launch-gates.spec.ts` (Postgres e2e harness). The pre-redesign
+scripts `verify-home.mjs`, `verify-pre-arrival.mjs`, `verify-home-internet.mjs` and
+`verify-mobile-plans.mjs` were stale (old h1 text and removed classes) and need rewriting
+or retiring.
+
+Spacing pass (16 October): the owner found pages congested, so section rhythm moved into
+tokens in `canadian-plans.css` (`--cp-rd-section-space`, `--cp-page-top-gap`,
+`--cp-cat-intro-gap`, `--cp-rd-catsec-inner-gap`, `--cp-landing-heading-gap`) and the
+page/landing gaps were raised (category 6→7.5rem, landing sections 5→7rem; smaller steps
+when stacked). Contact and FAQ sections gained room. The full audit stayed clean.
+
+Content placeholders and owner questions recorded at the end of the redesign (16 October).
+Later owner decisions in `docs/OPEN_INPUTS.md` (22 October: WhatsApp, provider naming,
+guide author, pre-arrival SIM type, contact forms) and the plan tables in
+`docs/LAUNCH_PLANS.md` resolve several of them; check those two files before acting:
+
+- Home header still linked "Pre-arrival SIM" / "Mobile Plans" to `#popular-plans`
+  (`scaffold.spec.ts` expected it); the footer moved to the site footer.
+- "Track order" goes to `/track` (real tracker); `/track-order` is the design preview.
+- FAQ: ten answers came from facts on other pages (`answerStatus: 'site'`). Still pending:
+  English support, activation time, data limit, changing an order, missing documents,
+  cancel/refund (no refund policy — owner wording needed).
+- Guides index lists only written guides; first-week checklist, Brampton internet, calling
+  home, eSIM vs physical SIM and no-credit plans are unwritten.
+- About: shop location, hours and the "no markup" claim are owner-supplied preview copy.
+- Students: FAQ answers on student discount, flight date changes and parents paying await
+  approved content; the old star rating and named testimonials were dropped as unverified.
+- From India: answers on parents ordering, number before visa approval and Hindi/Punjabi
+  support await approved content.
+- Rogers: plans and brand table come from the `/mobile-plans` preview data; real Rogers
+  offers were still needed; the unconfirmed "number transfer usually the same day" claim
+  was dropped.
+- Rogers vs Fido compares the site's own preview plans; topic widened from "prepaid" to
+  Rogers vs Fido overall.
+- Toronto Pearson: four FAQ answers (WiFi to activate, flight changes, family orders, other
+  airports) await approved content.
+- Footer: TV bundles and Surrey/Toronto internet links removed (no such pages; TV later).
+- Vancouver/Ontario: neighbourhood speeds, city prices and install times are preview
+  examples shown as "typical"; the TV-bundle FAQ was removed; basement-suite and moving
+  FAQs await approved answers.
+- Removed 15 October: unused `public/design/category-*` assets and their 136 `--cp-cat*`
+  tokens.
+- Pre-arrival plans (16 October) matched the owner's partner offer at the time; prices change
+  often, and `docs/LAUNCH_PLANS.md` is now the confirmed source.
 
 ## Final homepage design pass — 16 October 2026
 

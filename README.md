@@ -1,45 +1,61 @@
 # Canadian Plans
 
-T1–T5 provide the monorepo, backend/admin/site-1 shells, restricted tenant database foundation, and staff authentication/authorization layer. Operational order data remains later work; this is not yet a production-ready platform.
+Canadian Plans sells Canadian telecom plans — pre-arrival eSIM, bring-your-own-device
+mobile, and home internet and TV by province — to people moving to or living in Canada.
+This is the one pnpm monorepo for the whole platform: an Express backend that is the only
+database client, a Next.js staff admin, and the Canadian Plans storefront (`site-1`).
+The backend runs on Railway; admin and the storefront run on Vercel; Postgres and Auth are
+Supabase. The owner is the only person who deploys to production.
 
-## Read the project context
+## Start here
 
-Start with [PLATFORM_CONTEXT.md](PLATFORM_CONTEXT.md), then [Build Tasks](docs/BUILD_TASKS.md). The canonical detailed planning files currently live under `docs/`; root forwarding files preserve the paths in existing task prompts without duplicating their contents.
-
-- [Requirements](docs/REQUIREMENTS.md)
-- [Implementation Plan](docs/IMPLEMENTATION_PLAN.md)
-- [Owner Playbook](docs/OWNER_PLAYBOOK.md)
-- [Business inputs and confirmed decisions](docs/OPEN_INPUTS.md)
-- [Admin workspace placeholder note](OPEN_INPUTS.md)
-- [Reviewed baseline](docs/ADR/0000-reviewed-planning-baseline.md)
-
-Both existing OPEN_INPUTS files and ADR 0000 are preserved. Use the detailed business register under `docs/` for real business decisions.
-
-## AI sessions
-
-[AGENTS.md](AGENTS.md) is the shared startup entry point. It requires the platform
-context and [project workflow skill](.agents/skills/project-workflow/SKILL.md), then
-only task-relevant documents. CLAUDE.md points to the same instructions.
+- [PLATFORM_CONTEXT.md](PLATFORM_CONTEXT.md) — what the business is, the architecture and
+  the non-negotiable invariants. Read it in full before changing anything.
+- [AGENTS.md](AGENTS.md) — how AI sessions work in this repository; `CLAUDE.md` points here.
+- [docs/README.md](docs/README.md) — index of every planning, reference, runbook and
+  evidence document.
 
 For an AI tool that does not load AGENTS.md automatically, start with:
 
 > Read AGENTS.md and follow its startup reading order. My task is: …
 
-The AI needs repository access to read these files. Keep workflow changes in the
-shared guide instead of maintaining separate copies for each model.
+## Repository layout
+
+| Path                     | What it is                                                                                                       |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| `apps/backend`           | Express + strict TypeScript API; the only database client. Docker image on Railway. See [its README](apps/backend/README.md). |
+| `apps/admin`             | Next.js staff console (orders, partners, finance, settings). Backend API client only. [README](apps/admin/README.md) |
+| `apps/site-1`            | Next.js storefront for Canadian Plans. [README](apps/site-1/README.md), design and CMS docs in `apps/site-1/docs/`. |
+| `packages/contracts`     | Zod request/response schemas, typed API client, OpenAPI generator, browser-safe CMS schema types.                |
+| `packages/db`            | Drizzle schema, migrations and the tenant transaction helper. Imported only by the backend.                      |
+| `packages/adapters`      | Server-only provider adapters (R2, Resend, Sentry-style tracker, alerts, analytics, static catalogue).          |
+| `packages/ui`            | Shared shadcn-based primitives and the Canadian Plans design tokens.                                            |
+| `packages/types`         | Shared domain TypeScript types.                                                                                   |
+| `packages/observability` | Browser-safe log-record builder and PII scrubber shared by every app.                                           |
+| `packages/config`        | Shared tsconfig, ESLint (including the DB import-boundary rule), Prettier, Vitest and Playwright presets.        |
+| `jobs`                   | Outbox handlers run by the backend scheduler, plus the offline backup, restore, retention and monitor CLIs.      |
+| `scripts`                | Repo tooling: affected builds, preview-isolation check, B2 writer provisioning, recovery spike.                  |
+| `docs`                   | Planning, reference, ADRs, runbooks, legal texts and evidence. Indexed in [docs/README.md](docs/README.md).      |
+| `.github/workflows`      | CI (never deploys) and the backup, backup-monitor and backup-retention jobs.                                     |
 
 ## Local development
 
-Use Node **22.19.0** and pnpm **9.15.0**. Dependency versions are pinned in manifests, the pnpm catalog and lockfile.
+Use Node **22.19.0** and pnpm **9.15.0**. Dependency versions are pinned in manifests, the
+pnpm catalog and the lockfile.
 
 ```sh
 pnpm install --frozen-lockfile
 pnpm --filter backend dev
 pnpm --filter admin dev
+pnpm --filter site-1 dev
 DB_SEED_ALLOW_SYNTHETIC=1 pnpm --filter @canadian-plans/db db:seed   # local disposable DB only
 ```
 
-The backend listens on port 4000; admin defaults to 3000. The health endpoint needs no credentials. Staff routes require the Supabase Auth and restricted database variables documented in [docs/ENV.md](docs/ENV.md). The admin starts at `/login`; authenticated workspace routes begin at `/w/site-1/orders`.
+The backend listens on port 4000, admin on 3000 and the storefront on 3001. The health
+endpoint needs no credentials. Everything else needs the variables documented in
+[docs/ENV.md](docs/ENV.md) (names only; values live in the password manager and the
+deployment platforms). The admin starts at `/login`; authenticated workspace routes begin at
+`/w/site-1/orders`.
 
 ## Verification
 
@@ -54,24 +70,24 @@ pnpm --filter admin exec playwright install chromium
 pnpm run test:e2e
 ```
 
-Playwright starts the production admin build on port 3100. Set `CAPTURE_SCREENSHOTS=1` when running it to refresh the seven desktop and seven mobile screenshots under `docs/EVIDENCE/T2-screenshots`.
+`test:e2e` runs the admin shell checks, the site-1 browser suite, the site-1 security suite
+(production builds with analytics on and off, plus a synthetic-credential bundle scan) and
+the admin order-journey tests against the real backend harness. Playwright starts the
+production admin build on port 3100; set `CAPTURE_SCREENSHOTS=1` to refresh the screenshots
+under `docs/EVIDENCE/T2-screenshots`.
 
-`pnpm run build:affected` selects applications through workspace dependencies using `BASE_SHA`; without a valid baseline it builds all applications. Vercel uses the same selector with `VERCEL_GIT_PREVIOUS_SHA`, anchored to the repository root. CI never deploys; the owner selects production releases.
+`pnpm run build:affected` selects applications through workspace dependencies using
+`BASE_SHA`; without a valid baseline it builds everything. Vercel uses the same selector with
+`VERCEL_GIT_PREVIOUS_SHA`, anchored to the repository root. CI never deploys; the owner
+selects production releases ([release runbook](docs/RUNBOOKS/release-rollback.md)).
 
-See [T1/T2 review evidence](docs/EVIDENCE/T1-T2-review.md) for findings, fixes, test output and screenshot links.
+## Dependency notes
 
-T3 adds the [site-1 scaffold](apps/site-1/README.md), served locally on port 3001.
-Its security suite runs production builds and browser tests with analytics enabled
-and disabled, including a synthetic-credential bundle scan. The root `test:e2e`
-command includes this suite after admin. Sanity project connection remains T9;
-sites 2 and 3 remain Phase B.
-
-Dependency maintenance keeps Sanity 6.20.0 and tsup 9 on the pinned Node 22.19.0
-runtime. Two overrides are limited to their reviewed callers:
-`@esbuild-kit/core-utils@3.3.2` uses esbuild 0.25.12 for the legacy Drizzle
-transform loader, and `typeid-js@1.2.0` uses UUID 11.1.1 for Sanity CLI type IDs.
-`pnpm test:tooling` exercises their real CJS/ESM APIs, source maps, imports,
-UUID generation and buffer validation. Reassess these pins when their parents
-change; the CLI's skills pin is 1.5.9 to satisfy its declared range on Node 22.
-The dependency audit still reports unpatched upstream `braces` and `sprintf-js`
-advisories; passing application checks does not remove those advisories.
+Sanity 6.20.0 and tsup 9 are kept on the pinned Node 22.19.0 runtime. Two overrides are
+limited to their reviewed callers: `@esbuild-kit/core-utils@3.3.2` uses esbuild 0.25.12 for
+the legacy Drizzle transform loader, and `typeid-js@1.2.0` uses UUID 11.1.1 for Sanity CLI
+type IDs. `pnpm test:tooling` exercises their real CJS/ESM APIs, source maps, imports, UUID
+generation and buffer validation. Reassess these pins when their parents change; the Sanity
+CLI's `skills` pin is 1.5.9 to satisfy its declared range on Node 22. The dependency audit
+still reports unpatched upstream `braces` and `sprintf-js` advisories; passing application
+checks does not remove those advisories.

@@ -152,8 +152,8 @@ shared UI package and scoped to the storefront; validated CMS brand settings
 may override the approved settings through semantic variables. The Figma font
 is Google Sans Flex, so the earlier assumption that every frontend uses Inter
 is superseded for Canadian Plans. The token/font foundation is implemented;
-see [design notes](../../apps/site-1/DESIGN_NOTES.md). Page design previews are
+see [design notes](../../apps/site-1/docs/DESIGN_NOTES.md). Page design previews are
 implemented; CMS and live service integration remain separate work.
 
-See the [design-to-code plan](../DESIGN_TO_CODE_PLAN.md) for the frame map,
+See the [design-to-code plan](../../apps/site-1/docs/DESIGN_TO_CODE_PLAN.md) for the frame map,
 component reuse, content boundaries and visual verification gates.

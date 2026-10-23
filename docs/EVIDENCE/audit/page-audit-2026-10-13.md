@@ -1,6 +1,6 @@
 # Canadian Plans page audit — 13 October 2026
 
-The later [design and code review](DESIGN_CODE_REVIEW.md) expands browser
+The later [design and code review](design-code-review-2026-10-13.md) expands browser
 coverage to 39 route/state cases and records subsequent fixes and payload
 measurements. The performance results below describe this earlier audit.
 
@@ -77,23 +77,23 @@ around the existing editor.
 
 ## Evidence and method
 
-[Page screenshots and browser results](EVIDENCE/audit/final/pages.json) contain
+[Page screenshots and browser results](final/pages.json) contain
 64 captures, heading sequences, initial keyboard focus paths, image checks,
 metadata, landmarks, runtime errors, overflow and axe WCAG 2/2.1/2.2 AA plus
 best-practice results. Final captures have zero automated violations, no heading
 level jumps, one page H1 and no horizontal document overflow. Email iframe HTML
-has additional separate checks in [email evidence](EVIDENCE/emails/verification.json).
+has additional separate checks in [email evidence](../emails/verification.json).
 All 479 visible web image instances across these captures are loaded Next images.
 Automated checks and the focused interaction cases are not a complete assistive
 technology or WCAG certification.
 
-[Focus screenshots and measured contrast](EVIDENCE/audit/final/focus/results.json)
+[Focus screenshots and measured contrast](final/focus/results.json)
 cover representative light/inverse surfaces. Existing page verifiers additionally
 cover menus, focus traps/return, both finder branches, filters, tabs, carousels,
 disclosures, form error focus/retry, order refresh recovery, postal result states,
 tracking fixtures, legal contents and consent persistence/withdrawal.
 
-[Raw Figma pixel diffs](EVIDENCE/audit/final/diffs/summary.json) compare unscaled
+[Raw Figma pixel diffs](final/diffs/summary.json) compare unscaled
 reference PNGs with current full-page captures. Threshold 0.2, antialiasing excluded;
 there is no alignment, masking or automatic pass threshold. Differences include
 font rasterization, required preview notices, accessibility changes and state
@@ -120,7 +120,7 @@ These are laboratory measurements of the local production build and fixture
 states, not production field Web Vitals or a live backend/CMS load test.
 Earlier concurrent and intermediate runs are retained as diagnostic evidence;
 use `audit/final-verified/lighthouse` for the final performance gate.
-[Initial consent without application scripts](EVIDENCE/audit/final/consent-initial/results.json)
+[Initial consent without application scripts](final/consent-initial/results.json)
 separately verifies the early banner behavior.
 
 ## Open questions and remaining review
