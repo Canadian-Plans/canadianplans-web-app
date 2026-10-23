@@ -37,8 +37,8 @@ get/delete method at all); the retention workflow's credential is separate
 and adds delete; the monitor's credential is separate again and is read-only.
 See docs/EVIDENCE/A4-restore.md for what has and has not been proven with
 this tooling so far, and for the exact remaining steps to close the
-production gate (provisioning real secrets, pinning `supabase/setup-cli` to a
-verified SHA, and running against real B2/Supabase/Sanity/`age`).
+production gate (provisioning real secrets and running against real
+B2/Supabase/Sanity/`age`).
 
 ## Required access and material
 
@@ -50,8 +50,8 @@ verified SHA, and running against real B2/Supabase/Sanity/`age`).
   `BACKUP_LEASE_DATABASE_URL` (only `app.backup_leases`). Set each password
   in the SQL editor with `ALTER ROLE ... PASSWORD`. If the migration warned that
   it could not grant `BYPASSRLS` or `pg_read_all_data`, grant them as an
-  administrator. Before switching the secret, run the five `supabase db dump`
-  commands below as `backup_reader` and confirm each finishes with data.
+  administrator. Before switching the secret, confirm a backup run as
+  `backup_reader` finishes with data.
 - A read-only Cloudflare R2 token scoped to each source bucket.
 - A Sanity export token and a separate import token scoped to an isolated target
   project/dataset.
@@ -89,7 +89,16 @@ shell variables as placeholders; secrets remain in the runner secret store.
 ### Supabase database and Auth
 
 Use the source project's session-pooler or direct connection on port 5432, not
-the transaction pooler on 6543. The supported Supabase CLI backup sequence is:
+the transaction pooler on 6543.
+
+The scheduled backup (`jobs/src/backup/pg-dump.ts`, since 23 Oct 2026) runs the
+same five dumps with PostgreSQL 17's `pg_dumpall`/`pg_dump` directly, copying
+the Supabase CLI's flags, schema lists and output filters, but without the
+CLI's hard-coded `--role "postgres"`: the read-only `backup_reader` login is
+deliberately not allowed to switch to the owner role. The files it writes
+(`roles.sql`, `schema.sql`, `data.sql`, `history_schema.sql`,
+`history_data.sql`) load exactly like the CLI's. An owner taking a manual dump
+with the `postgres` login can still use the Supabase CLI sequence:
 
 ```sh
 supabase --version

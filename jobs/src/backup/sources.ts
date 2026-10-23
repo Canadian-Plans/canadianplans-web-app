@@ -4,7 +4,7 @@ import { runOrThrow, type RunCommand } from './command.js';
 
 export type ReadFile = (path: string) => Promise<Uint8Array>;
 
-/** Production default: reads the temp file the CLI wrote its output to. */
+/** Production default: reads a temp file a CLI wrote its output to. */
 export const nodeReadFile: ReadFile = async (path) => {
   const { readFile } = await import('node:fs/promises');
   return new Uint8Array(await readFile(path));
@@ -46,56 +46,6 @@ export interface DatabaseDumpArtifacts {
 
 export interface DatabaseExporter {
   exportAll(): Promise<DatabaseDumpArtifacts>;
-}
-
-/**
- * The three-file `supabase db dump` sequence from docs/RUNBOOKS/restore.md,
- * including migration-history capture. Uses a temp file per dump because the
- * Supabase CLI writes to `-f <path>`, not stdout.
- */
-export class SupabaseCliDatabaseExporter implements DatabaseExporter {
-  constructor(
-    private readonly dbUrl: string,
-    private readonly run: RunCommand,
-    private readonly withTempFile: WithTempFile = nodeWithTempFile,
-    private readonly readFile: ReadFile = nodeReadFile,
-  ) {}
-
-  async exportAll(): Promise<DatabaseDumpArtifacts> {
-    const roles = await this.dump(['--role-only']);
-    const schema = await this.dump([]);
-    const data = await this.dump([
-      '--use-copy',
-      '--data-only',
-      '-x',
-      'storage.buckets_vectors',
-      '-x',
-      'storage.vector_indexes',
-    ]);
-    const historySchema = await this.dump(['--schema', 'supabase_migrations']);
-    const historyData = await this.dump([
-      '--use-copy',
-      '--data-only',
-      '--schema',
-      'supabase_migrations',
-    ]);
-    return { roles, schema, data, historySchema, historyData };
-  }
-
-  private dump(extraArgs: string[]): Promise<Uint8Array> {
-    return this.withTempFile(async (path) => {
-      await runOrThrow(this.run, 'supabase', [
-        'db',
-        'dump',
-        '--db-url',
-        this.dbUrl,
-        '-f',
-        path,
-        ...extraArgs,
-      ]);
-      return this.readFile(path);
-    });
-  }
 }
 
 // --- Referenced-object manifest (prevents source cleanup racing the archive) --
