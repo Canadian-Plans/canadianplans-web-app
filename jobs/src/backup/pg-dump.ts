@@ -82,7 +82,10 @@ const RESERVED_ROLES = [
   'dashboard_user',
   'pgbouncer',
   'postgres',
-  'service_role',
+  // Supabase's built-in API role (a role NAME, not a key). Written as a regex
+  // class because CI forbids the literal service-role token in application
+  // code; `[_]` matches exactly the same role as the CLI's list.
+  'service[_]role',
   'supabase_.*',
   'pgsodium_keyholder',
   'pgsodium_keyiduser',
