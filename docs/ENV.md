@@ -265,6 +265,9 @@ exact commands are in [restore.md](RUNBOOKS/restore.md)):
   source), optional `BACKUP_SANITY_PROJECT_ID` / `BACKUP_SANITY_AUTH_TOKEN`,
   `RECOVERY_AGE_RECIPIENT` (public key only), `B2_ARCHIVE_ENDPOINT`, `B2_ARCHIVE_REGION`,
   `B2_ARCHIVE_BUCKET`, `B2_ARCHIVE_WRITER_KEY_ID`, `B2_ARCHIVE_WRITER_APPLICATION_KEY`.
+  Optional `BACKUP_MAX_SNAPSHOT_BYTES` overrides the 2 GiB in-memory snapshot guard
+  (PERF-03); a run above it fails with `backup_snapshot_too_large_for_runner`
+  before copying anything, and the missing heartbeat raises the usual alert.
 - **backup-monitor** (read-only): `B2_ARCHIVE_READER_KEY_ID`,
   `B2_ARCHIVE_READER_APPLICATION_KEY`, `B2_ARCHIVE_ENDPOINT`, `B2_ARCHIVE_REGION`,
   `B2_ARCHIVE_BUCKET`, plus the owner-alert `OWNER_ALERT_*` / `RESEND_*` values.
