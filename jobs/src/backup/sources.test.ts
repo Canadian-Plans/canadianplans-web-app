@@ -6,7 +6,6 @@ import {
   PsqlReferencedObjectManifestSource,
   S3R2SourceReader,
   SanityCliExporter,
-  SupabaseCliDatabaseExporter,
   type ReadFile,
   type WithTempFile,
 } from './sources.js';
@@ -18,56 +17,6 @@ const inMemoryTempFile: WithTempFile = async (fn) => fn('/tmp/fake-path');
 function fakeReadFile(bytes: Uint8Array): ReadFile {
   return async () => bytes;
 }
-
-describe('SupabaseCliDatabaseExporter', () => {
-  it('dumps roles, schema, data and migration history via the runbook sequence', async () => {
-    const calls: string[][] = [];
-    const run: RunCommand = async (command, args) => {
-      calls.push([command, ...args]);
-      return { stdout: new Uint8Array(), stderr: '', exitCode: 0 };
-    };
-    const bytes = new TextEncoder().encode('dump-bytes');
-    const exporter = new SupabaseCliDatabaseExporter(
-      'postgres://source/db',
-      run,
-      inMemoryTempFile,
-      fakeReadFile(bytes),
-    );
-    const result = await exporter.exportAll();
-    expect(result.roles).toEqual(bytes);
-    expect(result.schema).toEqual(bytes);
-    expect(result.data).toEqual(bytes);
-    expect(result.historySchema).toEqual(bytes);
-    expect(result.historyData).toEqual(bytes);
-    expect(calls).toHaveLength(5);
-    expect(calls[0]).toEqual([
-      'supabase',
-      'db',
-      'dump',
-      '--db-url',
-      'postgres://source/db',
-      '-f',
-      '/tmp/fake-path',
-      '--role-only',
-    ]);
-    expect(calls[2]!.join(' ')).toContain('--use-copy --data-only');
-  });
-
-  it('throws when the CLI exits non-zero', async () => {
-    const failing: RunCommand = async () => ({
-      stdout: new Uint8Array(),
-      stderr: 'connection refused',
-      exitCode: 1,
-    });
-    const exporter = new SupabaseCliDatabaseExporter(
-      'postgres://source/db',
-      failing,
-      inMemoryTempFile,
-      fakeReadFile(new Uint8Array()),
-    );
-    await expect(exporter.exportAll()).rejects.toThrow(/supabase_failed/);
-  });
-});
 
 describe('PsqlReferencedObjectManifestSource', () => {
   it('parses tab-separated rows into referenced objects', async () => {

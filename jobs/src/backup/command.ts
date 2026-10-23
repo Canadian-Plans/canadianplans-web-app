@@ -49,14 +49,35 @@ export const nodeRunCommand: RunCommand = (command, args, options = {}) =>
     else child.stdin.end();
   });
 
+/** Docker image-pull progress the Supabase CLI prints before its real error. */
+const PULL_PROGRESS =
+  /^(?:[0-9a-f]{12}: |Digest: |Status: |[\w.-]+: Pulling from |Retrying after |Dumping roles from )/;
+
+/**
+ * The part of a tool's stderr worth logging: progress lines dropped, any
+ * connection string's password blanked, and the END kept, because the cause
+ * comes last (the first 200 characters of a `supabase db dump` failure were
+ * only image-pull progress on 23 Oct 2026).
+ */
+export function stderrExcerpt(stderr: string, max = 400): string {
+  const meaningful = stderr
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line && !PULL_PROGRESS.test(line))
+    .join('\n')
+    .replace(/(postgres(?:ql)?:\/\/[^:\s/@]+:)[^@\s]+@/gi, '$1[redacted]@')
+    .replace(/(password=)\S+/gi, '$1[redacted]');
+  return meaningful.length > max ? `…${meaningful.slice(-max)}` : meaningful;
+}
+
 /** Raised when a required provider command exits non-zero or errors. */
 export class CommandFailedError extends Error {
   constructor(
     readonly command: string,
     readonly exitCode: number,
-    stderrExcerpt: string,
+    stderr: string,
   ) {
-    super(`${command}_failed:${exitCode}:${stderrExcerpt.slice(0, 200)}`);
+    super(`${command}_failed:${exitCode}:${stderrExcerpt(stderr)}`);
     this.name = 'CommandFailedError';
   }
 }

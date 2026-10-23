@@ -71,7 +71,6 @@ export {
   PsqlReferencedObjectManifestSource,
   S3R2SourceReader,
   SanityCliExporter,
-  SupabaseCliDatabaseExporter,
   nodeReadFile,
   nodeWithTempFile,
   presignR2SourceGet,
@@ -85,3 +84,12 @@ export {
   type SanityExporter,
   type WithTempFile,
 } from './sources.js';
+
+export {
+  DATA_EXCLUDED_SCHEMAS,
+  INTERNAL_SCHEMAS,
+  PgDumpDatabaseExporter,
+  filterData,
+  filterRoles,
+  filterSchema,
+} from './pg-dump.js';

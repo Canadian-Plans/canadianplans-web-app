@@ -5,12 +5,12 @@ import { S3ArchiveWriter } from './archive-store.js';
 import { nodeRunCommand } from './command.js';
 import { AgeCliEncryptor } from './encryptor.js';
 import { PgBackupLease } from './lease.js';
+import { PgDumpDatabaseExporter } from './pg-dump.js';
 import { createBackupRunId, runBackup } from './run.js';
 import {
   PsqlReferencedObjectManifestSource,
   S3R2SourceReader,
   SanityCliExporter,
-  SupabaseCliDatabaseExporter,
 } from './sources.js';
 
 /**
@@ -79,7 +79,9 @@ async function main(): Promise<void> {
     encryptor: new AgeCliEncryptor(ageRecipient, nodeRunCommand),
     archiveWriter,
     lease: new PgBackupLease(leaseDbUrl, nodeRunCommand),
-    database: new SupabaseCliDatabaseExporter(sourceDbUrl, nodeRunCommand),
+    // Direct pg_dump/pg_dumpall: the Supabase CLI hard-codes SET ROLE postgres,
+    // which the read-only backup_reader login is not allowed to do.
+    database: new PgDumpDatabaseExporter(sourceDbUrl, nodeRunCommand),
     referencedObjects: new PsqlReferencedObjectManifestSource(sourceDbUrl, nodeRunCommand),
     // Phase A has exactly one website/bucket; Phase B's per-site buckets need
     // a bucket→credentials map here before website 2/3 onboard (REQ 45).
@@ -99,7 +101,7 @@ async function main(): Promise<void> {
     // Recorded by the workflow from the installed binaries; never a placeholder.
     toolVersions: {
       age: process.env.AGE_VERSION?.trim() || 'unknown',
-      supabaseCli: process.env.SUPABASE_CLI_VERSION?.trim() || 'unknown',
+      pgDump: process.env.PG_DUMP_VERSION?.trim() || 'unknown',
     },
   });
 

@@ -38,25 +38,26 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y age
           age --version
-      - name: Install Supabase CLI (db dump)
-        # Pinned to a commit like every other action here (invariant 13): this
-        # job holds production read credentials, so a mutable tag or a
-        # "latest" binary must never choose what runs. Bump both deliberately
-        # and re-run the restore rehearsal with the new CLI version.
-        uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
-        with:
-          version: 2.121.0
-      - name: Install PostgreSQL client tools (psql, for the referenced-object manifest and lease)
-        run: sudo apt-get install -y postgresql-client
+      - name: Install PostgreSQL 17 client tools (pg_dump, pg_dumpall, psql)
+        # The database dump runs pg_dump/pg_dumpall directly (jobs/src/backup/pg-dump.ts):
+        # the Supabase CLI hard-codes SET ROLE postgres, which the read-only
+        # backup_reader login is deliberately not allowed to do. pg_dump must be at
+        # least the server's major version (17), and Ubuntu 24.04 ships 16, so the
+        # client comes from the PostgreSQL project's own apt repository.
+        run: |
+          sudo apt-get install -y postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y postgresql-client-17
+          echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
       - name: Record the tool versions this run was taken with (for the manifest)
         run: |
           echo "AGE_VERSION=$(age --version 2>&1 | head -n 1)" >> "$GITHUB_ENV"
-          echo "SUPABASE_CLI_VERSION=$(supabase --version 2>&1 | head -n 1)" >> "$GITHUB_ENV"
+          echo "PG_DUMP_VERSION=$(pg_dump --version 2>&1 | head -n 1)" >> "$GITHUB_ENV"
       - name: Run the independent daily backup
         env:
           # Real tool versions recorded in every manifest so a restore can match them.
           AGE_VERSION: ${{ env.AGE_VERSION }}
-          SUPABASE_CLI_VERSION: ${{ env.SUPABASE_CLI_VERSION }}
+          PG_DUMP_VERSION: ${{ env.PG_DUMP_VERSION }}
           # Read/export source credentials (never delete-capable).
           SOURCE_DATABASE_URL: ${{ secrets.BACKUP_SOURCE_DATABASE_URL }}
           BACKUP_LEASE_DATABASE_URL: ${{ secrets.BACKUP_LEASE_DATABASE_URL }}
