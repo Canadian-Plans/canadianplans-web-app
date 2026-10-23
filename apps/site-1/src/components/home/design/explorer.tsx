@@ -6,7 +6,6 @@ import {
 } from '@content/home-redesign';
 import { FinderLink } from '@/components/shared/finder-link';
 import { HomeArt } from './art';
-import { HomeExplorerNav } from './explorer-nav';
 
 const sectionId = (key: CategoryKey) => `cat-${key}`;
 
@@ -152,10 +151,13 @@ function CategoryBlock({ category }: { category: RedesignCategory }) {
   );
 }
 
-/** "Discover everything we offer." — sticky category nav beside four category blocks. */
+/**
+ * Four full-width category blocks under one heading. The sticky category nav and the
+ * "Who am I buying from?" card beside them were removed on the owner's request
+ * (23 October 2026); that answer lives in the homepage FAQ and on /about.
+ */
 export function HomeExplorer() {
   const e = homeRedesign.explorer;
-  const navItems = homeRedesign.categories.map((c) => ({ id: sectionId(c.key), label: c.nav }));
   return (
     <section className="cp-hd-section cp-hd-explorer" aria-labelledby="explorer-title">
       <div className="cp-hd-inner">
@@ -163,16 +165,6 @@ export function HomeExplorer() {
           {e.title}
         </h2>
         <div className="cp-hd-explorer-layout">
-          <aside className="cp-hd-explorer-aside">
-            <HomeExplorerNav items={navItems} label={e.navLabel} />
-            <div className="cp-hd-catinfo">
-              <strong>{e.info.title}</strong>
-              <span>{e.info.body}</span>
-              <a className="cp-hd-btn cp-hd-btn-sm cp-hd-btn-outline" href={e.info.href}>
-                {e.info.action}
-              </a>
-            </div>
-          </aside>
           <div className="cp-hd-catcol">
             {homeRedesign.categories.map((category) => (
               <CategoryBlock key={category.key} category={category} />

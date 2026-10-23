@@ -426,13 +426,6 @@ export const homeRedesign = {
   },
   explorer: {
     title: 'Everything a newcomer needs to get connected in Canada.',
-    navLabel: 'Service categories',
-    info: {
-      title: 'Who am I buying from?',
-      body: 'Your plan is a real account in your name. For eSIM plans you order before you arrive, that account is with Rogers, Fido or Chatr. For home internet and mobile, your advisor confirms the provider before anything is set up. Canadian Plans is the authorized reseller or sales agent that sets it up and stays your contact. We charge you nothing for that.',
-      action: 'How buying through us works',
-      href: '/about',
-    },
     help: {
       lead: 'Not sure which plan fits?',
       links: [
