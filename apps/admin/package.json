@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "test:e2e:orders": "node scripts/test-e2e-orders.mjs",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"

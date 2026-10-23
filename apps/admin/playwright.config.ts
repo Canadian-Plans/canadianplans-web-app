@@ -4,6 +4,9 @@ import { basePlaywrightConfig } from '@canadian-plans/config/playwright.base';
 export default defineConfig({
   ...basePlaywrightConfig,
   testDir: './e2e',
+  // The order journeys need the backend harness and the e2e build; they run
+  // from playwright.orders.config.ts (pnpm --filter admin test:e2e:orders).
+  testIgnore: ['orders.spec.ts'],
   workers: 1,
   use: {
     ...basePlaywrightConfig.use,

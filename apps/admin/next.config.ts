@@ -61,8 +61,19 @@ function buildCsp(): string {
     .join('; ');
 }
 
+// CQ-01: the browser-test session seam must never reach a deployment.
+if (process.env.NEXT_PUBLIC_E2E_STAFF_BEARER && (process.env.VERCEL || process.env.VERCEL_ENV)) {
+  throw new Error('NEXT_PUBLIC_E2E_STAFF_BEARER is for the local/CI e2e build only');
+}
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // The e2e build (scripts/test-e2e-orders.mjs) writes to its own folder so it
+  // never replaces the normal build the shell journeys test.
+  distDir: process.env.ADMIN_DIST_DIR || '.next',
+  // Always inlined, as '' when unset, so a normal build compiles the seam out
+  // entirely instead of leaving a runtime lookup behind.
+  env: { NEXT_PUBLIC_E2E_STAFF_BEARER: process.env.NEXT_PUBLIC_E2E_STAFF_BEARER ?? '' },
   transpilePackages: ['@canadian-plans/contracts', '@canadian-plans/types', '@canadian-plans/ui'],
   async headers() {
     return [
