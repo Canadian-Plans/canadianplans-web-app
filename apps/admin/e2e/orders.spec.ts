@@ -98,9 +98,11 @@ test('a stale tab is told the order changed and can reload it', async ({ page, c
 
   // The second tab still holds the old version; the backend must refuse it.
   await stale.getByRole('button', { name: 'Move to In progress' }).click();
-  const alert = stale.getByRole('alert');
-  await expect(alert).toBeVisible();
-  await alert.getByRole('button', { name: 'Reload order' }).click();
+  // Other alerts exist on the page (Next's route announcer, and the harness has
+  // no document storage), so pick the conflict alert by its reload action.
+  const reload = stale.getByRole('alert').getByRole('button', { name: 'Reload order' });
+  await expect(reload).toBeVisible();
+  await reload.click();
   await expect(statusBadge(stale, order.reference)).toHaveText('in_progress');
-  await expect(stale.getByRole('alert')).toHaveCount(0);
+  await expect(reload).toHaveCount(0);
 });
