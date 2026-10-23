@@ -12,7 +12,11 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   verify:
-    runs-on: ubuntu-24.04
+    # Blacksmith runner (same 4 vCPU / 16 GB shape as ubuntu-24.04). Needs the
+    # Blacksmith GitHub App installed on the Canadian-Plans organization, or the
+    # job queues forever. Backup workflows stay on GitHub-hosted runners because
+    # they hold production database credentials.
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 60
     env:
       MIGRATION_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/canadian_plans_test
