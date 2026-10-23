@@ -161,3 +161,52 @@ Observed on 23 October 2026 from the public pages. Claims below are theirs, not 
 - Confirmation that a Canadian lawyer has reviewed the legal texts before indexing opens.
 - Real customer reviews with consent before any testimonial section is shown.
 - `STOREFRONT_INDEXING_OPEN` stays `false` on this branch; nothing here opens indexing.
+
+## 7. Second pass, 23 October 2026: keyword and audience research for the guides
+
+Semrush still had no API units on this pass, so demand is again judged from what competing
+pages target and from the questions that recur in forums, settlement guides and vendor FAQs.
+
+### Who the audience is
+
+- IRCC admissions reported through mid-2026 put **India** first for both permanent residents
+  (about a quarter of admissions) and study permits, with the **Philippines**, **China**,
+  **Nigeria** and **Bangladesh** the other large sources, and **Pakistan** and **Cameroon**
+  close behind for permanent residence. Working-holiday (IEC) arrivals from the UK, Ireland,
+  Australia and France are a smaller, English-speaking audience with their own forums.
+- Across every source country the same three pains recur: a Canadian number before the bank
+  appointment, a phone that may be locked or missing bands, and one-time passwords from home
+  (UPI, GCash, bank apps, Aadhaar, BVN) that still go to the old number.
+
+### What competitors already publish
+
+- Get Canada SIM's blog has about 50 posts from July to October 2026 covering plan choice,
+  eSIM setup, IMEI/EID, unlocking, dual SIM, porting, area codes and coverage. CanadianSIM
+  lists 142 guides, heavy on per-device pages (iPhone 14 to 16, Galaxy S23/S24, Pixel 8),
+  deposits and billing. Both are thin on immigration-status eligibility, on the order of
+  first-week admin, and on keeping a home number alive for OTPs.
+- Settlement sites (welcomeaide, prepareforcanada, MOSAIC) rank for "first week in Canada"
+  and "newcomer checklist" with day-by-day lists that mention the phone number but not how
+  to have it before landing.
+
+### The five guides and the phrases they target
+
+| Slug                                               | Primary phrase                                       | Why it can rank                                                                 |
+| -------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `how-to-get-canadian-phone-number-before-arriving` | how to get a Canadian phone number before you arrive | Full three-week timeline plus what to do with the number before landing         |
+| `rogers-vs-fido-vs-chatr-for-newcomers`            | Rogers vs Fido vs Chatr for newcomers                | Brand comparison keyed to immigration status and stay length, with prices       |
+| `first-week-in-canada-checklist`                   | first week in Canada checklist                       | Order of operations with the dependencies explained; SIN rules from canada.ca   |
+| `will-my-phone-work-in-canada`                     | will my phone work in Canada                         | Unlock, bands (from Rogers' own list) and the VoLTE problem imported phones hit |
+| `keep-your-home-number-in-canada`                  | keep Indian number in Canada OTP; GCash Canada       | Country-by-country OTP advice no competitor page covers in one place            |
+
+### Facts checked for these guides
+
+- SIN documents and application routes: canada.ca SIN application page, 23 October 2026.
+- Rogers network bands: Rogers device compatibility page (LTE B2, B4, B5, B7, B12, B25, B66;
+  5G n41, n66, n71) and Rogers community guidance on imported phones and VoLTE.
+- GCash Overseas accepts a Canadian number for registration; loans and credit need a
+  Philippine number (GCash Help Centre).
+- Jio and Airtel OTP delivery abroad depends on roaming being enabled before departure
+  (carrier guidance and user reports; worded as such in the guide).
+- Provincial health waiting periods vary; the guide says "up to about three months" and tells
+  readers to keep interim insurance rather than quoting one province's rule.

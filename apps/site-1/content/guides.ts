@@ -1,96 +1,23 @@
-import type { FigmaAsset, FaqItemContent } from '@canadian-plans/ui/canadian-plans';
 import { componentAssets } from './components';
+import {
+  teamAuthor,
+  teamReviewer,
+  type ArticleBlock,
+  type DeviceInstructions,
+  type GuideArticle,
+  type StudentComparison,
+} from './guide-shared';
+import {
+  carrierPickerGuide,
+  firstWeekGuide,
+  homeNumberGuide,
+  newcomerGuides,
+  numberBeforeArrivalGuide,
+  phoneCompatibilityGuide,
+} from './guides-newcomer';
 
-export type ArticleBlock =
-  | {
-      readonly kind: 'section';
-      readonly id: string;
-      readonly title: string;
-      readonly text?: string;
-      readonly mobileLines?: readonly string[];
-    }
-  | { readonly kind: 'checklist'; readonly items: readonly string[] }
-  | {
-      readonly kind: 'comparison';
-      readonly rows: readonly StudentComparison[];
-      readonly note: string;
-    }
-  | {
-      readonly kind: 'table';
-      readonly id: string;
-      readonly title: string;
-      readonly caption: string;
-      readonly columns: readonly string[];
-      readonly rows: readonly { readonly label: string; readonly values: readonly string[] }[];
-      readonly note: string;
-    }
-  | {
-      readonly kind: 'plan-cta';
-      readonly eyebrow: string;
-      readonly text: string;
-      readonly label: string;
-      readonly mobileLines?: readonly string[];
-    }
-  | { readonly kind: 'devices'; readonly items: readonly DeviceInstructions[] }
-  | {
-      readonly kind: 'steps';
-      readonly id: string;
-      readonly title: string;
-      readonly items: readonly string[];
-    }
-  | { readonly kind: 'tip'; readonly label: string; readonly text: string }
-  | {
-      readonly kind: 'faq';
-      readonly id: string;
-      readonly title: string;
-      readonly items: readonly FaqItemContent[];
-    };
-export interface StudentComparison {
-  readonly id: string;
-  readonly name: string;
-  readonly data: string;
-  readonly price: string;
-  readonly storePrice?: string;
-  readonly detail?: string;
-  readonly bestFor: string;
-  readonly desktopBestForLines?: readonly string[];
-  readonly mobileDescription: string;
-  readonly popular?: boolean;
-}
-export interface DeviceInstructions {
-  readonly id: string;
-  readonly title: string;
-  readonly text: string;
-  readonly caption: string;
-}
-export interface GuideArticle {
-  readonly previewOnly: true;
-  readonly slug: string;
-  readonly title: string;
-  readonly breadcrumbTitle: string;
-  readonly category: string;
-  readonly description: string;
-  readonly author: {
-    readonly name: string;
-    readonly label: string;
-    readonly detail: string;
-    readonly avatar: FigmaAsset;
-  };
-  readonly reviewer: {
-    readonly name: string;
-    readonly label: string;
-    readonly detail: string;
-    readonly avatar: FigmaAsset;
-  };
-  readonly updated: string;
-  readonly updatedLabel: string;
-  readonly readingLabel: string;
-  readonly imageCaption: string;
-  readonly quickAnswer: string;
-  readonly quickMobileLines?: readonly string[];
-  readonly blocks: readonly ArticleBlock[];
-  readonly sources: string;
-}
+export type { ArticleBlock, DeviceInstructions, GuideArticle, StudentComparison };
+
 export const guideCopy = {
   skip: 'Skip to article',
   breadcrumb: 'Breadcrumb',
@@ -143,20 +70,6 @@ export const guideCopy = {
     advisor: '/contact#message-us',
     contact: '/contact#contact-options',
   },
-} as const;
-
-// Owner decision (22 Oct 2026, SEC-18): guides are credited to the team, not to individuals.
-const teamAuthor = {
-  name: 'Canadian Plans',
-  label: 'Written by the Canadian Plans team',
-  detail: 'Plan advisors, Surrey, BC',
-  avatar: { src: '/design/guides/0-imgEllipse1.svg', width: 44, height: 44, nodeId: '133:47' },
-} as const;
-const teamReviewer = {
-  name: 'Canadian Plans',
-  label: 'Checked against carrier plan pages',
-  detail: 'October 2026',
-  avatar: { src: '/design/guides/0-imgEllipse2.svg', width: 44, height: 44, nodeId: '133:52' },
 } as const;
 
 export const studentIndiaGuide: GuideArticle = {
@@ -716,6 +629,7 @@ export const guideArticles: readonly GuideArticle[] = [
   esimGuide,
   creditCheckGuide,
   internetCostGuide,
+  ...newcomerGuides,
 ];
 export const guideAssets = {
   ...componentAssets,
@@ -797,6 +711,75 @@ export const guideList: readonly GuideListEntry[] = [
     href: `/guides/${internetCostGuide.slug}`,
     description: internetCostGuide.description,
     keywords: ['internet cost', 'price', 'province', 'bc', 'alberta', 'manitoba', 'saskatchewan'],
+  },
+  {
+    id: numberBeforeArrivalGuide.slug,
+    previewOnly: true,
+    topic: 'moving',
+    category: numberBeforeArrivalGuide.category,
+    title: numberBeforeArrivalGuide.title,
+    detail: '7 min read · Updated October 2026',
+    caption: 'Boarding pass, passport and a phone showing a new +1 number',
+    href: `/guides/${numberBeforeArrivalGuide.slug}`,
+    description: numberBeforeArrivalGuide.description,
+    keywords: ['canadian number', 'before you arrive', 'before you land', 'esim', 'timeline'],
+  },
+  {
+    id: carrierPickerGuide.slug,
+    previewOnly: true,
+    topic: 'phones',
+    category: carrierPickerGuide.category,
+    title: carrierPickerGuide.title,
+    detail: '6 min read · Updated October 2026',
+    caption: 'Three phones side by side showing Rogers, Fido and Chatr plan screens',
+    href: `/guides/${carrierPickerGuide.slug}`,
+    description: carrierPickerGuide.description,
+    keywords: ['rogers', 'fido', 'chatr', 'which plan', 'comparison', 'prepaid', 'postpaid'],
+  },
+  {
+    id: firstWeekGuide.slug,
+    previewOnly: true,
+    topic: 'moving',
+    category: firstWeekGuide.category,
+    title: firstWeekGuide.title,
+    detail: '9 min read · Updated October 2026',
+    caption: 'Newcomer at a kitchen table with passport, permit and a checklist',
+    href: `/guides/${firstWeekGuide.slug}`,
+    description: firstWeekGuide.description,
+    keywords: ['first week', 'checklist', 'sin', 'bank account', 'health card', 'settlement'],
+  },
+  {
+    id: phoneCompatibilityGuide.slug,
+    previewOnly: true,
+    topic: 'phones',
+    category: phoneCompatibilityGuide.category,
+    title: phoneCompatibilityGuide.title,
+    detail: '8 min read · Updated October 2026',
+    caption: 'Phone settings screen showing the IMEI and network bands',
+    href: `/guides/${phoneCompatibilityGuide.slug}`,
+    description: phoneCompatibilityGuide.description,
+    keywords: ['unlocked', 'bands', 'volte', 'imei', 'will my phone work', 'network'],
+  },
+  {
+    id: homeNumberGuide.slug,
+    previewOnly: true,
+    topic: 'moving',
+    category: homeNumberGuide.category,
+    title: homeNumberGuide.title,
+    detail: '8 min read · Updated October 2026',
+    caption: 'Dual-SIM phone showing a home number and a Canadian number',
+    href: `/guides/${homeNumberGuide.slug}`,
+    description: homeNumberGuide.description,
+    keywords: [
+      'otp',
+      'dual sim',
+      'home number',
+      'india',
+      'philippines',
+      'gcash',
+      'upi',
+      'whatsapp',
+    ],
   },
   {
     id: 'student-sim',
@@ -943,6 +926,16 @@ export const guidesIndexCopy = {
       id: 'number',
       text: 'Can I keep my number if I change carriers?',
       href: '/mobile-plans#faq',
+    },
+    {
+      id: 'phone-work',
+      text: 'Will my phone work in Canada?',
+      href: `/guides/${phoneCompatibilityGuide.slug}`,
+    },
+    {
+      id: 'home-otp',
+      text: 'How do I keep getting OTPs on my home number?',
+      href: `/guides/${homeNumberGuide.slug}`,
     },
   ],
   final: {
