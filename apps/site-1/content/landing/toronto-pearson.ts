@@ -1,23 +1,24 @@
 import {
-  eSimCheck,
   landingBreadcrumb,
   landingFaqIntro,
   landingSkip,
+  preArrivalDocuments,
   preArrivalSteps,
   pricesNote,
+  sharedArrivalFaq,
 } from './shared';
 import type { LandingPageContent } from './types';
 
 /**
- * /pre-arrival-sim/toronto-pearson — primary keywords: Toronto Pearson eSIM, YYZ SIM card,
- * SIM card at Toronto airport, phone signal when landing in Toronto.
- * Facts carried over from the 5 Oct 2026 page; nothing new is claimed.
+ * /pre-arrival-sim/toronto-pearson (SEO rewrite, 23 October 2026). Primary phrase: SIM card
+ * at Toronto Pearson airport; supporting: eSIM Toronto airport, YYZ SIM card, phone signal
+ * when you land in Toronto. Facts from docs/LAUNCH_PLANS.md table D.
  */
 export const torontoPearsonLanding: LandingPageContent = {
   path: '/pre-arrival-sim/toronto-pearson',
-  title: 'Toronto Pearson (YYZ) eSIM: Be Online When You Land | Canadian Plans',
+  title: 'Toronto Pearson (YYZ) SIM Card & eSIM Before You Land | Canadian Plans',
   description:
-    'Landing at Toronto Pearson? Order a Canadian eSIM before you fly and switch it on at YYZ. No airport SIM kiosk, no roaming. Plans from $35/month.',
+    'Landing at Toronto Pearson? Skip the airport SIM kiosk. Order a Rogers, Fido or Chatr eSIM before you fly and switch it on at YYZ. From $35/month, no credit check.',
   mainId: 'pearson-main',
   skip: landingSkip,
   tone: 'amber',
@@ -25,7 +26,7 @@ export const torontoPearsonLanding: LandingPageContent = {
     ...landingBreadcrumb,
     items: [
       { label: 'Home', href: '/' },
-      { label: 'Pre-arrival SIM', href: '/pre-arrival-sim' },
+      { label: 'SIM before you arrive', href: '/pre-arrival-sim' },
       { label: 'Toronto Pearson (YYZ)' },
     ],
   },
@@ -33,15 +34,15 @@ export const torontoPearsonLanding: LandingPageContent = {
     eyebrow: 'Airport eSIM · Toronto Pearson (YYZ)',
     title: 'Toronto Pearson eSIM: signal before you leave the gate',
     description:
-      'Order your eSIM before you fly and switch it on when you land at YYZ. No airport kiosk, no line and no roaming charges.',
+      'Order your Canadian eSIM before you fly and switch it on when you land at YYZ. No airport SIM kiosk, no line after a long flight, and no roaming charges from your home carrier.',
     action: { label: 'See eSIM plans', href: '#plans' },
     pricePrefix: 'from',
     price: '$35',
     priceSuffix: '/mo',
     photo: 'PHOTO · traveller at Pearson arrivals turning off airplane mode',
-    highlights: ['No airport kiosk', 'Order from any country', 'Nothing to pay online'],
+    highlights: ['No airport kiosk', 'Order from any country', 'Nothing paid online'],
   },
-  byline: 'Updated 5 October 2026 · Reviewed by a Canadian Plans plan advisor',
+  byline: 'Updated 23 October 2026 · Checked by a Canadian Plans plan advisor',
   onThisPage: {
     label: 'On this page',
     links: [
@@ -56,7 +57,7 @@ export const torontoPearsonLanding: LandingPageContent = {
     eyebrow: 'Quick answer',
     title: 'Can I use my phone as soon as I land at Toronto Pearson?',
     answer:
-      'Yes. Order a Canadian eSIM 1 to 3 weeks before your flight and install it at home. When you land at Pearson (YYZ), turn off airplane mode and you are connected, with no airport WiFi or SIM kiosk needed. Plans start at $35 a month (CAD, plus tax).',
+      'Yes, if you order a Canadian eSIM before you fly. Order 1 to 3 weeks ahead, install the eSIM at home, and when you land at Pearson (YYZ) turn off airplane mode: calls, texts and data work before you reach baggage claim, with no airport WiFi or SIM kiosk needed. Plans start at $35 a month (CAD, plus tax), with no credit check and nothing paid online.',
   },
   facts: {
     label: 'Pearson arrival facts',
@@ -70,25 +71,10 @@ export const torontoPearsonLanding: LandingPageContent = {
   blocks: [
     preArrivalSteps('From touchdown at YYZ to texting home'),
     { kind: 'slot', id: 'plans' },
-    {
-      kind: 'checklist',
-      id: 'documents',
-      eyebrow: 'Before you fly',
-      title: 'What to have ready before you land',
-      description:
-        'You do not upload anything to order. Have these ready in case your advisor asks for them.',
-      mark: '✓',
-      items: [
-        { title: 'Passport', body: 'The photo page, with your name and photo.' },
-        {
-          title: 'Study or work permit, or PR confirmation',
-          body: 'The document you are travelling on.',
-        },
-        { title: 'Arrival date and city', body: 'So your plan starts the day you land.' },
-        { title: 'Email address', body: 'We send your eSIM QR code here.' },
-      ],
-      aside: eSimCheck,
-    },
+    preArrivalDocuments('documents', 'What to have ready before you land', {
+      title: 'Study or work permit, visa, or PR confirmation',
+      body: 'The document you are travelling on.',
+    }),
     {
       kind: 'article',
       id: 'guide',
@@ -98,19 +84,25 @@ export const torontoPearsonLanding: LandingPageContent = {
         {
           title: 'Is there free WiFi at Pearson Airport?',
           body: [
-            'Yes, Pearson has free WiFi, but you have to log in and it can be busy at peak times. With your eSIM already installed, you can book a ride or message family right away.',
+            'Yes, Pearson has free WiFi, but you have to log in and it can be slow at peak times. With your eSIM already installed you can book a ride, message family and check your transit route the moment you land.',
           ],
         },
         {
           title: 'Should I buy a SIM card at Toronto airport?',
           body: [
-            'You can, but airport prices are often higher and there may be a line after a long flight. Ordering before you fly means your number is ready for forms, and you are online the moment you land.',
+            'You can, but airport counters often charge more, and there can be a line after a long flight. Ordering before you fly means your number is already on your bank and college forms, and you are online the moment you switch on.',
           ],
         },
         {
           title: 'Which network works best in Toronto?',
           body: [
-            'Rogers, Fido and Chatr all use the Rogers network, which covers Toronto and the GTA well. The difference between them is price and extras, not signal.',
+            'Rogers, Fido and Chatr all use the Rogers network, which covers Toronto, the GTA and the UP Express and GO Transit routes out of Pearson well. The difference between the three brands is price and extras, not signal.',
+          ],
+        },
+        {
+          title: 'Getting from Pearson into the city',
+          body: [
+            'The UP Express train runs from Terminal 1 to Union Station downtown; GO buses and TTC buses leave from both terminals. Having data on arrival lets you buy your ticket, check times and share your location with whoever is meeting you.',
           ],
         },
       ],
@@ -118,13 +110,13 @@ export const torontoPearsonLanding: LandingPageContent = {
         title: 'Key facts',
         items: [
           { label: 'Price range', value: '$35–$50/mo, CAD + tax' },
-          { label: 'Payment today', value: '$0, nothing paid upfront' },
+          { label: 'Paid online', value: '$0, nothing paid upfront' },
           { label: 'When to order', value: '1–3 weeks before your flight' },
           { label: 'How you get it', value: 'eSIM by email, any country' },
           { label: 'Plan starts', value: 'When you land' },
-          { label: 'Networks', value: 'Rogers, Fido, Chatr' },
+          { label: 'Carriers', value: 'Rogers, Fido, Chatr' },
         ],
-        note: 'Updated 5 October 2026',
+        note: 'Updated 23 October 2026',
       },
     },
   ],
@@ -133,7 +125,7 @@ export const torontoPearsonLanding: LandingPageContent = {
       eyebrow: 'FAQ',
       title: 'Pearson arrival questions',
       description:
-        'Advisors are available Monday to Saturday, 9am–9pm Pacific (noon to midnight Eastern).',
+        'Advisors are available Monday to Saturday, 9am to 9pm Pacific (noon to midnight Eastern).',
     }),
     items: [
       {
@@ -146,38 +138,13 @@ export const torontoPearsonLanding: LandingPageContent = {
         id: 'landed',
         question: 'I have already landed. Can I still order?',
         answer:
-          'Yes. Choose a plan and an advisor will call you to confirm. If you need a number right now, call us and we will tell you the fastest way to get connected.',
+          'Yes. Choose a plan and an advisor will call or email you to confirm. If you need a number right now, call us and we tell you the fastest way to get connected.',
       },
-      {
-        id: 'device',
-        question: 'How do I know if my phone supports eSIM?',
-        answer:
-          'Check your phone settings for an EID or an “Add eSIM” option. Your phone also has to be unlocked. Send us the model if you are unsure.',
-      },
-      {
-        id: 'wifi',
-        question: 'Do I need WiFi at the airport to turn it on?',
-        answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
-        pending: true,
-      },
-      {
-        id: 'flight',
-        question: 'What if my flight changes?',
-        answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
-        pending: true,
-      },
-      {
-        id: 'family',
-        question: 'Can I order eSIMs for my whole family?',
-        answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
-        pending: true,
-      },
-      {
-        id: 'airport',
-        question: 'What if I land at a different airport?',
-        answer: 'This answer is awaiting approved content. Talk to an advisor for current details.',
-        pending: true,
-      },
+      sharedArrivalFaq.wifi,
+      sharedArrivalFaq.esim,
+      sharedArrivalFaq.airport,
+      sharedArrivalFaq.family,
+      sharedArrivalFaq.cancel,
     ],
   },
   related: {
@@ -187,7 +154,9 @@ export const torontoPearsonLanding: LandingPageContent = {
         title: 'Who you are',
         links: [
           { label: 'International students', href: '/pre-arrival-sim/students' },
-          { label: 'Workers, residents and visitors', href: '/pre-arrival-sim#plans' },
+          { label: 'Work permit holders', href: '/pre-arrival-sim/workers' },
+          { label: 'New permanent residents', href: '/pre-arrival-sim/new-immigrants' },
+          { label: 'Visitors and Super Visa', href: '/pre-arrival-sim/visitors' },
         ],
       },
       {
@@ -197,7 +166,7 @@ export const torontoPearsonLanding: LandingPageContent = {
       {
         title: 'Compare and learn',
         links: [
-          { label: 'All pre-arrival plans', href: '/pre-arrival-sim' },
+          { label: 'All eSIM plans', href: '/pre-arrival-sim' },
           { label: 'Newcomer guides', href: '/guides' },
         ],
       },
@@ -206,7 +175,7 @@ export const torontoPearsonLanding: LandingPageContent = {
   },
   cta: {
     title: 'Signal on before you clear customs',
-    subtitle: 'Choose a plan in about 2 minutes. Nothing to pay today.',
+    subtitle: 'Choose a plan in about 2 minutes. No credit check, nothing paid online.',
     primary: { label: 'See eSIM plans →', href: '#plans' },
     secondary: { label: 'Talk to an advisor ›', href: '/contact' },
     icon: 'cta-pre-arrival',
@@ -216,5 +185,5 @@ export const torontoPearsonLanding: LandingPageContent = {
 export const torontoPearsonPlanHeading = {
   title: ['Pick your plan before you land'],
   description:
-    'Every plan is an eSIM with nothing to pay upfront, and it works the minute you land at YYZ.',
+    'Every plan is an eSIM with nothing paid online, and it works the minute you land at YYZ.',
 };

@@ -5,8 +5,12 @@ import { usePlanFinder } from '@/components/shared/plan-finder-provider';
 import { homeRedesign } from '@content/home-redesign';
 
 type Audience = keyof typeof homeRedesign.hero.audiences;
-/** Slide order: the export opens on residents; the carousel and tabs move together. */
-const slides = ['resident', 'newcomer'] as const satisfies readonly Audience[];
+/**
+ * Slide order: newcomers first, because people moving to Canada are the primary audience
+ * (owner, 22 October 2026) and the server-rendered slide carries the page's H1. The carousel
+ * and tabs move together.
+ */
+const slides = ['newcomer', 'resident'] as const satisfies readonly Audience[];
 
 /** Final homepage hero: audience tabs, plan finder, photo card and a two-slide carousel. */
 export function HomeHero() {

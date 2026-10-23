@@ -15,9 +15,9 @@ interface ContactOption {
 /** Design copy and contact details are preview fixtures, pending business approval. */
 export const contactCopy = {
   previewOnly: true,
-  title: 'Contact Canadian Plans: Phone, Email & Surrey Office',
+  title: 'Contact Canadian Plans: Phone, Email & Surrey, BC Address',
   description:
-    'Contact Canadian Plans by phone or email, or visit our Surrey, BC office. Real advisors Monday to Saturday, 9am–9pm Pacific. Track your order without an account.',
+    'Call, email or write to Canadian Plans. Real advisors Monday to Saturday, 9am to 9pm Pacific. Based in Surrey, BC. Track an order without an account.',
   skip: 'Skip to main content',
   breadcrumb: {
     label: 'Breadcrumb',
@@ -26,10 +26,10 @@ export const contactCopy = {
   },
   hero: {
     eyebrow: 'Contact Canadian Plans',
-    title: 'Talk to a real person',
+    title: 'Talk to a real person about your Canadian phone or internet plan',
     description:
-      "No bots, no call-centre maze. You'll reach the same advisors who confirm every order, Mon–Sat, 9am–9pm Pacific.",
-    trust: 'Authorized dealer in Surrey, BC',
+      'No bots, no call-centre maze. You reach the same advisors who confirm every order, Monday to Saturday, 9am to 9pm Pacific. Ordering from abroad? Email is easiest, and we reply within one business day.',
+    trust: 'Authorized Rogers, Fido & Chatr reseller · Surrey, BC',
   },
   options: [
     {
@@ -45,7 +45,8 @@ export const contactCopy = {
       id: 'call',
       label: 'Call us',
       title: '+1 778-682-3771',
-      description: 'Mon–Sat, 9am–9pm Pacific. International callers: email us.',
+      description:
+        'Monday to Saturday, 9am to 9pm Pacific. Calling from outside Canada? Email us and we call you back.',
       action: 'Call now',
       tone: 'sky',
       buttonTone: 'outline',
@@ -54,7 +55,7 @@ export const contactCopy = {
       id: 'email',
       label: 'Email',
       title: 'info@canadianplans.com',
-      description: 'We reply within 1 business day.',
+      description: 'We reply within one business day, in plain English.',
       action: 'Send an email',
       tone: 'lemon',
       buttonTone: 'outline',
@@ -62,15 +63,16 @@ export const contactCopy = {
   ] satisfies readonly ContactOption[],
   track: {
     title: 'Track your order',
-    description: 'See where your eSIM, mobile plan or internet install is. No account needed.',
+    description:
+      'See the status of your eSIM, mobile plan or internet install, and request a change. No account needed.',
     submit: 'Track order  →',
     href: '/track',
     help: "Can't find your order number? It's in your confirmation email. Or call or email us and we'll look it up.",
   },
   office: {
-    title: 'Our office',
+    title: 'Our address',
     image: 'Image',
-    caption: 'Our advisors outside the shop on Whalley Blvd, Surrey, with the sign in view',
+    caption: 'Canadian Plans, Whalley Blvd, Surrey, BC',
     address: ['9981 Whalley Blvd', 'Surrey, BC'],
     directions: 'Get directions →',
     directionsHref:
@@ -102,8 +104,9 @@ export const contactCopy = {
     title: 'Quick help',
     arrow: '→',
     links: [
-      { label: 'Where is my SIM?', href: '#track-order' },
-      { label: 'How do I install my eSIM?', href: '/pre-arrival-sim#faq' },
+      { label: 'Where is my eSIM?', href: '#track-order' },
+      { label: 'How do I install my eSIM?', href: '/guides/esim-vs-physical-sim-canada' },
+      { label: 'Do I need a credit check?', href: '/faq#faq-eligibility' },
       { label: 'Change my install date', topic: 'internet' },
       { label: 'Update my documents', topic: 'documents' },
       { label: 'Is this call really from you?', topic: 'verification' },

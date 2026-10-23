@@ -46,8 +46,9 @@ the generated storefront audit output, and the three audit and review reports.
 
 ## Marketing
 
-[marketing/](marketing/) holds the launch posts drafted for the owner and the
-22 October 2026 business-growth research note.
+[marketing/](marketing/) holds the launch posts drafted for the owner, the
+22 October 2026 business-growth research note and the 23 October 2026 SEO content
+research that the storefront copy rewrite is based on.
 
 ## Storefront design and CMS
 

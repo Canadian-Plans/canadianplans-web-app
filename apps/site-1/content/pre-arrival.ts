@@ -14,9 +14,13 @@ const audienceOptions: readonly { readonly id: ArrivalAudience; readonly label: 
   { id: 'visitor', label: 'Visitor / Super Visa' },
 ];
 
-/** Source copy is a design preview, not approved commercial facts. */
+/**
+ * /pre-arrival-sim copy (SEO rewrite, 23 October 2026). Primary phrase: Canadian SIM card
+ * before you arrive. Every plan fact comes from docs/LAUNCH_PLANS.md table D and the static
+ * catalogue; nothing here is a commercial value the backend does not already hold.
+ */
 export const arrivalCopy = {
-  title: 'Pre-arrival SIM & eSIM | Canadian Plans',
+  title: 'Canadian SIM Card & eSIM Before You Arrive: Plans from $35 | Canadian Plans',
   skip: 'Skip to main content',
   breadcrumbLabel: 'Breadcrumb',
   separator: '/',
@@ -26,27 +30,27 @@ export const arrivalCopy = {
       href: '/',
     },
     {
-      label: 'Pre-arrival SIM',
+      label: 'SIM before you arrive',
     },
   ],
   hero: {
     description:
-      'Get a Rogers, Fido or Chatr number before you leave home, ready for bank, school and job forms. It works the minute you land. Monthly plans for students, workers and PRs; prepaid plans for visitors.',
+      'Order a Rogers, Fido or Chatr eSIM from any country and get your Canadian phone number before you fly. Monthly plans from $35 for students, workers and new permanent residents; prepaid plans for visitors. No credit check, nothing paid online.',
   },
   quick: {
     eyebrow: 'Quick answer · Updated October 2026',
-    title: 'Can I get a Canadian phone number before I arrive?',
+    title: 'Can I get a Canadian SIM card before I arrive in Canada?',
     description:
-      "Yes. Order a pre-arrival eSIM 1 to 3 weeks before your flight. You get your number right away, and your plan starts when you land. Students, workers and PRs get monthly Rogers or Fido plans from $35 a month; visitors get Chatr prepaid plans from $35 for 30 days (CAD, plus tax). You don't need a Canadian credit history, and you upload nothing to order: an advisor confirms your eligibility with you.",
+      'Yes. Order a Canadian eSIM online 1 to 3 weeks before your flight. An advisor confirms your order, your Canadian number is assigned, and your eSIM QR code arrives by email. Students, workers and permanent residents staying over 90 days get monthly Rogers or Fido plans from $35 a month; visitors and Super Visa holders get Chatr prepaid plans from $35 for 30 days (CAD, plus tax). There is no credit check, nothing to upload and nothing paid online. Your line starts when you land.',
   },
   picker: {
     step: 'Step 1 of 2',
     heading: {
-      title: ['Choose your plan.'],
+      title: ['Choose your eSIM plan.'],
       description:
-        'Tell us who you are — we show the plans that fit. All pre-arrival plans are eSIM. Exact prices, no contract.',
+        'Tell us how you are arriving and we show the plans you are eligible for. Every plan is an eSIM for your own unlocked phone, with the exact monthly price and no contract.',
     },
-    audienceLabel: 'I am a…',
+    audienceLabel: 'I am arriving as a…',
     audiences: audienceOptions,
     phoneLabel: 'Your phone',
     phone: 'eSIM',
@@ -54,15 +58,15 @@ export const arrivalCopy = {
     includesTitle: 'Every plan includes',
     includes: [
       '✓ Canadian number before you fly',
-      '✓ eSIM by email in minutes',
-      '✓ Activation help by phone or email',
-      '✓ Pay nothing until we confirm',
+      '✓ eSIM by email, nothing to ship',
+      '✓ No credit check, no Canadian credit history',
+      '✓ Nothing paid online; the carrier bills you after activation',
     ],
     yourPlan: 'Your plan',
     continue: 'Continue to step 2 →',
-    note: 'Prices in Canadian dollars, before tax. Updated October 2026.',
-    empty: 'No preview plans match this audience. Try another audience.',
-    regionLabel: 'Pre-arrival plans',
+    note: 'Prices in Canadian dollars, before tax. Checked October 2026.',
+    empty: 'No plans match this audience. Try another audience.',
+    regionLabel: 'eSIM plans you can order before you arrive',
     selectedAnnouncement: 'Selected plan',
     filterAnnouncement: 'plans shown for',
     due: '$0 due today',
@@ -74,22 +78,26 @@ export const arrivalCopy = {
   comparison: {
     heading: {
       eyebrow: 'Compare your options',
-      title: ['Pre-arrival SIM vs. buying after you land'],
+      title: ['Ordering before you fly vs. buying a SIM after you land'],
     },
     label: 'Pre-arrival SIM comparison',
     featureLabel: 'Feature',
-    columns: ['Canadian Plans (pre-arrival)', 'Airport kiosk', 'Carrier store after you land'],
+    columns: [
+      'Canadian Plans (before you fly)',
+      'Airport SIM kiosk',
+      'Carrier store after you land',
+    ],
     rows: [
       {
         feature: 'Canadian number before you fly',
         values: ['✓ Yes', '✗ No', '✗ No'],
       },
       {
-        feature: 'Exact price shown before you order',
-        values: ['✓ Yes, with date', 'Varies', '✓ Yes'],
+        feature: 'Exact monthly price shown before you order',
+        values: ['✓ Yes', 'Varies', '✓ Yes'],
       },
       {
-        feature: 'Help by phone or email in plain English',
+        feature: 'Help by phone or email, in plain English',
         values: ['✓ Yes', '✗ No', 'In store only'],
       },
       {
@@ -98,7 +106,11 @@ export const arrivalCopy = {
       },
       {
         feature: 'Credit check',
-        values: ['None needed', 'None', 'Often, for postpaid'],
+        values: ['None', 'None', 'Often, for postpaid'],
+      },
+      {
+        feature: 'Paid online when you order',
+        values: ['$0', 'Pay at the counter', 'Pay in store'],
       },
     ],
     note: 'Airport kiosk and carrier-store details are general observations, checked October 2026. Prices and availability vary by location.',
@@ -106,39 +118,57 @@ export const arrivalCopy = {
   faq: {
     heading: {
       eyebrow: 'FAQ',
-      title: ['Pre-arrival SIM', 'questions'],
-      description: 'Talk to an advisor, Monday to Saturday, 9am–9pm Pacific time.',
+      title: ['Questions about getting a SIM', 'before you arrive'],
+      description: 'Talk to an advisor, Monday to Saturday, 9am to 9pm Pacific time.',
     },
     items: [
       {
         id: 'arrival-faq-0',
-        question: 'When should I order my pre-arrival SIM?',
+        question: 'When should I order my Canadian SIM?',
         answer:
-          'Order 1–3 weeks before your flight. Your eSIM arrives by email minutes after we confirm, so your number is ready for bank and college forms right away.',
+          'Order 1 to 3 weeks before your flight. Your eSIM QR code arrives by email once an advisor confirms the order, so your Canadian number is ready for bank, college and job forms before you leave home.',
+      },
+      {
+        id: 'arrival-faq-5',
+        question: 'Which plan am I eligible for?',
+        answer:
+          'If you are arriving on a study permit, a work permit or as a permanent resident and staying more than 90 days, choose a monthly Rogers or Fido plan. If you are visiting on a visitor visa or a Super Visa for under 90 days, choose a Chatr prepaid plan. Pick your situation above and only the plans that fit are shown.',
       },
       {
         id: 'arrival-faq-1',
         question: 'How do I know if my phone supports eSIM?',
         answer:
-          'On an iPhone, go to Settings → General → About and look for “EID” or “Digital SIM”. On Samsung and Android, go to Settings → Connections → SIM manager and look for “Add eSIM”. Not sure? Send us your phone model and we will check.',
+          'On an iPhone, go to Settings, General, About and look for “EID” or “Digital SIM”. On Samsung and other Android phones, go to Settings, Connections, SIM manager and look for “Add eSIM”. Not sure? Send us your phone model and we will check.',
       },
       {
         id: 'arrival-faq-2',
         question: 'Does my phone need to be unlocked?',
         answer:
-          'Yes. Your phone must be unlocked and support eSIM. If it is locked to another carrier, ask that carrier to unlock it before you order.',
+          'Yes. Your phone must be unlocked and support eSIM. If it is locked to a carrier at home, ask that carrier to unlock it before you order.',
       },
       {
         id: 'arrival-faq-3',
         question: 'Can I order from any country?',
         answer:
-          'Yes. Order online from any country 1 to 3 weeks before your flight. We confirm your order, then email your eSIM QR code; it switches on when you land.',
+          'Yes. Order online from any country 1 to 3 weeks before your flight. We confirm your order by phone or email, then email your eSIM QR code. Install it at home and it switches on when you land.',
+      },
+      {
+        id: 'arrival-faq-6',
+        question: 'Do I need to upload documents or a SIN to order?',
+        answer:
+          'No. You order with your name, email, arrival date and the plan you want. There is no SIN, no credit check and nothing to upload. If the carrier needs to see your passport or permit, your advisor asks you for it.',
       },
       {
         id: 'arrival-faq-4',
         question: 'When will I be charged for my plan?',
         answer:
-          'Nothing is paid on this website. Your first bill comes from the provider once your number is active, and an advisor walks you through the date before anything is billed.',
+          'Nothing is paid on this website. Your first bill comes from Rogers, Fido or Chatr once your number is active, for the monthly price plus tax. Your advisor explains the billing date before anything is charged. Canadian Plans charges no SIM, activation or shipping fee.',
+      },
+      {
+        id: 'arrival-faq-7',
+        question: 'What happens if I cancel or my plans change?',
+        answer:
+          'Before activation you can cancel at no cost: just tell your advisor. After activation the plan is with the carrier, so you cancel with them under their terms. Because nothing was paid to Canadian Plans, there is nothing for us to refund.',
       },
     ],
   },
@@ -149,7 +179,7 @@ export const arrivalCopy = {
     close: 'Close preview',
     compatibilityTitle: 'Is my phone eSIM-ready?',
     compatibilityDescription:
-      'Check your device’s settings for an eSIM or “Add eSIM” option, and confirm support with its manufacturer. An advisor can help confirm compatibility before an order.',
+      'Check your phone’s settings for an eSIM or “Add eSIM” option, and confirm support with its manufacturer. An advisor can help confirm compatibility before an order.',
   },
 };
 export type ArrivalAudience = 'student' | 'worker' | 'resident' | 'visitor';
@@ -164,8 +194,8 @@ export interface ArrivalPlan extends PlanCardContent {
 const longTerm: readonly ArrivalAudience[] = ['student', 'worker', 'resident'];
 const internationalMinutes = '✓ 1,000 min to India, China, Bangladesh, Mexico & UK';
 /**
- * Pre-arrival offer, matched to the owner's partner offer (getcanadasim.com, checked 16
- * October 2026). Students, workers and PRs get monthly postpaid Rogers/Fido plans;
+ * Pre-arrival eSIM plans, as confirmed by the owner in docs/LAUNCH_PLANS.md table D
+ * (20 October 2026). Students, workers and PRs get monthly postpaid Rogers/Fido plans;
  * visitors (tourist, Super Visa) get Chatr prepaid. Audience mapping is for the UI only;
  * backend eligibility is not inferred.
  */

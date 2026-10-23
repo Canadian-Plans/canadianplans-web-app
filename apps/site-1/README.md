@@ -214,10 +214,13 @@ and remaining inbox/asset/business-copy review.
 
 ### Category design previews
 
-The seven category routes are `/pre-arrival-sim/students`,
+The category routes are `/pre-arrival-sim/students`, `/pre-arrival-sim/workers`,
+`/pre-arrival-sim/new-immigrants`, `/pre-arrival-sim/visitors`,
 `/pre-arrival-sim/from-india`, `/pre-arrival-sim/toronto-pearson`,
 `/mobile-plans/rogers`, `/compare/rogers-vs-fido`,
-`/home-internet/vancouver` and `/home-internet/ontario`.
+`/home-internet/vancouver` and `/home-internet/ontario`. The workers, new-immigrants
+and visitors pages were added in the 23 October 2026 SEO content rewrite
+(`docs/marketing/seo-content-research-2026-10-23.md`).
 Each has desktop/mobile Figma references and typed preview content. All are
 noindex and excluded from the sitemap. Address checks and plan selections use
 local fixtures; these pages create no provider request or real order.

@@ -1,23 +1,25 @@
 import {
-  eSimCheck,
+  advisorHours,
   landingBreadcrumb,
   landingFaqIntro,
   landingSkip,
+  preArrivalDocuments,
   preArrivalSteps,
   pricesNote,
+  sharedArrivalFaq,
 } from './shared';
 import type { LandingPageContent } from './types';
 
 /**
- * /pre-arrival-sim/from-india — primary keywords: Canadian SIM card in India, Canada eSIM
- * from India, SIM for Indians moving to Canada, keep Indian number in Canada.
- * Facts carried over from the 5 Oct 2026 page; nothing new is claimed.
+ * /pre-arrival-sim/from-india (SEO rewrite, 23 October 2026). Primary phrase: Canadian SIM
+ * card in India; supporting: Canada eSIM from India, SIM for Indians moving to Canada, keep
+ * Indian number for OTP in Canada. Facts from docs/LAUNCH_PLANS.md table D.
  */
 export const fromIndiaLanding: LandingPageContent = {
   path: '/pre-arrival-sim/from-india',
-  title: 'Canadian SIM Card in India: Get a Canada eSIM Before You Fly | Canadian Plans',
+  title: 'Canadian SIM Card in India: Get Your Canada eSIM Before You Fly | Canadian Plans',
   description:
-    'Moving from India to Canada? Order a Canadian eSIM from India, get your number before you fly and keep your Indian SIM for OTPs. Plans from $35/month.',
+    'Moving from India to Canada? Order a Rogers, Fido or Chatr eSIM from India, get your number before you fly and keep your Indian SIM for OTPs. From $35/month.',
   mainId: 'india-main',
   skip: landingSkip,
   tone: 'amber',
@@ -25,7 +27,7 @@ export const fromIndiaLanding: LandingPageContent = {
     ...landingBreadcrumb,
     items: [
       { label: 'Home', href: '/' },
-      { label: 'Pre-arrival SIM', href: '/pre-arrival-sim' },
+      { label: 'SIM before you arrive', href: '/pre-arrival-sim' },
       { label: 'From India' },
     ],
   },
@@ -33,7 +35,7 @@ export const fromIndiaLanding: LandingPageContent = {
     eyebrow: 'Canada eSIM · Moving from India',
     title: 'Canadian SIM card for Indians moving to Canada',
     description:
-      'Get your Canadian number while you are still in India, ready for bank, college and job forms. Rogers, Fido and Chatr eSIM plans with no Canadian credit history and nothing paid online.',
+      'Get your Canadian number while you are still in India, ready for bank, college and job forms. Rogers, Fido and Chatr eSIM plans with 1,000 minutes to India, no Canadian credit check and nothing paid online.',
     action: { label: 'See plans for India', href: '#plans' },
     pricePrefix: 'from',
     price: '$35',
@@ -41,7 +43,7 @@ export const fromIndiaLanding: LandingPageContent = {
     photo: 'PHOTO · newcomer from India at Toronto Pearson arrivals, phone in hand',
     highlights: ['Order from India', 'No credit check', 'Keep your Indian number'],
   },
-  byline: 'Updated 5 October 2026 · Reviewed by a Canadian Plans plan advisor',
+  byline: 'Updated 23 October 2026 · Checked by a Canadian Plans plan advisor',
   onThisPage: {
     label: 'On this page',
     links: [
@@ -57,48 +59,40 @@ export const fromIndiaLanding: LandingPageContent = {
     eyebrow: 'Quick answer',
     title: 'How do I get a Canadian SIM card in India?',
     answer:
-      'Order a Canadian eSIM online from India 1 to 3 weeks before your flight. We confirm by phone or email, assign your Canadian number right away and email your eSIM QR code. Install it at home and it switches on when you land. Plans start at $35 a month (CAD, plus tax) and you don’t need a Canadian credit history.',
+      'Order a Canadian eSIM online from India 1 to 3 weeks before your flight. An advisor confirms by phone or email, your Canadian number is assigned right away, and your eSIM QR code arrives by email. Install it at home and it switches on when you land. Monthly Rogers and Fido plans start at $35 (CAD, plus tax) and include 1,000 minutes to India. There is no Canadian credit check and nothing is paid online.',
   },
   facts: {
     label: 'Plan facts for India',
     items: [
       { label: 'How to order', value: 'Online, 2 min', detail: 'Nothing paid online' },
-      { label: 'eSIM delivery', value: 'Minutes', detail: 'By email, install at home' },
+      { label: 'eSIM delivery', value: 'By email', detail: 'Install at home in India' },
       { label: 'Support in IST', value: '9:30pm–9:30am', detail: 'Mon–Sat (9am–9pm PT)*' },
-      { label: 'Most chosen', value: 'Rogers 100 GB', detail: '$40/mo, CAD + tax' },
+      { label: 'Calls to India', value: '1,000 min', detail: 'On every monthly plan' },
     ],
     note: '*IST times are for Pacific Daylight Time and move one hour later when clocks change in November.',
   },
   blocks: [
     preArrivalSteps('Your Canadian SIM from India in 3 steps'),
     { kind: 'slot', id: 'plans' },
-    {
-      kind: 'checklist',
-      id: 'documents',
-      eyebrow: 'Before you order',
-      title: 'What you need to order from India',
-      description:
-        'You do not upload anything to order. Have these ready in case your advisor asks for them.',
-      mark: '✓',
-      items: [
-        { title: 'Indian passport', body: 'The photo page. Your name should match your permit.' },
-        {
-          title: 'Study or work permit, visa or COPR',
-          body: 'The document you are travelling on.',
-        },
-        { title: 'Arrival date and city', body: 'So your plan starts the day you land.' },
-        { title: 'Email address', body: 'We send your eSIM QR code here.' },
-      ],
-      aside: eSimCheck,
-    },
+    preArrivalDocuments('documents', 'What you need to order from India', {
+      title: 'Study or work permit, visa or COPR',
+      body: 'The document you are travelling on. Students can use the letter of introduction.',
+    }),
     {
       kind: 'cards',
       id: 'calling-india',
       eyebrow: 'Stay in touch',
       title: 'How to call India from Canada',
-      description: 'Three ways to keep talking to family, from free to unlimited.',
+      description:
+        'Every monthly plan includes 1,000 minutes to India. Here are the three ways families usually keep in touch.',
       columns: 3,
       items: [
+        {
+          id: 'included',
+          chip: 'Included',
+          title: '1,000 international minutes',
+          body: 'Rogers and Fido monthly plans include 1,000 minutes a month to India, plus unlimited international texts.',
+        },
         {
           id: 'whatsapp',
           chip: 'Free',
@@ -107,15 +101,9 @@ export const fromIndiaLanding: LandingPageContent = {
         },
         {
           id: 'add-on',
-          chip: 'Paid add-on',
-          title: 'International calling add-on',
-          body: 'Unlimited calls to India on top of your Canadian plan.',
-        },
-        {
-          id: 'per-minute',
-          chip: 'Per minute',
-          title: 'Pay per minute',
-          body: 'Good if you only call landlines in India now and then.',
+          chip: 'Ask an advisor',
+          title: 'Need more minutes?',
+          body: 'If you call landlines in India a lot, ask your advisor about add-ons once your plan is active.',
         },
       ],
     },
@@ -128,21 +116,21 @@ export const fromIndiaLanding: LandingPageContent = {
         {
           title: 'Will my Indian phone work with a Canadian eSIM?',
           body: [
-            'Yes, if it is unlocked and supports eSIM. Most recent iPhones and many Samsung and Pixel phones do.',
-            'Phones bought on an Indian carrier contract may be locked, so check before you order.',
+            'Yes, if it is unlocked and supports eSIM. Most recent iPhones and many Samsung, OnePlus and Pixel phones do.',
+            'Phones bought on an Indian carrier contract or from some online bundles may be locked, so check the settings or send us the model before you order.',
           ],
         },
         {
           title: 'Should I keep my Indian SIM?',
           body: [
-            'Yes, for at least the first few months. Indian banks, UPI and Aadhaar still send one-time codes (OTPs) to your Indian number, so keep it on a low-cost plan.',
-            'A dual-SIM phone lets you keep both lines: your Indian SIM and your Canadian eSIM. Turn off roaming on the Indian SIM to avoid charges, and receive OTPs over WiFi calling where your Indian carrier supports it.',
+            'Yes, for at least the first few months. Indian banks, UPI and Aadhaar still send one-time passwords to your Indian number, so keep it on a low-cost plan.',
+            'A dual-SIM phone lets you run both lines: your Indian SIM and your Canadian eSIM. Turn off data roaming on the Indian SIM to avoid charges, and use WiFi calling where your Indian carrier supports it.',
           ],
         },
         {
-          title: 'What is the cheapest way to call India from Canada?',
+          title: 'Which plan do newcomers from India choose?',
           body: [
-            'WhatsApp calls are free on WiFi or data. If your family uses landlines, add an international calling add-on to your Canadian plan.',
+            'Students and workers staying over 90 days choose a monthly plan: Fido 75 GB at $35 or Rogers 100 GB at $40. Parents visiting on a visitor visa or Super Visa for under 90 days choose a Chatr prepaid plan, from $35 for 30 days or $75 for 90 days.',
           ],
         },
       ],
@@ -154,9 +142,9 @@ export const fromIndiaLanding: LandingPageContent = {
           { label: 'When to order', value: '1–3 weeks before your flight' },
           { label: 'How you get it', value: 'eSIM by email, ordered from India' },
           { label: 'Support in IST', value: '9:30pm–9:30am, Mon–Sat' },
-          { label: 'Networks', value: 'Rogers, Fido, Chatr' },
+          { label: 'Carriers', value: 'Rogers, Fido, Chatr' },
         ],
-        note: 'Updated 5 October 2026',
+        note: 'Updated 23 October 2026',
       },
     },
   ],
@@ -164,14 +152,14 @@ export const fromIndiaLanding: LandingPageContent = {
     intro: landingFaqIntro({
       eyebrow: 'FAQ',
       title: 'India to Canada SIM questions',
-      description: 'Advisors are available Monday to Saturday, 9am–9pm Pacific time.',
+      description: advisorHours,
     }),
     items: [
       {
         id: 'india-buy',
         question: 'Can I buy a Canadian SIM card in India?',
         answer:
-          'Yes, as an eSIM. Order online from India, confirm by phone or email and we email your eSIM QR code. There is nothing to pay online; your plan starts when you land.',
+          'Yes, as an eSIM. Order online from India, confirm by phone or email and we email your eSIM QR code. There is nothing to pay online; your plan starts when you land in Canada.',
       },
       {
         id: 'india-phone',
@@ -183,8 +171,16 @@ export const fromIndiaLanding: LandingPageContent = {
         id: 'india-keep',
         question: 'Should I keep my Indian SIM active?',
         answer:
-          'Keep it for one-time codes from your bank and other services. Use a dual-SIM phone and check your Indian carrier’s roaming settings.',
+          'Yes. Keep it for one-time passwords from your bank, UPI and Aadhaar. Use a dual-SIM phone and turn off data roaming on the Indian SIM.',
       },
+      {
+        id: 'india-parents-visit',
+        question: 'What plan should my parents get for a Super Visa visit?',
+        answer:
+          'A Chatr prepaid plan: 50 GB for $35 or 90 GB for $40 per 30 days, or 75 GB for $75 over 90 days (CAD, plus tax). Chatr plans are for visitor and Super Visa stays under 90 days and are activated 24 hours before arrival.',
+      },
+      sharedArrivalFaq.pay,
+      sharedArrivalFaq.cancel,
       {
         id: 'india-parents',
         question: 'Can my parents in India order for me?',
@@ -212,8 +208,12 @@ export const fromIndiaLanding: LandingPageContent = {
     title: 'Keep exploring',
     groups: [
       {
-        title: 'For students',
-        links: [{ label: 'Student SIM for Canada', href: '/pre-arrival-sim/students' }],
+        title: 'Who you are',
+        links: [
+          { label: 'International students', href: '/pre-arrival-sim/students' },
+          { label: 'Work permit holders', href: '/pre-arrival-sim/workers' },
+          { label: 'Visitors and Super Visa', href: '/pre-arrival-sim/visitors' },
+        ],
       },
       {
         title: 'Arriving at',
@@ -222,7 +222,7 @@ export const fromIndiaLanding: LandingPageContent = {
       {
         title: 'Compare and learn',
         links: [
-          { label: 'All pre-arrival plans', href: '/pre-arrival-sim' },
+          { label: 'All eSIM plans', href: '/pre-arrival-sim' },
           {
             label: 'Best SIM for students from India',
             href: '/guides/best-sim-for-students-from-india',
@@ -234,7 +234,7 @@ export const fromIndiaLanding: LandingPageContent = {
   },
   cta: {
     title: 'From India to online in Canada',
-    subtitle: 'Choose a plan in about 2 minutes. Nothing to pay today.',
+    subtitle: 'Choose a plan in about 2 minutes. No credit check, nothing paid online.',
     primary: { label: 'See plans for India →', href: '#plans' },
     secondary: { label: 'Talk to an advisor ›', href: '/contact' },
     icon: 'cta-pre-arrival',
@@ -244,5 +244,5 @@ export const fromIndiaLanding: LandingPageContent = {
 export const fromIndiaPlanHeading = {
   title: ['Plans newcomers from India choose'],
   description:
-    'Every plan is an eSIM with nothing to pay upfront. Pick who you are travelling as to see the plans that fit.',
+    'Every plan is an eSIM with nothing paid online. Pick how you are travelling to see the plans you are eligible for.',
 };

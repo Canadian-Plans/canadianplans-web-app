@@ -2,16 +2,16 @@ import { landingBreadcrumb, landingFaqIntro, landingSkip } from './landing/share
 import type { LandingPageContent } from './landing/types';
 
 /**
- * /about on the Electric Blue landing kit (15 October 2026). Primary keywords: Canadian
- * Plans, authorized Rogers Fido Chatr dealer Surrey BC, phone plans for newcomers.
- * Owner-supplied claims from the 12 Oct design copy; location and hours remain preview
- * fixtures until confirmed.
+ * /about on the Electric Blue landing kit (15 October 2026; copy rewritten 23 October 2026).
+ * Primary phrase: Canadian Plans, authorised Rogers, Fido and chatr reseller in Surrey, BC.
+ * Canadian Plans is an online business: it has a Surrey address and helps customers by
+ * phone and email, so the page no longer invites in-person visits.
  */
 export const aboutPage: LandingPageContent = {
   path: '/about',
-  title: 'About Canadian Plans: Authorized Phone & Internet Dealer in Surrey, BC',
+  title: 'About Canadian Plans: Authorized Rogers, Fido & Chatr Reseller in Surrey, BC',
   description:
-    'Canadian Plans, in Surrey, BC, is an authorized Rogers, Fido and Chatr dealer for pre-arrival plans, and an authorized sales agent for home internet and mobile. We help newcomers get a phone or internet plan in plain English, with no Canadian credit history needed.',
+    'Canadian Plans is an authorised Rogers, Fido and chatr reseller in Surrey, BC, helping newcomers get a Canadian phone plan or home internet. Nothing paid online.',
   mainId: 'about-main',
   skip: landingSkip,
   tone: 'navy',
@@ -21,26 +21,26 @@ export const aboutPage: LandingPageContent = {
   },
   hero: {
     eyebrow: 'About Canadian Plans',
-    title: 'Canadian phone and internet plans, explained by humans',
+    title: 'Canadian phone and internet plans, explained by a real person',
     description:
-      'Based in Surrey, BC, we are an authorized Rogers, Fido and Chatr dealer for pre-arrival plans, and an authorized sales agent for home internet and mobile. We help newcomers get a phone or internet plan in plain English, with no Canadian credit history needed.',
+      'We are an authorized Rogers, Fido and Chatr reseller for the eSIM plans you order before you arrive in Canada, and an authorized sales agent for home internet and mobile plans. Based in Surrey, BC, we help newcomers by phone and email, in plain English, with nothing paid on the website.',
     action: { label: 'Talk to an advisor', href: '/contact' },
-    photo: 'PHOTO · the Canadian Plans team at the Surrey shop counter',
-    highlights: ['Authorized dealer', 'Real people, no bots', 'Nothing to pay today'],
+    photo: 'PHOTO · a Canadian Plans advisor on a call, Surrey, BC',
+    highlights: ['Authorized reseller', 'Real people, no bots', 'Nothing paid online'],
   },
   quick: {
-    eyebrow: 'Our story',
-    title: 'We started because a phone plan shouldn’t need a credit history',
+    eyebrow: 'Why we exist',
+    title: 'A phone plan should not depend on a credit history you cannot have yet',
     answer:
-      'Too many newcomers were turned away for not having a SIN, a credit score or a local address, or were sold plans they didn’t need. So we became an authorized dealer for people arriving in Canada: students, workers, permanent residents and visitors.',
+      'Newcomers get turned away for not having a SIN, a credit score or a Canadian address, or get sold more plan than they need. Canadian Plans sells carrier plans at the carrier’s own price, explains who the contract is with, and lets you order before you land with no credit check and nothing paid online.',
   },
   facts: {
     label: 'Canadian Plans at a glance',
     items: [
-      { label: 'Location', value: 'Surrey, BC', detail: 'Visit us in person' },
-      { label: 'Pre-arrival carriers', value: '3', detail: 'Rogers, Fido, Chatr' },
+      { label: 'Based in', value: 'Surrey, BC', detail: 'Help by phone and email' },
+      { label: 'eSIM carriers', value: '3', detail: 'Rogers, Fido, Chatr' },
       { label: 'Hours', value: 'Mon–Sat', detail: '9am–9pm Pacific' },
-      { label: 'To order', value: '$0', detail: 'Nothing due today' },
+      { label: 'Paid online', value: '$0', detail: 'On every plan' },
     ],
   },
   blocks: [
@@ -48,31 +48,31 @@ export const aboutPage: LandingPageContent = {
       kind: 'cards',
       id: 'why-us',
       eyebrow: 'Why us',
-      title: 'Why newcomers choose Canadian Plans',
+      title: 'Why newcomers order through Canadian Plans',
       columns: 2,
       items: [
         {
           id: 'credit',
-          title: 'No credit history needed',
-          body: 'No Canadian credit history? No problem. We work with newcomers every day.',
+          title: 'No credit check on eSIM plans',
+          body: 'Order a Rogers, Fido or Chatr plan before you arrive with no Canadian credit history and nothing to upload.',
           icon: 'why-mb-credit',
         },
         {
           id: 'humans',
-          title: 'Real humans',
-          body: 'A real advisor calls to confirm every order. No bots, no phone menus.',
+          title: 'A real advisor confirms every order',
+          body: 'By phone or email, usually the same day. No bots and no phone menus.',
           icon: 'gets-bz-support',
         },
         {
           id: 'anywhere',
-          title: 'Order from anywhere',
-          body: 'Start before you land. Order your eSIM from your home country.',
+          title: 'Order from any country',
+          body: 'Your Canadian number is ready before you fly, and your eSIM arrives by email.',
           icon: 'why-pa-roaming',
         },
         {
           id: 'dealer',
           title: 'Carrier prices, no markup',
-          body: 'Rogers, Fido and Chatr pre-arrival plans at the carriers’ own prices.',
+          body: 'You pay the carrier’s own monthly price plus tax. We charge no SIM, activation or service fee.',
           icon: 'why-mb-carriers',
         },
       ],
@@ -80,29 +80,29 @@ export const aboutPage: LandingPageContent = {
     {
       kind: 'cards',
       id: 'carriers',
-      eyebrow: 'Authorized dealer',
-      title: 'Rogers, Fido and Chatr pre-arrival plans, under one roof',
+      eyebrow: 'Who you buy from',
+      title: 'Rogers, Fido and Chatr plans, with the contract in your name',
       description:
-        'For pre-arrival plans we are an independent authorized dealer, not the carrier. All three brands run on the Rogers network; we help you pick the one that fits.',
+        'For eSIM plans ordered before you arrive we are an independent authorized reseller, not the carrier: your account is with Rogers, Fido or Chatr and they bill you after activation. For home internet and mobile plans we are an authorized sales agent, and your advisor confirms the provider before anything is set up. All three carrier brands run on the Rogers network.',
       columns: 3,
       items: [
         {
           id: 'rogers',
-          chip: 'Premium',
+          chip: 'Most data',
           title: 'Rogers',
-          body: 'Fastest 5G+ speeds and Canada–US plans. Postpaid, builds Canadian credit.',
+          body: '100 GB for $40 or 120 GB with Canada + US calling and roaming for $50 a month. Postpaid, hotspot included.',
         },
         {
           id: 'fido',
-          chip: 'Best value',
+          chip: 'Lowest monthly price',
           title: 'Fido',
-          body: 'The same network for less, with prepaid or postpaid plans.',
+          body: '75 GB for $35 a month on the same network. Postpaid, for stays over 90 days.',
         },
         {
           id: 'chatr',
-          chip: 'Lowest price',
+          chip: 'Prepaid for visitors',
           title: 'Chatr',
-          body: 'Simple prepaid plans with no credit check.',
+          body: 'Prepaid plans from $35 for 30 days, for visitor and Super Visa stays under 90 days.',
         },
       ],
     },
@@ -111,31 +111,32 @@ export const aboutPage: LandingPageContent = {
     intro: landingFaqIntro({
       eyebrow: 'FAQ',
       title: 'About Canadian Plans',
-      description: 'Advisors are available Monday to Saturday, 9am–9pm Pacific time.',
+      description: 'Advisors are available Monday to Saturday, 9am to 9pm Pacific time.',
     }),
     items: [
       {
         id: 'carrier',
         question: 'Is Canadian Plans a phone carrier?',
         answer:
-          'No. We are an independent authorized dealer for Rogers, Fido and Chatr pre-arrival plans, and an authorized sales agent for home internet and mobile providers. Your plan and bill come from the provider, not from us.',
+          'No. We are an independent authorized reseller of Rogers, Fido and Chatr for eSIM plans ordered before you arrive, and an authorized sales agent for home internet and mobile providers. Your plan and your bill come from the provider, not from us.',
       },
       {
         id: 'markup',
         question: 'Do you charge more than the carrier?',
-        answer: 'No. You pay the carriers’ own prices, with no markup.',
+        answer:
+          'No. You pay the carrier’s own monthly price plus tax, billed by the carrier after activation. Canadian Plans charges no SIM, activation, shipping or service fee.',
       },
       {
         id: 'where',
         question: 'Where are you located?',
         answer:
-          'Our shop is in Surrey, BC, and we help customers online from anywhere, including before they arrive in Canada.',
+          'Canadian Plans is based at 9981 Whalley Blvd, Surrey, British Columbia. We help customers by phone and email from anywhere in the world, including before they arrive in Canada.',
       },
       {
         id: 'credit',
         question: 'Can you help if I have no Canadian credit history?',
         answer:
-          'Yes. We work with newcomers every day and explain the options that do not need a Canadian credit history.',
+          'Yes. The eSIM plans you order before you arrive need no credit check. For home internet, many newcomers sign up with a passport and permit; your advisor tells you if a deposit is needed before anything is booked.',
       },
     ],
   },
@@ -145,8 +146,10 @@ export const aboutPage: LandingPageContent = {
       {
         title: 'Moving to Canada',
         links: [
-          { label: 'Pre-arrival SIM plans', href: '/pre-arrival-sim' },
-          { label: 'Student SIM', href: '/pre-arrival-sim/students' },
+          { label: 'eSIM plans before you arrive', href: '/pre-arrival-sim' },
+          { label: 'International students', href: '/pre-arrival-sim/students' },
+          { label: 'Work permit holders', href: '/pre-arrival-sim/workers' },
+          { label: 'New permanent residents', href: '/pre-arrival-sim/new-immigrants' },
         ],
       },
       {
@@ -166,9 +169,9 @@ export const aboutPage: LandingPageContent = {
     ],
   },
   cta: {
-    title: 'Ready to get connected?',
-    subtitle: 'Talk to a real advisor. No bots, no pressure, nothing to pay today.',
-    primary: { label: 'See plans →', href: '/mobile-plans' },
+    title: 'Ready to get connected in Canada?',
+    subtitle: 'Talk to a real advisor. No bots, no pressure, nothing paid online.',
+    primary: { label: 'See eSIM plans →', href: '/pre-arrival-sim#plans' },
     secondary: { label: 'Talk to an advisor ›', href: '/contact' },
     icon: 'cta-mobile',
   },

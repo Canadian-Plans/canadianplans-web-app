@@ -130,6 +130,37 @@ export function ArticleBodyBlock({ block }: { block: ArticleBlock }) {
           <p className="cp-guide-small">{block.note}</p>
         </>
       );
+    case 'table':
+      return (
+        <section className="cp-guide-section">
+          <h2 id={block.id} tabIndex={-1}>
+            {block.title}
+          </h2>
+          <table className="cp-guide-table" aria-label={block.caption}>
+            <caption className="sr-only">{block.caption}</caption>
+            <thead>
+              <tr>
+                {block.columns.map((column) => (
+                  <th key={column} scope="col">
+                    {column}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {block.rows.map((row) => (
+                <tr key={row.label}>
+                  <th scope="row">{row.label}</th>
+                  {row.values.map((value, index) => (
+                    <td key={`${row.label}-${block.columns[index + 1] ?? index}`}>{value}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="cp-guide-small">{block.note}</p>
+        </section>
+      );
     case 'plan-cta':
       return (
         <div className="cp-guide-inline-cta">

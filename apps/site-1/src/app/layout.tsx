@@ -8,6 +8,7 @@ import { PlanFinderProvider } from '@/components/shared/plan-finder-provider';
 import { CookieConsentProvider } from '@/components/shared/cookie-consent';
 import { metadataCopy } from '@content/metadata';
 import { cookieBootstrapScript } from '@/lib/cookie-bootstrap';
+import { buildOrganizationSchema, serializeOrganizationSchema } from '@/lib/organization-schema';
 import './(storefront)/globals.css';
 export const metadata: Metadata = {
   metadataBase: new URL(siteBaseUrl()),
@@ -32,6 +33,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <script
           id="cp-consent-bootstrap"
           dangerouslySetInnerHTML={{ __html: cookieBootstrapScript }}
+        />
+        {/* Sitewide Organization JSON-LD: public business facts only (content/organization.ts). */}
+        <script
+          id="cp-organization-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: serializeOrganizationSchema(buildOrganizationSchema(siteBaseUrl())),
+          }}
         />
       </head>
       <body>

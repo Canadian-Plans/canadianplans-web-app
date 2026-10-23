@@ -876,3 +876,61 @@
     padding-bottom: var(--cp-cat-page-gap);
   }
 }
+
+/* Data table in guide articles (23 October 2026): visible at every width, scrolls sideways
+   on narrow screens instead of hiding like the plan comparison does. */
+.cp-guide-table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: var(--cp-border-thin) solid var(--cp-color-line);
+  border-radius: var(--cp-radius-20);
+}
+.cp-guide-table thead,
+.cp-guide-table tbody,
+.cp-guide-table tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+.cp-guide-table th,
+.cp-guide-table td {
+  padding: var(--cp-space-14) var(--cp-space-18);
+  vertical-align: top;
+  text-align: left;
+  font-size: var(--cp-text-14);
+  line-height: var(--cp-space-20);
+}
+.cp-guide-table thead {
+  background: var(--cp-color-snow);
+}
+.cp-guide-table th {
+  font-weight: var(--cp-weight-bold);
+}
+.cp-guide-table tbody :is(th, td) {
+  border-top: var(--cp-border-thin) solid var(--cp-color-line);
+}
+@variant sm {
+  .cp-guide-table {
+    display: table;
+    table-layout: fixed;
+    overflow: hidden;
+  }
+  .cp-guide-table thead,
+  .cp-guide-table tbody {
+    display: table-header-group;
+  }
+  .cp-guide-table tbody {
+    display: table-row-group;
+  }
+  .cp-guide-table tr {
+    display: table-row;
+  }
+  .cp-guide-table td {
+    font-size: var(--cp-text-16);
+    line-height: var(--cp-space-24);
+  }
+}

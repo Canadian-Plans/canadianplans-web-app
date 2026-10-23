@@ -8,11 +8,33 @@ export function guideContents(article: GuideArticle) {
   return [
     { id: 'quick-answer', title: guideCopy.quick },
     ...article.blocks.flatMap((block) =>
-      block.kind === 'section' || block.kind === 'steps' || block.kind === 'faq'
+      block.kind === 'section' ||
+      block.kind === 'steps' ||
+      block.kind === 'faq' ||
+      block.kind === 'table'
         ? [{ id: block.id, title: block.title }]
         : [],
     ),
   ];
+}
+/** FAQPage schema for a guide's FAQ blocks, or null when the article has none. */
+export function guideFaqSchema(article: GuideArticle) {
+  const questions = article.blocks.flatMap((block) =>
+    block.kind === 'faq'
+      ? block.items
+          .filter((item) => item.question.trim() && item.answer.trim())
+          .map((item) => ({
+            '@type': 'Question' as const,
+            name: item.question,
+            acceptedAnswer: { '@type': 'Answer' as const, text: item.answer },
+          }))
+      : [],
+  );
+  if (questions.length === 0) return null;
+  return { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: questions } as const;
+}
+export function serializeGuideFaqSchema(schema: NonNullable<ReturnType<typeof guideFaqSchema>>) {
+  return JSON.stringify(schema).replace(/</g, '\\u003c');
 }
 /** Describes the rendered article; no guessed publication date or placeholder photo. */
 export function articleSchema(article: GuideArticle, origin: string) {

@@ -12,12 +12,15 @@ function matches(query: string) {
 }
 
 describe('FAQ search and structured content', () => {
-  it('keeps all 19 questions and original groups for a blank search', () => {
-    expect(matches(' \n ')).toHaveLength(19);
+  const allItems = faqGroups.flatMap((group) => group.items);
+  const pendingCount = allItems.filter((item) => item.answerStatus === 'pending').length;
+  it('keeps every question and the original groups for a blank search', () => {
+    expect(matches(' \n ')).toHaveLength(allItems.length);
+    expect(allItems.length).toBe(24);
     expect(filterFaqGroup(faqGroups[0]!, '')).toBe(faqGroups[0]);
   });
-  it('matches the source placeholder example through its credit-check alias', () => {
-    expect(matches('no credit check').map((item) => item.id)).toEqual(['credit-history']);
+  it('matches the credit-check question first through its keyword alias', () => {
+    expect(matches('no credit check').map((item) => item.id)[0]).toBe('credit-history');
   });
   it('normalizes Unicode, case and repeated whitespace', () => {
     expect(normalizeFaqSearch(' ＥＳＩＭ  PHYSICAL ')).toBe('esim physical');
@@ -33,15 +36,16 @@ describe('FAQ search and structured content', () => {
   it('does not treat the pending editorial notice as FAQ answer content', () => {
     expect(matches('awaiting approved')).toEqual([]);
   });
-  it('emits the 13 answered Q&A pairs and excludes the 6 pending answers', () => {
+  it('emits every answered Q&A pair and excludes the pending answers', () => {
+    expect(pendingCount).toBe(3);
     const schema = buildFaqPageSchema(faqGroups);
     expect(schema['@type']).toBe('FAQPage');
     expect(schema['@context']).toBe('https://schema.org');
     const complete = faqGroups.flatMap((group) =>
       group.items.filter((item) => item.answerStatus !== 'pending'),
     );
-    expect(complete).toHaveLength(13);
-    expect(schema.mainEntity).toHaveLength(13);
+    expect(complete).toHaveLength(allItems.length - pendingCount);
+    expect(schema.mainEntity).toHaveLength(allItems.length - pendingCount);
     expect(
       schema.mainEntity.map((item) => ({ question: item.name, answer: item.acceptedAnswer.text })),
     ).toEqual(complete.map((item) => ({ question: item.question, answer: item.answer })));
