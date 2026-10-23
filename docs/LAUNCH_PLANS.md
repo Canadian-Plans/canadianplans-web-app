@@ -64,14 +64,23 @@ government fees are extra.
 
 ## C. Mobile, bring your own device (national, postpaid, no connection fee)
 
-| Plan                   | Data      | Price | Notes                                                                 |
-| ---------------------- | --------- | ----: | --------------------------------------------------------------------- |
-| Canada + US            | 100 GB 5G |   $40 | "Limited time offer"; roaming up to 5 GB/day                          |
-| Canada + US + Mexico   | 150 GB 5G |   $65 | Roaming up to 5 GB/day                                                |
-| 5G+ Complete Unlimited | Unlimited |   $90 | Speeds up to 2 Gbps, 50 GB hotspot, Canada/US/Mexico, no data sharing |
+Re-read from [canadawideinternet.com/mobility](https://www.canadawideinternet.com/mobility)
+on 23 October 2026; the 20 October table came from the older repo copy and no longer
+matched the live site.
 
-Unlimited talk and text on all three. eSIM or SIM card. Canada Wide runs an identity and
+| Plan                   | Data      | Price | Notes                                                                            |
+| ---------------------- | --------- | ----: | -------------------------------------------------------------------------------- |
+| 5G+ Complete           | 100 GB    |   $55 | Speeds up to 2 Gbps; US roaming up to 5 GB/day; not shareable; 5-year price lock |
+| 5G+ Complete           | 175 GB    |   $60 | "Limited time offer", no end date shown; otherwise as the 100 GB plan            |
+| 5G+ Complete Unlimited | Unlimited |   $90 | Speeds up to 2 Gbps, 50 GB hotspot, Canada/US/Mexico, no data sharing            |
+
+Unlimited talk and text in Canada and the US on all three, AI scam protection, Easy Roam
+outside the US from $16/day. Prices include a $10 pre-authorized bank payment discount.
+Unlocked phone required; eSIM or SIM card. No contract. Canada Wide runs an identity and
 credit check on these, then an advisor confirms the price.
+
+Superseded 23 October 2026: Canada + US 100 GB $40 (limited time) and Canada + US +
+Mexico 150 GB $65.
 
 ## D. Mobile, pre-arrival eSIM (national, all BYOD)
 

@@ -310,14 +310,14 @@ export const homeRedesign = {
         title: 'Canadian phone & internet plans, with real prices.',
         description:
           'Bring your own phone, keep your number, and get set up by a real person. Home internet in BC, Alberta, Manitoba and Saskatchewan.',
-        price: 'Mobile from $40/mo + tax',
+        price: 'Mobile from $55/mo + tax',
         chips: ['✓ No contract', '✓ Keep your number'],
         needs: ['A mobile plan', 'Home internet', 'Mobile + internet bundle', 'Business internet'],
         fieldLabel: 'Postal code',
         fieldHint: 'e.g. V3T 1Z2',
         cta: 'Show my plans →',
         badgeTop: 'Mobile from',
-        badgePrice: '$40',
+        badgePrice: '$55',
         photo: 'PHOTO · customer at home, phone in hand, router behind (with consent)',
       },
       newcomer: {
@@ -367,7 +367,7 @@ export const homeRedesign = {
         price: 'From $50/mo',
         icon: 'picker-home-internet',
       },
-      { key: 'mobile', title: 'Mobile Plans', price: 'From $40/mo', icon: 'picker-mobile' },
+      { key: 'mobile', title: 'Mobile Plans', price: 'From $55/mo', icon: 'picker-mobile' },
       {
         key: 'business',
         title: 'Business Internet',
@@ -410,7 +410,7 @@ export const homeRedesign = {
       {
         key: 'mobile',
         title: 'Mobile Plans',
-        dollars: '40',
+        dollars: '55',
         cents: '.00',
         icon: 'column-mobile',
         features: ['Keep your current number', 'Bring your own phone', 'eSIM or SIM card'],
@@ -597,7 +597,7 @@ export const homeRedesign = {
         title: 'Switch to a plan that fits.',
         action: 'See mobile plans',
         pricePrefix: 'from',
-        price: '$40',
+        price: '$55',
         priceSuffix: '/mo',
         photo: 'PHOTO · advisor helping a customer compare phones',
       },

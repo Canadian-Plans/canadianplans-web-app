@@ -21,7 +21,7 @@ export const missingCopy = {
     },
     {
       title: 'Mobile plans',
-      description: 'From $40/mo, for your phone',
+      description: 'From $55/mo, for your phone',
       icon: 'mobile',
       href: '/mobile-plans',
     },
