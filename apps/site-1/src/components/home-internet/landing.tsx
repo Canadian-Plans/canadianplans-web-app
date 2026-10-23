@@ -5,15 +5,15 @@ import {
   CpButton,
   CpCtaBand,
   CpFaqAccordion,
-  CpPlanCard,
   CpStepTimeline,
 } from '@canadian-plans/ui/canadian-plans';
 import { redesignAssets, type RedesignAssetKey } from '@content/home-redesign';
 import {
   internetLandingShared as shared,
   internetProvinceCards,
-  internetProvinceGroups,
+  internetProvincePlanCards,
   type InternetPageContent,
+  type InternetPlanCardContent,
   type LandingImage,
   type LandingShowcaseRow,
 } from '@content/home-internet-landing';
@@ -172,26 +172,36 @@ function Proof() {
 /** Landing page: one card per province, opening that province's page. */
 function ProvinceCards({ label }: { label: string }) {
   return (
-    <ul className="cp-hi-province-grid" aria-label={label}>
+    <ul className="cp-hi-cards" aria-label={label}>
       {internetProvinceCards.map((card) => (
         <li key={card.province}>
-          <a className="cp-hi-province-card" href={card.href} data-province={card.province}>
-            <span className="cp-hi-province-badge">{card.badge}</span>
-            <span className="cp-hi-province-name">{card.name}</span>
-            <span className="cp-hi-province-price">
-              <span>{card.fromLabel}</span>
-              <strong className="cp-hi-num">{card.price}</strong>
-              <span>{card.period}</span>
+          <a className="cp-hi-card" href={card.href} data-featured={card.highlighted}>
+            <span className="cp-hi-card-tag" data-featured={card.highlighted}>
+              {card.tag}
             </span>
-            <ul className="cp-hi-province-bullets">
-              {card.bullets.map((bullet) => (
-                <li key={bullet}>
+            <span className="cp-hi-card-name">{card.name}</span>
+            <span className="cp-hi-card-context">{card.context}</span>
+            <span className="cp-hi-card-price">
+              <span className="cp-hi-card-from">{card.fromLabel}</span>
+              <span className="cp-hi-card-amount">
+                <span className="cp-hi-card-currency">{card.currency}</span>
+                <strong className="cp-hi-num">{card.price}</strong>
+                <span className="cp-hi-card-period">{card.period}</span>
+              </span>
+              <span className="cp-hi-card-note">{card.priceNote}</span>
+            </span>
+            <span className="cp-hi-card-action" data-featured={card.highlighted}>
+              {card.action}
+            </span>
+            <span className="cp-hi-card-includes-title">{card.includesTitle}</span>
+            <ul className="cp-hi-card-includes">
+              {card.includes.map((item) => (
+                <li key={item}>
                   <Tick />
-                  {bullet}
+                  {item}
                 </li>
               ))}
             </ul>
-            <span className="cp-hi-province-action">{card.action}</span>
           </a>
         </li>
       ))}
@@ -199,11 +209,52 @@ function ProvinceCards({ label }: { label: string }) {
   );
 }
 
-/** Province page: every plan sold there, grouped as Internet and Internet + TV. */
+/** One plan on a province page, same slots as the province card; the button opens /order. */
+function PlanCard({ card }: { card: InternetPlanCardContent }) {
+  return (
+    <article className="cp-hi-card" data-featured={card.featured} data-tv={card.tv}>
+      {card.tag ? (
+        <span className="cp-hi-card-tag" data-featured={card.featured}>
+          {card.tag}
+        </span>
+      ) : null}
+      <span className="cp-hi-card-eyebrow">{card.eyebrow}</span>
+      <h3 className="cp-hi-card-name">{card.plan.allowance}</h3>
+      <span className="cp-hi-card-context">{card.bestFor}</span>
+      <p className="cp-hi-card-price">
+        <span className="cp-hi-card-amount">
+          <span className="cp-hi-card-currency">{card.currency}</span>
+          <strong className="cp-hi-num">{card.price}</strong>
+          <span className="cp-hi-card-period">{card.period}</span>
+        </span>
+        <span className="cp-hi-card-note">{card.priceNote}</span>
+      </p>
+      <CpButton
+        asChild
+        tone={card.featured ? 'primary' : 'outline'}
+        scale="large"
+        className="cp-hi-card-button"
+      >
+        <a href={card.href}>{card.action}</a>
+      </CpButton>
+      <span className="cp-hi-card-includes-title">{card.includesTitle}</span>
+      <ul className="cp-hi-card-includes">
+        {card.includes.map((item) => (
+          <li key={item}>
+            <Tick />
+            {item}
+          </li>
+        ))}
+      </ul>
+    </article>
+  );
+}
+
+/** Province page: every plan sold there in one row, internet first, then TV bundles. */
 function ProvincePlans({ page }: { page: InternetPageContent }) {
   const p = page.plans;
   if (!p.province) return null;
-  const groups = internetProvinceGroups(p.province);
+  const cards = internetProvincePlanCards(p.province);
   return (
     <div className="cp-hi-province-plans">
       {p.promo ? (
@@ -212,29 +263,11 @@ function ProvincePlans({ page }: { page: InternetPageContent }) {
           <span>{p.promo}</span>
         </p>
       ) : null}
-      {(
-        [
-          ['internet', groups.internet],
-          ['tv', groups.tv],
-        ] as const
-      ).map(([key, plans]) =>
-        plans.length ? (
-          <div key={key} className="cp-hi-plan-group">
-            <h3 className="cp-hi-plan-group-title">{p.groups[key]}</h3>
-            <div className="cp-hi-plan-cards" data-count={plans.length}>
-              {plans.map((plan) => (
-                <CpPlanCard
-                  key={plan.id}
-                  content={plan}
-                  variant="internet"
-                  featured={plan.badge !== undefined}
-                  href={groups.href(plan)}
-                />
-              ))}
-            </div>
-          </div>
-        ) : null,
-      )}
+      <div className="cp-hi-cards" data-count={cards.length} aria-label={p.cardsLabel}>
+        {cards.map((card) => (
+          <PlanCard key={card.plan.id} card={card} />
+        ))}
+      </div>
     </div>
   );
 }

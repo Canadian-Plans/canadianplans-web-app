@@ -86,7 +86,7 @@ const trialOffer = (name: string): ProvinceOffer => ({
 const offers: Record<InternetProvince, ProvinceOffer> = {
   SK: {
     badge: '2 months free',
-    bullet: 'No upfront payment',
+    bullet: 'Up to 2 months free',
     detail: 'First 2 months free once your service is active. Billing starts in month three.',
     heroTitle: 'Enjoy 2 months free on home internet in Saskatchewan.',
     heroBullets: [
@@ -111,36 +111,123 @@ const tvBullet = (province: InternetProvince) =>
     ? 'Optional StreamSaver TV bundle'
     : 'Optional TV bundle: 120+ channels';
 
-/** One card per province on /home-internet; each opens that province's page. */
+/**
+ * One card per province on /home-internet; each opens that province's page. Card pattern
+ * (Mobbin pricing references, 23 October 2026): name, one line of context, price, sub-line,
+ * button, then an "Includes" tick list. The standout offer (SK) is the highlighted card.
+ */
 export const internetProvinceCards = internetProvinces.map((province) => {
   const plans = internetPlansByProvince[province];
+  const offer = offers[province];
   return {
     province,
     href: internetProvinceHref(province),
-    badge: offers[province].badge,
+    highlighted: province === 'SK',
+    tag: offer.badge,
     name: internetProvinceNames[province],
+    context: `${plans.length} plans · ${offer.bullet.toLowerCase()}`,
     fromLabel: 'From',
-    price: `$${lowestOf(plans)}`,
+    currency: '$',
+    price: `${lowestOf(plans)}`,
     period: '/mo',
-    bullets: [
-      `Up to ${topSpeedOf(plans)}`,
-      offers[province].bullet,
-      'Unlimited data',
+    priceNote: 'CAD · taxes extra · no contract',
+    action: 'View plans & offers',
+    includesTitle: 'Every plan includes:',
+    includes: [
+      `Unlimited data up to ${topSpeedOf(plans)}`,
       'Free WiFi router & modem',
+      'Free professional installation',
+      'No upfront payment',
       tvBullet(province),
     ],
-    action: 'View plans & offers →',
   };
 });
 
-/** Plan cards for a province page, grouped as on Canada Wide: Internet, then Internet + TV. */
-export function internetProvinceGroups(province: InternetProvince) {
+export interface InternetPlanCardContent {
+  readonly plan: InternetPlan;
+  readonly href: string;
+  readonly featured: boolean;
+  readonly tag?: string;
+  readonly tv: boolean;
+  readonly eyebrow: string;
+  readonly bestFor: string;
+  readonly currency: string;
+  readonly price: string;
+  readonly period: string;
+  readonly priceNote: string;
+  readonly action: string;
+  readonly includesTitle: string;
+  readonly includes: readonly string[];
+}
+
+const bestForOf = (plan: InternetPlan, tv: boolean): string => {
+  if (tv) {
+    return plan.id.includes('streamsaver')
+      ? 'Best for gaming, streaming & TV'
+      : 'Best for families who want internet and TV';
+  }
+  return plan.mbps >= 1000
+    ? 'Best for whole-home & work-from-home'
+    : 'Best for streaming & everyday use';
+};
+
+const tvExtras = (plan: InternetPlan): readonly string[] =>
+  plan.features
+    .map((text) => text.replace(/^✓\s*/u, ''))
+    .filter((text) => !/^Unlimited data|WiFi router/u.test(text));
+
+/**
+ * A province's plan cards in one row, as sold on Canada Wide: the entry plan lists what
+ * every plan includes, each faster tier says "Everything in <previous>, plus:", and a TV
+ * bundle says what it adds to its internet speed. Every button opens that plan in /order.
+ */
+export function internetProvincePlanCards(province: InternetProvince): InternetPlanCardContent[] {
   const plans = internetPlansByProvince[province];
-  return {
-    internet: plans.filter((plan) => !isTvPlan(plan)),
-    tv: plans.filter(isTvPlan),
-    href: (plan: InternetPlan) => internetOrderHref(province, plan),
-  };
+  const offer = offers[province];
+  const internet = plans.filter((plan) => !isTvPlan(plan)).sort((a, b) => a.mbps - b.mbps);
+  const tv = plans.filter(isTvPlan);
+  const card = (
+    plan: InternetPlan,
+    isTv: boolean,
+    includesTitle: string,
+    includes: readonly string[],
+  ): InternetPlanCardContent => ({
+    plan,
+    href: internetOrderHref(province, plan),
+    featured: plan.badge !== undefined,
+    ...(plan.badge ? { tag: plan.badge } : {}),
+    tv: isTv,
+    eyebrow: isTv ? plan.carrier : 'Internet',
+    bestFor: bestForOf(plan, isTv),
+    currency: '$',
+    price: `${plan.priceCad}`,
+    period: '/mo',
+    priceNote: 'CAD · taxes extra · no contract',
+    action: `Choose ${plan.allowance}`,
+    includesTitle,
+    includes,
+  });
+  return [
+    ...internet.map((plan, index) => {
+      const previous = internet[index - 1];
+      return previous
+        ? card(plan, false, `Everything in ${previous.allowance}, plus:`, [
+            `Unlimited data up to ${plan.allowance}`,
+            'Maximum speed for the entire household',
+            'Ideal for remote work & video calls',
+          ])
+        : card(plan, false, 'Includes:', [
+            `Unlimited data up to ${plan.allowance}`,
+            'Free WiFi router & modem',
+            'Free professional installation',
+            'No upfront payment',
+            offer.bullet,
+          ]);
+    }),
+    ...tv.map((plan) =>
+      card(plan, true, `Everything in ${plan.allowance} internet, plus:`, tvExtras(plan)),
+    ),
+  ];
 }
 
 const showcase: readonly LandingShowcaseRow[] = [

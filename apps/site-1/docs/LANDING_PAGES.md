@@ -66,6 +66,23 @@ classes); routes `/home-internet` and `/home-internet/[province]` (british-colum
 alberta, saskatchewan, manitoba; anything else is a 404). `/home-internet/vancouver` and
 `/home-internet/ontario` keep their own kit.
 
+### Plan card pattern (Mobbin, 23 October 2026)
+
+Checked against Mobbin pricing references (Webflow, Unify, Height, Grammarly, Vercel,
+Hashnode, Circle, Netflix, Zendesk, Asana). What they share, and what the province and
+plan cards now follow:
+
+- Flat white card, one hairline border, no shadow, no tinted header, no icon chips.
+- The same slots in every card, top to bottom: name, one line of context ("best for"
+  or "3 plans · 2-year price lock"), the price with a small "/mo", one sub-line
+  (currency, taxes, no contract), the button, a divider, then "Includes:" or
+  "Everything in <previous plan>, plus:" with a short tick list.
+- The button sits directly under the price, not at the bottom of the card.
+- Exactly one card is highlighted: a brand-blue border, a tag on its top edge
+  ("Popular" on a province page, "2 months free" for Saskatchewan on the landing page)
+  and the only filled button; every other card uses an outline button.
+- One row of cards, equal height, three or four across on desktop, one column on phones.
+
 ## 3. How plans work across the site
 
 One source, three readers, no hand-copied prices in page code:
