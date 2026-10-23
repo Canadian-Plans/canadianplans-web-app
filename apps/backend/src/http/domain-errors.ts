@@ -25,6 +25,7 @@ const messages: Partial<Record<ApiErrorCode, string>> = {
   order_not_found: 'The order does not exist in this workspace.',
   job_not_found: 'The job does not exist in this workspace.',
   job_not_retryable: 'Only definitively failed jobs can be retried.',
+  job_not_uncertain: 'Only jobs with an uncertain outcome can be resolved.',
   version_conflict: 'The order changed. Reload it before applying another transition.',
   illegal_transition: 'That order status transition is not allowed.',
   cancellation_reason_required: 'A cancellation reason is required.',

@@ -118,6 +118,16 @@ describe('OrdersList', () => {
     });
     expect(screen.queryByText('CP-000123')).toBeNull();
   });
+  it('starts filtered by a partner code passed from the partner page (PERF-02)', async () => {
+    render(<OrdersList workspaceSlug="site-1" initialPartnerCode="MAPLE10" />);
+    await waitFor(() =>
+      expect(mocks.listWorkspaceOrders).toHaveBeenCalledWith(
+        'staff-token',
+        WORKSPACE,
+        expect.objectContaining({ partnerCode: 'MAPLE10' }),
+      ),
+    );
+  });
   it('renders the order row with its source and customer', async () => {
     render(<OrdersList workspaceSlug="site-1" />);
 

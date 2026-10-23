@@ -4,7 +4,12 @@ import { useCallback, useEffect, useState } from 'react';
 import type { ListWorkspaceJobsResponse } from '@canadian-plans/contracts';
 import { Badge, Button } from '@canadian-plans/ui';
 
-import { BackendError, listWorkspaceJobs, retryWorkspaceJob } from '../lib/api';
+import {
+  BackendError,
+  listWorkspaceJobs,
+  resolveUncertainWorkspaceJob,
+  retryWorkspaceJob,
+} from '../lib/api';
 import { useStaffSession } from './staff-session-provider';
 
 function time(value: string | null): string {
@@ -35,20 +40,36 @@ export function JobsStatus({ workspaceSlug }: { workspaceSlug: string }) {
     void refresh();
   }, [refresh]);
 
-  async function retry(jobId: string) {
+  async function act(jobId: string, run: () => Promise<unknown>, failure: string) {
     if (!staff.accessToken || !workspaceId || busyJobId) return;
     setBusyJobId(jobId);
     setMessage(undefined);
     try {
-      await retryWorkspaceJob(staff.accessToken, workspaceId, jobId);
+      await run();
       await refresh();
     } catch (error) {
       setMessage(
-        `Could not retry the job. Reason: ${error instanceof BackendError ? error.code : 'internal_error'}.`,
+        `${failure} Reason: ${error instanceof BackendError ? error.code : 'internal_error'}.`,
       );
     } finally {
       setBusyJobId(undefined);
     }
+  }
+
+  function retry(jobId: string) {
+    const token = staff.accessToken;
+    if (!token || !workspaceId) return;
+    void act(jobId, () => retryWorkspaceJob(token, workspaceId, jobId), 'Could not retry the job.');
+  }
+
+  function resolve(jobId: string, delivered: boolean) {
+    const token = staff.accessToken;
+    if (!token || !workspaceId) return;
+    void act(
+      jobId,
+      () => resolveUncertainWorkspaceJob(token, workspaceId, jobId, delivered),
+      'Could not record the outcome.',
+    );
   }
 
   if (!result && !message) return <p className="text-sm text-muted-foreground">Loading…</p>;
@@ -59,10 +80,16 @@ export function JobsStatus({ workspaceSlug }: { workspaceSlug: string }) {
     (job) => job.status === 'pending' || job.status === 'processing',
   );
   const failed = result.jobs.filter((job) => job.status === 'failed' || job.status === 'uncertain');
+  const hasUncertain = failed.some((job) => job.status === 'uncertain');
 
   return (
     <section className="flex flex-col gap-8">
       {message ? <p role="status">{message}</p> : null}
+      {result.total !== undefined && result.total > result.jobs.length ? (
+        <p className="text-sm text-muted-foreground">
+          Showing the {result.jobs.length} most recently updated of {result.total} active jobs.
+        </p>
+      ) : null}
       <div>
         <h2 className="text-base font-semibold">Pending</h2>
         {pending.length === 0 ? (
@@ -73,6 +100,12 @@ export function JobsStatus({ workspaceSlug }: { workspaceSlug: string }) {
       </div>
       <div>
         <h2 className="text-base font-semibold">Failed</h2>
+        {hasUncertain ? (
+          <p className="mt-1 text-sm text-muted-foreground">
+            An uncertain job may already have reached the provider. Check the provider&apos;s log
+            first, then mark it delivered, or not delivered to make it retryable.
+          </p>
+        ) : null}
         {failed.length === 0 ? (
           <p className="text-sm text-muted-foreground">No failed jobs.</p>
         ) : (
@@ -84,10 +117,29 @@ export function JobsStatus({ workspaceSlug }: { workspaceSlug: string }) {
                   size="sm"
                   variant="outline"
                   disabled={busyJobId !== undefined}
-                  onClick={() => void retry(job.id)}
+                  onClick={() => retry(job.id)}
                 >
                   {busyJobId === job.id ? 'Retrying…' : 'Retry'}
                 </Button>
+              ) : job.status === 'uncertain' && result.canRetry ? (
+                <span className="inline-flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={busyJobId !== undefined}
+                    onClick={() => resolve(job.id, true)}
+                  >
+                    Mark delivered
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={busyJobId !== undefined}
+                    onClick={() => resolve(job.id, false)}
+                  >
+                    Mark not delivered
+                  </Button>
+                </span>
               ) : job.status === 'uncertain' ? (
                 <span className="text-xs text-muted-foreground">Reconcile before retry</span>
               ) : null

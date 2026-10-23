@@ -326,4 +326,32 @@ databaseDescribe('partner commission model against Postgres (T19)', () => {
     `;
     expect(orderRow).toEqual({ status: 'dispatched', version: 1 });
   });
+
+  test('partner detail returns the newest 200 referred orders and the full total (PERF-02)', async () => {
+    await admin`
+      insert into app.leads (id, workspace_id, status, consent_version, partner_id)
+      select ('50000000-0000-4000-9000-' || lpad(g::text, 12, '0'))::uuid, ${WORKSPACE},
+        'submitted', 'terms-1', ${PARTNER}
+      from generate_series(1, 203) as g
+    `;
+    await admin`
+      insert into app.orders (
+        id, workspace_id, reference, lead_id, status, payment_state, delivery_state,
+        version, snapshot, payload, partner_id, submitted_at
+      )
+      select ('82000000-0000-4000-9000-' || lpad(g::text, 12, '0'))::uuid, ${WORKSPACE},
+        'CP-CAP-' || lpad(g::text, 4, '0'),
+        ('50000000-0000-4000-9000-' || lpad(g::text, 12, '0'))::uuid,
+        'dispatched', 'not_required', 'none', 1, '{}'::jsonb, '{}'::jsonb, ${PARTNER},
+        ${NOW}::timestamptz + make_interval(mins => g)
+      from generate_series(1, 203) as g
+    `;
+    const partnerStore = new DatabasePartnerStore(client, () => NOW);
+    const detail = await partnerStore.getPartnerDetail(WORKSPACE, ACTOR, PARTNER);
+    expect(detail?.referredOrderTotal).toBe(203);
+    expect(detail?.referredOrders).toHaveLength(200);
+    expect(detail?.referredOrders[0]?.reference).toBe('CP-CAP-0203');
+    expect(detail?.referredOrders.at(-1)?.reference).toBe('CP-CAP-0004');
+    expect(detail?.commissionTotal).toBe(0);
+  });
 });

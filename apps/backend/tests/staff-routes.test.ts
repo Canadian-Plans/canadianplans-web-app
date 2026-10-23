@@ -6,6 +6,7 @@ import {
   inviteStaffResponseSchema,
   listWorkspaceJobsResponseSchema,
   listWorkspaceLeadsResponseSchema,
+  resolveUncertainJobResponseSchema,
   retryWorkspaceJobResponseSchema,
   staffWorkspaceAccessResponseSchema,
   staffWorkspacesResponseSchema,
@@ -53,14 +54,33 @@ const noopOrderQueryStore: OrderQueryStore = {
 };
 
 class MemoryJobStore implements JobAdminStore {
-  jobs: Awaited<ReturnType<JobAdminStore['listActive']>> = [];
+  jobs: Awaited<ReturnType<JobAdminStore['listActive']>>['jobs'] = [];
+  /** Defaults to the number of jobs; set higher to simulate the 500-row cap. */
+  total: number | undefined;
   readonly listCalls: { workspaceId: string; actorId: string }[] = [];
   readonly retryCalls: { workspaceId: string; jobId: string }[] = [];
+  readonly resolveCalls: { workspaceId: string; jobId: string; delivered: boolean }[] = [];
   retryResult: Awaited<ReturnType<JobAdminStore['retry']>> = 'retried';
+  resolveResult: Awaited<ReturnType<JobAdminStore['resolveUncertain']>> | undefined;
 
   async listActive(workspaceId: string, actorId: string) {
     this.listCalls.push({ workspaceId, actorId });
-    return this.jobs;
+    return { jobs: this.jobs, total: this.total ?? this.jobs.length };
+  }
+
+  async resolveUncertain(input: {
+    workspaceId: string;
+    actorId: string;
+    jobId: string;
+    requestId: string;
+    delivered: boolean;
+  }) {
+    this.resolveCalls.push({
+      workspaceId: input.workspaceId,
+      jobId: input.jobId,
+      delivered: input.delivered,
+    });
+    return this.resolveResult ?? (input.delivered ? 'completed' : 'failed');
   }
 
   async retry(input: { workspaceId: string; actorId: string; jobId: string; requestId: string }) {
@@ -601,6 +621,67 @@ describe('protected staff routes', () => {
     expect(body.jobs[0]?.availableAt).toBe('2026-09-14T00:00:00.000Z');
     expect(body.canRetry).toBe(false);
     expect(jobStore.listCalls).toEqual([{ workspaceId: WORKSPACE, actorId: ACTOR }]);
+  });
+
+  it('reports the full active-job total when the list is capped (REL-20)', async () => {
+    jobStore.total = 612;
+    const response = await fetch(`${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/jobs`, {
+      headers: { authorization: 'Bearer aal1-token' },
+    });
+    const body = listWorkspaceJobsResponseSchema.parse(await response.json());
+    expect(body.jobs).toHaveLength(1);
+    expect(body.total).toBe(612);
+  });
+
+  describe('resolving an uncertain job (REL-20)', () => {
+    const resolve = (token: string, body: unknown) =>
+      fetch(`${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/jobs/${sampleJob.id}/resolve`, {
+        method: 'POST',
+        headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+    it('denies a viewer with 403 and no store call', async () => {
+      store.access = { ...store.access, roles: ['viewer'], permissions: [] };
+      const response = await resolve('aal2-token', { delivered: true });
+      expect(response.status).toBe(403);
+      expect(jobStore.resolveCalls).toEqual([]);
+    });
+
+    it('needs an MFA session, then records delivered or not delivered', async () => {
+      store.access = { ...store.access, roles: ['owner'], permissions: [] };
+      const unverified = await resolve('aal1-token', { delivered: true });
+      expect(unverified.status).toBe(403);
+      expect(apiErrorResponseSchema.parse(await unverified.json()).error.code).toBe('mfa_required');
+
+      const delivered = await resolve('aal2-token', { delivered: true });
+      expect(delivered.status).toBe(200);
+      expect(resolveUncertainJobResponseSchema.parse(await delivered.json())).toMatchObject({
+        jobId: sampleJob.id,
+        status: 'completed',
+      });
+      const notDelivered = await resolve('aal2-token', { delivered: false });
+      expect(resolveUncertainJobResponseSchema.parse(await notDelivered.json()).status).toBe(
+        'failed',
+      );
+      expect(jobStore.resolveCalls).toEqual([
+        { workspaceId: WORKSPACE, jobId: sampleJob.id, delivered: true },
+        { workspaceId: WORKSPACE, jobId: sampleJob.id, delivered: false },
+      ]);
+    });
+
+    it('rejects a missing answer, and a job that is not uncertain', async () => {
+      store.access = { ...store.access, roles: ['owner'], permissions: [] };
+      expect((await resolve('aal2-token', {})).status).toBe(400);
+      jobStore.resolveResult = 'not_uncertain';
+      const conflict = await resolve('aal2-token', { delivered: true });
+      expect(conflict.status).toBe(409);
+      expect(apiErrorResponseSchema.parse(await conflict.json()).error.code).toBe(
+        'job_not_uncertain',
+      );
+      jobStore.resolveResult = 'not_found';
+      expect((await resolve('aal2-token', { delivered: true })).status).toBe(404);
+    });
   });
 
   it('denies a viewer the job retry with 403 and no store call', async () => {

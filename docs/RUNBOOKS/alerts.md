@@ -182,7 +182,9 @@ has persisted continuously for 10 minutes, then stays quiet while the backlog
 is unchanged or shrinking, and alerts again when it grows (a new failure while
 an older one is still open). A clean queue resets it, so it fires per new
 failure, not once per 60-second tick. Resolve stored failures to keep later
-alerts meaningful.
+alerts meaningful: in Settings > Jobs, retry failed jobs, and for each
+uncertain job check the provider's log, then use Mark delivered (closes it) or
+Mark not delivered (makes it retryable).
 
 ### Error-rate spike — not yet wired
 

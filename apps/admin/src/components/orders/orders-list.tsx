@@ -122,13 +122,21 @@ export function toOrderQuery(filters: Filters, page: number): ListWorkspaceOrder
   };
 }
 
-export function OrdersList({ workspaceSlug }: { workspaceSlug: string }) {
+export function OrdersList({
+  workspaceSlug,
+  initialPartnerCode,
+}: {
+  workspaceSlug: string;
+  initialPartnerCode?: string;
+}) {
   const staff = useStaffSession();
   const workspace = staff.workspaces.find((item) => item.slug === workspaceSlug);
   const workspaceId = workspace?.id;
   const accessToken = staff.accessToken;
 
-  const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS);
+  const [filters, setFilters] = useState<Filters>(() =>
+    initialPartnerCode ? { ...INITIAL_FILTERS, partnerCode: initialPartnerCode } : INITIAL_FILTERS,
+  );
   const [draftSearch, setDraftSearch] = useState('');
   const [page, setPage] = useState(1);
   const [orders, setOrders] = useState<readonly OrderListItem[]>([]);

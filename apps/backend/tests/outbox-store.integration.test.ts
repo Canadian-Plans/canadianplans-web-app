@@ -355,4 +355,82 @@ databaseTest('database outbox store', () => {
       last_error_code: 'provider_rate_limited',
     });
   });
+
+  test('staff resolve an uncertain job as delivered or not delivered (REL-20)', async () => {
+    const RESOLVE_WORKSPACE = '10000000-0000-4000-8000-000000000785';
+    await admin`
+      insert into app.workspaces (id, slug, name)
+      values (${RESOLVE_WORKSPACE}, 'ci-outbox-resolve', 'CI Outbox Resolve')
+      on conflict (id) do nothing
+    `;
+    await admin`delete from app.outbox_job_alerts where workspace_id = ${RESOLVE_WORKSPACE}`;
+    await admin`delete from app.outbox_jobs where workspace_id = ${RESOLVE_WORKSPACE}`;
+    const seed = async (dedupeKey: string, status: string) => {
+      const rows = await admin<{ id: string }[]>`
+        insert into app.outbox_jobs (
+          workspace_id, job_type, dedupe_key, payload, status, attempts, uncertain_at,
+          provider_id, last_error_code
+        ) values (
+          ${RESOLVE_WORKSPACE}, 'analytics_order_submitted', ${dedupeKey},
+          ${admin.json({ orderId: crypto.randomUUID() })}, ${status}, 1, now(),
+          'provider-evidence', 'provider_timeout'
+        )
+        returning id
+      `;
+      const id = rows[0]?.id;
+      if (!id) throw new Error('failed to seed a job');
+      await admin`
+        insert into app.outbox_job_alerts (workspace_id, job_id, alert_code)
+        values (${RESOLVE_WORKSPACE}, ${id}, 'provider_timeout')
+      `;
+      return id;
+    };
+    const delivered = await seed('order:resolve-delivered', 'uncertain');
+    const notDelivered = await seed('order:resolve-not-delivered', 'uncertain');
+    const alreadyFailed = await seed('order:resolve-failed', 'failed');
+    const resolve = (jobId: string, isDelivered: boolean) =>
+      store.resolveUncertain({
+        workspaceId: RESOLVE_WORKSPACE,
+        actorId: ACTOR,
+        jobId,
+        requestId: crypto.randomUUID(),
+        delivered: isDelivered,
+      });
+
+    expect(await resolve(delivered, true)).toBe('completed');
+    expect(await resolve(notDelivered, false)).toBe('failed');
+    expect(await resolve(alreadyFailed, true)).toBe('not_uncertain');
+    expect(await resolve(crypto.randomUUID(), true)).toBe('not_found');
+    // Resolving twice is a conflict, not a second state change.
+    expect(await resolve(delivered, false)).toBe('not_uncertain');
+
+    const rows = await admin<{ id: string; status: string; provider_id: string; done: boolean }[]>`
+      select id, status, provider_id, completed_at is not null as done
+      from app.outbox_jobs where workspace_id = ${RESOLVE_WORKSPACE}
+    `;
+    const byId = new Map(rows.map((row) => [String(row.id), row]));
+    expect(byId.get(delivered)).toMatchObject({
+      status: 'completed',
+      provider_id: 'provider-evidence',
+      done: true,
+    });
+    expect(byId.get(notDelivered)).toMatchObject({ status: 'failed', done: false });
+    const openAlerts = await admin<{ job_id: string }[]>`
+      select job_id from app.outbox_job_alerts
+      where workspace_id = ${RESOLVE_WORKSPACE} and resolved_at is null
+    `;
+    expect(openAlerts.map((row) => String(row.job_id))).toEqual([alreadyFailed]);
+    // The not-delivered job can now take the normal staff retry.
+    expect(
+      await store.retry({
+        workspaceId: RESOLVE_WORKSPACE,
+        actorId: ACTOR,
+        jobId: notDelivered,
+        requestId: crypto.randomUUID(),
+      }),
+    ).toBe('retried');
+    const listed = await store.listActive(RESOLVE_WORKSPACE, ACTOR);
+    expect(listed.total).toBe(2);
+    expect(listed.jobs.map((job) => job.id).sort()).toEqual([alreadyFailed, notDelivered].sort());
+  });
 });

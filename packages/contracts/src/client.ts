@@ -15,8 +15,12 @@ import {
 import { healthResponseSchema, type HealthResponse } from './health';
 import {
   listWorkspaceJobsResponseSchema,
+  resolveUncertainJobRequestSchema,
+  resolveUncertainJobResponseSchema,
   retryWorkspaceJobResponseSchema,
   type ListWorkspaceJobsResponse,
+  type ResolveUncertainJobRequest,
+  type ResolveUncertainJobResponse,
   type RetryWorkspaceJobResponse,
 } from './jobs';
 import {
@@ -322,6 +326,11 @@ export interface BackendClient {
     catalogue(workspaceId: string): Promise<CatalogueStatusResponse>;
     listJobs(workspaceId: string): Promise<ListWorkspaceJobsResponse>;
     retryJob(workspaceId: string, jobId: string): Promise<RetryWorkspaceJobResponse>;
+    resolveUncertainJob(
+      workspaceId: string,
+      jobId: string,
+      body: ResolveUncertainJobRequest,
+    ): Promise<ResolveUncertainJobResponse>;
     createServiceCredential(
       workspaceId: string,
       body: CreateServiceCredentialRequest,
@@ -707,6 +716,13 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           method: 'POST',
           path: `/api/v1/staff/workspaces/${encode(workspaceId)}/jobs/${encode(jobId)}/retry`,
           responseSchema: retryWorkspaceJobResponseSchema,
+        }),
+      resolveUncertainJob: (workspaceId, jobId, body) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/jobs/${encode(jobId)}/resolve`,
+          body: resolveUncertainJobRequestSchema.parse(body),
+          responseSchema: resolveUncertainJobResponseSchema,
         }),
       createServiceCredential: (workspaceId, body) =>
         call({
