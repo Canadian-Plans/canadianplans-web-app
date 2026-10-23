@@ -12,6 +12,7 @@ import {
   runOutboxWithQueueMonitor,
 } from '../src/scheduler.js';
 import { INITIAL_QUEUE_HEALTH_STATE, type QueueHealthState } from '../src/jobs/queueMonitor.js';
+import { operationalRetentionEnabled } from '../src/retention/operational.js';
 
 const WORKSPACE = '10000000-0000-4000-8000-000000000901';
 const ACTOR = '20000000-0000-4000-8000-000000000901';
@@ -432,6 +433,30 @@ describe('runDataRetention (SEC-12)', () => {
     );
     expect(restrictAbandoned).toHaveBeenCalledTimes(2);
     expect(restrictAbandoned).toHaveBeenCalledWith({ workspaceId: 'w1', actorId: 'actor', now });
-    expect(result).toEqual({ restrictedLeads: 4 });
+    expect(result).toEqual({ restrictedLeads: 4, prunedRows: 'disabled' });
+  });
+
+  it('prunes operational rows only when the pruner is configured (REL-19)', async () => {
+    const now = new Date('2026-10-22T00:00:00.000Z');
+    const restrictAbandoned = vi.fn(async () => ({ restrictedLeads: 0 }));
+    const prune = vi.fn(async ({ workspaceId }: { workspaceId: string }) => [
+      { tableName: 'outbox_jobs', deleted: workspaceId === 'w1' ? 5 : 2 },
+      { tableName: 'quotes', deleted: 1 },
+    ]);
+    const result = await runDataRetention(
+      { abandonedLeads: { restrictAbandoned }, operational: { prune } },
+      { actorId: 'actor', authorizedWorkspaceIds: ['w1', 'w2'] },
+      now,
+    );
+    expect(prune).toHaveBeenCalledWith({ workspaceId: 'w2', actorId: 'actor', now });
+    expect(result).toEqual({ restrictedLeads: 0, prunedRows: { outbox_jobs: 7, quotes: 2 } });
+  });
+});
+
+describe('operationalRetentionEnabled (REL-19)', () => {
+  it('is off unless OPERATIONAL_RETENTION_ENABLED is exactly 1', () => {
+    expect(operationalRetentionEnabled({})).toBe(false);
+    expect(operationalRetentionEnabled({ OPERATIONAL_RETENTION_ENABLED: 'true' })).toBe(false);
+    expect(operationalRetentionEnabled({ OPERATIONAL_RETENTION_ENABLED: '1' })).toBe(true);
   });
 });

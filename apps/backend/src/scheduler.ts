@@ -7,6 +7,7 @@ import { loadDeploymentEnvironment } from './config/deployment.js';
 import { createDocumentServiceFromEnv } from './documents/factory.js';
 import type { DocumentService } from './documents/service.js';
 import { DatabaseAbandonedLeadPruner } from './retention/abandoned-leads.js';
+import { DatabaseOperationalPruner, operationalRetentionEnabled } from './retention/operational.js';
 import { isConnectionLevelError, logRequestError } from './http/logger.js';
 import {
   INITIAL_QUEUE_HEALTH_STATE,
@@ -311,6 +312,7 @@ export function createDefaultSchedulerDependencies(): BackendSchedulerDependenci
   const alerts = createOwnerAlertChannelFromEnv();
   const documents = createDocumentServiceFromEnv();
   const abandonedLeads = new DatabaseAbandonedLeadPruner();
+  const operational = operationalRetentionEnabled() ? new DatabaseOperationalPruner() : undefined;
   let queueHealth = INITIAL_QUEUE_HEALTH_STATE;
   let catalogueFailing = false;
   return {
@@ -333,12 +335,15 @@ export function createDefaultSchedulerDependencies(): BackendSchedulerDependenci
       ),
     runSyntheticCheck: (input) => synthetic.run(input),
     runDocumentCleanup: (input) => runDocumentCleanup(documents, input),
-    runDataRetention: (input) => runDataRetention({ abandonedLeads }, input, new Date()),
+    runDataRetention: (input) =>
+      runDataRetention({ abandonedLeads, operational }, input, new Date()),
   };
 }
 
 export interface DataRetentionDependencies {
   abandonedLeads: Pick<DatabaseAbandonedLeadPruner, 'restrictAbandoned'>;
+  /** REL-19: present only when OPERATIONAL_RETENTION_ENABLED=1. */
+  operational?: Pick<DatabaseOperationalPruner, 'prune'>;
 }
 
 /** One pass per authorized workspace; returns counts only, never row data. */
@@ -346,17 +351,27 @@ export async function runDataRetention(
   dependencies: DataRetentionDependencies,
   input: SchedulerRunInput,
   now: Date,
-): Promise<{ restrictedLeads: number }> {
-  const totals = { restrictedLeads: 0 };
+): Promise<{ restrictedLeads: number; prunedRows: Record<string, number> | 'disabled' }> {
+  let restrictedLeads = 0;
+  const pruned: Record<string, number> = {};
   for (const workspaceId of new Set(input.authorizedWorkspaceIds)) {
     const leads = await dependencies.abandonedLeads.restrictAbandoned({
       workspaceId,
       actorId: input.actorId,
       now,
     });
-    totals.restrictedLeads += leads.restrictedLeads;
+    restrictedLeads += leads.restrictedLeads;
+    if (dependencies.operational) {
+      for (const table of await dependencies.operational.prune({
+        workspaceId,
+        actorId: input.actorId,
+        now,
+      })) {
+        pruned[table.tableName] = (pruned[table.tableName] ?? 0) + table.deleted;
+      }
+    }
   }
-  return totals;
+  return { restrictedLeads, prunedRows: dependencies.operational ? pruned : 'disabled' };
 }
 
 /**
