@@ -896,6 +896,12 @@
   border-collapse: separate;
   border-spacing: 0;
 }
+.cp-guide-table[data-compact='true'] {
+  min-width: 0;
+}
+.cp-guide-table[data-compact='true'] :is(th, td) {
+  padding-inline: var(--cp-space-12);
+}
 .cp-guide-table th,
 .cp-guide-table td {
   padding: var(--cp-space-14) var(--cp-space-18);

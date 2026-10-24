@@ -23,12 +23,16 @@ export type ArticleBlock =
       readonly columns: readonly string[];
       readonly rows: readonly { readonly label: string; readonly values: readonly string[] }[];
       readonly note: string;
+      /** Short numeric tables fit a phone screen instead of scrolling sideways. */
+      readonly compact?: boolean;
     }
   | {
       readonly kind: 'plan-cta';
       readonly eyebrow: string;
       readonly text: string;
       readonly label: string;
+      /** Where the button goes; defaults to the eSIM plans. */
+      readonly href?: string;
       readonly mobileLines?: readonly string[];
     }
   | { readonly kind: 'devices'; readonly items: readonly DeviceInstructions[] }

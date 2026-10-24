@@ -143,7 +143,7 @@ export function ArticleBodyBlock({ block }: { block: ArticleBlock }) {
             role="region"
             aria-label={block.caption}
           >
-            <table className="cp-guide-table">
+            <table className="cp-guide-table" data-compact={block.compact ? 'true' : undefined}>
               <caption className="sr-only">{block.caption}</caption>
               <thead>
                 <tr>
@@ -190,7 +190,7 @@ export function ArticleBodyBlock({ block }: { block: ArticleBlock }) {
             </h3>
           </div>
           <CpButton asChild tone="sun">
-            <a href={guideCopy.destinations.plans}>{block.label}</a>
+            <a href={block.href ?? guideCopy.destinations.plans}>{block.label}</a>
           </CpButton>
         </div>
       );

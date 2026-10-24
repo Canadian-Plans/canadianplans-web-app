@@ -7,6 +7,7 @@ import {
   type GuideArticle,
   type StudentComparison,
 } from './guide-shared';
+import { workFromHomeSpeedGuide } from './guides-internet';
 import {
   carrierPickerGuide,
   firstWeekGuide,
@@ -629,6 +630,7 @@ export const guideArticles: readonly GuideArticle[] = [
   esimGuide,
   creditCheckGuide,
   internetCostGuide,
+  workFromHomeSpeedGuide,
   ...newcomerGuides,
 ];
 export const guideAssets = {
@@ -711,6 +713,28 @@ export const guideList: readonly GuideListEntry[] = [
     href: `/guides/${internetCostGuide.slug}`,
     description: internetCostGuide.description,
     keywords: ['internet cost', 'price', 'province', 'bc', 'alberta', 'manitoba', 'saskatchewan'],
+  },
+  {
+    id: workFromHomeSpeedGuide.slug,
+    previewOnly: true,
+    topic: 'internet',
+    category: workFromHomeSpeedGuide.category,
+    title: workFromHomeSpeedGuide.title,
+    detail: '8 min read · Updated October 2026',
+    caption: 'Person on a video call at a home desk next to a WiFi router',
+    href: `/guides/${workFromHomeSpeedGuide.slug}`,
+    description: workFromHomeSpeedGuide.description,
+    keywords: [
+      'work from home',
+      'remote work',
+      'upload speed',
+      'mbps',
+      'zoom',
+      'teams',
+      'video calls',
+      'vpn',
+      'cra',
+    ],
   },
   {
     id: numberBeforeArrivalGuide.slug,
@@ -921,6 +945,11 @@ export const guidesIndexCopy = {
       id: 'internet-cost',
       text: 'How much is home internet in Canada?',
       href: `/guides/${internetCostGuide.slug}`,
+    },
+    {
+      id: 'wfh-speed',
+      text: 'How much internet speed do I need to work from home?',
+      href: `/guides/${workFromHomeSpeedGuide.slug}`,
     },
     {
       id: 'number',
