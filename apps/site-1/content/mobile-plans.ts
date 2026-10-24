@@ -16,7 +16,7 @@ export interface MobilePlan extends PlanCardContent {
   readonly featured: boolean;
 }
 export const mobileCopy = {
-  title: 'Bring Your Own Phone Plans in Canada: 100 GB from $40/mo | Canadian Plans',
+  title: 'Bring Your Own Phone Plans in Canada: 100 GB from $55/mo | Canadian Plans',
   skip: 'Skip to main content',
   breadcrumbLabel: 'Breadcrumb',
   breadcrumb: [
@@ -37,7 +37,7 @@ export const mobileCopy = {
     eyebrow: 'Quick answer · Updated October 2026',
     title: 'Which bring-your-own-phone plan should I choose in Canada?',
     description:
-      'For most people, the 100 GB Canada + US plan at $40 a month is enough: unlimited talk and text, 5G data, and up to 5 GB a day of roaming in the US. Choose 150 GB at $65 if you travel to Mexico or share a lot of video, or the unlimited 5G+ plan at $90 for the fastest speeds and a 50 GB hotspot. All three are postpaid with no contract and no connection fee. Prices are CAD, taxes extra.',
+      '5G+ Complete with 100 GB at $55 a month suits most people: unlimited talk and text in Canada and the US, 5G+ data at speeds up to 2 Gbps, and up to 5 GB a day of roaming in the US. For a limited time, 175 GB is $60 a month, or choose the unlimited plan at $90 for a 50 GB hotspot and Mexico. All three are postpaid with no contract, no connection fee, and the $10 pre-authorized payment discount included. Prices are CAD, taxes extra.',
   },
   plans: {
     eyebrow: 'Mobile plans',
@@ -52,27 +52,35 @@ export const mobileCopy = {
     title: 'Compare the three plans',
     description:
       'Same unlimited talk and text. The difference is how much data you get and where you can use it.',
-    columns: ['Canada + US', 'Canada + US + Mexico', '5G+ Complete Unlimited'],
+    columns: ['100 GB', '175 GB', 'Unlimited'],
     rows: [
       {
         label: 'Price',
-        values: ['$40/mo', '$65/mo', '$90/mo'],
+        values: ['$55/mo', '$60/mo', '$90/mo'],
       },
       {
         label: 'Data',
-        values: ['100 GB 5G', '150 GB 5G', 'Unlimited, up to 2 Gbps*'],
+        values: [
+          '100 GB 5G+, up to 2 Gbps',
+          '175 GB 5G+, up to 2 Gbps',
+          'Unlimited, up to 2 Gbps*',
+        ],
       },
       {
         label: 'Use it in',
-        values: ['Canada & the US', 'Canada, the US & Mexico', 'Canada, the US & Mexico'],
+        values: ['Canada & the US', 'Canada & the US', 'Canada, the US & Mexico'],
       },
       {
         label: 'Roaming data',
-        values: ['Up to 5 GB/day', 'Up to 5 GB/day', 'Ask an advisor'],
+        values: ['Up to 5 GB/day in the US', 'Up to 5 GB/day in the US', 'Ask an advisor'],
       },
       {
         label: 'Mobile hotspot',
         values: ['Ask an advisor', 'Ask an advisor', '50 GB'],
+      },
+      {
+        label: 'Price lock',
+        values: ['5 years', '5 years', 'Ask an advisor'],
       },
     ],
     note: '*Speeds up to 2 Gbps. Data sharing is not included on 5G+ Complete Unlimited.',
@@ -135,43 +143,45 @@ export const mobileCopy = {
 } as const;
 export const mobilePlans: readonly MobilePlan[] = [
   {
-    id: 'mobile-can-us-100',
-    priceCad: 40,
-    featured: true,
-    carrier: 'Canada + US',
+    id: 'mobile-5g-plus-complete-100',
+    priceCad: 55,
+    featured: false,
+    carrier: '5G+ Complete',
     allowance: '100 GB',
-    amount: '$40',
+    amount: '$55',
     period: '/mo',
-    finePrint: 'CAD · taxes extra · postpaid',
-    goodFor: 'Good for: Talk, text and 5G data in Canada and the US.',
+    finePrint: 'CAD · taxes extra · postpaid · includes $10 pre-authorized payment discount',
+    goodFor: 'Good for: 5G+ data at speeds up to 2 Gbps, in Canada and the US.',
     features: [
-      '✓ 100 GB of high-speed 5G data',
-      '✓ Unlimited talk & text',
-      '✓ Use it in Canada & the US',
-      '✓ Roaming data up to 5 GB/day',
+      '✓ 100 GB of 5G+ data, speeds up to 2 Gbps',
+      '✓ Unlimited talk & text in Canada and the US',
+      '✓ US roaming data up to 5 GB/day',
+      '✓ 5-year price lock',
+      '✓ AI scam protection',
     ],
     buttonLabel: 'Choose 100 GB',
     selectedLabel: 'Selected',
-    badge: 'Limited time offer',
   },
   {
-    id: 'mobile-can-us-mex-150',
-    priceCad: 65,
-    featured: false,
-    carrier: 'Canada + US + Mexico',
-    allowance: '150 GB',
-    amount: '$65',
+    id: 'mobile-5g-plus-complete-175',
+    priceCad: 60,
+    featured: true,
+    carrier: '5G+ Complete',
+    allowance: '175 GB',
+    amount: '$60',
     period: '/mo',
-    finePrint: 'CAD · taxes extra · postpaid',
-    goodFor: 'Good for: More data, plus Mexico for travel and family calls.',
+    finePrint: 'CAD · taxes extra · postpaid · includes $10 pre-authorized payment discount',
+    goodFor: 'Good for: More data for the same speeds, in Canada and the US.',
     features: [
-      '✓ 150 GB of high-speed 5G data',
-      '✓ Unlimited talk & text',
-      '✓ Use it in Canada, the US & Mexico',
-      '✓ Roaming data up to 5 GB/day',
+      '✓ 175 GB of 5G+ data, speeds up to 2 Gbps',
+      '✓ Unlimited talk & text in Canada and the US',
+      '✓ US roaming data up to 5 GB/day',
+      '✓ 5-year price lock',
+      '✓ AI scam protection',
     ],
-    buttonLabel: 'Choose 150 GB',
+    buttonLabel: 'Choose 175 GB',
     selectedLabel: 'Selected',
+    badge: 'Limited time offer',
   },
   {
     id: 'mobile-5g-plus-complete-unlimited',
@@ -181,7 +191,7 @@ export const mobilePlans: readonly MobilePlan[] = [
     allowance: 'Unlimited',
     amount: '$90',
     period: '/mo',
-    finePrint: 'CAD · taxes extra · postpaid',
+    finePrint: 'CAD · taxes extra · postpaid · includes $10 pre-authorized payment discount',
     goodFor: 'Good for: Unlimited data at our fastest speeds, nationwide.',
     features: [
       '✓ Unlimited data, speeds up to 2 Gbps*',

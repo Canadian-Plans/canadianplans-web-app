@@ -28,6 +28,9 @@ read, the browser captures taken at 390 and 1440, and the checks recorded in
 
 ## Storefront audits
 
+- [guide-covers/](guide-covers/README.md) — six approved branded guide covers,
+  browser captures and image-loading checks at 390 and 1440 pixels.
+
 - `audit/` — output of the `apps/site-1/scripts/audit-*.mjs` and `verify-*.mjs` scripts:
   `final/` (page captures, pixel diffs, focus and consent results), `final-verified/lighthouse/`
   (Lighthouse runs and summary), `review-baseline/` and `design-review-final/` (payload and

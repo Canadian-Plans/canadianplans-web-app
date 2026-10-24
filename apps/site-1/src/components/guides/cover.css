@@ -1,0 +1,17 @@
+/* Keep the complete branded composition visible at every card size. */
+.cp-guide-cover.cp-guides-featured-image,
+.cp-guide-cover.cp-guides-card-image,
+.cp-guide-cover.cp-guide-header-image,
+.cp-guide-cover.cp-guide-mobile-image,
+.cp-guide-cover.cp-guide-related-image {
+  height: auto;
+  padding: 0;
+  overflow: hidden;
+  align-self: center;
+  background: var(--cp-color-navy);
+}
+.cp-guide-cover > img {
+  display: block;
+  width: 100%;
+  height: auto;
+}

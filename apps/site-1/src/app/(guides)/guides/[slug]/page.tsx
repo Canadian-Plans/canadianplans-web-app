@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { pageMetadata } from '@/lib/page-metadata';
 import { notFound } from 'next/navigation';
 import { SkipLink } from '@canadian-plans/ui';
-import { CpAsset, CpBreadcrumb, CpCtaBand, CpImageSlot } from '@canadian-plans/ui/canadian-plans';
+import { CpAsset, CpBreadcrumb, CpCtaBand } from '@canadian-plans/ui/canadian-plans';
+import { GuideCover } from '@/components/guides/cover';
 import { guideArticles, guideAssets, guideCopy, guideList, guidesIndexCopy } from '@content/guides';
 import { siteChrome, siteFooter } from '@content/site-chrome';
 import { SiteHeader } from '@/components/shared/site-header';
@@ -84,10 +85,9 @@ export default async function GuidePage({ params }: Props) {
                   <p>{article.readingLabel}</p>
                 </div>
               </div>
-              <CpImageSlot
+              <GuideCover
+                guideId={article.slug}
                 className="cp-guide-header-image"
-                icon={guideAssets.imageLight}
-                label={guideCopy.imageLabel}
                 caption={article.imageCaption}
               />
             </div>
@@ -110,10 +110,9 @@ export default async function GuidePage({ params }: Props) {
                   </div>
                 </section>
                 <GuidePromotion className="cp-guide-mobile-promotion" />
-                <CpImageSlot
+                <GuideCover
+                  guideId={article.slug}
                   className="cp-guide-mobile-image"
-                  icon={guideAssets.imageLight}
-                  label={guideCopy.imageLabel}
                   caption={article.imageCaption}
                 />
                 <GuideContents items={contents} mobile />
@@ -142,10 +141,9 @@ export default async function GuidePage({ params }: Props) {
               {related.map((guide) => (
                 <li key={guide.id}>
                   <a href={guide.href} className="cp-guide-related-card">
-                    <CpImageSlot
+                    <GuideCover
+                      guideId={guide.id}
                       className="cp-guide-related-image"
-                      icon={guideAssets.imageLight}
-                      label={guideCopy.imageLabel}
                       caption={guide.caption}
                     />
                     <div>

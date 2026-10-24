@@ -31,8 +31,8 @@ const internetPrices: [string, string, number][] = [
 
 /** docs/LAUNCH_PLANS.md section C. */
 const mobilePrices: [string, number][] = [
-  ['mobile-can-us-100', 40],
-  ['mobile-can-us-mex-150', 65],
+  ['mobile-5g-plus-complete-100', 55],
+  ['mobile-5g-plus-complete-175', 60],
   ['mobile-5g-plus-complete-unlimited', 90],
 ];
 
@@ -154,7 +154,7 @@ describe('owner decisions', () => {
       return found;
     };
     expect(byKey('internet-sk-1000').billingParty).toMatch(/authorised sales agent/);
-    expect(byKey('mobile-can-us-100').billingParty).toMatch(/authorised sales agent/);
+    expect(byKey('mobile-5g-plus-complete-100').billingParty).toMatch(/authorised sales agent/);
     expect(byKey('prearrival-fido-essential-75').billingParty).toMatch(/authorised reseller/);
     expect(byKey('prearrival-fido-essential-75').eligibility).toMatch(
       /study permit.*more than 90 days/,
@@ -203,20 +203,20 @@ describe('StaticCatalogue', () => {
   });
 
   it('gives a stable revision for unchanged content and a new one when the price changes', async () => {
-    const first = await open.fetchPublishedByProductKey('mobile-can-us-100');
+    const first = await open.fetchPublishedByProductKey('mobile-5g-plus-complete-100');
     const again = await new StaticCatalogue(site1CommercialOffers, {
       allowOpenInputs: true,
-    }).fetchPublishedByProductKey('mobile-can-us-100');
+    }).fetchPublishedByProductKey('mobile-5g-plus-complete-100');
     expect(again?.revisionId).toBe(first?.revisionId);
 
     const repriced = site1CommercialOffers.map((offer) =>
-      offer.productKey === 'mobile-can-us-100'
+      offer.productKey === 'mobile-5g-plus-complete-100'
         ? { ...offer, recurringChargeAmountMinor: 4500 }
         : offer,
     );
     const changed = await new StaticCatalogue(repriced, {
       allowOpenInputs: true,
-    }).fetchPublishedByProductKey('mobile-can-us-100');
+    }).fetchPublishedByProductKey('mobile-5g-plus-complete-100');
     expect(changed?.revisionId).not.toBe(first?.revisionId);
   });
 
