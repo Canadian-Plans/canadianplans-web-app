@@ -606,7 +606,63 @@ a.cp-lp-card:hover .cp-lp-card-action[data-featured='true'] {
   line-height: inherit;
 }
 
-/* ---------- Plan groups (pre-arrival: monthly vs prepaid) ---------- */
+/* ---------- Plan tabs (pre-arrival: pill toggle over the cards) ---------- */
+.cp-lp-plan-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-space-20);
+}
+.cp-lp-tabs {
+  align-self: center;
+  display: inline-flex;
+  max-width: 100%;
+  padding: var(--cp-space-6);
+  border-radius: var(--cp-radius-999);
+  background: var(--cp-color-white);
+  box-shadow: var(--cp-hd-shadow-finder);
+}
+.cp-lp-tab {
+  min-height: var(--cp-hd-control-height);
+  padding: 0 var(--cp-space-22);
+  border: 0;
+  border-radius: var(--cp-radius-999);
+  background: transparent;
+  color: var(--cp-hd-muted);
+  font: inherit;
+  font-size: var(--cp-text-15);
+  font-weight: var(--cp-hd-weight-bold);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--cp-transition-duration),
+    color var(--cp-transition-duration);
+  @variant cp-hd-xs {
+    padding: 0 var(--cp-space-14);
+    font-size: var(--cp-text-14);
+    white-space: normal;
+  }
+}
+.cp-lp-tab:hover {
+  color: var(--cp-hd-ink);
+}
+.cp-lp-tab[aria-selected='true'] {
+  background: var(--cp-hd-ink);
+  color: var(--cp-color-white);
+}
+.cp-lp-plan-tabpanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-space-4);
+}
+.cp-lp-plan-tabs-note {
+  margin: 0;
+  text-align: center;
+  font-size: var(--cp-text-14);
+  line-height: var(--cp-leading-body);
+  color: var(--cp-hd-muted);
+}
+
+/* ---------- Plan groups (stacked alternative) ---------- */
 .cp-lp-plan-groups {
   display: flex;
   flex-direction: column;
@@ -1123,6 +1179,7 @@ a.cp-lp-card:hover .cp-lp-card-action[data-featured='true'] {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .cp-lp-tab,
   .cp-lp-card,
   .cp-lp-card-action,
   .cp-lp-faq-list .cp-faq-toggle {

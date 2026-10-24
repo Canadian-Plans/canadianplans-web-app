@@ -4,12 +4,12 @@ import {
   preArrivalPlanGroups,
 } from '@content/pre-arrival-landing';
 import { LandingKitPageShell } from '@/components/landing-kit/page';
-import { PlanCards } from '@/components/landing-kit/landing';
+import { PlanTabs } from '@/components/landing-kit/plan-tabs';
 
 /**
- * /pre-arrival-sim on the category landing kit: two plan groups as the catalogue sells
- * them (monthly Rogers/Fido for stays over 90 days, prepaid Chatr for visitors), each
- * button straight into /order.
+ * /pre-arrival-sim on the category landing kit: a pill toggle between the two plan groups
+ * the catalogue sells (monthly Rogers/Fido for permits and PRs, prepaid Chatr for
+ * visitors), each button straight into /order.
  */
 export function PreArrivalLanding() {
   return (
@@ -17,21 +17,7 @@ export function PreArrivalLanding() {
       shared={preArrivalLandingShared}
       page={preArrivalLandingPage}
       plans={
-        <div className="cp-lp-plan-groups">
-          {preArrivalPlanGroups.map((group) => (
-            <section
-              key={group.id}
-              className="cp-lp-plan-group"
-              aria-labelledby={`plans-${group.id}-title`}
-            >
-              <div className="cp-lp-plan-group-head">
-                <h3 id={`plans-${group.id}-title`}>{group.title}</h3>
-                <p>{group.description}</p>
-              </div>
-              <PlanCards cards={group.cards} label={group.title} />
-            </section>
-          ))}
-        </div>
+        <PlanTabs groups={preArrivalPlanGroups} label={preArrivalLandingPage.plans.cardsLabel} />
       }
     />
   );

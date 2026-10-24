@@ -50,15 +50,16 @@ const card = (plan: ArrivalPlan): LandingPlanCard => ({
 export const preArrivalPlanGroups = [
   {
     id: 'monthly',
-    title: 'Staying over 90 days',
+    title: 'Student / PR / Work Permit',
     description:
-      'Study permit, work permit or permanent resident. Monthly Rogers and Fido plans, no contract.',
+      'Staying over 90 days on a study permit, work permit or as a permanent resident: monthly Rogers and Fido plans, no contract.',
     cards: monthly.map(card),
   },
   {
     id: 'prepaid',
-    title: 'Visiting under 90 days',
-    description: 'Visitor visa or Super Visa. Prepaid Chatr plans for 30 or 90 days.',
+    title: 'Tourist / Super Visa',
+    description:
+      'Visiting under 90 days on a visitor visa or Super Visa: prepaid Chatr plans for 30 or 90 days.',
     cards: prepaid.map(card),
   },
 ] as const;
