@@ -1,14 +1,25 @@
-/** Public descriptions only: never interpolate queries, order data or personal details. */
+/**
+ * Page descriptions (SEO rewrite, 23 October 2026; see docs/marketing/seo-content-research-2026-10-23.md).
+ * Public descriptions only: never interpolate queries, order data or personal details.
+ * Keep each between about 120 and 160 characters and lead with the phrase people search for.
+ */
 export const pageDescriptions: Readonly<Record<string, string>> = {
-  '/': 'Explore Canadian mobile plans and newcomer connectivity with Canadian Plans.',
-  '/pre-arrival-sim': 'Explore SIM and eSIM plan options before arriving in Canada.',
-  '/home-internet': 'Check home internet options and preview address availability.',
-  '/mobile-plans': 'Compare Canadian mobile plans by carrier, data allowance and budget.',
+  '/': 'Canadian SIM, phone and home internet plans for newcomers. Get a Canadian number before you arrive, from $35/mo. Rogers, Fido and chatr. Nothing paid online.',
+  '/pre-arrival-sim':
+    'Order a Rogers, Fido or chatr eSIM before you arrive in Canada. Your number is ready before you fly. From $35/mo, no credit check, nothing paid online.',
+  '/home-internet':
+    'Home internet in BC, Alberta, Manitoba and Saskatchewan from $50/mo. Unlimited data, free professional install, router included, nothing to pay up front.',
+  '/mobile-plans':
+    'Bring your own phone and keep your number. 100 GB Canada + US from $40/mo, 150 GB with Mexico $65, unlimited 5G+ $90. Unlimited talk and text, no contract.',
   '/business-internet': 'Preview business internet options and request a quote from an advisor.',
-  '/contact': 'Find contact options and get help from Canadian Plans.',
-  '/faq': 'Answers to questions about SIM cards, eSIMs, orders and getting connected in Canada.',
-  '/about': 'Learn about Canadian Plans and our approach to helping newcomers get connected.',
-  '/guides': 'Browse practical guides to mobile plans, eSIMs and connectivity in Canada.',
+  '/contact':
+    'Call, email or write to Canadian Plans. Real advisors Monday to Saturday, 9am to 9pm Pacific. Based in Surrey, BC. Track an order without an account.',
+  '/faq':
+    'Straight answers about getting a Canadian SIM or eSIM before you arrive, credit checks, SIN, documents, billing, cancelling and tracking your order.',
+  '/about':
+    'Canadian Plans is an authorised Rogers, Fido and chatr reseller in Surrey, BC, helping newcomers get a Canadian phone plan or home internet. Nothing paid online.',
+  '/guides':
+    'Plain-English guides to Canadian SIM cards, eSIM, phone plans, credit checks and home internet for students, workers, new immigrants and visitors.',
   '/order/home-internet': 'Preview the home internet order form.',
   '/order/pre-arrival': 'Preview the pre-arrival SIM order form.',
   '/track-order': 'Preview the order tracking design.',
@@ -25,8 +36,9 @@ export const pageDescriptions: Readonly<Record<string, string>> = {
   '/studio': 'Canadian Plans content editing workspace.',
 };
 export const metadataCopy = {
-  siteDescription: 'Canadian Plans helps newcomers explore mobile connectivity in Canada.',
-  imageAlt: 'Canadian Plans',
+  siteDescription:
+    'Canadian SIM cards, phone plans and home internet for newcomers to Canada. Get your Canadian number before you arrive. Nothing is paid online.',
+  imageAlt: 'Canadian Plans: Canadian SIM, phone and internet plans for newcomers',
   missingTitle: 'Page not found | Canadian Plans',
   missingDescription:
     'The requested page could not be found. Explore Canadian Plans or search for help.',

@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { studentIndiaGuide } from '@content/guides';
-import { articleSchema, findGuide, guideContents, serializeArticleSchema } from './guide-content';
+import { internetCostGuide, studentIndiaGuide } from '@content/guides';
+import {
+  articleSchema,
+  findGuide,
+  guideContents,
+  guideFaqSchema,
+  serializeArticleSchema,
+  serializeGuideFaqSchema,
+} from './guide-content';
 
 describe('guide resolution and Article schema', () => {
   it('resolves the supplied article and rejects unknown or inherited names', () => {
@@ -27,13 +34,34 @@ describe('guide resolution and Article schema', () => {
       headline: studentIndiaGuide.title,
       description: studentIndiaGuide.description,
       author: { '@type': 'Organization', name: studentIndiaGuide.author.name },
-      dateModified: '2026-10-05',
+      dateModified: studentIndiaGuide.updated,
       url: 'https://preview.example/guides/best-sim-for-students-from-india',
     });
     expect(schema.mainEntityOfPage['@id']).toBe(schema.url);
     expect(schema).not.toHaveProperty('datePublished');
     expect(schema).not.toHaveProperty('image');
     expect(schema).not.toHaveProperty('reviewedBy');
+  });
+  it('lists table blocks in the contents and builds a FAQPage from the FAQ block', () => {
+    expect(guideContents(internetCostGuide).map((item) => item.id)).toContain('price-table');
+    const schema = guideFaqSchema(internetCostGuide);
+    expect(schema?.['@type']).toBe('FAQPage');
+    expect(schema?.mainEntity.length).toBeGreaterThan(0);
+    expect(guideFaqSchema({ ...internetCostGuide, blocks: [] })).toBeNull();
+    const faq = {
+      ...internetCostGuide,
+      blocks: [
+        {
+          kind: 'faq' as const,
+          id: 'q',
+          title: 'FAQ',
+          items: [{ id: 'x', question: 'A </script> q?', answer: 'Yes.' }],
+        },
+      ],
+    };
+    const encoded = serializeGuideFaqSchema(guideFaqSchema(faq)!);
+    expect(encoded).not.toContain('<');
+    expect(JSON.parse(encoded).mainEntity[0].name).toBe('A </script> q?');
   });
   it('escapes script-breaking copy without changing the parsed Article', () => {
     const article = { ...studentIndiaGuide, title: 'A </script><script>alert(1)</script> guide' };

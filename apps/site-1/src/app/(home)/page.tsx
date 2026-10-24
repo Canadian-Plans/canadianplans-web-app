@@ -2,6 +2,9 @@ import { pageMetadata } from '@/lib/page-metadata';
 import { publicRobots } from '@/lib/seo';
 import type { Metadata } from 'next';
 import { homeCopy } from '@content/home';
+import { homeRedesignFaq } from '@content/home-redesign';
+import { buildLandingSchema, serializeLandingSchema } from '@/lib/landing-schema';
+import { siteBaseUrl } from '@/lib/seo';
 import { siteChrome, siteFooter } from '@content/site-chrome';
 import { Footer } from '@/components/shared/chrome';
 import { SiteHeader } from '@/components/shared/site-header';
@@ -24,8 +27,15 @@ export const metadata: Metadata = pageMetadata('/', {
  * a home design component on the `--cp-hd-*` tokens (see src/app/(home)/home-design.css).
  */
 export default function HomePage() {
+  // FAQPage JSON-LD for the homepage questions (SEO rewrite, 23 October 2026).
+  const schema = buildLandingSchema(siteBaseUrl(), [{ label: 'Home', href: '/' }], homeRedesignFaq);
   return (
     <>
+      <script
+        id="home-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeLandingSchema(schema) }}
+      />
       <a href="#main-content" className="cp-hd-skip">
         {homeCopy.skip}
       </a>

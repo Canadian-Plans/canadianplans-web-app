@@ -42,7 +42,7 @@ export const siteChromeWithPromo = (
 export const siteFooter: FooterContent = {
   ...footerContent,
   description:
-    'Authorized Rogers, Fido & Chatr dealer for pre-arrival plans, and an authorized sales agent for home internet and mobile. We help you pick the right plan and stay your contact afterwards.',
+    'Canadian SIM cards, phone plans and home internet for newcomers. Authorized Rogers, Fido and Chatr reseller for eSIM plans you order before you arrive, and authorized sales agent for home internet and mobile. Nothing is paid online.',
   contactLines: ['+1 778-682-3771', 'info@canadianplans.com', '9981 Whalley Blvd, Surrey, BC'],
   social: [],
   groups: [
@@ -53,6 +53,16 @@ export const siteFooter: FooterContent = {
         { label: 'Home Internet', href: '/home-internet' },
         { label: 'Mobile Plans', href: '/mobile-plans' },
         { label: 'Business Internet', href: '/business-internet' },
+      ],
+    },
+    {
+      title: 'Before you arrive',
+      links: [
+        { label: 'International students', href: '/pre-arrival-sim/students' },
+        { label: 'Work permit holders', href: '/pre-arrival-sim/workers' },
+        { label: 'New permanent residents', href: '/pre-arrival-sim/new-immigrants' },
+        { label: 'Visitors and Super Visa', href: '/pre-arrival-sim/visitors' },
+        { label: 'Moving from India', href: '/pre-arrival-sim/from-india' },
       ],
     },
     {
@@ -68,7 +78,7 @@ export const siteFooter: FooterContent = {
       title: 'Company',
       links: [
         { label: 'About us', href: '/about' },
-        { label: 'Why buy from a dealer', href: '/about#why-us' },
+        { label: 'Who you buy from', href: '/about#carriers' },
       ],
     },
   ],

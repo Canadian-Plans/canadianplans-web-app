@@ -869,3 +869,104 @@
     transition: none;
   }
 }
+
+/* Finder refresh (23 October 2026): hover state, a symbol tile that matches the icon tiles in
+   the "need" layout, the "nothing selected" hint and the no-plans result. */
+.cp-finder-option:hover {
+  border-color: var(--cp-color-blue);
+}
+.cp-finder-options[data-layout='need'] {
+  @variant cp-finder-desktop {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.cp-finder-options[data-layout='need'] .cp-finder-symbol {
+  width: var(--cp-space-64);
+  height: var(--cp-space-64);
+  border-radius: var(--cp-radius-20);
+  font-size: var(--cp-text-18);
+}
+.cp-finder-options[data-layout='need'] .cp-finder-option-copy {
+  gap: var(--cp-space-6);
+}
+.cp-finder-options[data-layout='need'] .cp-finder-option-badge {
+  order: -1;
+}
+.cp-finder-unselected {
+  font-size: var(--cp-text-13);
+  color: var(--cp-color-slot-muted);
+}
+.cp-finder-noplans {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--cp-space-12);
+  padding: var(--cp-space-20);
+  border: var(--cp-border-outline) solid var(--cp-finder-line);
+  border-radius: var(--cp-radius-16);
+  background: var(--cp-color-snow);
+}
+.cp-finder-noplans h3 {
+  font-size: var(--cp-text-18);
+  font-weight: var(--cp-weight-bold);
+}
+.cp-finder-noplans p {
+  font-size: var(--cp-text-14);
+  color: var(--cp-color-slot-muted);
+  line-height: var(--cp-leading-body);
+}
+
+/* "Need" cards: a single column of row-style cards on phones (three options would leave an
+   orphan in a 2-up grid); the column layout returns on desktop. The symbol tile reads as
+   ink on its tone, like the icon tiles. */
+.cp-finder-options[data-layout='need'] {
+  grid-template-columns: minmax(0, 1fr);
+}
+.cp-finder-options[data-layout='need'] .cp-finder-option {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--cp-space-14);
+  min-height: 0;
+  padding: var(--cp-space-14) var(--cp-space-18) var(--cp-space-14) var(--cp-space-14);
+  @variant cp-finder-desktop {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--cp-space-22) var(--cp-space-20);
+    min-height: var(--cp-finder-need-desktop);
+  }
+}
+.cp-finder-options[data-layout='need'] :is(.cp-finder-option-icon, .cp-finder-symbol) {
+  width: var(--cp-space-44);
+  height: var(--cp-space-44);
+  border-radius: var(--cp-radius-14);
+  @variant cp-finder-desktop {
+    width: var(--cp-space-64);
+    height: var(--cp-space-64);
+    border-radius: var(--cp-radius-20);
+  }
+}
+.cp-finder-options[data-layout='need'] .cp-finder-symbol {
+  color: var(--cp-color-ink);
+}
+.cp-finder-options[data-layout='need'] .cp-finder-radio-visual {
+  position: static;
+  @variant cp-finder-desktop {
+    position: absolute;
+    top: var(--cp-space-20);
+    right: var(--cp-space-20);
+  }
+}
+.cp-finder-footer .cp-finder-unselected {
+  order: 0;
+  width: 100%;
+  text-align: center;
+  @variant cp-finder-desktop {
+    width: auto;
+    text-align: right;
+  }
+}
+.cp-finder-footer:not([data-intro='true']) {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cp-space-10);
+}

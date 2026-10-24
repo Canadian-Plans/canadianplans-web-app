@@ -6,9 +6,13 @@ import {
   type ChromeContent,
   type FooterContent,
 } from './components';
-/** Copy for /home-internet; plan prices come from internetPlansByProvince below. */
+/**
+ * Copy for /home-internet (SEO rewrite, 23 October 2026). Primary phrase: home internet
+ * plans in BC, Alberta, Manitoba and Saskatchewan. Plan prices come from
+ * internetPlansByProvince below, which mirrors the static catalogue.
+ */
 export const internetCopy = {
-  title: 'Home Internet | Canadian Plans',
+  title: 'Home Internet Plans in BC, Alberta, Manitoba & Saskatchewan | Canadian Plans',
   skip: 'Skip to main content',
   breadcrumbLabel: 'Breadcrumb',
   separator: '/',
@@ -22,43 +26,43 @@ export const internetCopy = {
     },
   ],
   hero: {
-    eyebrow: 'Home Internet & TV · BC, AB, MB, SK',
-    title: 'Fast home internet from move-in day.',
+    eyebrow: 'Home internet & TV · British Columbia, Alberta, Manitoba, Saskatchewan',
+    title: 'Unlimited home internet, installed free, from move-in day.',
     description:
-      'Up to 2 Gbps, depending on your province. Unlimited data, a free install, and most homes are online within 3 days.',
+      'Speeds up to 2 Gbps depending on your province. Unlimited data, a WiFi router and modem included, free professional installation and nothing to pay up front. Most homes are online within about 3 days of your call.',
     price: 'From $50/mo',
-    priceNote: 'CAD, plus tax. Pay $0 to order.',
+    priceNote: 'CAD, plus tax. Nothing paid online.',
     features: [
-      '✓ Authorized dealer in Surrey, BC',
-      '✓ WiFi modem included',
-      "✓ No Canadian credit history? We'll explain your options",
+      '✓ Authorized sales agent based in Surrey, BC',
+      '✓ WiFi router and modem included, no rental fee',
+      '✓ New to Canada? Your advisor explains your options',
     ],
   },
   quick: {
     eyebrow: 'Quick answer · Updated October 2026',
     title: 'How much is home internet in Canada?',
     description:
-      'Prices depend on your province: from $50/mo in Saskatchewan, $70/mo in British Columbia and Alberta, and $90/mo in Manitoba (CAD, taxes extra). Every plan has unlimited data, a free WiFi router and modem, free professional installation and no upfront payment. Most homes are installed within about 3 days.',
+      'Through Canadian Plans, unlimited home internet starts at $50 a month in Saskatchewan, $70 in British Columbia and Alberta, and $90 in Manitoba (CAD, taxes extra). Every plan includes unlimited data, a WiFi router and modem, free professional installation and no upfront payment. Saskatchewan plans come with the first two months free; BC, Alberta and Manitoba plans have a 2-year price lock and a 15-day trial, with the first bill 15 days after installation. Internet + TV bundles start at $90.',
   },
   plans: {
     heading: {
       eyebrow: 'Internet plans',
-      title: ['Plans and prices by province.'],
+      title: ['Home internet plans and prices by province'],
     },
     date: 'Prices as of October 2026 · CAD, taxes extra',
     includesTitle: 'Every plan includes',
     includes: [
-      '✓ Unlimited data',
-      '✓ Free WiFi router & modem',
-      '✓ Free professional install',
-      '✓ No upfront payment',
+      '✓ Unlimited data, no overage',
+      '✓ WiFi router and modem, no rental fee',
+      '✓ Free professional installation',
+      '✓ No upfront payment and no contract',
     ],
   },
   comparison: {
     heading: {
-      title: ['What each speed feels like'],
+      title: ['What each internet speed feels like'],
       description:
-        "Real examples instead of tech terms. Times are based on each plan's top speed. Wi-Fi inside your home may be a bit slower.",
+        "Real examples instead of tech terms. Times are based on each plan's top speed. WiFi inside your home may be a bit slower.",
     },
     label: 'Internet speed comparison',
     featureLabel: 'Usage',
@@ -82,16 +86,16 @@ export const internetCopy = {
       },
       {
         label: 'Best for',
-        values: ['2–4 people', '4+ people', 'Power users'],
+        values: ['1–3 people', '4+ people', 'Big households and heavy users'],
       },
     ],
     note: 'Download times are theoretical at full plan speed (50 GB = 400 gigabits). Device and stream counts are guidance, not guarantees.',
   },
   tv: {
     eyebrow: 'Add TV & streaming',
-    title: 'Your shows from home, on one bill.',
+    title: 'Internet and TV on one bill.',
     description:
-      'Add TV with live channels and streaming apps to any internet plan. We’ll explain the packages in plain words when we call.',
+      'Add TV with 120+ live channels and a PVR box to any plan, or in BC and Alberta choose StreamSaver TV with 70+ channels on the app plus Netflix, Disney+ and Apple TV. Your advisor explains the packages in plain words when you talk.',
     caption: 'Family on the sofa watching a hockey game on the living-room TV',
     button: 'See TV bundles →',
   },
@@ -99,26 +103,38 @@ export const internetCopy = {
     heading: {
       eyebrow: 'FAQ',
       title: ['Home internet', 'questions'],
-      description: 'Talk to an advisor, Monday to Saturday, 9am–9pm Pacific time.',
+      description: 'Talk to an advisor, Monday to Saturday, 9am to 9pm Pacific time.',
     },
     items: [
       {
         id: 'install',
         question: 'How fast can you install home internet?',
         answer:
-          'Most installs happen within about 3 days of your call with us. Tell us your move-in date and we’ll book the first slot after you get the keys.',
+          'Most installs happen within about 3 days of your call with an advisor. Tell us your move-in date and we book the first slot after you get the keys. Installation is free and a technician sets up the modem and WiFi.',
+      },
+      {
+        id: 'cost',
+        question: 'What does home internet cost each month?',
+        answer:
+          'From $50 a month in Saskatchewan, $70 in British Columbia and Alberta, and $90 in Manitoba, plus tax. Internet + TV bundles start at $90 in Saskatchewan, $115 in BC and Alberta and $150 in Manitoba. There is no upfront payment and no equipment rental fee.',
       },
       {
         id: 'credit',
-        question: 'Do I need a Canadian credit history?',
+        question: 'Do I need a Canadian credit history for home internet?',
         answer:
-          'Not always. Many newcomers sign up with a passport and permit. If a deposit or a different plan is needed, your advisor tells you before anything is booked.',
+          'Not always. Many newcomers sign up with a passport and permit. If the provider needs a deposit or a different plan, your advisor tells you before anything is booked, so there are no surprises on install day.',
       },
       {
         id: 'internet-faq-0',
         question: 'Is there a contract?',
         answer:
-          'No. There is no contract, including with the 2-year price lock in Manitoba, British Columbia and Alberta. Your service agreement is with the provider, and an advisor explains it before anything is booked.',
+          'No. There is no contract, including with the 2-year price lock in Manitoba, British Columbia and Alberta. Your service agreement is with the provider, and your advisor explains it before anything is booked.',
+      },
+      {
+        id: 'promo',
+        question: 'What promotions are included?',
+        answer:
+          'In Saskatchewan your first two months are free and billing starts in month three. In BC, Alberta and Manitoba there is no deposit or activation fee, your first bill comes 15 days after installation, your price is locked for 2 years, and you have a 15-day trial if the service is not right for you.',
       },
       {
         id: 'internet-faq-1',
@@ -133,10 +149,16 @@ export const internetCopy = {
           'Yes. A WiFi router and modem are included on every plan, with no monthly equipment rental fee.',
       },
       {
+        id: 'provinces',
+        question: 'Which provinces do you serve?',
+        answer:
+          'British Columbia, Alberta, Manitoba and Saskatchewan today, priced by province rather than by city. If you live somewhere else, join the wish list on the order page and we email you when your province opens. Mobile plans are available in every province.',
+      },
+      {
         id: 'internet-faq-3',
         question: 'What happens to my internet if I move again?',
         answer:
-          'Talk to an advisor before you move. They check whether service is available at your new address and what it costs there.',
+          'Talk to an advisor before you move. They check whether service is available at your new address and what it costs there, then book the transfer.',
       },
     ],
   },
@@ -268,26 +290,63 @@ export const internetOrderHref = (province: string, plan?: InternetPlan) =>
   plan
     ? `/order?plan=${plan.id}&category=internet&province=${plan.province}`
     : `/order?category=internet&province=${province}`;
-/** One summary card per province for /home-internet; each opens that province in /order. */
-export const internetProvinceCards: readonly (PlanCardContent & {
+/** URL slug for each province page, e.g. /home-internet/british-columbia. */
+export const internetProvinceSlugs: Record<InternetProvince, string> = {
+  SK: 'saskatchewan',
+  MB: 'manitoba',
+  BC: 'british-columbia',
+  AB: 'alberta',
+};
+export const internetProvinceHref = (province: InternetProvince) =>
+  `/home-internet/${internetProvinceSlugs[province]}`;
+export const internetProvinceFromSlug = (slug: string): InternetProvince | undefined =>
+  internetProvinces.find((province) => internetProvinceSlugs[province] === slug);
+
+export interface InternetProvinceSummary {
   readonly province: InternetProvince;
-})[] = internetProvinces.map((province) => {
-  const plans = internetPlansByProvince[province];
-  const from = Math.min(...plans.map((plan) => plan.priceCad));
-  const top = plans.reduce((best, plan) => (plan.mbps > best.mbps ? plan : best));
-  return {
-    id: `internet-${province.toLowerCase()}`,
-    province,
-    carrier: internetProvinceNames[province],
-    allowance: `Up to ${top.allowance}`,
-    amount: `$${from}`,
-    period: '/mo',
-    finePrint: `From · CAD · taxes extra · ${internetPromotions[province].toLowerCase()}`,
-    features: plans.map((plan) => `✓ ${plan.carrier}, ${plan.allowance}: ${plan.amount}/mo`),
-    buttonLabel: `See ${province} plans`,
-    selectedLabel: 'Selected ✓',
-  };
-});
+  readonly name: string;
+  readonly href: string;
+  /** Lowest monthly price in the province, in dollars. */
+  readonly fromCad: number;
+  readonly topSpeed: string;
+  readonly highlights: readonly string[];
+}
+/**
+ * One summary card per province for /home-internet (owner request, 23 October 2026): the
+ * lowest price, the headline facts, and a link to that province's own page. Derived from the
+ * plan list so it can never disagree with it.
+ */
+export const internetProvinceSummaries: readonly InternetProvinceSummary[] = internetProvinces.map(
+  (province) => {
+    const plans = internetPlansByProvince[province];
+    const from = Math.min(...plans.map((plan) => plan.priceCad));
+    const top = plans.reduce((best, plan) => (plan.mbps > best.mbps ? plan : best));
+    const tv = plans.some((plan) => plan.id.includes('streamsaver'))
+      ? 'Optional TV or StreamSaver bundle'
+      : 'Optional TV bundle, 120+ channels';
+    return {
+      province,
+      name: internetProvinceNames[province],
+      href: internetProvinceHref(province),
+      fromCad: from,
+      topSpeed: top.allowance,
+      highlights: [
+        `Up to ${top.allowance}`,
+        internetPromotions[province],
+        'Unlimited data',
+        'Free WiFi router & modem',
+        tv,
+      ],
+    };
+  },
+);
+export const internetProvinceCardCopy = {
+  from: 'From',
+  period: '/mo',
+  action: 'View plans & offers',
+  arrow: '→',
+  label: 'Home internet by province',
+} as const;
 export const internetAssets = {
   '106-34-imgEllipse': {
     src: '/design/home-internet/106-34-imgEllipse.svg',

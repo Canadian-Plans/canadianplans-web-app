@@ -16,7 +16,7 @@ export interface MobilePlan extends PlanCardContent {
   readonly featured: boolean;
 }
 export const mobileCopy = {
-  title: 'Mobile Plans | Canadian Plans',
+  title: 'Bring Your Own Phone Plans in Canada: 100 GB from $55/mo | Canadian Plans',
   skip: 'Skip to main content',
   breadcrumbLabel: 'Breadcrumb',
   breadcrumb: [
@@ -31,26 +31,27 @@ export const mobileCopy = {
   separator: '/',
   hero: {
     description:
-      'Three plans, explained in plain words. Bring your own unlocked phone and keep your number. An identity and credit check is required.',
+      'Three postpaid plans, explained in plain words. Bring your own unlocked phone, keep your number, and pay nothing online. An identity and credit check is required, and an advisor confirms your price before anything changes.',
   },
   quick: {
     eyebrow: 'Quick answer · Updated October 2026',
-    title: 'Which mobile plan should I choose?',
+    title: 'Which bring-your-own-phone plan should I choose in Canada?',
     description:
-      '5G+ Complete with 100 GB at $55/mo suits most people. For a limited time, 175 GB is $60/mo, or choose $90/mo for unlimited data with a 50 GB hotspot and Mexico. All three are postpaid with unlimited talk and text and a $10 pre-authorized payment discount included. Prices CAD, taxes extra.',
+      '5G+ Complete with 100 GB at $55 a month suits most people: unlimited talk and text in Canada and the US, 5G+ data at speeds up to 2 Gbps, and up to 5 GB a day of roaming in the US. For a limited time, 175 GB is $60 a month, or choose the unlimited plan at $90 for a 50 GB hotspot and Mexico. All three are postpaid with no contract, no connection fee, and the $10 pre-authorized payment discount included. Prices are CAD, taxes extra.',
   },
   plans: {
     eyebrow: 'Mobile plans',
-    title: 'All mobile plans and prices',
+    title: 'All three plans and prices',
     date: 'Prices as of October 2026 · CAD, taxes extra',
     includesTitle: 'Every plan:',
     includes:
-      'unlimited talk and text, bring your own phone, eSIM or SIM card, no connection fee and $0 to order online. We call you to confirm before we switch anything.',
+      'unlimited talk and text, bring your own unlocked phone, eSIM or SIM card, no connection fee and nothing paid online. An advisor calls to confirm before anything is switched.',
     note: 'An advisor confirms your exact price, and the provider is confirmed when your order is approved.',
   },
   comparison: {
     title: 'Compare the three plans',
-    description: 'Same unlimited talk and text. The difference is data and where you can use it.',
+    description:
+      'Same unlimited talk and text. The difference is how much data you get and where you can use it.',
     columns: ['100 GB', '175 GB', 'Unlimited'],
     rows: [
       {
@@ -87,48 +88,55 @@ export const mobileCopy = {
   faq: {
     eyebrow: 'FAQ',
     title: ['Mobile plan', 'questions'],
-    description: 'Talk to an advisor, Monday to Saturday, 9am–9pm Pacific time.',
+    description: 'Talk to an advisor, Monday to Saturday, 9am to 9pm Pacific time.',
     items: [
       {
         id: 'mobile-faq-0',
-        question: 'Can I keep my number when I switch?',
+        question: 'Can I keep my phone number when I switch?',
         answer:
-          'Yes. Keep your current plan active, give us your account number and PIN, and we move your number to the new plan, usually the same day.',
-      },
-      {
-        id: 'mobile-faq-1',
-        question: 'When do I pay?',
-        answer:
-          'Nothing is paid on this website. The provider bills you directly once your plan is active.',
+          'Yes. Keep your current plan active, give us your account number and transfer PIN, and we request the move to the new plan. It usually completes the same day, and your old plan closes once the number has moved.',
       },
       {
         id: 'mobile-faq-2',
         question: 'Do I need a credit check for a phone plan in Canada?',
         answer:
-          'Yes, for these plans. They are postpaid, so an identity and credit check is required. You upload government ID with your order.',
+          'For these three plans, yes. They are postpaid, so the provider runs an identity and credit check, and you upload a government ID with your order. If you are new to Canada and have no credit history yet, start with one of our eSIM plans for newcomers instead: they have no credit check.',
       },
       {
-        id: 'mobile-faq-3',
-        question: 'Who provides the service?',
+        id: 'mobile-faq-1',
+        question: 'When do I pay?',
         answer:
-          'Canadian Plans is an authorised sales agent. The provider is confirmed when your order is approved, and your service agreement is with them.',
+          'Nothing is paid on this website. The provider bills you directly, monthly, once your plan is active. There is no connection fee, and Canadian Plans charges nothing for setting it up.',
       },
       {
         id: 'mobile-faq-4',
         question: 'Can I bring my own phone?',
         answer:
-          'Yes, every plan is bring-your-own-device. Your phone must be unlocked and compatible. Choose an eSIM or a SIM card.',
+          'Yes. Every plan is bring-your-own-device. Your phone must be unlocked and work on Canadian 5G or LTE bands. Choose an eSIM or a physical SIM card when you order.',
       },
       {
         id: 'mobile-faq-5',
         question: 'What do I need to switch providers?',
         answer:
-          'Government ID for the credit check, and your current account number and PIN if you are keeping your number. An advisor walks you through it.',
+          'A government ID for the credit check, and your current account number and transfer PIN if you are keeping your number. Do not cancel your old plan first. An advisor walks you through it.',
+      },
+      {
+        id: 'mobile-faq-3',
+        question: 'Who provides the service?',
+        answer:
+          'Canadian Plans is an authorized sales agent. The provider is confirmed when your order is approved, your account is in your name, and your service agreement is with that provider.',
+      },
+      {
+        id: 'mobile-faq-7',
+        question: 'Is there a contract?',
+        answer:
+          'No. All three plans are month to month with no contract. You can change plans later if you use more or less data than expected.',
       },
       {
         id: 'mobile-faq-6',
         question: 'Can I add a family member later?',
-        answer: 'Yes. Place a separate order for each line, or ask an advisor to help you choose.',
+        answer:
+          'Yes. Place a separate order for each line, or ask an advisor to set up several lines at once.',
       },
     ],
   },

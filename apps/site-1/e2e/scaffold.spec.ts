@@ -1,7 +1,7 @@
 import { expect, test } from './fixtures';
 
 const pages = [
-  ['/', 'Canadian phone & internet plans, with real prices.'],
+  ['/', 'Canadian SIM card and phone plans for newcomers, ready before you arrive.'],
   ['/plans', 'Plans'],
   ['/plans/test-plan', 'Plan details'],
   ['/order', 'Order a plan'],

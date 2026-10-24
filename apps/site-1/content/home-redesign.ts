@@ -7,10 +7,10 @@ import type {
 } from '@canadian-plans/ui/canadian-plans';
 
 /**
- * Electric Blue homepage redesign (14 October 2026).
- * Source: Claude Design canvas "Canadian Plans — Homepage Redesign" (Home.dc.html).
- * Design-preview copy: prices, timelines and claims in [brackets] or marked below
- * still need business confirmation. Commercial values remain backend-authoritative.
+ * Electric Blue homepage redesign (14 October 2026); copy rewritten for search on
+ * 23 October 2026 (docs/marketing/seo-content-research-2026-10-23.md). Every price and
+ * claim below traces to docs/LAUNCH_PLANS.md or docs/OPEN_INPUTS.md. Commercial values
+ * remain backend-authoritative.
  */
 
 /** Illustrations exported from the canvas into /public/design/redesign. */
@@ -304,12 +304,28 @@ export const homeRedesign = {
   hero: {
     toggleLabel: 'Who is this for',
     audiences: {
+      newcomer: {
+        tab: "I'm moving to Canada",
+        eyebrow: 'Authorized Rogers, Fido & Chatr reseller · Surrey, BC',
+        title: 'Canadian SIM card and phone plans for newcomers, ready before you arrive.',
+        description:
+          'Order a Rogers, Fido or Chatr eSIM from any country and get your Canadian number before you fly. Add home internet when you move in. Nothing is paid online.',
+        price: 'eSIM plans from $35/mo + tax',
+        chips: ['✓ Nothing paid online', '✓ No credit check'],
+        needs: ['A number before I arrive', 'Home internet when I move in', 'Both'],
+        fieldLabel: 'Arrival date',
+        fieldHint: 'e.g. Jan 15, 2027',
+        cta: 'See plans for newcomers →',
+        badgeTop: 'eSIM plans from',
+        badgePrice: '$35',
+        photo: 'PHOTO · newcomer at arrivals, phone in hand (real customer, with consent)',
+      },
       resident: {
         tab: 'I already live in Canada',
-        eyebrow: 'Authorized dealer · Surrey, BC',
-        title: 'Canadian phone & internet plans, with real prices.',
+        eyebrow: 'Authorized sales agent · Surrey, BC',
+        title: 'Phone and home internet plans in Canada, with the real price up front.',
         description:
-          'Bring your own phone, keep your number, and get set up by a real person. Home internet in BC, Alberta, Manitoba and Saskatchewan.',
+          'Bring your own phone and keep your number, or book home internet in BC, Alberta, Manitoba and Saskatchewan. A real advisor sets it up with you.',
         price: 'Mobile from $55/mo + tax',
         chips: ['✓ No contract', '✓ Keep your number'],
         needs: ['A mobile plan', 'Home internet', 'Mobile + internet bundle', 'Business internet'],
@@ -320,25 +336,9 @@ export const homeRedesign = {
         badgePrice: '$55',
         photo: 'PHOTO · customer at home, phone in hand, router behind (with consent)',
       },
-      newcomer: {
-        tab: "I'm moving to Canada",
-        eyebrow: 'Authorized dealer · Surrey, BC',
-        title: 'Canadian SIM & internet plans for newcomers.',
-        description:
-          'Get your Canadian phone number before you fly, then set up home internet when you move in.',
-        price: 'From $35/mo + tax',
-        chips: ['✓ Pay $0 today', '✓ No credit history needed'],
-        needs: ['A number before I arrive', 'Home internet when I move in', 'Both'],
-        fieldLabel: 'Arrival date',
-        fieldHint: 'e.g. Jan 15, 2027',
-        cta: 'See pre-arrival plans →',
-        badgeTop: 'SIM plans from',
-        badgePrice: '$35',
-        photo: 'PHOTO · newcomer at arrivals, phone in hand (real customer, with consent)',
-      },
     },
     needLabel: 'I need',
-    assurances: ['No credit check options', 'Pay $0 until we confirm'],
+    assurances: ['No credit check on eSIM plans', 'Nothing paid until we confirm'],
     carousel: { previous: 'Previous slide', next: 'Next slide', slide: 'Show slide' },
     badgeSuffix: '/mo · CAD',
     sticker: 'No contract',
@@ -351,13 +351,13 @@ export const homeRedesign = {
     },
   },
   picker: {
-    eyebrow: 'No contract on anything',
-    title: 'What are you looking for?',
-    description: 'Pick a service to see plans and real prices.',
+    eyebrow: 'No contract on any plan',
+    title: 'What do you need in Canada?',
+    description: 'Pick a service to see every plan and its real monthly price.',
     cards: [
       {
         key: 'pre-arrival',
-        title: 'Pre-arrival Plans',
+        title: 'SIM before you arrive',
         price: 'From $35/mo',
         icon: 'picker-pre-arrival',
       },
@@ -377,7 +377,7 @@ export const homeRedesign = {
     ],
     more: 'See plans →',
     bundleLead: 'Need more than one?',
-    bundleLink: 'Bundle and save with an advisor ›',
+    bundleLink: 'Set up a phone plan and home internet together with an advisor ›',
   },
   columns: {
     label: 'Plan categories',
@@ -389,13 +389,13 @@ export const homeRedesign = {
     items: [
       {
         key: 'pre-arrival',
-        title: 'Pre-arrival Plans',
+        title: 'SIM before you arrive',
         dollars: '35',
         cents: '.00',
         icon: 'column-pre-arrival',
         features: [
           'Canadian number before you land',
-          'eSIM, ready before you fly',
+          'eSIM by email, no credit check',
           'Works the moment you arrive',
         ],
       },
@@ -405,7 +405,7 @@ export const homeRedesign = {
         dollars: '50',
         cents: '.00',
         icon: 'column-home-internet',
-        features: ['Unlimited data', 'Free installation', 'No contract'],
+        features: ['Unlimited data', 'Free professional install', 'No upfront payment'],
       },
       {
         key: 'mobile',
@@ -425,36 +425,29 @@ export const homeRedesign = {
     ],
   },
   explorer: {
-    title: 'Discover everything we offer.',
-    navLabel: 'Service categories',
-    info: {
-      title: 'Who am I buying from?',
-      body: "Your plan is a real account in your name: with Rogers, Fido or Chatr for pre-arrival SIMs, or with the provider your advisor confirms for home internet and mobile. We're the authorized dealer that sets it up and helps you afterwards. Our help costs nothing extra.",
-      action: 'Learn more',
-      href: '/about',
-    },
+    title: 'Everything a newcomer needs to get connected in Canada.',
     help: {
       lead: 'Not sure which plan fits?',
       links: [
         { label: 'Find my plan ›', href: '/pre-arrival-sim#plans', finder: true },
-        { label: 'Guides ›', href: '/guides' },
+        { label: 'Newcomer guides ›', href: '/guides' },
       ],
     },
   },
   categories: [
     {
       key: 'pre-arrival',
-      nav: 'Pre-arrival Plans',
+      nav: 'SIM before you arrive',
       tone: 'amber',
       art: 'art-pre-arrival',
       feature: {
-        title: 'Land in Canada already connected',
-        body: "Get your number before you fly, as an eSIM. Turn on your phone when you land and you're online: no airport kiosk, no line-up.",
+        title: 'Land in Canada with a working phone number',
+        body: 'Order a Rogers, Fido or Chatr eSIM 1 to 3 weeks before your flight. Install it at home, turn it on when you land, and skip the airport SIM kiosk and the roaming bill.',
       },
       banner: {
-        eyebrow: 'Pre-arrival Plan',
-        title: 'Arrive with a Canadian number.',
-        action: 'See pre-arrival plans',
+        eyebrow: 'Canadian SIM before you arrive',
+        title: 'Canadian SIM card and eSIM, ready before you arrive.',
+        action: 'See eSIM plans',
         pricePrefix: 'from',
         price: '$35',
         priceSuffix: '/mo',
@@ -462,13 +455,13 @@ export const homeRedesign = {
       },
       steps: {
         title: 'How it works',
-        aside: 'Done in 3 easy steps',
+        aside: 'Done in 3 steps',
         items: [
           {
             id: 'order',
             marker: '1',
-            title: 'Order from anywhere',
-            body: 'Pick a plan and fill in one short form, from any country.',
+            title: 'Order from any country',
+            body: 'Pick a plan and fill in one short form. No payment and no documents to upload.',
             meta: '~2 min',
             art: 'step-pa-order',
           },
@@ -476,15 +469,15 @@ export const homeRedesign = {
             id: 'esim',
             marker: '2',
             title: 'Get your eSIM by email',
-            body: 'Scan the QR code before you fly. Your number is ready.',
+            body: 'An advisor confirms your order, then emails your QR code. Scan it at home before you fly.',
             meta: 'Before your flight',
             art: 'step-pa-esim',
           },
           {
             id: 'online',
             marker: '✓',
-            title: "Land and you're online",
-            body: 'Switch on at the airport. Calls, data and maps from minute one.',
+            title: 'Land and switch on',
+            body: 'Turn off airplane mode at arrivals. Calls, texts and data work from minute one.',
             meta: 'On arrival',
             done: true,
             art: 'step-pa-online',
@@ -492,25 +485,25 @@ export const homeRedesign = {
         ],
       },
       cards: {
-        title: 'Why get it before you land',
+        title: 'Why get your Canadian number before you land',
         columns: 3,
         items: [
           {
             id: 'bank',
-            title: 'Open a bank account early',
-            body: 'Banks ask for a Canadian number. Have one before your first appointment.',
+            title: 'Open a bank account sooner',
+            body: 'Banks text a code to a Canadian number. Have one before your first appointment.',
             icon: 'why-pa-bank',
           },
           {
             id: 'forms',
-            title: 'Fill in school & job forms',
-            body: 'Give employers and your college a real local number from day one.',
+            title: 'Fill in school, job and rental forms',
+            body: 'Give your college, employer and landlord a real local number from day one.',
             icon: 'why-pa-forms',
           },
           {
             id: 'roaming',
-            title: 'No roaming bill',
-            body: 'Skip roaming fees from home and pricey airport SIM kiosks.',
+            title: 'No roaming bill, no airport kiosk',
+            body: 'Skip roaming fees from your home carrier and the line at the arrivals SIM counter.',
             icon: 'why-pa-roaming',
           },
         ],
@@ -518,7 +511,7 @@ export const homeRedesign = {
       cta: {
         icon: 'cta-pre-arrival',
         title: 'Ready for your Canadian number?',
-        subtitle: 'Order in about 2 minutes. No credit history needed.',
+        subtitle: 'Order in about 2 minutes. No credit check, nothing paid online.',
         primary: { label: 'Get my Canadian number →', href: '/pre-arrival-sim' },
         secondary: { label: 'Talk to an advisor ›', href: '/contact' },
       },
@@ -529,12 +522,12 @@ export const homeRedesign = {
       tone: 'mint',
       art: 'art-home-internet',
       feature: {
-        title: 'Fast internet in every room',
-        body: 'Unlimited data, free installation and no contract. We book the install and stay your contact afterwards, so you are never stuck on hold.',
+        title: 'Home internet with free installation and no upfront payment',
+        body: 'Unlimited data and a WiFi router included, in British Columbia, Alberta, Manitoba and Saskatchewan. We book the install and stay your contact afterwards, so you are never stuck on hold.',
       },
       banner: {
         eyebrow: 'Home Internet',
-        title: 'Fast home internet, installed free.',
+        title: 'Home internet plans in BC, Alberta, Manitoba and Saskatchewan.',
         action: 'See internet plans',
         pricePrefix: 'from',
         price: '$50',
@@ -542,13 +535,13 @@ export const homeRedesign = {
         photo: 'PHOTO · home internet modem in a bright living room',
       },
       cards: {
-        title: 'What you get',
+        title: 'What every internet plan includes',
         columns: 2,
         items: [
           {
             id: 'install',
             title: 'Free professional install',
-            body: "A technician sets up your modem and Wi-Fi. You don't touch a cable.",
+            body: 'A technician sets up your modem and WiFi, usually within about 3 days of your call.',
             chip: '$0 install',
             icon: 'feature-hi-install',
           },
@@ -561,15 +554,15 @@ export const homeRedesign = {
           },
           {
             id: 'wifi',
-            title: 'Wi-Fi in every room',
-            body: 'Strong, steady Wi-Fi for the whole family, room to room.',
+            title: 'WiFi router and modem included',
+            body: 'No monthly equipment rental. Speeds up to 2 Gbps, depending on your province.',
             chip: 'Up to 2 Gbps',
             icon: 'feature-hi-wifi',
           },
           {
             id: 'moving',
             title: 'Moving? It moves with you',
-            body: 'Tell your advisor your new address and we book the transfer for you.',
+            body: 'Tell your advisor your new address and we check availability and book the transfer.',
             chip: 'We handle it',
             icon: 'feature-hi-moving',
           },
@@ -577,9 +570,9 @@ export const homeRedesign = {
       },
       cta: {
         icon: 'cta-home-internet',
-        title: 'Is fast internet available at your address?',
-        subtitle: 'Free installation, unlimited data, no contract.',
-        primary: { label: 'Check my address →', href: '/home-internet' },
+        title: 'Is home internet available at your address?',
+        subtitle: 'Free installation, unlimited data, no contract, nothing paid up front.',
+        primary: { label: 'See plans by province →', href: '/home-internet' },
         secondary: { label: 'Talk to an advisor ›', href: '/contact' },
       },
     },
@@ -589,12 +582,12 @@ export const homeRedesign = {
       tone: 'blue',
       art: 'art-mobile',
       feature: {
-        title: 'Switch your plan, keep your number',
-        body: 'Three simple plans with unlimited talk and text. Bring your own phone and we move your number for you, with one advisor if you ever want to change.',
+        title: 'Bring your own phone, keep your number',
+        body: 'Three postpaid plans with unlimited talk and text, from 100 GB of 5G+ data at $55 a month. We request the number transfer for you, and one advisor stays on your account.',
       },
       banner: {
         eyebrow: 'Mobile Plans',
-        title: 'Switch to a plan that fits.',
+        title: 'Bring your own phone plans with unlimited talk and text.',
         action: 'See mobile plans',
         pricePrefix: 'from',
         price: '$55',
@@ -603,13 +596,13 @@ export const homeRedesign = {
       },
       steps: {
         title: 'Keep your number. We move it for you.',
-        aside: 'Done in 3 easy steps',
+        aside: 'Done in 3 steps',
         items: [
           {
             id: 'details',
             marker: '1',
             title: 'Share your details',
-            body: 'Your current provider and account number.',
+            body: 'Your current provider, account number and PIN, plus government ID for the credit check.',
             meta: '2 min',
             art: 'step-mb-details',
           },
@@ -617,7 +610,7 @@ export const homeRedesign = {
             id: 'transfer',
             marker: '2',
             title: 'We request the transfer',
-            body: "Don't cancel your old plan. We handle it.",
+            body: "Don't cancel your old plan. The transfer closes it once your number moves.",
             meta: 'Usually same day',
             art: 'step-mb-transfer',
           },
@@ -638,20 +631,20 @@ export const homeRedesign = {
         items: [
           {
             id: 'phone',
-            title: 'Bring your phone or upgrade',
-            body: 'Unlocked phones work as-is, or pick a new one.',
+            title: 'Bring your own unlocked phone',
+            body: 'eSIM or a SIM card, whichever your phone supports.',
             icon: 'why-mb-phone',
           },
           {
             id: 'carriers',
-            title: 'One advisor, every option',
-            body: 'Your advisor compares the plans side by side with you.',
+            title: 'One advisor, every plan explained',
+            body: 'Your advisor compares the three plans with you and confirms the price before anything changes.',
             icon: 'why-mb-carriers',
           },
           {
             id: 'credit',
-            title: 'No credit check options',
-            body: 'New to Canada or rebuilding credit? We have plans for you.',
+            title: 'New to Canada? Start with an eSIM plan',
+            body: 'These mobile plans need a credit check. Our eSIM plans for newcomers do not.',
             icon: 'why-mb-credit',
           },
         ],
@@ -659,7 +652,7 @@ export const homeRedesign = {
       cta: {
         icon: 'cta-mobile',
         title: 'Ready to switch and keep your number?',
-        subtitle: 'Compare mobile plans in a few minutes.',
+        subtitle: 'Compare the three plans in a few minutes. Nothing paid online.',
         primary: { label: 'Compare mobile plans →', href: '/mobile-plans' },
         secondary: { label: 'Talk to an advisor ›', href: '/contact' },
       },
@@ -688,7 +681,7 @@ export const homeRedesign = {
           {
             id: 'shops',
             title: 'Shops & restaurants',
-            body: 'Reliable Wi-Fi for payments, orders and guests.',
+            body: 'Reliable WiFi for payments, orders and guests.',
             icon: 'who-bz-shops',
           },
           {
@@ -746,9 +739,9 @@ export const homeRedesign = {
     },
   ],
   how: {
-    title: 'Getting connected is easy',
+    title: 'How to get a phone plan or home internet through Canadian Plans',
     description:
-      'Tell us what you need, pick a plan, and we take care of the rest. No contract, no store visit.',
+      'Choose a plan, send one short form, and a real advisor does the rest. No contract, no store visit, and nothing is paid on this website.',
     primary: { label: 'Find my plan', href: '/pre-arrival-sim#plans' },
     secondary: { label: 'Talk to an advisor', href: '/contact' },
     stepLabel: 'Step',
@@ -756,19 +749,19 @@ export const homeRedesign = {
     steps: [
       {
         title: 'Choose your plan',
-        body: 'Compare mobile, home internet and pre-arrival plans side by side, or tell us what you need and we will match you.',
+        body: 'Compare eSIM, mobile and home internet plans with the real monthly price, or tell us what you need and we match you.',
         overlay: 'Pick in minutes',
         photo: 'PHOTO · customer browsing plans on phone',
       },
       {
-        title: 'We handle the setup',
-        body: 'An advisor confirms your order, books any install and sorts out your number transfer for you.',
+        title: 'An advisor confirms it with you',
+        body: 'Usually the same day, by phone or email. They check your plan, your dates and anything the provider needs before it is set up.',
         overlay: 'We do the setup',
         photo: 'PHOTO · advisor on a call / SIM being prepared',
       },
       {
         title: 'You are connected',
-        body: 'Your SIM, eSIM or internet is ready to go, with the same advisor on hand if you need anything later.',
+        body: 'Your eSIM arrives by email, your number moves over, or your internet install is booked. The same advisor stays your contact.',
         overlay: 'You are online',
         photo: 'PHOTO · happy customer at home, connected',
       },
@@ -783,10 +776,11 @@ export const homeRedesign = {
   },
   faq: {
     eyebrow: 'FAQ',
-    title: 'Questions, answered',
-    description: "Can't find what you're looking for? An advisor can walk you through it.",
+    title: 'Questions newcomers ask us',
+    description: 'Short answers first. For anything else, a real advisor can walk you through it.',
     helpTitle: 'Still have questions?',
-    helpBody: 'Chat with us or book a quick call. Our help costs nothing extra.',
+    helpBody:
+      'Call or email us, Monday to Saturday, 9am to 9pm Pacific. Our help costs nothing extra.',
     helpAction: { label: 'Talk to an advisor', href: '/contact' },
     symbols: { expand: '+', collapse: '−' },
   },
@@ -794,17 +788,17 @@ export const homeRedesign = {
     eyebrow: "Let's get you connected",
     title: 'So, what do you need today?',
     description:
-      "Tap what fits and we'll show you the right plans. Need more than one? We can bundle them.",
+      "Tap what fits and we'll show you the right plans with real prices. Need a phone plan and home internet? An advisor sets up both.",
     tiles: [
       {
         key: 'pre-arrival',
         ask: "I'm moving to Canada",
-        title: 'Pre-arrival Plans',
+        title: 'SIM before you arrive',
         icon: 'tile-pre-arrival',
       },
       {
         key: 'home-internet',
-        ask: 'I need Wi-Fi at home',
+        ask: 'I need WiFi at home',
         title: 'Home Internet',
         icon: 'tile-home-internet',
       },
@@ -826,40 +820,58 @@ export const homeRedesign = {
   },
 } as const;
 
+/**
+ * Homepage FAQ. Each answer must stand on its own when quoted in a search result, so it
+ * repeats the key fact instead of pointing elsewhere.
+ */
 export const homeRedesignFaq: readonly FaqItemContent[] = [
+  {
+    id: 'before',
+    question: 'Can I get a Canadian phone number before I arrive in Canada?',
+    answer:
+      'Yes. Order a Rogers, Fido or Chatr eSIM from any country 1 to 3 weeks before your flight. An advisor confirms the order, your Canadian number is assigned, and your eSIM QR code arrives by email. Install it at home and the line starts when you land.',
+  },
+  {
+    id: 'credit',
+    question: 'Do I need a Canadian credit history or a credit check?',
+    answer:
+      'Not for the eSIM plans you order before you arrive: no credit check and no Canadian credit history. The bring-your-own-phone mobile plans for people already in Canada are postpaid and do need an identity and credit check.',
+  },
+  {
+    id: 'pay',
+    question: 'When do I pay, and what do I pay Canadian Plans?',
+    answer:
+      'Nothing is paid on this website, on any plan. After your plan is active, the provider bills you directly for the monthly price plus tax. Canadian Plans charges no SIM, activation or shipping fee, and our help costs you nothing.',
+  },
   {
     id: 'carrier',
     question: 'Who will my plan actually be with?',
     answer:
-      'For pre-arrival SIMs, your plan is a real Rogers, Fido or Chatr account in your name. For home internet and mobile, your advisor confirms the provider with you before anything is set up, and the account is in your name. We are an authorized dealer: we help you choose, set everything up and stay your contact afterwards.',
-  },
-  {
-    id: 'cost',
-    question: 'Does it cost more to buy through you?',
-    answer: 'No. You pay the carrier price, and our help costs nothing extra.',
-  },
-  {
-    id: 'before',
-    question: 'Can I get a Canadian number before I arrive?',
-    answer:
-      'Yes. Order a pre-arrival plan 1 to 3 weeks before your flight, from any country, and your Canadian number is ready before you fly.',
+      'For eSIM plans you order before you arrive, your plan is a real Rogers, Fido or Chatr account in your name. For home internet and mobile plans, your advisor confirms the provider with you before anything is set up. Canadian Plans is the authorized reseller or sales agent, not the carrier.',
   },
   {
     id: 'keep',
-    question: 'Can I keep my current phone number?',
-    answer: 'Yes. When you switch mobile plans we handle the number transfer for you.',
+    question: 'Can I keep my current phone number when I switch?',
+    answer:
+      'Yes. Keep your old plan active, give us your account number and PIN, and we request the transfer. Your number usually moves the same day and your phone keeps working throughout.',
   },
   {
     id: 'contract',
     question: 'Is there a contract?',
     answer:
-      'No. None of our plans has a contract, including home internet with a 2-year price lock. Your service agreement is with the provider, and an advisor explains its terms before anything is activated.',
+      'No. None of the plans has a contract, including home internet with a 2-year price lock in BC, Alberta and Manitoba. Your service agreement is with the provider, and your advisor explains its terms before anything is activated.',
   },
   {
     id: 'install',
-    question: 'How fast can I get home internet installed?',
+    question: 'How fast can home internet be installed?',
     answer:
-      'Most installs happen within about 3 days of your call with us. We book the install for you and keep you updated.',
+      'Usually within about 3 days of your call with an advisor, in British Columbia, Alberta, Manitoba and Saskatchewan. Installation is free, the WiFi router and modem are included, and nothing is paid up front.',
+  },
+  {
+    id: 'cancel',
+    question: 'Can I cancel?',
+    answer:
+      'Before activation, yes, at no cost: tell your advisor and we cancel the order. After activation your plan is with the provider, so you cancel with them under their terms. Because Canadian Plans takes no payment, there is nothing for us to refund.',
   },
 ];
 

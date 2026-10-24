@@ -8,6 +8,8 @@ import {
 } from '@canadian-plans/ui/canadian-plans';
 import type { RedesignCategory } from '@content/home-redesign';
 import type { CategoryPageContent } from '@content/category-redesign';
+import { buildLandingSchema, serializeLandingSchema } from '@/lib/landing-schema';
+import { siteBaseUrl } from '@/lib/seo';
 import { RedesignFaqSection } from './faq';
 import { CategorySupport, categoryAsset } from './support';
 
@@ -31,8 +33,15 @@ export function CategoryTemplate({
   plans: ReactNode;
   afterPlans?: ReactNode;
 }) {
+  // Same FAQPage + BreadcrumbList JSON-LD as the landing pages (SEO rewrite, 23 October 2026).
+  const schema = buildLandingSchema(siteBaseUrl(), page.breadcrumb.items, faqItems);
   return (
     <main id={page.mainId} tabIndex={-1}>
+      <script
+        id={`${category.key}-schema`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeLandingSchema(schema) }}
+      />
       <div className="cp-container cp-cat-page-breadcrumb">
         <CpBreadcrumb
           items={page.breadcrumb.items}

@@ -7,7 +7,13 @@ import { guideArticles, guideAssets, guideCopy, guideList, guidesIndexCopy } fro
 import { siteChrome, siteFooter } from '@content/site-chrome';
 import { SiteHeader } from '@/components/shared/site-header';
 import { categoryAsset } from '@/components/category-redesign/support';
-import { findGuide, guideContents, serializeArticleSchema } from '@/lib/guide-content';
+import {
+  findGuide,
+  guideContents,
+  guideFaqSchema,
+  serializeArticleSchema,
+  serializeGuideFaqSchema,
+} from '@/lib/guide-content';
 import { publicRobots, siteBaseUrl } from '@/lib/seo';
 import { Footer } from '@/components/shared/chrome';
 import { GuideContents, GuideHelpful, GuideShare } from '@/components/guides/interactions';
@@ -32,6 +38,7 @@ export default async function GuidePage({ params }: Props) {
   const article = findGuide((await params).slug);
   if (!article) notFound();
   const contents = guideContents(article);
+  const faqSchema = guideFaqSchema(article);
   // Keep reading: real pages from the guide index, never this article.
   const related = guideList.filter((guide) => !guide.href.endsWith(`/${article.slug}`)).slice(0, 3);
   return (
@@ -166,6 +173,13 @@ export default async function GuidePage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeArticleSchema(article, siteBaseUrl()) }}
       />
+      {faqSchema ? (
+        <script
+          id="guide-faq-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeGuideFaqSchema(faqSchema) }}
+        />
+      ) : null}
     </>
   );
 }

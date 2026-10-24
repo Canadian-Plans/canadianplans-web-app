@@ -167,6 +167,7 @@
 :root {
   /* Guide article: 133:2 and 247:39. */
   --cp-guide-title-width: 60rem;
+  --cp-guide-table-min: 34rem;
   --cp-guide-intro-width: 47.5rem;
   --cp-guide-toc-width: 13.75rem;
   --cp-guide-aside-width: 16.25rem;
@@ -868,8 +869,6 @@
   --cp-hd-art-max: 23.75rem;
   --cp-hd-art-box: 20rem;
   --cp-hd-how-media: 28.75rem;
-  --cp-hd-catnav-basis: 14.375rem;
-  --cp-hd-catnav-max: 16.25rem;
   --cp-hd-catsec-gap: 10rem;
   --cp-hd-catsec-gap-sm: 6rem;
   --cp-hd-band-glow: 13.75rem;
@@ -893,7 +892,6 @@
   --cp-hd-picker-art: 7rem;
   --cp-hd-picker-art-tall: 5.25rem;
   --cp-hd-swipe-card: 78%;
-  --cp-hd-catcol-basis: 37.5rem;
   --cp-hd-scroll-margin-sm: 5.25rem;
   --cp-hd-feature-basis: 17.5rem;
   --cp-hd-feature-art-basis: 16.25rem;

@@ -3,7 +3,7 @@ import { mobilePlans } from './mobile-plans';
 import { internetOrderHref, internetPlansByProvince, internetProvinces } from './home-internet';
 export interface FinderAnswers {
   location: 'canada' | 'arrival';
-  need: 'phone' | 'internet';
+  need: 'phone' | 'internet' | 'tv';
   province: 'on' | 'bc' | 'ab' | 'qc' | 'mb' | 'ns' | 'sk' | 'other';
   provider: 'rogers' | 'fido' | 'chatr' | 'bell' | 'telus' | 'virgin' | 'freedom' | 'other';
   priority: 'speed' | 'value' | 'price';
@@ -42,23 +42,27 @@ export interface FinderOption<T extends string> {
   readonly description?: string;
   readonly mobileDescription?: string;
 }
+/** Where a step leads: the first route whose `value` and `when` match the answers wins. */
+export interface FinderRoute<K extends FinderQuestion> {
+  readonly value?: FinderAnswers[K];
+  /** Earlier answers the route depends on, e.g. the province step skips the provider question for internet. */
+  readonly when?: Partial<Pick<FinderAnswers, 'need'>>;
+  readonly to: FinderStepId;
+}
 export interface FinderStep<K extends FinderQuestion> {
   readonly id: K;
   readonly frame: string;
-  readonly defaultValue: FinderAnswers[K];
-  readonly progress: string;
+  /** Intro line for the first step; later steps show "Step x of y" from the computed path. */
+  readonly progress?: string;
   readonly title: string;
   readonly description: string;
   readonly mobileDescription?: string;
   readonly question?: string;
   readonly layout: 'location' | 'need' | 'compact' | 'priority' | 'arrival' | 'stay';
   readonly options: readonly FinderOption<FinderAnswers[K]>[];
-  readonly routes: readonly { readonly value?: FinderAnswers[K]; readonly to: FinderStepId }[];
-  readonly progressRatio: { readonly desktop: number; readonly mobile: number };
+  readonly routes: readonly FinderRoute<K>[];
   readonly headerIcon?: FinderAssetPair;
   readonly headerTone?: FinderTone;
-  readonly ordinal?: number;
-  readonly total?: number;
   readonly tip?: string;
 }
 export type FinderConfig = { readonly [K in FinderQuestion]: FinderStep<K> };
@@ -105,12 +109,19 @@ export const finderCopy = {
   advisorTitle: 'Advisor preview',
   advisorDescription:
     'Advisor contact will be connected separately. This preview sends no message.',
+  step: (ordinal: number, total: number) =>
+    ordinal === total ? `Step ${ordinal} of ${total} · last one!` : `Step ${ordinal} of ${total}`,
+  noPlansTitle: 'Not in your province yet',
+  noPlansBody:
+    'We sell home internet and TV in British Columbia, Alberta, Manitoba and Saskatchewan today. Leave your email and we tell you once when your province opens.',
+  noPlansAction: 'Join the wish list →',
+  noPlansHref: '/order?category=internet&province=',
+  unselected: 'Choose one to continue',
 } as const;
 export const finderSteps = {
   location: {
     id: 'location',
     frame: '291:3',
-    defaultValue: 'arrival',
     progress: 'Plan finder · about 30 seconds',
     title: 'Hi! Let’s find your perfect plan.',
     description:
@@ -172,18 +183,12 @@ export const finderSteps = {
         description: 'Get your Canadian number before you land',
       },
     ],
-    progressRatio: {
-      desktop: 0.07649253731343283,
-      mobile: 0.06206896551724138,
-    },
   },
   need: {
     id: 'need',
     frame: '291:62',
-    defaultValue: 'phone',
-    progress: 'Step 1 of 4',
     title: 'What can we help you with?',
-    description: 'Pick one. You can add more later.',
+    description: 'Pick one to start. An advisor can add the others when they call.',
     layout: 'need',
     routes: [
       {
@@ -205,14 +210,13 @@ export const finderSteps = {
       },
     },
     headerTone: 'blue',
-    ordinal: 1,
-    total: 4,
     options: [
       {
         value: 'phone',
         label: 'Phone plan',
         summary: 'Phone plan',
         tone: 'violet',
+        badge: 'FROM $55/MO',
         icon: {
           desktop: {
             src: '/design/plan-finder/291-62-imgIconPhone.svg',
@@ -227,13 +231,14 @@ export const finderSteps = {
             nodeId: '291:62',
           },
         },
-        description: 'SIM or eSIM',
+        description: 'Bring your own phone, keep your number',
       },
       {
         value: 'internet',
         label: 'Home internet',
         summary: 'Home internet',
         tone: 'mint',
+        badge: 'FROM $50/MO',
         icon: {
           desktop: {
             src: '/design/plan-finder/291-62-imgIconWifi.svg',
@@ -248,25 +253,32 @@ export const finderSteps = {
             nodeId: '291:62',
           },
         },
-        description: 'Wi-Fi at home',
+        description: 'Unlimited WiFi at home, free install',
+      },
+      {
+        value: 'tv',
+        label: 'Home internet + TV',
+        summary: 'Internet + TV',
+        tone: 'warm',
+        symbol: 'TV',
+        badge: 'FROM $90/MO',
+        description: 'WiFi plus 120+ live channels or streaming apps',
       },
     ],
-    progressRatio: {
-      desktop: 0.2126865671641791,
-      mobile: 0.19655172413793104,
-    },
   },
   province: {
     id: 'province',
     frame: '291:109',
-    defaultValue: 'on',
-    progress: 'Step 2 of 4',
     title: 'Which province are you in?',
     description: 'Plans and prices change by province.',
     layout: 'compact',
     routes: [
       {
+        when: { need: 'phone' },
         to: 'provider',
+      },
+      {
+        to: 'priority',
       },
     ],
     headerIcon: {
@@ -284,8 +296,6 @@ export const finderSteps = {
       },
     },
     headerTone: 'pink',
-    ordinal: 2,
-    total: 4,
     options: [
       {
         value: 'on',
@@ -344,16 +354,10 @@ export const finderSteps = {
         symbol: '…',
       },
     ],
-    progressRatio: {
-      desktop: 0.4253731343283582,
-      mobile: 0.3931034482758621,
-    },
   },
   provider: {
     id: 'provider',
     frame: '292:3',
-    defaultValue: 'rogers',
-    progress: 'Step 3 of 4',
     title: 'Who is your provider today?',
     description: 'We’ll check if switching saves you money.',
     layout: 'compact',
@@ -377,8 +381,6 @@ export const finderSteps = {
       },
     },
     headerTone: 'violet',
-    ordinal: 3,
-    total: 4,
     tip: 'Switching? Keep your current number. We handle the transfer for free.',
     options: [
       {
@@ -438,16 +440,10 @@ export const finderSteps = {
         symbol: '—',
       },
     ],
-    progressRatio: {
-      desktop: 0.6380597014925373,
-      mobile: 0.5862068965517241,
-    },
   },
   priority: {
     id: 'priority',
     frame: '292:91',
-    defaultValue: 'value',
-    progress: 'Step 4 of 4 · last one!',
     title: 'What matters most to you?',
     description: 'We’ll sort your matches by this.',
     layout: 'priority',
@@ -471,8 +467,6 @@ export const finderSteps = {
       },
     },
     headerTone: 'warm',
-    ordinal: 4,
-    total: 4,
     options: [
       {
         value: 'speed',
@@ -539,16 +533,10 @@ export const finderSteps = {
         description: 'Pay as little as possible',
       },
     ],
-    progressRatio: {
-      desktop: 0.8507462686567164,
-      mobile: 0.7793103448275862,
-    },
   },
   arrivalKind: {
     id: 'arrivalKind',
     frame: '292:145',
-    defaultValue: 'student',
-    progress: 'Step 1 of 2',
     title: 'Welcome! How are you coming to Canada?',
     description: 'We show the plans that fit how you are arriving.',
     mobileDescription: 'We show the plans that fit\nhow you are arriving.',
@@ -573,8 +561,6 @@ export const finderSteps = {
       },
     },
     headerTone: 'blue',
-    ordinal: 1,
-    total: 2,
     options: [
       {
         value: 'student',
@@ -662,16 +648,10 @@ export const finderSteps = {
         description: 'Holiday, family visit, super visa',
       },
     ],
-    progressRatio: {
-      desktop: 0.4253731343283582,
-      mobile: 0.3931034482758621,
-    },
   },
   stay: {
     id: 'stay',
     frame: '293:3',
-    defaultValue: 'long',
-    progress: 'Step 2 of 2 · last one!',
     title: 'How long will you be in Canada?',
     description: 'Short trips and long stays need different plans.',
     layout: 'stay',
@@ -695,8 +675,6 @@ export const finderSteps = {
       },
     },
     headerTone: 'warm',
-    ordinal: 2,
-    total: 2,
     options: [
       {
         value: 'short',
@@ -784,16 +762,8 @@ export const finderSteps = {
         description: 'PR or permanent move. Build Canadian credit',
       },
     ],
-    progressRatio: {
-      desktop: 0.8955223880597015,
-      mobile: 0.8206896551724138,
-    },
   },
 } satisfies FinderConfig;
-export const finderPaths = {
-  canada: ['location', 'need', 'province', 'provider', 'priority'],
-  arrival: ['location', 'arrivalKind', 'stay'],
-} as const satisfies Record<FinderAnswers['location'], readonly FinderQuestion[]>;
 export const finderQuestionIds = [
   'location',
   'need',
@@ -1299,12 +1269,20 @@ export const finderPhoneMatches: readonly FinderCatalogMatch[] = mobilePlans.map
   popular: plan.featured,
 }));
 
-/** Internet matches for the province chosen in the finder; none where internet is not sold. */
+const isTvBundle = (id: string) => id.includes('-tv-') || id.includes('streamsaver');
+
+/**
+ * Internet matches for the province chosen in the finder; none where internet is not sold.
+ * "Home internet" lists internet-only plans; "Home internet + TV" lists the TV bundles.
+ */
 export function finderInternetMatches(
   province: FinderAnswers['province'] | undefined,
+  need: 'internet' | 'tv' = 'internet',
 ): readonly FinderCatalogMatch[] {
   const code = internetProvinces.find((item) => item.toLowerCase() === province);
-  const plans = code ? internetPlansByProvince[code] : [];
+  const plans = (code ? internetPlansByProvince[code] : []).filter(
+    (plan) => isTvBundle(plan.id) === (need === 'tv'),
+  );
   return plans.map((plan) => ({
     id: plan.id,
     previewOnly: true,
