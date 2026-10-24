@@ -1551,3 +1551,16 @@ works with the "don't cancel first" aside, an eSIM-or-SIM spotlight, who switche
 eleven FAQ answers and the final CTA. Verified with Playwright at 390 and 1440: no
 horizontal overflow, one H1, title and description, BreadcrumbList and FAQPage JSON-LD,
 zero axe violations; the two home internet pages were re-captured with the same result.
+
+## Pre-arrival SIM landing page — 24 October 2026
+
+`/pre-arrival-sim` moved onto the category landing kit after reading Airalo, Holafly,
+aloSIM, newcomer SIM guides and Mobbin's Airalo flows (notes in
+[LANDING_PAGES.md](LANDING_PAGES.md)). Copy is in `content/pre-arrival-landing.ts`; plans
+come from `content/pre-arrival.ts` and link to the catalogue keys in /order. The plans
+block shows two groups as the catalogue sells them, monthly Rogers/Fido for stays over 90
+days and prepaid Chatr for visitors, with the popular plan in each group highlighted; the
+kit gained plan-group styles and the about block can name the reseller role. The old
+`(pre-arrival)` stylesheet and the audience `PlanPicker` stay for the three
+`/pre-arrival-sim/*` audience pages. Verified at 390 and 1440 with the other two category
+pages: no horizontal overflow, one H1, title, description and JSON-LD, zero axe violations.

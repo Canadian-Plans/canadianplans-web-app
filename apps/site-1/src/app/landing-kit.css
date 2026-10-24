@@ -606,6 +606,37 @@ a.cp-lp-card:hover .cp-lp-card-action[data-featured='true'] {
   line-height: inherit;
 }
 
+/* ---------- Plan groups (pre-arrival: monthly vs prepaid) ---------- */
+.cp-lp-plan-groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-space-40);
+}
+.cp-lp-plan-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-space-8);
+}
+.cp-lp-plan-group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--cp-space-6) var(--cp-space-14);
+  padding-bottom: var(--cp-space-8);
+  border-bottom: var(--cp-border-thin) solid var(--cp-hd-line);
+}
+.cp-lp-plan-group-head h3 {
+  margin: 0;
+  font-size: var(--cp-text-18);
+  font-weight: var(--cp-hd-weight-bold);
+  letter-spacing: var(--cp-hd-tracking-title);
+}
+.cp-lp-plan-group-head p {
+  margin: 0;
+  font-size: var(--cp-text-14);
+  color: var(--cp-hd-muted);
+}
+
 /* ---------- Image rows (heading + text + button beside a photo, alternating) ---------- */
 .cp-lp-showcase {
   padding-bottom: var(--cp-hd-section-y);

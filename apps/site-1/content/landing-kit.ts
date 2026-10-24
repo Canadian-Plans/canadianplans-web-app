@@ -203,12 +203,19 @@ export interface LandingKitPage {
   readonly moreLinks?: { readonly title: string; readonly links: readonly LandingLink[] };
 }
 
-/** "Who you are buying from": the same office, hours and promises on every category page. */
-export const landingAbout = (providerLine: string): LandingAbout => ({
+/**
+ * "Who you are buying from": the same office, hours and promises on every category page.
+ * `role` is how Canadian Plans sells that category (sales agent for internet and mobile,
+ * reseller for pre-arrival); `providerLine` says how the provider is confirmed.
+ */
+export const landingAbout = (
+  providerLine: string,
+  role = 'Canadian Plans is an authorized sales agent.',
+): LandingAbout => ({
   id: 'about',
   eyebrow: 'Who you are buying from',
   title: 'A real office in Surrey, BC. A real person on the phone.',
-  body: `Canadian Plans is an authorized sales agent. Your service agreement is with the provider, who bills you directly after activation. ${providerLine} Our help costs you nothing extra.`,
+  body: `${role} Your service agreement is with the provider, who bills you directly after activation. ${providerLine} Our help costs you nothing extra.`,
   points: [
     'You pay the provider, never this website',
     'Cancel with us free any time before the provider activates your service',

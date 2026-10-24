@@ -64,8 +64,10 @@ Files: shared kit in `apps/site-1/content/landing-kit.ts` (content shape),
 and `apps/site-1/src/app/landing-kit.css` (tokens only, `cp-lp-*` classes). Home internet
 copy in `content/home-internet-landing.ts`, mobile copy in `content/mobile-plans-landing.ts`.
 Routes `/home-internet`, `/home-internet/[province]` (british-columbia, alberta,
-saskatchewan, manitoba; anything else is a 404) and `/mobile-plans`. `/home-internet/vancouver`
-and `/home-internet/ontario` keep the older SEO landing kit.
+saskatchewan, manitoba; anything else is a 404), `/mobile-plans` and `/pre-arrival-sim`
+(copy in `content/pre-arrival-landing.ts`). `/home-internet/vancouver`, `/home-internet/ontario`
+and the three `/pre-arrival-sim/*` audience pages keep the older SEO landing kit and the
+audience plan picker.
 
 ### Plan card pattern (Mobbin, 23 October 2026)
 
@@ -114,6 +116,34 @@ Freedom, Mint and Fizz blocked automated reads. What the good pages do, and what
 The composition is now a shared kit (`content/landing-kit.ts`,
 `src/components/landing-kit/`, `src/app/landing-kit.css`, classes `cp-lp-*`) that home
 internet and mobile both fill; pre-arrival follows.
+
+### Pre-arrival SIM research (24 October 2026)
+
+Pages read: Airalo (Canada eSIM), Holafly (eSIM Canada), aloSIM (Canada eSIM), newcomer
+SIM guides (internationalstudent.com, welcomeaide, bytesim), travel-eSIM conversion
+notes, and Mobbin's Airalo purchase and install flows. Rogers' and Fido's newcomer pages
+returned 404; PhoneBox blocked automated reads. What the travel-eSIM leaders do, and how
+`/pre-arrival-sim` turns it to a newcomer's advantage:
+
+- **"Install before you fly, switch on when you land"** is the whole story on Airalo,
+  Holafly and aloSIM (three steps: choose, install, turn on). The hero, the how-it-works
+  steps and an image row say exactly that, with the pre-arrival timing (order 1–3 weeks
+  before, same-day eSIM, live at arrivals).
+- **Compatibility is the first gate**: every leader has a "check my phone" link and a model
+  list (iPhone XS or later, Pixel 3 or later, recent Galaxy). The eSIM spotlight carries the
+  list and the settings check; the FAQ repeats it.
+- **The newcomer difference**: travel eSIMs are data only and aloSIM's own FAQ asks "does it
+  include a Canadian phone number?" Ours does, and the forms newcomers face (bank, SIN
+  appointment, lease, school portal, job) all ask for one, so an image row leads with that.
+- **Dual SIM for bank codes**: the guides' top practical tip (keep the home SIM in, roaming
+  off) is in a row and the FAQ.
+- **Trust the leaders earn with ratings and refunds** we earn with specifics instead: no
+  credit check, no deposit, nothing to upload, $0 to order, a real office, and the
+  comparison table against the airport kiosk and the carrier store.
+- **Two audiences, two groups**: the catalogue sells monthly Rogers/Fido plans to permit
+  and PR arrivals (over 90 days) and prepaid Chatr to visitors (under 90 days), so the
+  plans block shows two labelled groups instead of the old audience filter. No "in store"
+  comparison prices appear: they are still unverified (LAUNCH_PLANS.md section E).
 
 ## 3. How plans work across the site
 
@@ -183,4 +213,3 @@ the browser; no payment is taken on any plan.
 - Photos for the three image rows and the hero (slots are labelled in the page).
 - The "connected in 2 days" versus "about 3 days" install claim.
 - Real, consented customer reviews before any rating or testimonial appears.
-- Whether `/mobile-plans` and `/pre-arrival-sim` get the same blueprint (next step).
