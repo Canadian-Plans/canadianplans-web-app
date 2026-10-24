@@ -1499,3 +1499,68 @@ Sans Flex.
   Google Sans Flex wrapping differently from Archivo), full audit 28 routes × 320/390/1440 with
   0 problems, interactions (tabs, carousel, FAQ, how-it-works, sign-up, explorer nav, finder,
   skip link, desktop and mobile nav) checked, 178 unit tests.
+
+## Home internet landing pages — 23 October 2026
+
+`/home-internet` was rebuilt as a full landing page and `/home-internet/<province>`
+(british-columbia, alberta, saskatchewan, manitoba) added, both on one composition in
+`src/components/home-internet/landing.tsx` with copy in
+`content/home-internet-landing.ts` and page styles in
+`src/app/(home-internet)/home-internet-landing.css` (`cp-hi-*`, tokens only, built on the
+final homepage design's `--cp-hd-*` scale). Research, the section blueprint, the plan
+source structure and the lead flow are in [LANDING_PAGES.md](LANDING_PAGES.md).
+
+The landing page shows one card per province (offer badge, from-price, five bullets,
+"View plans & offers") that opens the province page; the province page shows that
+province's plans grouped Internet / Internet + TV, each linking straight into `/order`.
+Three alternating image + text rows carry photo slots until the owner supplies images
+(`image.src` in content). On phones the utility bar and promo strip are hidden and a
+sticky "See plans" bar appears once the plans block scrolls away (owner, 23 Oct 2026).
+The step timeline's dashed connector now runs only across the gap between cards.
+
+Verified with Playwright (installed Chrome) at 390 and 1440 on the landing, BC and SK
+pages: no horizontal overflow, one H1, title and description per page, BreadcrumbList
+and FAQPage JSON-LD, province cards and plan cards present. Site-1 typecheck, ESLint,
+Prettier and the affected Vitest files pass. The Figma home-internet frames were not
+re-read: the owner asked for a research-led rethink instead of the Figma layout.
+
+The mobile BYOD plans were re-read from canadawideinternet.com/mobility the same day and
+no longer matched the catalogue; the catalogue, `content/mobile-plans.ts`, the homepage
+from-prices and `docs/LAUNCH_PLANS.md` table C now carry 100 GB $55, 175 GB $60 (limited
+time) and Unlimited $90. `/mobile-plans` and `/pre-arrival-sim` still use the category
+template; they follow once the owner approves the home internet page.
+
+## Mobile plans landing page and the landing kit — 24 October 2026
+
+`/mobile-plans` was rebuilt on the same blueprint as home internet, after reading Visible,
+Koodo, Bell, chatr, Lucky Mobile, Canada Wide's mobility page and Mobbin plan-selection
+screens (notes in [LANDING_PAGES.md](LANDING_PAGES.md)). The home internet composition
+became a shared category landing kit: `content/landing-kit.ts` holds the content shape,
+`src/components/landing-kit/` the sections, plan cards, sticky bar and page shell, and
+`src/app/landing-kit.css` the styles (`cp-lp-*`, tokens only). Home internet and mobile
+both fill the kit; the old `(mobile-plans)/mobile-plans.css` and
+`components/mobile-plans/interactive.tsx` were removed. Each layout sets `data-landing`
+so the header highlights the current category.
+
+Mobile page sections: hero (bring your phone, keep your number, from $55), proof strip,
+three plan cards with the 175 GB limited-time card highlighted, every-plan row and a
+"need more than one line" aside, what you get, three image rows (unlock check, number
+transfer, families), the compare table from `content/mobile-plans.ts`, how switching
+works with the "don't cancel first" aside, an eSIM-or-SIM spotlight, who switches with us
+(including newcomers without a credit file, pointed to pre-arrival), who you buy from,
+eleven FAQ answers and the final CTA. Verified with Playwright at 390 and 1440: no
+horizontal overflow, one H1, title and description, BreadcrumbList and FAQPage JSON-LD,
+zero axe violations; the two home internet pages were re-captured with the same result.
+
+## Pre-arrival SIM landing page — 24 October 2026
+
+`/pre-arrival-sim` moved onto the category landing kit after reading Airalo, Holafly,
+aloSIM, newcomer SIM guides and Mobbin's Airalo flows (notes in
+[LANDING_PAGES.md](LANDING_PAGES.md)). Copy is in `content/pre-arrival-landing.ts`; plans
+come from `content/pre-arrival.ts` and link to the catalogue keys in /order. The plans
+block shows two groups as the catalogue sells them, monthly Rogers/Fido for stays over 90
+days and prepaid Chatr for visitors, with the popular plan in each group highlighted; the
+kit gained plan-group styles and the about block can name the reseller role. The old
+`(pre-arrival)` stylesheet and the audience `PlanPicker` stay for the three
+`/pre-arrival-sim/*` audience pages. Verified at 390 and 1440 with the other two category
+pages: no horizontal overflow, one H1, title, description and JSON-LD, zero axe violations.

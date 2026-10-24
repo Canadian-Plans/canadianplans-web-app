@@ -216,7 +216,7 @@ export const finderSteps = {
         label: 'Phone plan',
         summary: 'Phone plan',
         tone: 'violet',
-        badge: 'FROM $40/MO',
+        badge: 'FROM $55/MO',
         icon: {
           desktop: {
             src: '/design/plan-finder/291-62-imgIconPhone.svg',

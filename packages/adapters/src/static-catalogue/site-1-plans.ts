@@ -356,10 +356,11 @@ const internetOffers: CommercialOffer[] = [
 
 const mobileTerms = [
   'Prices are in Canadian dollars and exclude applicable taxes and government fees.',
+  'Prices include a $10 pre-authorized bank payment discount.',
   'Postpaid plan with no connection fee.',
   'Bring your own unlocked, compatible phone. Choose an eSIM or a SIM card.',
   'An identity and credit check is required. An advisor confirms your exact price.',
-  'No contract.',
+  'No contract. Cancel anytime.',
 ];
 
 interface MobilePlanInput {
@@ -403,34 +404,38 @@ function mobileOffer(input: MobilePlanInput): CommercialOffer {
 
 const mobileOffers: CommercialOffer[] = [
   mobileOffer({
-    slug: 'can-us-100',
-    title: 'Canada + US',
+    slug: '5g-plus-complete-100',
+    title: '5G+ Complete',
     dataAllowance: '100 GB',
     dataLabel: '100 GB',
-    priceDollars: 40,
-    bestFor: 'Talk, text and 5G data in Canada and the US.',
+    priceDollars: 55,
+    bestFor: '5G+ data at speeds up to 2 Gbps, in Canada and the US.',
+    features: [
+      '100 GB of 5G+ data, speeds up to 2 Gbps',
+      'Unlimited talk & text in Canada and the US',
+      'US roaming data up to 5 GB/day',
+      '5-year price lock',
+      'AI scam protection',
+    ],
+    note: 'Data is not shareable. Reduced speeds after 100 GB. Easy Roam outside the US from $16/day.',
+  }),
+  mobileOffer({
+    slug: '5g-plus-complete-175',
+    title: '5G+ Complete',
+    dataAllowance: '175 GB',
+    dataLabel: '175 GB',
+    priceDollars: 60,
+    bestFor: 'More data for the same speeds, in Canada and the US.',
     tag: 'Limited time offer',
     featured: true,
     features: [
-      '100 GB of high-speed 5G data',
-      'Unlimited talk & text',
-      'Use it in Canada & the US',
-      'Roaming data up to 5 GB/day',
+      '175 GB of 5G+ data, speeds up to 2 Gbps',
+      'Unlimited talk & text in Canada and the US',
+      'US roaming data up to 5 GB/day',
+      '5-year price lock',
+      'AI scam protection',
     ],
-  }),
-  mobileOffer({
-    slug: 'can-us-mex-150',
-    title: 'Canada + US + Mexico',
-    dataAllowance: '150 GB',
-    dataLabel: '150 GB',
-    priceDollars: 65,
-    bestFor: 'More data, plus Mexico for travel and family calls.',
-    features: [
-      '150 GB of high-speed 5G data',
-      'Unlimited talk & text',
-      'Use it in Canada, the US & Mexico',
-      'Roaming data up to 5 GB/day',
-    ],
+    note: 'Data is not shareable. Reduced speeds after 175 GB. Easy Roam outside the US from $16/day.',
   }),
   mobileOffer({
     slug: '5g-plus-complete-unlimited',

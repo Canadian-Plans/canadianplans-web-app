@@ -93,8 +93,8 @@ describe('global finder flow', () => {
       'Best value',
     ]);
     expect(finderMatches(phone).map((plan) => plan.id)).toEqual([
-      'mobile-can-us-100',
-      'mobile-can-us-mex-150',
+      'mobile-5g-plus-complete-175',
+      'mobile-5g-plus-complete-100',
     ]);
     const internet = finish(initialFinderState, {
       location: 'canada',
@@ -191,8 +191,8 @@ describe('global finder flow', () => {
   });
 
   it.each([
-    ['price', ['mobile-can-us-100', 'mobile-can-us-mex-150']],
-    ['speed', ['mobile-5g-plus-complete-unlimited', 'mobile-can-us-mex-150']],
+    ['price', ['mobile-5g-plus-complete-100', 'mobile-5g-plus-complete-175']],
+    ['speed', ['mobile-5g-plus-complete-unlimited', 'mobile-5g-plus-complete-175']],
   ] as const)('uses the configured %s ordering', async (priority, ids) => {
     const final = finish(initialFinderState, { location: 'canada', need: 'phone', priority });
     expect(finderMatches(final).map((plan) => plan.id)).toEqual(ids);
