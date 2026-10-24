@@ -286,7 +286,8 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--cp-space-14);
-  margin: 0;
+  /* Block only: the list is also .cp-lp-inner, whose auto inline margins centre it. */
+  margin-block: 0;
   padding: 0;
   list-style: none;
   @variant cp-hd-md {
