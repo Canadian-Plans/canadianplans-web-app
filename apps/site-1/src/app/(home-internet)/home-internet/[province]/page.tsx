@@ -4,12 +4,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { provinceFromSlug, provinceSlug } from '@canadian-plans/contracts';
 import { internetProvinces, type InternetProvince } from '@content/home-internet';
-import { internetLandingShared, internetProvincePage } from '@content/home-internet-landing';
-import { Footer } from '@/components/shared/chrome';
-import { SiteHeader } from '@/components/shared/site-header';
-import { siteChrome, siteChromeWithPromo, siteFooter } from '@content/site-chrome';
+import { internetProvincePage } from '@content/home-internet-landing';
 import { InternetLanding } from '@/components/home-internet/landing';
-import { InternetStickyCta } from '@/components/home-internet/sticky';
 
 /** The four provinces internet is sold in; anything else is a 404 (Vancouver/Ontario have their own pages). */
 function soldProvince(slug: string): InternetProvince | undefined {
@@ -46,22 +42,5 @@ export default async function InternetProvincePage({
 }) {
   const province = soldProvince((await params).province);
   if (!province) notFound();
-  const page = internetProvincePage(province);
-  return (
-    <>
-      <a href={`#${internetLandingShared.mainId}`} className="cp-hi-skip">
-        {internetLandingShared.skip}
-      </a>
-      <SiteHeader
-        planHref={page.hero.primary.href}
-        content={siteChromeWithPromo(
-          internetLandingShared.promo.text,
-          internetLandingShared.promo.link,
-        )}
-      />
-      <InternetLanding page={page} />
-      <InternetStickyCta title={page.sticky.title} detail={page.sticky.detail} />
-      <Footer brand={siteChrome.brand} content={siteFooter} brandHref="/" />
-    </>
-  );
+  return <InternetLanding page={internetProvincePage(province)} province={province} />;
 }

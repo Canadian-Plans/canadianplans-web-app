@@ -1529,3 +1529,25 @@ no longer matched the catalogue; the catalogue, `content/mobile-plans.ts`, the h
 from-prices and `docs/LAUNCH_PLANS.md` table C now carry 100 GB $55, 175 GB $60 (limited
 time) and Unlimited $90. `/mobile-plans` and `/pre-arrival-sim` still use the category
 template; they follow once the owner approves the home internet page.
+
+## Mobile plans landing page and the landing kit — 24 October 2026
+
+`/mobile-plans` was rebuilt on the same blueprint as home internet, after reading Visible,
+Koodo, Bell, chatr, Lucky Mobile, Canada Wide's mobility page and Mobbin plan-selection
+screens (notes in [LANDING_PAGES.md](LANDING_PAGES.md)). The home internet composition
+became a shared category landing kit: `content/landing-kit.ts` holds the content shape,
+`src/components/landing-kit/` the sections, plan cards, sticky bar and page shell, and
+`src/app/landing-kit.css` the styles (`cp-lp-*`, tokens only). Home internet and mobile
+both fill the kit; the old `(mobile-plans)/mobile-plans.css` and
+`components/mobile-plans/interactive.tsx` were removed. Each layout sets `data-landing`
+so the header highlights the current category.
+
+Mobile page sections: hero (bring your phone, keep your number, from $55), proof strip,
+three plan cards with the 175 GB limited-time card highlighted, every-plan row and a
+"need more than one line" aside, what you get, three image rows (unlock check, number
+transfer, families), the compare table from `content/mobile-plans.ts`, how switching
+works with the "don't cancel first" aside, an eSIM-or-SIM spotlight, who switches with us
+(including newcomers without a credit file, pointed to pre-arrival), who you buy from,
+eleven FAQ answers and the final CTA. Verified with Playwright at 390 and 1440: no
+horizontal overflow, one H1, title and description, BreadcrumbList and FAQPage JSON-LD,
+zero axe violations; the two home internet pages were re-captured with the same result.

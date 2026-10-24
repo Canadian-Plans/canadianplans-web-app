@@ -1,7 +1,15 @@
-import type { CpStepContent, FaqItemContent } from '@canadian-plans/ui/canadian-plans';
+import type { CpStepContent } from '@canadian-plans/ui/canadian-plans';
 import { provinceSlug } from '@canadian-plans/contracts';
-import type { RedesignAssetKey } from './home-redesign';
-import { siteFooter } from './site-chrome';
+import {
+  landingAbout,
+  landingChrome,
+  landingFaqIntro,
+  type LandingFaq,
+  type LandingKitPage,
+  type LandingKitShared,
+  type LandingPlanCard,
+  type LandingShowcaseRow,
+} from './landing-kit';
 import {
   internetOrderHref,
   internetPlansByProvince,
@@ -13,12 +21,12 @@ import {
 
 /**
  * Home internet landing pages (23 October 2026): /home-internet (one card per province)
- * and /home-internet/<province> (that province's plans and offer). Every number comes
- * from content/home-internet.ts, which mirrors the backend catalogue
- * (packages/adapters/src/static-catalogue/site-1-plans.ts, LAUNCH_PLANS.md A–B, verified
- * against canadawideinternet.com/plan/<province> on 23 October 2026). Prices stay
- * backend-authoritative at order time: every "Get started" link opens /order, which
- * re-reads the plan from the backend.
+ * and /home-internet/<province> (that province's plans and offer), both on the category
+ * landing kit (content/landing-kit.ts). Every number comes from content/home-internet.ts,
+ * which mirrors the backend catalogue (packages/adapters/src/static-catalogue/site-1-plans.ts,
+ * LAUNCH_PLANS.md A–B, verified against canadawideinternet.com/plan/<province> on
+ * 23 October 2026). Every "Choose" button opens /order, which re-reads the plan from the
+ * backend.
  */
 
 const allPlans = Object.values(internetPlansByProvince).flat();
@@ -36,26 +44,6 @@ export const internetProvinceHref = (province: InternetProvince) =>
 
 /** Where a visitor outside the four provinces leaves their email (/order wish list). */
 export const internetWishListHref = '/order?category=internet&province=ON';
-
-export type InternetLandingFaq = FaqItemContent;
-
-/** An image the owner drops into /public; until then the slot shows its caption. */
-export interface LandingImage {
-  readonly caption: string;
-  readonly src?: string;
-  readonly alt?: string;
-}
-
-export interface LandingShowcaseRow {
-  readonly id: string;
-  readonly eyebrow: string;
-  readonly title: string;
-  readonly body: string;
-  readonly action: { readonly label: string; readonly href: string };
-  readonly image: LandingImage;
-  /** Image on the left instead of the right. */
-  readonly reverse?: boolean;
-}
 
 interface ProvinceOffer {
   readonly badge: string;
@@ -111,54 +99,35 @@ const tvBullet = (province: InternetProvince) =>
     ? 'Optional StreamSaver TV bundle'
     : 'Optional TV bundle: 120+ channels';
 
-/**
- * One card per province on /home-internet; each opens that province's page. Card pattern
- * (Mobbin pricing references, 23 October 2026): name, one line of context, price, sub-line,
- * button, then an "Includes" tick list. The standout offer (SK) is the highlighted card.
- */
-export const internetProvinceCards = internetProvinces.map((province) => {
-  const plans = internetPlansByProvince[province];
-  const offer = offers[province];
-  return {
-    province,
-    href: internetProvinceHref(province),
-    highlighted: province === 'SK',
-    tag: offer.badge,
-    name: internetProvinceNames[province],
-    context: `${plans.length} plans · ${offer.bullet.toLowerCase()}`,
-    fromLabel: 'From',
-    currency: '$',
-    price: `${lowestOf(plans)}`,
-    period: '/mo',
-    priceNote: 'CAD · taxes extra · no contract',
-    action: 'View plans & offers',
-    includesTitle: 'Every plan includes:',
-    includes: [
-      `Unlimited data up to ${topSpeedOf(plans)}`,
-      'Free WiFi router & modem',
-      'Free professional installation',
-      'No upfront payment',
-      tvBullet(province),
-    ],
-  };
-});
-
-export interface InternetPlanCardContent {
-  readonly plan: InternetPlan;
-  readonly href: string;
-  readonly featured: boolean;
-  readonly tag?: string;
-  readonly tv: boolean;
-  readonly eyebrow: string;
-  readonly bestFor: string;
-  readonly currency: string;
-  readonly price: string;
-  readonly period: string;
-  readonly priceNote: string;
-  readonly action: string;
-  readonly includesTitle: string;
-  readonly includes: readonly string[];
-}
+/** One card per province on /home-internet; the card opens that province's page. */
+export const internetProvinceCards: readonly LandingPlanCard[] = internetProvinces.map(
+  (province) => {
+    const plans = internetPlansByProvince[province];
+    const offer = offers[province];
+    return {
+      id: `province-${province}`,
+      href: internetProvinceHref(province),
+      featured: province === 'SK',
+      tag: offer.badge,
+      name: internetProvinceNames[province],
+      context: `${plans.length} plans · ${offer.bullet.toLowerCase()}`,
+      fromLabel: 'From',
+      currency: '$',
+      price: `${lowestOf(plans)}`,
+      period: '/mo',
+      priceNote: 'CAD · taxes extra · no contract',
+      action: 'View plans & offers',
+      includesTitle: 'Every plan includes:',
+      includes: [
+        `Unlimited data up to ${topSpeedOf(plans)}`,
+        'Free WiFi router & modem',
+        'Free professional installation',
+        'No upfront payment',
+        tvBullet(province),
+      ],
+    };
+  },
+);
 
 const bestForOf = (plan: InternetPlan, tv: boolean): string => {
   if (tv) {
@@ -181,7 +150,7 @@ const tvExtras = (plan: InternetPlan): readonly string[] =>
  * every plan includes, each faster tier says "Everything in <previous>, plus:", and a TV
  * bundle says what it adds to its internet speed. Every button opens that plan in /order.
  */
-export function internetProvincePlanCards(province: InternetProvince): InternetPlanCardContent[] {
+export function internetProvincePlanCards(province: InternetProvince): LandingPlanCard[] {
   const plans = internetPlansByProvince[province];
   const offer = offers[province];
   const internet = plans.filter((plan) => !isTvPlan(plan)).sort((a, b) => a.mbps - b.mbps);
@@ -191,14 +160,14 @@ export function internetProvincePlanCards(province: InternetProvince): InternetP
     isTv: boolean,
     includesTitle: string,
     includes: readonly string[],
-  ): InternetPlanCardContent => ({
-    plan,
+  ): LandingPlanCard => ({
+    id: plan.id,
     href: internetOrderHref(province, plan),
     featured: plan.badge !== undefined,
     ...(plan.badge ? { tag: plan.badge } : {}),
-    tv: isTv,
     eyebrow: isTv ? plan.carrier : 'Internet',
-    bestFor: bestForOf(plan, isTv),
+    name: plan.allowance,
+    context: bestForOf(plan, isTv),
     currency: '$',
     price: `${plan.priceCad}`,
     period: '/mo',
@@ -338,21 +307,13 @@ const sharedFaq = {
     answer:
       'Talk to your advisor before you move. They check whether service is available at your new address and what it costs there.',
   },
-} satisfies Record<string, InternetLandingFaq>;
-
-interface IconCard {
-  readonly id: string;
-  readonly icon: RedesignAssetKey;
-  readonly title: string;
-  readonly body: string;
-}
+} satisfies Record<string, LandingFaq>;
 
 /** Everything the landing page and the province pages share. */
-export const internetLandingShared = {
-  skip: 'Skip to main content',
+export const internetLandingShared: LandingKitShared = {
+  key: 'home-internet',
+  ...landingChrome,
   mainId: 'internet-main',
-  breadcrumbLabel: 'Breadcrumb',
-  separator: '/',
   promo: {
     text: 'Moving in soon? Book your install date now and be online on move-in day.',
     link: { label: 'See plans for my province', href: '#plans' },
@@ -392,16 +353,17 @@ export const internetLandingShared = {
         title: 'No contract, and we stay your contact',
         body: 'No term commitment. Moving again? Tell your advisor and they check your new address.',
       },
-    ] satisfies readonly IconCard[],
+    ],
   },
   showcase,
-  speed: {
+  showcaseLabel: 'Why home internet with us',
+  table: {
     id: 'speed',
     eyebrow: 'Which speed?',
     title: 'What each speed feels like at home.',
     lead: 'Real examples instead of tech terms. Times are based on each plan’s top speed; WiFi inside your home can be a little slower.',
     caption: 'How many people and devices each internet speed supports',
-    usageLabel: 'Everyday use',
+    rowHeaderLabel: 'Everyday use',
     columns: ['500 Mbps', '1 Gbps', '2 Gbps'],
     recommended: 1,
     recommendedLabel: 'Most popular',
@@ -428,7 +390,7 @@ export const internetLandingShared = {
       action: { label: 'Book my install date', href: '#plans' },
     },
   },
-  tv: {
+  spotlight: {
     id: 'tv',
     eyebrow: 'Add TV',
     title: 'Add TV to any plan, on the same bill.',
@@ -463,36 +425,14 @@ export const internetLandingShared = {
         title: 'Moving within Canada',
         body: 'Tell us your move-in date and new address. We check availability and book the first install slot after you get the keys.',
       },
-    ] satisfies readonly IconCard[],
-  },
-  about: {
-    id: 'about',
-    eyebrow: 'Who you are buying from',
-    title: 'A real office in Surrey, BC. A real person on the phone.',
-    body: 'Canadian Plans is an authorized sales agent. Your service agreement is with the internet provider, who installs the line and bills you directly after activation. Our advisor confirms the provider, your price and your install date before anything is booked. Our help costs you nothing extra.',
-    points: [
-      'You pay the provider, never this website',
-      'Cancel with us free any time before the provider activates your service',
-      'One advisor from order to install, and afterwards',
     ],
-    contactTitle: 'Talk to us',
-    contactLines: siteFooter.contactLines ?? [],
-    hours: 'Monday to Saturday, 9am–9pm Pacific',
-    action: { label: 'Contact an advisor', href: '/contact' },
-    secondary: { label: 'About Canadian Plans', href: '/about' },
   },
-  faqIntro: {
-    id: 'faq',
-    eyebrow: 'FAQ',
-    title: 'Home internet questions, answered.',
-    lead: 'Still unsure? An advisor can answer in a quick call, at no cost.',
-    helpTitle: 'Prefer to ask a person?',
-    helpBody: 'Call, email or send us a message and an advisor replies the same day.',
-    helpAction: { label: 'Talk to an advisor', href: '/contact' },
-    symbols: { expand: '+', collapse: '×' },
-  },
+  about: landingAbout(
+    'Our advisor confirms the provider, your price and your install date before anything is booked.',
+  ),
+  faqIntro: landingFaqIntro('Home internet questions, answered.'),
   final: {
-    icon: 'cta-home-internet' satisfies RedesignAssetKey,
+    icon: 'cta-home-internet',
     secondary: { label: 'Talk to an advisor ›', href: '/contact' },
   },
   stickyButton: 'See plans',
@@ -506,61 +446,7 @@ export const internetLandingShared = {
       { label: 'Newcomer guides', href: '/guides' },
     ],
   },
-} as const;
-
-export interface InternetPageContent {
-  readonly path: string;
-  readonly title: string;
-  readonly description: string;
-  readonly breadcrumb: readonly { readonly label: string; readonly href?: string }[];
-  readonly hero: {
-    readonly eyebrow: string;
-    readonly title: string;
-    readonly lead: string;
-    /** Offer bullets on a province page; empty on the landing page. */
-    readonly bullets: readonly string[];
-    readonly primary: { readonly label: string; readonly href: string };
-    readonly secondary: { readonly label: string; readonly href: string };
-    readonly priceLabel: string;
-    readonly price: string;
-    readonly priceSuffix: string;
-    readonly chips: readonly string[];
-    readonly art: RedesignAssetKey;
-    readonly artLabel: string;
-    readonly badge: { readonly top: string; readonly price: string; readonly suffix: string };
-    readonly sticker: string;
-  };
-  readonly plans: {
-    readonly eyebrow: string;
-    readonly title: string;
-    readonly lead: string;
-    readonly date: string;
-    /** Set on a province page: its plans and offer. Absent on the landing page (province cards). */
-    readonly province?: InternetProvince;
-    readonly promoLabel: string;
-    readonly promo?: string;
-    readonly includesTitle: string;
-    readonly includes: readonly string[];
-    readonly elsewhere: {
-      readonly title: string;
-      readonly body: string;
-      readonly action: { readonly label: string; readonly href: string };
-    };
-    readonly groups: { readonly internet: string; readonly tv: string };
-    readonly cardsLabel: string;
-  };
-  readonly faq: readonly InternetLandingFaq[];
-  readonly final: {
-    readonly title: string;
-    readonly subtitle: string;
-    readonly primary: { readonly label: string; readonly href: string };
-  };
-  readonly sticky: { readonly title: string; readonly detail: string };
-  readonly otherProvinces: {
-    readonly title: string;
-    readonly links: readonly { readonly label: string; readonly href: string }[];
-  };
-}
+};
 
 const includes = [
   'Unlimited data',
@@ -586,7 +472,7 @@ const otherProvinces = (except?: InternetProvince) => ({
     })),
 });
 
-const costAnswer = (province?: InternetProvince): InternetLandingFaq => ({
+const costAnswer = (province?: InternetProvince): LandingFaq => ({
   id: 'cost',
   question: province
     ? `How much does home internet cost in ${internetProvinceNames[province]}?`
@@ -597,7 +483,7 @@ const costAnswer = (province?: InternetProvince): InternetLandingFaq => ({
 });
 
 /** /home-internet: the overview page with one card per province. */
-export const internetLandingPage: InternetPageContent = {
+export const internetLandingPage: LandingKitPage = {
   path: '/home-internet',
   title: 'Home Internet Plans by Province | Canadian Plans',
   description: `Unlimited home internet from $${lowestPrice}/mo in ${provinceSentence}. WiFi router included, free professional install, no contract, nothing to pay online. An advisor books your install date.`,
@@ -623,12 +509,10 @@ export const internetLandingPage: InternetPageContent = {
     title: 'Find the best internet in your province.',
     lead: 'Prices and offers are set per province, never per city. Pick yours to see every plan and the current offer. Taxes are extra.',
     date: 'Prices as of October 2026 · CAD',
-    promoLabel: 'Offer',
+    cardsLabel: 'Provinces',
     includesTitle: 'Every plan includes',
     includes,
-    elsewhere,
-    groups: { internet: 'Internet', tv: 'Internet + TV' },
-    cardsLabel: 'Provinces',
+    aside: elsewhere,
   },
   faq: [
     costAnswer(),
@@ -657,11 +541,11 @@ export const internetLandingPage: InternetPageContent = {
     title: `Home internet from $${lowestPrice}/mo`,
     detail: 'Free install · No contract · $0 to order',
   },
-  otherProvinces: otherProvinces(),
+  moreLinks: otherProvinces(),
 };
 
 /** /home-internet/<province>: that province's plans, prices and offer. */
-export function internetProvincePage(province: InternetProvince): InternetPageContent {
+export function internetProvincePage(province: InternetProvince): LandingKitPage {
   const name = internetProvinceNames[province];
   const plans = internetPlansByProvince[province];
   const from = lowestOf(plans);
@@ -696,14 +580,12 @@ export function internetProvincePage(province: InternetProvince): InternetPageCo
       title: `Choose your plan in ${name}.`,
       lead: `Every plan below is sold in ${name} with the same offer. Pick one and send your details; an advisor confirms your address and price before anything is booked.`,
       date: 'Prices as of October 2026 · CAD · taxes extra',
-      province,
+      cardsLabel: `${name} plans`,
       promoLabel: 'Offer',
       promo: offer.detail,
       includesTitle: 'Every plan includes',
       includes,
-      elsewhere,
-      groups: { internet: 'Internet', tv: 'Internet + TV' },
-      cardsLabel: `${name} plans`,
+      aside: elsewhere,
     },
     faq: [
       costAnswer(province),
@@ -727,6 +609,6 @@ export function internetProvincePage(province: InternetProvince): InternetPageCo
       title: `${name} internet from $${from}/mo`,
       detail: `${capitalize(offer.badge)} · Free install · $0 to order`,
     },
-    otherProvinces: otherProvinces(province),
+    moreLinks: otherProvinces(province),
   };
 }
