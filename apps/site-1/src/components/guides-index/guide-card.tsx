@@ -1,5 +1,5 @@
-import { CpImageSlot } from '@canadian-plans/ui/canadian-plans';
-import { guidesIndexAssets, guidesIndexCopy, type GuideListEntry } from '@content/guides';
+import { guidesIndexCopy, type GuideListEntry } from '@content/guides';
+import { GuideCover } from '@/components/guides/cover';
 
 export function GuideIndexCard({
   guide,
@@ -14,11 +14,10 @@ export function GuideIndexCard({
       className={featured ? 'cp-guides-featured' : 'cp-guides-card'}
       data-guide-id={guide.id}
     >
-      <CpImageSlot
-        icon={featured ? guidesIndexAssets.featured : guidesIndexAssets.imageLight}
-        label={guidesIndexCopy.imageLabel}
+      <GuideCover
+        guideId={guide.id}
+        featured={featured}
         caption={guide.caption}
-        tone={featured ? 'on-blue' : 'light'}
         className={featured ? 'cp-guides-featured-image' : 'cp-guides-card-image'}
       />
       <div className="cp-guides-card-copy">
