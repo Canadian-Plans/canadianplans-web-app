@@ -67,6 +67,11 @@ export interface DeviceInstructions {
   readonly text: string;
   readonly caption: string;
 }
+/** One scannable line under the quick answer: a bold label, then the detail. */
+export interface QuickPoint {
+  readonly label: string;
+  readonly text: string;
+}
 export interface GuideArticle {
   readonly previewOnly: true;
   readonly slug: string;
@@ -90,10 +95,15 @@ export interface GuideArticle {
   readonly updatedLabel: string;
   readonly readingLabel: string;
   readonly imageCaption: string;
+  /** One or two sentences that answer the title question on their own. */
   readonly quickAnswer: string;
   readonly quickMobileLines?: readonly string[];
+  /** Three to five bullet points that follow the quick answer. */
+  readonly quickPoints: readonly QuickPoint[];
   readonly blocks: readonly ArticleBlock[];
   readonly sources: string;
+  /** Guide index ids shown under "Keep reading"; falls back to the top of the index. */
+  readonly related?: readonly string[];
 }
 
 // Owner decision (22 Oct 2026, SEC-18): guides are credited to the team, not to individuals.

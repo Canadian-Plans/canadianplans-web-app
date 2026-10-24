@@ -5,6 +5,7 @@ import {
   type ArticleBlock,
   type DeviceInstructions,
   type GuideArticle,
+  type QuickPoint,
   type StudentComparison,
 } from './guide-shared';
 import { workFromHomeSpeedGuide } from './guides-internet';
@@ -16,8 +17,20 @@ import {
   numberBeforeArrivalGuide,
   phoneCompatibilityGuide,
 } from './guides-newcomer';
+import {
+  activateCanadianEsimGuide,
+  airportSimVsOrderingAheadGuide,
+  documentsForPhonePlanGuide,
+  firstPhoneBillExplainedGuide,
+  foreignPhoneCompatibilityGuide,
+  lockedPhoneEsimCheckGuide,
+  prepaidVsPostpaidCanadaGuide,
+  seoPackGuides,
+  studentWorkerPhonePlansGuide,
+  virtualNumberVsSimGuide,
+} from './guides-seo-pack';
 
-export type { ArticleBlock, DeviceInstructions, GuideArticle, StudentComparison };
+export type { ArticleBlock, DeviceInstructions, GuideArticle, QuickPoint, StudentComparison };
 
 export const guideCopy = {
   skip: 'Skip to article',
@@ -88,7 +101,17 @@ export const studentIndiaGuide: GuideArticle = {
   readingLabel: '8 min read · Prices as of October 2026',
   imageCaption: 'Student from India at airport arrivals, phone in hand',
   quickAnswer:
-    'Most students from India do well with a 75 to 100 GB monthly eSIM plan: Fido 75 GB for $35 or Rogers 100 GB for $40 a month (CAD, plus tax), both with 1,000 minutes to India. Order 1 to 3 weeks before your flight so your Canadian number is ready for your bank and college forms, and keep your Indian SIM for OTPs. There is no Canadian credit check and nothing is paid online.',
+    'Most students from India do well with a 75 to 100 GB monthly eSIM plan, ordered 1 to 3 weeks before the flight so the Canadian number is ready for bank and college forms.',
+  quickPoints: [
+    { label: 'Lowest price:', text: 'Fido 75 GB at $35 a month.' },
+    { label: 'Most popular:', text: 'Rogers 100 GB at $40 a month, hotspot included.' },
+    { label: 'Calling home:', text: 'both include 1,000 minutes to India every month.' },
+    { label: 'Your Indian SIM:', text: 'keep it for OTPs, with data roaming off.' },
+    {
+      label: 'No surprises:',
+      text: 'no Canadian credit check and nothing paid online. Prices CAD + tax.',
+    },
+  ],
   blocks: [
     {
       kind: 'section',
@@ -256,7 +279,16 @@ export const esimGuide: GuideArticle = {
   readingLabel: '6 min read · Checked October 2026',
   imageCaption: 'Phone showing an eSIM QR code next to a passport and boarding pass',
   quickAnswer:
-    'An eSIM is a SIM built into your phone that you install by scanning a QR code; a physical SIM is the small card you put in the SIM tray. If you are ordering a Canadian plan before you fly, choose eSIM: it arrives by email in minutes, nothing is shipped, and your line works the moment you land. You need an unlocked phone that supports eSIM, which most iPhones from the XS onward and most recent Samsung, Pixel and OnePlus phones do.',
+    'An eSIM is a SIM built into your phone that you install by scanning a QR code; a physical SIM is the small card you put in the SIM tray. If you are ordering a Canadian plan before you fly, choose eSIM.',
+  quickPoints: [
+    { label: 'Delivery:', text: 'an eSIM arrives by email in minutes; nothing is shipped.' },
+    { label: 'Timing:', text: 'install it at home, and the line works the moment you land.' },
+    { label: 'Dual SIM:', text: 'your home SIM stays in the tray for bank codes.' },
+    {
+      label: 'You need:',
+      text: 'an unlocked phone with eSIM: iPhone XS or newer, and most recent Samsung, Pixel and OnePlus phones.',
+    },
+  ],
   blocks: [
     {
       kind: 'section',
@@ -390,7 +422,19 @@ export const creditCheckGuide: GuideArticle = {
   readingLabel: '7 min read · Checked October 2026',
   imageCaption: 'Passport and study permit on a desk next to a phone showing an order confirmation',
   quickAnswer:
-    'Usually, yes: postpaid phone plans bought in a Canadian store or online from a carrier include an identity and credit check, and a newcomer with no Canadian credit history may be refused or asked for a deposit. Prepaid plans need no credit check. The monthly Rogers and Fido eSIM plans you order through Canadian Plans before you arrive are postpaid but skip the credit check entirely: no Canadian credit history, no deposit, and nothing paid online.',
+    'Usually, yes: postpaid phone plans bought in a Canadian store or online from a carrier include an identity and credit check. Prepaid plans need none.',
+  quickPoints: [
+    {
+      label: 'No Canadian credit history:',
+      text: 'a store may refuse you a postpaid plan or ask for a deposit.',
+    },
+    { label: 'Prepaid:', text: 'never needs a credit check, because you pay in advance.' },
+    {
+      label: 'Ordered before you arrive:',
+      text: 'the monthly Rogers and Fido eSIM plans through Canadian Plans are postpaid but skip the credit check.',
+    },
+    { label: 'Also not needed:', text: 'a deposit, a SIN or any payment online.' },
+  ],
   blocks: [
     {
       kind: 'section',
@@ -500,7 +544,19 @@ export const internetCostGuide: GuideArticle = {
   readingLabel: '6 min read · Prices as of October 2026',
   imageCaption: 'Technician connecting a WiFi modem in a newly rented apartment',
   quickAnswer:
-    'Through Canadian Plans, unlimited home internet costs from $50 a month in Saskatchewan, $70 in British Columbia and Alberta, and $90 in Manitoba (CAD, plus tax). Every plan includes unlimited data, a WiFi router and modem with no rental fee, free professional installation and no upfront payment. Internet + TV bundles start at $90. Most homes are installed within about 3 days of your call, and there is no contract.',
+    'Through Canadian Plans, unlimited home internet costs from $50 a month in Saskatchewan, $70 in British Columbia and Alberta, and $90 in Manitoba (CAD, plus tax).',
+  quickPoints: [
+    {
+      label: 'Every plan includes:',
+      text: 'unlimited data and a WiFi router and modem with no rental fee.',
+    },
+    {
+      label: 'Installation:',
+      text: 'free and professional, usually within about 3 days of your call.',
+    },
+    { label: 'Up front:', text: 'nothing to pay, and no contract.' },
+    { label: 'With TV:', text: 'Internet + TV bundles start at $90.' },
+  ],
   blocks: [
     {
       kind: 'section',
@@ -632,6 +688,7 @@ export const guideArticles: readonly GuideArticle[] = [
   internetCostGuide,
   workFromHomeSpeedGuide,
   ...newcomerGuides,
+  ...seoPackGuides,
 ];
 export const guideAssets = {
   ...componentAssets,
@@ -658,6 +715,25 @@ export interface GuideListEntry {
   readonly description?: string;
   readonly keywords?: readonly string[];
 }
+/** Index card for a full guide article; reading time and copy come from the article itself. */
+function articleEntry(
+  article: GuideArticle,
+  topic: GuideListEntry['topic'],
+  keywords: readonly string[],
+): GuideListEntry {
+  return {
+    id: article.slug,
+    previewOnly: true,
+    topic,
+    category: article.category,
+    title: article.title,
+    detail: `${article.readingLabel.split(' · ')[0]} · Updated October 2026`,
+    caption: article.imageCaption,
+    href: `/guides/${article.slug}`,
+    description: article.description,
+    keywords,
+  };
+}
 /**
  * Index entries: every card opens real content, either a full guide article or one of the
  * Electric Blue audience pages, which are written as guides. Cards for guides that do not
@@ -678,6 +754,74 @@ export const guideList: readonly GuideListEntry[] = [
       'Which plan Indian students choose, how to order before you fly, and how to keep your Indian number for OTPs.',
     keywords: ['eSIM', 'student', 'India'],
   },
+  articleEntry(virtualNumberVsSimGuide, 'moving', [
+    'virtual number',
+    'textnow',
+    'voip',
+    'bank codes',
+    'verification',
+    'travel esim',
+  ]),
+  articleEntry(prepaidVsPostpaidCanadaGuide, 'credit', [
+    'prepaid vs postpaid',
+    'credit check',
+    'monthly plan',
+    'chatr',
+    'visitor',
+  ]),
+  articleEntry(studentWorkerPhonePlansGuide, 'moving', [
+    'international students',
+    'work permit',
+    'iec',
+    'flanker',
+    'hotspot',
+  ]),
+  articleEntry(airportSimVsOrderingAheadGuide, 'moving', [
+    'airport sim',
+    'toronto pearson',
+    'yyz',
+    'yvr',
+    'arrival',
+  ]),
+  articleEntry(foreignPhoneCompatibilityGuide, 'phones', [
+    'indian phone',
+    'philippines',
+    'nigeria',
+    'china',
+    'xiaomi',
+    'redmi',
+    'volte',
+  ]),
+  articleEntry(documentsForPhonePlanGuide, 'credit', [
+    'documents',
+    'id',
+    'passport',
+    'study permit',
+    'copr',
+    'sin',
+  ]),
+  articleEntry(lockedPhoneEsimCheckGuide, 'phones', [
+    'locked phone',
+    'carrier lock',
+    'unlocked',
+    'sim not supported',
+    'esim',
+  ]),
+  articleEntry(activateCanadianEsimGuide, 'phones', [
+    'activate esim',
+    'qr code',
+    'no service',
+    'dual sim',
+    'install',
+  ]),
+  articleEntry(firstPhoneBillExplainedGuide, 'credit', [
+    'first bill',
+    'proration',
+    'taxes',
+    'hst',
+    '911 fee',
+    'activation fee',
+  ]),
   {
     id: esimGuide.slug,
     previewOnly: true,
@@ -778,11 +922,20 @@ export const guideList: readonly GuideListEntry[] = [
     topic: 'phones',
     category: phoneCompatibilityGuide.category,
     title: phoneCompatibilityGuide.title,
-    detail: '8 min read · Updated October 2026',
+    detail: '9 min read · Updated October 2026',
     caption: 'Phone settings screen showing the IMEI and network bands',
     href: `/guides/${phoneCompatibilityGuide.slug}`,
     description: phoneCompatibilityGuide.description,
-    keywords: ['unlocked', 'bands', 'volte', 'imei', 'will my phone work', 'network'],
+    keywords: [
+      'unlocked',
+      'bands',
+      'volte',
+      'imei',
+      'will my phone work',
+      'network',
+      'compatibility',
+      'esim',
+    ],
   },
   {
     id: homeNumberGuide.slug,

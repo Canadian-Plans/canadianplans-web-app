@@ -20,7 +20,22 @@ export const workFromHomeSpeedGuide: GuideArticle = {
   readingLabel: '8 min read · Figures checked October 2026',
   imageCaption: 'Person on a video call at a home desk next to a WiFi router',
   quickAnswer:
-    'Most people working from home in Canada are fine with about 100 Mbps download and 10 to 20 Mbps upload. That covers video calls, a work VPN and cloud files for one person. Plan for 300 to 500 Mbps if two people work from home or the house streams and games at the same time, and 1 Gbps if you move big files. Upload speed and a steady connection matter more than the biggest number on the plan.',
+    'Most people working from home in Canada are fine with about 100 Mbps download and 10 to 20 Mbps upload. Upload speed and a steady connection matter more than the biggest number on the plan.',
+  quickPoints: [
+    {
+      label: 'One person:',
+      text: 'about 100 Mbps covers video calls, a work VPN and cloud files.',
+    },
+    {
+      label: 'Two workers or a busy house:',
+      text: '300 to 500 Mbps, so calls, streaming and gaming can run at once.',
+    },
+    { label: 'Big file transfers:', text: '1 Gbps or more, with a high upload speed too.' },
+    {
+      label: 'Before you upgrade:',
+      text: 'test next to the router and at your desk; weak Wi-Fi is often the real problem.',
+    },
+  ],
   blocks: [
     {
       kind: 'section',

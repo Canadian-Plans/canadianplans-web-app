@@ -40,8 +40,10 @@ export default async function GuidePage({ params }: Props) {
   if (!article) notFound();
   const contents = guideContents(article);
   const faqSchema = guideFaqSchema(article);
-  // Keep reading: real pages from the guide index, never this article.
-  const related = guideList.filter((guide) => !guide.href.endsWith(`/${article.slug}`)).slice(0, 3);
+  // Keep reading: the article's own topical picks, else real pages from the index; never itself.
+  const others = guideList.filter((guide) => !guide.href.endsWith(`/${article.slug}`));
+  const picked = (article.related ?? []).flatMap((id) => others.filter((guide) => guide.id === id));
+  const related = (picked.length > 0 ? picked : others).slice(0, 3);
   return (
     <>
       <SkipLink href="#guide-main" className="cp-guide-skip">
@@ -107,6 +109,15 @@ export default async function GuidePage({ params }: Props) {
                         mobileLines={article.quickMobileLines}
                       />
                     </p>
+                    <ul className="cp-guide-quick-points">
+                      {article.quickPoints.map((point) => (
+                        <li key={point.label}>
+                          <span>
+                            <strong>{point.label}</strong> {point.text}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </section>
                 <GuidePromotion className="cp-guide-mobile-promotion" />

@@ -22,7 +22,22 @@ export const numberBeforeArrivalGuide: GuideArticle = {
   readingLabel: '7 min read · Prices as of October 2026',
   imageCaption: 'Boarding pass, passport and a phone showing a new +1 number',
   quickAnswer:
-    'Order a Canadian eSIM online 1 to 3 weeks before your flight. An advisor confirms the order by phone or email, your +1 number is assigned, and your eSIM QR code arrives by email. Install it at home on WiFi, leave the line off, and switch it on when you land. Monthly Rogers and Fido plans start at $35 (CAD, plus tax) for students, workers and new permanent residents; Chatr prepaid plans start at $35 for visitors. No credit check, nothing uploaded, nothing paid online.',
+    'Order a Canadian eSIM online 1 to 3 weeks before your flight. An advisor confirms the order by phone or email, your +1 number is assigned, and your eSIM QR code arrives by email.',
+  quickPoints: [
+    {
+      label: 'Install:',
+      text: 'at home on WiFi; leave the line off and switch it on when you land.',
+    },
+    {
+      label: 'Students, workers, permanent residents:',
+      text: 'monthly Rogers and Fido plans from $35/mo.',
+    },
+    { label: 'Visitors:', text: 'Chatr prepaid plans from $35 per 30 days.' },
+    {
+      label: 'To order:',
+      text: 'no credit check, nothing uploaded, nothing paid online. Prices CAD + tax.',
+    },
+  ],
   blocks: [
     {
       kind: 'section',
@@ -146,7 +161,16 @@ export const carrierPickerGuide: GuideArticle = {
   readingLabel: '6 min read · Prices as of October 2026',
   imageCaption: 'Three phones side by side showing Rogers, Fido and Chatr plan screens',
   quickAnswer:
-    'Rogers, Fido and Chatr all use the Rogers network, so coverage is the same; the differences are price, data and who is eligible. Staying over 90 days on a study permit, work permit or as a permanent resident: Fido 75 GB at $35 is the lowest monthly price, Rogers 100 GB at $40 is the most popular, and Rogers 120 GB at $50 adds Canada + US calling and roaming. Visiting for under 90 days: Chatr prepaid from $35 per 30 days. Prices are CAD before tax, and none of these plans ordered before arrival needs a credit check.',
+    'Rogers, Fido and Chatr all use the Rogers network, so coverage is the same. What differs is price, data and who is eligible, and none needs a credit check when ordered before you arrive.',
+  quickPoints: [
+    { label: 'Lowest monthly price:', text: 'Fido 75 GB at $35, for stays over 90 days.' },
+    { label: 'Most popular:', text: 'Rogers 100 GB at $40, hotspot included.' },
+    { label: 'US trips:', text: 'Rogers 120 GB at $50, with Canada + US calling and roaming.' },
+    {
+      label: 'Visiting under 90 days:',
+      text: 'Chatr prepaid from $35 per 30 days. Prices CAD + tax.',
+    },
+  ],
   blocks: [
     {
       kind: 'section',
@@ -255,7 +279,7 @@ export const carrierPickerGuide: GuideArticle = {
       kind: 'section',
       id: 'switch',
       title: 'You can change your mind after the first month',
-      text: 'The monthly plans have no contract. If 75 GB turns out to be too little or 120 GB too much, ask your advisor to move you after the first month. Once you have Canadian ID and a few months of history, the bring-your-own-phone mobile plans for people already in Canada (100 GB Canada + US for $40, 150 GB with Mexico for $65, unlimited 5G+ for $90) are another option; those do include a credit check.',
+      text: 'The monthly plans have no contract. If 75 GB turns out to be too little or 120 GB too much, ask your advisor to move you after the first month. Once you have Canadian ID and a few months of history, the bring-your-own-phone mobile plans for people already in Canada (100 GB for $55, 175 GB for $60 as a limited-time offer, unlimited 5G+ for $90) are another option; those do include a credit check.',
     },
     {
       kind: 'faq',
@@ -314,7 +338,20 @@ export const firstWeekGuide: GuideArticle = {
   readingLabel: '9 min read · Checked October 2026',
   imageCaption: 'Newcomer at a kitchen table with passport, permit and a checklist',
   quickAnswer:
-    'Do the admin in the order each step depends on: a working Canadian phone number first (ideally ordered before you fly), then your Social Insurance Number at Service Canada, then a newcomer bank account, then your provincial health card and interim insurance, then home internet once you have an address. The phone number comes first because the bank, your employer and most online services text a code to it.',
+    'Do the admin in the order each step depends on. The phone number comes first because the bank, your employer and most online services text a code to it.',
+  quickPoints: [
+    {
+      label: '1. Phone number:',
+      text: 'a working Canadian number, ideally ordered before you fly.',
+    },
+    { label: '2. SIN:', text: 'your Social Insurance Number from Service Canada, free.' },
+    { label: '3. Bank account:', text: 'a newcomer account, once you have your SIN.' },
+    {
+      label: '4. Health card:',
+      text: 'apply in week one and keep interim insurance until it is active.',
+    },
+    { label: '5. Home internet:', text: 'once you have an address.' },
+  ],
   blocks: [
     {
       kind: 'section',
@@ -427,31 +464,46 @@ export const firstWeekGuide: GuideArticle = {
 export const phoneCompatibilityGuide: GuideArticle = {
   previewOnly: true,
   slug: 'will-my-phone-work-in-canada',
-  title: 'Will my phone work in Canada? Unlocked phones, bands and VoLTE explained (2026)',
+  title: 'Will my phone work in Canada? Unlock, bands, VoLTE and eSIM checks (2026)',
   breadcrumbTitle: 'Will my phone work in Canada',
   category: 'Phones & SIMs',
   description:
-    'Three checks before you fly: is the phone unlocked, does it support Canadian LTE and 5G bands, and will calls (VoLTE) work on an imported model from India, the Philippines or China.',
+    'Four checks before you fly: is the phone unlocked, does it support the Rogers network bands, will calls work over VoLTE, and does it support eSIM. With settings paths for iPhone and Android.',
   author: teamAuthor,
   reviewer: teamReviewer,
-  updated: '2026-10-23',
-  updatedLabel: 'Updated 23 Oct 2026',
-  readingLabel: '8 min read · Checked October 2026',
+  updated: '2026-10-24',
+  updatedLabel: 'Updated 24 Oct 2026',
+  readingLabel: '9 min read · Checked 24 October 2026',
   imageCaption: 'Phone settings screen showing the IMEI and network bands',
   quickAnswer:
-    'Most phones bought in the last five years work in Canada if they are unlocked and support the main Canadian bands: LTE bands 2, 4, 5, 7, 12 and 66, and 5G bands n66, n71 and n41 on the Rogers network. The catch is voice: some phones made for a single home-country carrier do not support VoLTE on Canadian networks, so data works but calls do not. Check all three (unlock, bands, VoLTE) before you fly, and if in doubt send us the exact model.',
+    'Most phones from the last five years work in Canada if they pass four checks: unlocked, Canadian bands, calls over LTE (VoLTE) and, for plans ordered before you arrive, eSIM.',
+  quickPoints: [
+    {
+      label: 'Unlocked:',
+      text: 'on iPhone, Settings › General › About › Carrier Lock says “No SIM restrictions”.',
+    },
+    {
+      label: 'Bands:',
+      text: 'LTE B2, B4 or B66, B7 and B12 at minimum on the Rogers network; 5G is a bonus.',
+    },
+    {
+      label: 'Calls:',
+      text: 'the phone must support VoLTE on Canadian networks; data working while calls fail points here.',
+    },
+    { label: 'eSIM:', text: 'dial *#06#; a 32-digit EID means the phone has eSIM.' },
+  ],
   blocks: [
     {
       kind: 'section',
-      id: 'three-checks',
-      title: 'The three checks',
-      text: 'A phone fails in Canada for one of three reasons. It is locked to a carrier at home and refuses another SIM. It does not support the radio bands Canadian networks use, so it gets weak or no signal. Or it supports the bands but its software does not support voice over LTE (VoLTE) on Canadian carriers, so you get data but cannot make calls. Each one has a quick check.',
+      id: 'four-checks',
+      title: 'The four checks',
+      text: 'A phone fails in Canada for one of four reasons. It is locked to a carrier at home and refuses another SIM. It lacks the radio bands Canadian networks use, so signal is weak or missing. It has the bands, but its software does not support voice over LTE (VoLTE) on Canadian carriers, so data works and calls do not. Or, for a plan ordered before you arrive, it has no eSIM. Each has a quick check, and every plan sold through Canadian Plans runs on the Rogers network, so that is the network to check against.',
     },
     {
       kind: 'section',
       id: 'unlocked',
       title: 'Check 1: is it unlocked?',
-      text: 'A locked phone only works with the carrier that sold it. If you bought the phone on a contract or an instalment plan at home, assume it is locked until proven otherwise. The simplest test is to put a friend’s SIM from another carrier in it; if it connects, it is unlocked. Otherwise ask your home carrier to unlock it before you leave, which can take days. Phones sold in Canada have had to be unlocked since 2017 under the CRTC Wireless Code, but that does not help a phone bought elsewhere.',
+      text: 'A locked phone only works with the carrier that sold it. If you bought the phone on a contract or an instalment plan at home, assume it is locked until proven otherwise. The simplest test is to put in a SIM from another carrier; if it connects, the phone is unlocked. Otherwise ask your home carrier to unlock it before you leave, which can take days. Phones sold in Canada have had to be unlocked since December 2017 under the CRTC Wireless Code, but that does not help a phone bought elsewhere.',
     },
     {
       kind: 'devices',
@@ -459,13 +511,13 @@ export const phoneCompatibilityGuide: GuideArticle = {
         {
           id: 'iphone',
           title: 'iPhone',
-          text: 'Settings → General → About → Carrier Lock. “No SIM restrictions” means unlocked. The same screen shows your IMEI and EID.',
+          text: 'Settings → General → About → Carrier Lock. “No SIM restrictions” means unlocked. The same screen shows your IMEI and, on eSIM models, the EID.',
           caption: 'Screenshot: iPhone Settings › General › About, with Carrier Lock and EID rows',
         },
         {
           id: 'android',
           title: 'Android',
-          text: 'Settings → Connections (or Network & internet) → SIM manager. Dial *#06# to see your IMEI. If the carrier lock status is not shown, your home carrier can tell you from the IMEI.',
+          text: 'Settings → About phone shows the model number and IMEI. Dial *#06# to see the IMEI and, on most eSIM models, the EID. If the lock status is not shown, a SIM from another carrier is the surest test.',
           caption: 'Screenshot: Android SIM manager with “Add eSIM” and the *#06# IMEI dialog',
         },
       ],
@@ -474,57 +526,68 @@ export const phoneCompatibilityGuide: GuideArticle = {
       kind: 'section',
       id: 'bands',
       title: 'Check 2: does it support Canadian bands?',
-      text: 'Search your exact model number plus “specifications” and compare the LTE and 5G bands with the table below. A phone that only matches one or two bands will have signal in some places and none in others; aim for all the main ones.',
+      text: 'Search your exact model number plus “specifications” and compare its LTE and 5G bands with the table below. A phone that matches only one or two bands will have signal in some places and none in others, because not every tower broadcasts every band. Aim for all the main ones; band 12 matters most for signal inside buildings and outside cities.',
     },
     {
       kind: 'table',
       id: 'band-table',
       title: 'Bands used on the Rogers network (Rogers, Fido and Chatr)',
       caption:
-        'LTE and 5G bands on the Rogers network, from Rogers’ device compatibility page, October 2026',
+        'LTE and 5G bands on the Rogers network, from Rogers’ bring-your-own-device page, checked 24 October 2026',
       columns: ['Network', 'Bands', 'Why it matters'],
       rows: [
         {
           label: '4G LTE',
           values: [
-            'B2, B4, B5, B7, B12, B25, B66',
+            'B2 and B25 (1900 MHz), B4 and B66 (AWS), B5 (850 MHz), B7 (2600 MHz), B12 (700 MHz)',
             'B4/B66 and B7 carry most city traffic; B12 and B5 reach indoors and rural areas',
           ],
         },
         {
           label: '5G',
           values: [
-            'n66, n71, n41 (plus n78 in some cities)',
+            'n71 (600 MHz), n66 (AWS), n41 (2500 MHz), n78 (3500 MHz)',
             'n71 gives wide 5G coverage; n41 and n78 give the fastest speeds',
           ],
         },
         {
           label: 'Minimum to be comfortable',
           values: [
-            'B2, B4/B66, B7, B12',
+            'B2, B4 or B66, B7, B12',
             'Without B12 you may lose signal inside buildings and outside cities',
           ],
         },
       ],
-      note: 'Band support does not guarantee coverage, and a phone’s software can switch bands off for some regions. Chatr plans run on 4G LTE only.',
+      note: 'Band support does not guarantee coverage, and a phone’s software can switch bands off for some regions. Chatr plans run on 4G LTE only, and a phone without Canadian 5G bands simply uses LTE.',
     },
     {
       kind: 'section',
       id: 'volte',
       title: 'Check 3: will calls work? (VoLTE)',
-      text: 'Canadian networks carry calls over LTE and 5G (VoLTE and VoNR). A phone made for one home-country carrier, or running a regional software build, can have VoLTE switched off for networks it does not recognise. The symptom is a phone that has full data but drops to “no service” or fails the moment you dial. Phones sold as global or international models, and all recent iPhones, Pixels and Galaxy S and A models sold unlocked, generally work. If your model was bought on a carrier contract at home, check the maker’s site for “VoLTE” and “Canada” or send us the model.',
+      text: 'Rogers requires phones on its network to make calls over LTE, known as voice over LTE (VoLTE), and it is retiring its older 3G network. It also warns that a phone bought elsewhere can lack VoLTE or WiFi calling on its network even with the right bands (rogers.com, checked 24 October 2026). The symptom is a phone with full data that fails the moment you dial, or never rings. Global or international versions, and recent iPhones, Pixels and Galaxy S models sold unlocked, generally work. If your phone was sold by a carrier at home or is a regional budget model, check before you fly or send us the model.',
+    },
+    {
+      kind: 'section',
+      id: 'esim',
+      title: 'Check 4: does it support eSIM?',
+      text: 'The plans you order before you arrive are eSIM only, so your phone also needs eSIM. Dial *#06#: on most eSIM phones a 32-digit EID appears beside the IMEI, or look in Settings › About. iPhone XS, XR and later support eSIM, except most models sold in mainland China, Hong Kong and Macau, which take two physical SIM cards. Most Galaxy S20 and later, Pixel 3 and later, and recent OnePlus phones support it too. If yours does not, you can still get a physical SIM on a bring-your-own-phone mobile plan after you land.',
     },
     {
       kind: 'section',
       id: 'countries',
       title: 'Notes by where you bought the phone',
-      text: 'India: unlocked phones from Samsung, OnePlus, Apple and Google generally work; phones from carrier bundles may be locked, and a few budget models lack band 12 or 66. Philippines: most unlocked Samsung, Apple and Xiaomi models work; check VoLTE on carrier-sold units. China: phones made for the Chinese market often lack bands 12 and 66 and may have VoLTE limited to Chinese carriers, so check carefully. Nigeria and Bangladesh: phones bought unlocked from retail usually work; confirm bands 4, 12 and 66 on budget models. Whatever the country, the same three checks apply.',
+      text: 'India: unlocked iPhones, Pixels and Galaxy S phones generally work; budget models built for Indian networks often lack bands 2, 4, 12 or 66. Philippines: phones sold on a Globe or Smart postpaid plan are often locked; check VoLTE on carrier-sold units. China: phones made for the Chinese market often lack bands 12 and 66 and may limit VoLTE to Chinese carriers. Nigeria and Bangladesh: phones bought unlocked from retail usually work; check budget models for bands 4, 12 and 66. Our guide to phones bought abroad goes brand by brand.',
     },
     {
-      kind: 'section',
-      id: 'esim',
-      title: 'eSIM or SIM card?',
-      text: 'The plans you order before you arrive are eSIM only, so your phone also needs eSIM support (an EID in the About screen on iPhone, or “Add eSIM” in the Android SIM manager). Most phones from 2019 onward have it. If yours does not, you can still get a physical SIM on a bring-your-own-phone mobile plan after you land.',
+      kind: 'checklist',
+      items: [
+        'Exact model number noted from Settings › About',
+        'Unlocked: “No SIM restrictions” on iPhone, or another carrier’s SIM tested on Android',
+        'LTE bands 2, 4 or 66, 7 and 12 on the spec sheet',
+        'VoLTE on Canadian networks confirmed for your model',
+        'An EID under *#06# for eSIM',
+        'Latest software update installed over WiFi before you fly',
+      ],
     },
     {
       kind: 'plan-cta',
@@ -536,7 +599,7 @@ export const phoneCompatibilityGuide: GuideArticle = {
     {
       kind: 'tip',
       label: 'Buying new?',
-      text: 'If you are buying new before you fly, buy it unlocked from the maker or a retailer rather than a carrier, choose the global or international version, and check the spec sheet lists bands 4, 7, 12 and 66 and 5G n71. That one choice avoids all three problems.',
+      text: 'If you are buying a phone before you fly, buy it unlocked from the maker or a retailer rather than a carrier, choose the global or international version, and check the spec sheet lists LTE bands 2, 4, 7, 12 and 66 and 5G n71. That one choice avoids all four problems.',
     },
     {
       kind: 'faq',
@@ -548,6 +611,18 @@ export const phoneCompatibilityGuide: GuideArticle = {
           question: 'My phone has data but cannot make calls in Canada. Why?',
           answer:
             'Almost always VoLTE. Your phone supports the data bands but its software does not support voice over LTE on Canadian networks. Check for a VoLTE setting in the mobile network menu; if there is none, the model may not support it here.',
+        },
+        {
+          id: 'lte-no-5g',
+          question: 'My phone has 4G but not 5G. Will it work?',
+          answer:
+            'Yes. A phone without Canadian 5G bands uses 4G LTE for calls and data, which is plenty for maps, messaging and video calls, as long as it has the main LTE bands and VoLTE.',
+        },
+        {
+          id: 'eid-lock',
+          question: 'Does having an EID mean my phone is unlocked?',
+          answer:
+            'No. The EID only shows the phone has eSIM hardware. A locked phone with an EID still rejects a Canadian eSIM until the original carrier unlocks it.',
         },
         {
           id: 'unlock-canada',
@@ -577,7 +652,12 @@ export const phoneCompatibilityGuide: GuideArticle = {
     },
   ],
   sources:
-    'Sources: Rogers device compatibility page (LTE B2, B4, B5, B7, B12, B25, B66; 5G n41, n66, n71) and Rogers community guidance on imported devices, checked 23 October 2026; CRTC Wireless Code (unlocking rules). Band lists change as networks grow; confirm your model with the maker.',
+    'Sources: Rogers bring-your-own-device page (LTE B2, B4, B5, B7, B12, B25, B66; 5G n41, n66, n71, n78; VoLTE requirement and 3G retirement), checked 24 October 2026; Apple support on carrier lock, eSIM and Dual SIM with two nano-SIM cards; CRTC Wireless Code (unlocking rules). Band lists change as networks grow; confirm your model with the maker.',
+  related: [
+    'foreign-phone-compatibility-canada',
+    'canadian-esim-locked-phone-check',
+    'esim-vs-physical-sim-canada',
+  ],
 };
 
 export const homeNumberGuide: GuideArticle = {
@@ -595,7 +675,16 @@ export const homeNumberGuide: GuideArticle = {
   readingLabel: '8 min read · Checked October 2026',
   imageCaption: 'Dual-SIM phone showing two lines: a home number and a Canadian number',
   quickAnswer:
-    'Keep your home SIM in the phone as a second line with data roaming switched off, and run your Canadian eSIM as the main line for calls and data. Before you fly, make sure the home line can receive texts abroad (some carriers need an international roaming pack or WiFi calling enabled) and know the minimum top-up that keeps the number alive. Move everything you can to the Canadian number, and keep the home line only for the accounts that insist on it.',
+    'Keep your home SIM in the phone as a second line with data roaming switched off, and run your Canadian eSIM as the main line for calls and data.',
+  quickPoints: [
+    {
+      label: 'Before you fly:',
+      text: 'check the home line can receive texts abroad; some carriers need a roaming pack or WiFi calling.',
+    },
+    { label: 'Keep it alive:', text: 'know the minimum top-up that keeps the number active.' },
+    { label: 'Move accounts:', text: 'switch everything you can to the Canadian number.' },
+    { label: 'Keep the home line for:', text: 'the banks and portals that insist on it.' },
+  ],
   blocks: [
     {
       kind: 'section',

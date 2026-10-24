@@ -14,6 +14,8 @@ describe('guide list filters', () => {
   });
   it('finds device terminology in supplied metadata and handles no results', () => {
     expect(filterGuides('compatibility', 'phones').map((guide) => guide.id)).toEqual([
+      'foreign-phone-compatibility-canada',
+      'will-my-phone-work-in-canada',
       'student-sim',
     ]);
     expect(filterGuides('unmatched-preview-xyz', 'all')).toEqual([]);
