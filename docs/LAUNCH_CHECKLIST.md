@@ -433,7 +433,14 @@ Depends on Stage 1 findings and the Stage 2 answers.
   sitemap follow it (`publicRobots()` / `INDEXABLE_PATHS`). _25 Oct: live robots.txt is
   `Allow: /` with `/studio` and `/api` disallowed; sitemap.xml returns 200. Not verified:
   sitemap submission to Google Search Console / Bing._
-- ☐ **6.2 Analytics** _(Both)_ — Umami (or chosen tool) recording visits and order starts.
+- ☑ **6.2 Analytics** _(Both)_ — Umami (or chosen tool) recording visits and order starts.
+  _25 Oct: self-hosted Umami at umami.canadianplans.com (OPEN_INPUTS #12). Backend
+  `UMAMI_EVENTS_URL`, `UMAMI_WORKSPACE_WEBSITES`, `UMAMI_HOSTNAME` set on Railway (live
+  13:50 UTC); the test order's two analytics jobs, failed earlier with
+  `provider_not_configured`, were retried from admin and both succeeded. Storefront
+  `NEXT_PUBLIC_UMAMI_*` set on Vercel by the owner; the rebuilt site's security policy allows
+  the Umami origin and the website id is in the client bundle. Browser page views load only
+  after analytics consent; a consented visit in the Umami dashboard was not checked._
 - ◐ **6.3 Announce** _(You)_ — first customers usually come from people you can reach _22 Oct: skipped for now (owner)._
   directly: newcomer and student groups, WhatsApp/Facebook communities, friends and
   partners. Claude can draft posts and a short launch message. _22 Oct: drafts for every channel in
