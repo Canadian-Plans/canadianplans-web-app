@@ -1612,9 +1612,11 @@ export const deletedEmailMessages = appSchema
 
 /**
  * A customer order-tracking one-time-code challenge (T22, REQ 05). The code and
- * the binding email are stored only as keyed hashes bound to workspace, order
- * and normalized email; the plaintext code is never persisted. Consumed,
- * expired or over-attempted challenges never verify.
+ * the binding email are stored only as keyed hashes bound to workspace and
+ * normalized email; the plaintext code is never persisted. Consumed, expired or
+ * over-attempted challenges never verify. Since email-only tracking (migration
+ * 0027) a challenge covers every order of that email in the workspace, so
+ * `order_id` is null for new rows; older rows keep their order.
  */
 export const trackingChallenges = appSchema
   .table(
@@ -1624,7 +1626,7 @@ export const trackingChallenges = appSchema
       workspaceId: uuid('workspace_id')
         .notNull()
         .references(() => workspaces.id, { onDelete: 'cascade' }),
-      orderId: uuid('order_id').notNull(),
+      orderId: uuid('order_id'),
       emailHash: text('email_hash').notNull(),
       codeHash: text('code_hash').notNull(),
       status: text('status').notNull().default('pending'),
@@ -1649,6 +1651,57 @@ export const trackingChallenges = appSchema
       ),
       index('tracking_challenges_workspace_email_idx').on(table.workspaceId, table.emailHash),
       tenantPolicy('tracking_challenges_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/**
+ * Staff asking the customer for missing order details (REQ 21). `fields` lists
+ * the amendable field keys requested (`contact.phone`, `form.arrivalDate`, ...)
+ * and `message` is the customer-facing explanation. The customer's answer is a
+ * pending change request (`change_request_id`); staff still approve it, so the
+ * submitted order stays immutable (REQ 14).
+ */
+export const orderInfoRequests = appSchema
+  .table(
+    'order_info_requests',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      orderId: uuid('order_id').notNull(),
+      requestedBy: uuid('requested_by').notNull(),
+      fields: jsonb('fields').notNull(),
+      message: text('message'),
+      status: text('status').default('pending').notNull(),
+      changeRequestId: uuid('change_request_id'),
+      resolvedBy: uuid('resolved_by'),
+      resolvedAt: timestamp('resolved_at', { withTimezone: true, mode: 'date' }),
+      createdAt: createdAt(),
+    },
+    (table) => [
+      unique('order_info_requests_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'order_info_requests_workspace_order_fk',
+        columns: [table.workspaceId, table.orderId],
+        foreignColumns: [orders.workspaceId, orders.id],
+      }).onDelete('cascade'),
+      foreignKey({
+        name: 'order_info_requests_workspace_change_request_fk',
+        columns: [table.workspaceId, table.changeRequestId],
+        foreignColumns: [orderChangeRequests.workspaceId, orderChangeRequests.id],
+      }).onDelete('set null'),
+      check(
+        'order_info_requests_status_check',
+        sql`${table.status} in ('pending', 'answered', 'cancelled')`,
+      ),
+      index('order_info_requests_workspace_order_status_idx').on(
+        table.workspaceId,
+        table.orderId,
+        table.status,
+      ),
+      tenantPolicy('order_info_requests_tenant_policy', table.workspaceId),
     ],
   )
   .enableRLS();
@@ -1722,6 +1775,7 @@ export type Quote = typeof quotes.$inferSelect;
 export type OrderStatusHistory = typeof orderStatusHistory.$inferSelect;
 export type OrderAmendment = typeof orderAmendments.$inferSelect;
 export type OrderChangeRequest = typeof orderChangeRequests.$inferSelect;
+export type OrderInfoRequest = typeof orderInfoRequests.$inferSelect;
 export type OrderNote = typeof orderNotes.$inferSelect;
 export type OrderReminder = typeof orderReminders.$inferSelect;
 export type IdempotencyKey = typeof idempotencyKeys.$inferSelect;
@@ -2213,6 +2267,7 @@ export const schema = {
   orderStatusHistory,
   orderAmendments,
   orderChangeRequests,
+  orderInfoRequests,
   orderNotes,
   orderReminders,
   idempotencyKeys,

@@ -1,10 +1,12 @@
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, eq, isNull, sql } from 'drizzle-orm';
+import { z } from 'zod';
 import {
   auditEvents,
   leads,
   memberships,
   orderAmendments,
   orderChangeRequests,
+  orderInfoRequests,
   orderNotes,
   orderReminders,
   orders,
@@ -15,12 +17,17 @@ import {
 import {
   amendableContactPatchSchema,
   amendableFormPatchSchema,
+  amendableFieldKeySchema,
   orderChangeRequestStatusSchema,
+  orderInfoRequestStatusSchema,
   orderSnapshotSchema,
+  patchFieldKeys,
   paymentStateSchema,
   type BulkAssignOrderResult,
+  type AmendableFieldKey,
   type OrderChangeRequest,
   type OrderChangeRequestPatch,
+  type OrderInfoRequest,
   type OrderNote,
   type OrderReminder,
   type PaymentState,
@@ -150,6 +157,34 @@ export interface ResolveOrderChangeRequestInput {
   expectedVersion: number;
 }
 
+export interface CreateOrderInfoRequestInput {
+  workspaceId: string;
+  actorId: string;
+  requestId: string;
+  orderId: string;
+  fields: readonly AmendableFieldKey[];
+  message?: string;
+}
+
+export type CreateOrderInfoRequestOutcome =
+  | { status: 'created'; infoRequest: OrderInfoRequest }
+  | { status: 'not_found' | 'too_many_pending' };
+
+export interface CancelOrderInfoRequestInput {
+  workspaceId: string;
+  actorId: string;
+  requestId: string;
+  orderId: string;
+  infoRequestId: string;
+}
+
+export type CancelOrderInfoRequestOutcome =
+  | { status: 'cancelled'; infoRequest: OrderInfoRequest }
+  | { status: 'not_found' | 'info_request_not_found' | 'info_request_resolved' };
+
+/** Open info requests one order may carry; more is noise for the customer. */
+export const MAX_PENDING_INFO_REQUESTS = 3;
+
 export interface StaffOrderActionStore {
   addNote(input: AddOrderNoteInput): Promise<AddOrderNoteOutcome>;
   listNotes(input: ListOrderNotesInput): Promise<ListOrderNotesOutcome>;
@@ -163,6 +198,8 @@ export interface StaffOrderActionStore {
     input: CreateOrderChangeRequestInput,
   ): Promise<CreateOrderChangeRequestOutcome>;
   resolveChangeRequest(input: ResolveOrderChangeRequestInput): Promise<OrderWriteOutcome>;
+  createInfoRequest(input: CreateOrderInfoRequestInput): Promise<CreateOrderInfoRequestOutcome>;
+  cancelInfoRequest(input: CancelOrderInfoRequestInput): Promise<CancelOrderInfoRequestOutcome>;
 }
 
 interface OrderLockRow {
@@ -748,14 +785,115 @@ export class DatabaseStaffOrderActionStore implements StaffOrderActionStore {
       },
     );
   }
+
+  /**
+   * Asks the customer for missing details (REQ 21). The request carries field
+   * keys and a customer-facing message; the audit keeps only the field keys.
+   */
+  createInfoRequest(input: CreateOrderInfoRequestInput): Promise<CreateOrderInfoRequestOutcome> {
+    return this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: input.actorId },
+      async (tx) => {
+        if (!(await lockOrder(tx, input.workspaceId, input.orderId)))
+          return { status: 'not_found' };
+        const [open] = await tx
+          .select({ count: sql<number>`count(*)::int` })
+          .from(orderInfoRequests)
+          .where(
+            and(
+              eq(orderInfoRequests.workspaceId, input.workspaceId),
+              eq(orderInfoRequests.orderId, input.orderId),
+              eq(orderInfoRequests.status, 'pending'),
+            ),
+          );
+        if ((open?.count ?? 0) >= MAX_PENDING_INFO_REQUESTS) return { status: 'too_many_pending' };
+        const fields = [...new Set(input.fields)].sort();
+        const [row] = await tx
+          .insert(orderInfoRequests)
+          .values({
+            workspaceId: input.workspaceId,
+            orderId: input.orderId,
+            requestedBy: input.actorId,
+            fields,
+            message: input.message?.trim() || null,
+            status: 'pending',
+          })
+          .returning();
+        if (!row) throw new Error('info request insert did not return a row');
+        await insertAudit(tx, {
+          workspaceId: input.workspaceId,
+          actorId: input.actorId,
+          requestId: input.requestId,
+          action: 'order.info_request_created',
+          entityId: input.orderId,
+          after: { infoRequestId: row.id, fields },
+        });
+        return { status: 'created', infoRequest: infoRequestView(row) };
+      },
+    );
+  }
+
+  cancelInfoRequest(input: CancelOrderInfoRequestInput): Promise<CancelOrderInfoRequestOutcome> {
+    return this.database.withTenantTx(
+      { workspaceId: input.workspaceId, actorId: input.actorId },
+      async (tx) => {
+        if (!(await lockOrder(tx, input.workspaceId, input.orderId)))
+          return { status: 'not_found' };
+        const [current] = await tx
+          .select()
+          .from(orderInfoRequests)
+          .where(
+            and(
+              eq(orderInfoRequests.workspaceId, input.workspaceId),
+              eq(orderInfoRequests.orderId, input.orderId),
+              eq(orderInfoRequests.id, input.infoRequestId),
+            ),
+          )
+          .limit(1)
+          .for('update');
+        if (!current) return { status: 'info_request_not_found' };
+        if (current.status !== 'pending') return { status: 'info_request_resolved' };
+        const [row] = await tx
+          .update(orderInfoRequests)
+          .set({ status: 'cancelled', resolvedBy: input.actorId, resolvedAt: this.now() })
+          .where(
+            and(
+              eq(orderInfoRequests.workspaceId, input.workspaceId),
+              eq(orderInfoRequests.id, input.infoRequestId),
+            ),
+          )
+          .returning();
+        if (!row) throw new Error('info request update did not return a row');
+        await insertAudit(tx, {
+          workspaceId: input.workspaceId,
+          actorId: input.actorId,
+          requestId: input.requestId,
+          action: 'order.info_request_cancelled',
+          entityId: input.orderId,
+          after: { infoRequestId: row.id },
+        });
+        return { status: 'cancelled', infoRequest: infoRequestView(row) };
+      },
+    );
+  }
 }
 
 /** Lists the proposed field names for an audit value — never the proposed values. */
 function patchFieldNames(patch: OrderChangeRequestPatch): string[] {
-  return [
-    ...Object.keys(patch.contact ?? {}).map((key) => `contact.${key}`),
-    ...Object.keys(patch.form ?? {}).map((key) => `form.${key}`),
-  ].sort();
+  return patchFieldKeys(patch);
+}
+
+function infoRequestView(row: typeof orderInfoRequests.$inferSelect): OrderInfoRequest {
+  return {
+    id: row.id,
+    requestedBy: row.requestedBy,
+    status: orderInfoRequestStatusSchema.parse(row.status),
+    fields: z.array(amendableFieldKeySchema).min(1).parse(row.fields),
+    message: row.message,
+    changeRequestId: row.changeRequestId,
+    resolvedAt: row.resolvedAt?.toISOString() ?? null,
+    createdAt: row.createdAt.toISOString(),
+  };
 }
 
 /**

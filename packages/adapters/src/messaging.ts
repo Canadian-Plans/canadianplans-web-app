@@ -252,12 +252,12 @@ function renderTemplateBody(message: EmailMessage): {
     case 'tracking_otp':
       return {
         subject: `Your Canadian Plans tracking code`,
-        text: `Your code for order ${ref} is ${message.variables?.code ?? ''}. It expires 10 minutes after your request. Use only the most recently requested code. If you did not request this code, ignore this email.`,
+        text: `Your Canadian Plans tracking code is ${message.variables?.code ?? ''}. It expires 10 minutes after your request and shows every order placed with this email address. Use only the most recently requested code. If you did not request this code, ignore this email.`,
       };
     case 'order_acknowledgement':
       return {
         subject: `We received your order ${ref}`,
-        text: `Thanks — we received your order ${ref}. Nothing has been charged. An advisor will contact you (Monday to Saturday, 9am–9pm Pacific time) to confirm your plan. Track your order at https://canadianplans.com/track with this reference. Didn't place this order? Reply to this email and we will cancel it.`,
+        text: `Thanks — we received your order ${ref}. Nothing has been charged. An advisor will contact you (Monday to Saturday, 9am–9pm Pacific time) to confirm your plan. Track your order at https://canadianplans.com/track with this email address. Didn't place this order? Reply to this email and we will cancel it.`,
       };
     case 'order_status':
       return {
@@ -267,7 +267,7 @@ function renderTemplateBody(message: EmailMessage): {
     case 'order_awaiting_customer':
       return {
         subject: `Action needed on your order ${ref}`,
-        text: `We need more information on order ${ref} to keep moving. Please respond when you can.`,
+        text: `We need more information on order ${ref} to keep moving. Sign in at https://canadianplans.com/track with this email address to see what we need, upload documents or update your details.`,
       };
     case 'order_dispatch': {
       // Canadian Plans ships nothing (OPEN_INPUTS #5, 22 Oct 2026): "dispatch"

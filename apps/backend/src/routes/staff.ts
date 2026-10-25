@@ -4,6 +4,7 @@ import {
   bulkAssignOrdersRequestSchema,
   changeCommissionStateRequestSchema,
   createOrderChangeRequestRequestSchema,
+  createOrderInfoRequestRequestSchema,
   createOrderNoteRequestSchema,
   createOrderReminderRequestSchema,
   createServiceCredentialRequestSchema,
@@ -1105,6 +1106,74 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
       sendStaffAuthError(res, req.id, 'internal_error', 500);
     }
   });
+
+  router.post('/workspaces/:workspaceId/orders/:orderId/info-requests', async (req, res) => {
+    const body = createOrderInfoRequestRequestSchema.safeParse(req.body);
+    if (!body.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const context = await prepareOrderWrite(req, res, 'order.manage');
+      if (!context) return;
+      const outcome = await context.actionStore.createInfoRequest({
+        workspaceId: context.workspaceId,
+        orderId: context.orderId,
+        actorId: context.actorId,
+        requestId: req.id,
+        fields: body.data.fields,
+        ...(body.data.message ? { message: body.data.message } : {}),
+      });
+      if (outcome.status !== 'created') {
+        if (outcome.status === 'not_found') sendDomainError(res, req.id, 'order_not_found', 404);
+        else sendDomainError(res, req.id, 'too_many_pending_requests', 409);
+        return;
+      }
+      res.status(201).json({ infoRequest: outcome.infoRequest, requestId: req.id });
+    } catch (error) {
+      reportFailure(req, error);
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.post(
+    '/workspaces/:workspaceId/orders/:orderId/info-requests/:infoRequestId/cancel',
+    async (req, res) => {
+      const infoRequestId = z.uuid().safeParse(req.params['infoRequestId']);
+      if (!infoRequestId.success) {
+        sendStaffAuthError(res, req.id, 'invalid_request', 400);
+        return;
+      }
+      try {
+        const context = await prepareOrderWrite(req, res, 'order.manage');
+        if (!context) return;
+        const outcome = await context.actionStore.cancelInfoRequest({
+          workspaceId: context.workspaceId,
+          orderId: context.orderId,
+          actorId: context.actorId,
+          requestId: req.id,
+          infoRequestId: infoRequestId.data,
+        });
+        switch (outcome.status) {
+          case 'cancelled':
+            res.json({ infoRequest: outcome.infoRequest, requestId: req.id });
+            return;
+          case 'not_found':
+            sendDomainError(res, req.id, 'order_not_found', 404);
+            return;
+          case 'info_request_not_found':
+            sendDomainError(res, req.id, 'info_request_not_found', 404);
+            return;
+          case 'info_request_resolved':
+            sendDomainError(res, req.id, 'info_request_resolved', 409);
+            return;
+        }
+      } catch (error) {
+        reportFailure(req, error);
+        sendStaffAuthError(res, req.id, 'internal_error', 500);
+      }
+    },
+  );
 
   async function resolveChangeRequest(
     req: Request,

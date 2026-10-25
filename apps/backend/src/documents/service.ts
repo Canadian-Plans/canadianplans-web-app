@@ -67,6 +67,8 @@ export interface FinalizeInput {
   checksumSha256: string;
   /** When set (website caller), the file must be a lead document owned by this lead. */
   ownedLeadId?: string;
+  /** When set (verified order tracking), the file must belong to this order. */
+  ownedOrderId?: string;
 }
 
 export type FinalizeOutcome =
@@ -175,16 +177,18 @@ export class DocumentService {
   }
 
   async finalize(input: FinalizeInput): Promise<FinalizeOutcome> {
-    // Website callers may only finalize their own lead's document. The record id
-    // is immutable, so this pre-check is safe before the atomic claim and stops
-    // one draft touching another draft's file within the same workspace.
-    if (input.ownedLeadId !== undefined) {
+    // Website callers may only finalize their own lead's (draft) or order's
+    // (verified tracking) document. The record id is immutable, so this
+    // pre-check is safe before the atomic claim and stops one customer touching
+    // another's file within the same workspace.
+    const owner = ownerOf(input);
+    if (owner) {
       const owned = await this.store.getFile({
         workspaceId: input.workspaceId,
         actorId: input.actorId,
         fileId: input.fileId,
       });
-      if (!owned || owned.recordType !== 'lead' || owned.recordId !== input.ownedLeadId) {
+      if (!owned || owned.recordType !== owner.recordType || owned.recordId !== owner.recordId) {
         return { status: 'not_found' };
       }
     }
@@ -397,4 +401,17 @@ function rejectionFromReason(reason: string | null): VerifyUploadRejection {
     default:
       return 'unsupported_signature';
   }
+}
+
+/** The record a website caller must own, if any. Both set is a caller bug. */
+function ownerOf(input: {
+  ownedLeadId?: string;
+  ownedOrderId?: string;
+}): { recordType: DocumentParentType; recordId: string } | undefined {
+  if (input.ownedLeadId !== undefined && input.ownedOrderId !== undefined)
+    throw new Error('finalize_owner_ambiguous');
+  if (input.ownedLeadId !== undefined) return { recordType: 'lead', recordId: input.ownedLeadId };
+  if (input.ownedOrderId !== undefined)
+    return { recordType: 'order', recordId: input.ownedOrderId };
+  return undefined;
 }

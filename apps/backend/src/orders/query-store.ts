@@ -7,6 +7,7 @@ import {
   membershipRoles,
   orderAmendments,
   orderChangeRequests,
+  orderInfoRequests,
   orderNotes,
   orderReminders,
   orderStatusHistory,
@@ -17,10 +18,13 @@ import {
   withTenantTx,
 } from '@canadian-plans/db';
 import {
+  amendableFieldKeySchema,
   leadFormSchema,
   moneySchema,
+  orderChangeRequestOriginSchema,
   orderChangeRequestPatchSchema,
   orderChangeRequestStatusSchema,
+  orderInfoRequestStatusSchema,
   orderConsentSchema,
   orderFulfilmentStatusSchema,
   orderSnapshotSchema,
@@ -80,11 +84,15 @@ export interface OrderQueryStore {
 /**
  * The stored shape of a change request's `payload` column: the proposed patch
  * plus the requester's optional note. Kept in one JSONB column so no extra
- * migration was needed beyond the tables T12 already created.
+ * migration was needed beyond the tables T12 already created. `origin` and
+ * `infoRequestId` mark a request raised by the customer through order
+ * tracking; rows without them were recorded by staff.
  */
 export const changeRequestPayloadSchema = z.object({
   patch: orderChangeRequestPatchSchema,
   note: z.string().max(2000).optional(),
+  origin: orderChangeRequestOriginSchema.optional(),
+  infoRequestId: z.uuid().optional(),
 });
 export type ChangeRequestPayload = z.infer<typeof changeRequestPayloadSchema>;
 
@@ -298,6 +306,7 @@ export class DatabaseOrderQueryStore implements OrderQueryStore {
         noteRows,
         reminderRows,
         changeRequestRows,
+        infoRequestRows,
         amendmentRows,
         paymentRows,
         dispatchRows,
@@ -345,6 +354,16 @@ export class DatabaseOrderQueryStore implements OrderQueryStore {
             ),
           )
           .orderBy(asc(orderChangeRequests.createdAt)),
+        tx
+          .select()
+          .from(orderInfoRequests)
+          .where(
+            and(
+              eq(orderInfoRequests.workspaceId, workspaceId),
+              eq(orderInfoRequests.orderId, orderId),
+            ),
+          )
+          .orderBy(asc(orderInfoRequests.createdAt)),
         tx
           .select()
           .from(orderAmendments)
@@ -438,11 +457,25 @@ export class DatabaseOrderQueryStore implements OrderQueryStore {
                 status: orderChangeRequestStatusSchema.parse(changeRequest.status),
                 patch: stored.patch,
                 note: stored.note ?? null,
+                origin: stored.origin ?? 'staff',
+                infoRequestId: stored.infoRequestId ?? null,
                 resolvedBy: changeRequest.resolvedBy,
                 resolvedAt: changeRequest.resolvedAt?.toISOString() ?? null,
                 createdAt: changeRequest.createdAt.toISOString(),
               };
             }),
+        infoRequests: restricted
+          ? []
+          : infoRequestRows.map((info) => ({
+              id: info.id,
+              requestedBy: info.requestedBy,
+              status: orderInfoRequestStatusSchema.parse(info.status),
+              fields: z.array(amendableFieldKeySchema).min(1).parse(info.fields),
+              message: info.message,
+              changeRequestId: info.changeRequestId,
+              resolvedAt: info.resolvedAt?.toISOString() ?? null,
+              createdAt: info.createdAt.toISOString(),
+            })),
         amendments: restricted
           ? []
           : amendmentRows.map((amendment) => ({

@@ -15,6 +15,7 @@ import {
   marketingConsents,
   orderAmendments,
   orderChangeRequests,
+  orderInfoRequests,
   orderNotes,
   orderReminders,
   orderStatusHistory,
@@ -390,6 +391,14 @@ async function erasePersonalCopies(
       .delete(orderAmendments)
       .where(
         and(eq(orderAmendments.workspaceId, scope.workspaceId), eq(orderAmendments.orderId, id)),
+      );
+    await tx
+      .delete(orderInfoRequests)
+      .where(
+        and(
+          eq(orderInfoRequests.workspaceId, scope.workspaceId),
+          eq(orderInfoRequests.orderId, id),
+        ),
       );
     await tx
       .delete(orderChangeRequests)

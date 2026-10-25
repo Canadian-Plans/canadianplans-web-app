@@ -82,14 +82,26 @@ import {
   type StaffWorkspacesResponse,
 } from './staff-auth';
 import {
+  trackingChangeRequestRequestSchema,
+  trackingChangeRequestResponseSchema,
+  trackingInfoResponseRequestSchema,
+  trackingOrderResponseSchema,
+  trackingOrdersResponseSchema,
   trackingOtpRequestSchema,
   trackingOtpResponseSchema,
-  trackingStatusResponseSchema,
+  trackingUploadFinalizeResponseSchema,
+  trackingUploadIntentRequestSchema,
   trackingVerifyRequestSchema,
   trackingVerifyResponseSchema,
+  type TrackingChangeRequestRequest,
+  type TrackingChangeRequestResponse,
+  type TrackingInfoResponseRequest,
+  type TrackingOrderResponse,
+  type TrackingOrdersResponse,
   type TrackingOtpRequest,
   type TrackingOtpResponse,
-  type TrackingStatusResponse,
+  type TrackingUploadFinalizeResponse,
+  type TrackingUploadIntentRequest,
   type TrackingVerifyRequest,
   type TrackingVerifyResponse,
 } from './tracking';
@@ -116,8 +128,11 @@ import {
 import {
   bulkAssignOrdersRequestSchema,
   bulkAssignOrdersResponseSchema,
+  cancelOrderInfoRequestResponseSchema,
   createOrderChangeRequestRequestSchema,
   createOrderChangeRequestResponseSchema,
+  createOrderInfoRequestRequestSchema,
+  createOrderInfoRequestResponseSchema,
   createOrderNoteRequestSchema,
   createOrderReminderRequestSchema,
   createOrderReminderResponseSchema,
@@ -136,8 +151,11 @@ import {
   resolveOrderChangeRequestResponseSchema,
   type BulkAssignOrdersRequest,
   type BulkAssignOrdersResponse,
+  type CancelOrderInfoRequestResponse,
   type CreateOrderChangeRequestRequest,
   type CreateOrderChangeRequestResponse,
+  type CreateOrderInfoRequestRequest,
+  type CreateOrderInfoRequestResponse,
   type CreateOrderNoteRequest,
   type CreateOrderReminderRequest,
   type CreateOrderReminderResponse,
@@ -310,7 +328,30 @@ export interface BackendClient {
   tracking: {
     otp(body: TrackingOtpRequest, proof?: WebsiteBotProof): Promise<TrackingOtpResponse>;
     verify(body: TrackingVerifyRequest, proof?: WebsiteBotProof): Promise<TrackingVerifyResponse>;
-    get(options: { customerGrant: string }): Promise<TrackingStatusResponse>;
+    listOrders(options: { customerGrant: string }): Promise<TrackingOrdersResponse>;
+    getOrder(reference: string, options: { customerGrant: string }): Promise<TrackingOrderResponse>;
+    requestChange(
+      reference: string,
+      body: TrackingChangeRequestRequest,
+      options: { customerGrant: string },
+    ): Promise<TrackingChangeRequestResponse>;
+    answerInfoRequest(
+      reference: string,
+      infoRequestId: string,
+      body: TrackingInfoResponseRequest,
+      options: { customerGrant: string },
+    ): Promise<TrackingChangeRequestResponse>;
+    createUploadIntent(
+      reference: string,
+      body: TrackingUploadIntentRequest,
+      options: { customerGrant: string } & WebsiteBotProof,
+    ): Promise<CreateUploadIntentResponse>;
+    finalizeUpload(
+      reference: string,
+      uploadId: string,
+      body: FinalizeUploadRequest,
+      options: { customerGrant: string } & WebsiteBotProof,
+    ): Promise<TrackingUploadFinalizeResponse>;
   };
   staff: {
     listWorkspaces(): Promise<StaffWorkspacesResponse>;
@@ -385,6 +426,16 @@ export interface BackendClient {
       orderId: string,
       body: CreateOrderChangeRequestRequest,
     ): Promise<CreateOrderChangeRequestResponse>;
+    createOrderInfoRequest(
+      workspaceId: string,
+      orderId: string,
+      body: CreateOrderInfoRequestRequest,
+    ): Promise<CreateOrderInfoRequestResponse>;
+    cancelOrderInfoRequest(
+      workspaceId: string,
+      orderId: string,
+      infoRequestId: string,
+    ): Promise<CancelOrderInfoRequestResponse>;
     approveOrderChangeRequest(
       workspaceId: string,
       orderId: string,
@@ -644,12 +695,51 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           headers: proofHeader(proof),
           responseSchema: trackingVerifyResponseSchema,
         }),
-      get: (opts) =>
+      listOrders: (opts) =>
         call({
           method: 'GET',
-          path: '/api/v1/website/tracking',
+          path: '/api/v1/website/tracking/orders',
           headers: { 'x-customer-grant': opts.customerGrant },
-          responseSchema: trackingStatusResponseSchema,
+          responseSchema: trackingOrdersResponseSchema,
+        }),
+      getOrder: (reference, opts) =>
+        call({
+          method: 'GET',
+          path: `/api/v1/website/tracking/orders/${encode(reference)}`,
+          headers: { 'x-customer-grant': opts.customerGrant },
+          responseSchema: trackingOrderResponseSchema,
+        }),
+      requestChange: (reference, body, opts) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/website/tracking/orders/${encode(reference)}/change-requests`,
+          body: trackingChangeRequestRequestSchema.parse(body),
+          headers: { 'x-customer-grant': opts.customerGrant },
+          responseSchema: trackingChangeRequestResponseSchema,
+        }),
+      answerInfoRequest: (reference, infoRequestId, body, opts) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/website/tracking/orders/${encode(reference)}/info-requests/${encode(infoRequestId)}/response`,
+          body: trackingInfoResponseRequestSchema.parse(body),
+          headers: { 'x-customer-grant': opts.customerGrant },
+          responseSchema: trackingChangeRequestResponseSchema,
+        }),
+      createUploadIntent: (reference, body, opts) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/website/tracking/orders/${encode(reference)}/uploads/intents`,
+          body: trackingUploadIntentRequestSchema.parse(body),
+          headers: { 'x-customer-grant': opts.customerGrant, ...proofHeader(opts) },
+          responseSchema: createUploadIntentResponseSchema,
+        }),
+      finalizeUpload: (reference, uploadId, body, opts) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/website/tracking/orders/${encode(reference)}/uploads/${encode(uploadId)}/finalize`,
+          body: finalizeUploadRequestSchema.parse(body),
+          headers: { 'x-customer-grant': opts.customerGrant, ...proofHeader(opts) },
+          responseSchema: trackingUploadFinalizeResponseSchema,
         }),
     },
 
@@ -829,6 +919,19 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/change-requests`,
           body: createOrderChangeRequestRequestSchema.parse(body),
           responseSchema: createOrderChangeRequestResponseSchema,
+        }),
+      createOrderInfoRequest: (workspaceId, orderId, body) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/info-requests`,
+          body: createOrderInfoRequestRequestSchema.parse(body),
+          responseSchema: createOrderInfoRequestResponseSchema,
+        }),
+      cancelOrderInfoRequest: (workspaceId, orderId, infoRequestId) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/orders/${encode(orderId)}/info-requests/${encode(infoRequestId)}/cancel`,
+          responseSchema: cancelOrderInfoRequestResponseSchema,
         }),
       approveOrderChangeRequest: (workspaceId, orderId, changeRequestId, body) =>
         call({

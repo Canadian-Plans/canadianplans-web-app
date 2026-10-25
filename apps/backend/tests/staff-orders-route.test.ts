@@ -130,6 +130,7 @@ function sampleRecord(status: OrderDetail['fulfilmentStatus'] = 'submitted'): Or
     notes: [],
     reminders: [],
     changeRequests: [],
+    infoRequests: [],
     amendments: [],
     payments: [],
     dispatch: null,
@@ -265,6 +266,28 @@ class MemoryActionStore implements StaffOrderActionStore {
   });
   resolveChangeRequest: StaffOrderActionStore['resolveChangeRequest'] = async () => ({
     status: 'updated',
+  });
+  readonly infoCalls: unknown[] = [];
+  infoResult: 'created' | 'not_found' | 'too_many_pending' = 'created';
+  createInfoRequest: StaffOrderActionStore['createInfoRequest'] = async (input) => {
+    this.infoCalls.push(input);
+    if (this.infoResult !== 'created') return { status: this.infoResult };
+    return {
+      status: 'created',
+      infoRequest: {
+        id: ORDER,
+        requestedBy: input.actorId,
+        status: 'pending',
+        fields: [...input.fields],
+        message: input.message ?? null,
+        changeRequestId: null,
+        resolvedAt: null,
+        createdAt: NOW,
+      },
+    };
+  };
+  cancelInfoRequest: StaffOrderActionStore['cancelInfoRequest'] = async () => ({
+    status: 'info_request_resolved',
   });
 }
 
@@ -638,5 +661,60 @@ describe('staff order detail', () => {
     const body = getWorkspaceOrderResponseSchema.parse(await response.json());
     // The operational gate hides `dispatched`, leaving only cancellation.
     expect(body.order.allowedTransitions).toEqual(['cancelled']);
+  });
+});
+
+describe('staff requests for missing customer details', () => {
+  const path = () =>
+    `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/orders/${ORDER}/info-requests`;
+
+  it('lets order-managing staff ask for amendable fields only', async () => {
+    store.access = { ...store.access, roles: ['orders'], permissions: [] };
+    const created = await fetch(path(), {
+      method: 'POST',
+      headers: headers(),
+      body: JSON.stringify({ fields: ['form.arrivalDate'], message: 'When do you land?' }),
+    });
+    expect(created.status).toBe(201);
+    expect(await created.json()).toMatchObject({
+      infoRequest: { status: 'pending', fields: ['form.arrivalDate'] },
+    });
+    const commercial = await fetch(path(), {
+      method: 'POST',
+      headers: headers(),
+      body: JSON.stringify({ fields: ['snapshot.total'] }),
+    });
+    expect(commercial.status).toBe(400);
+    expect(actionStore.infoCalls).toHaveLength(1);
+  });
+
+  it('denies a viewer before reaching the store', async () => {
+    store.access = { ...store.access, roles: ['viewer'], permissions: [] };
+    const response = await fetch(path(), {
+      method: 'POST',
+      headers: headers(),
+      body: JSON.stringify({ fields: ['contact.phone'] }),
+    });
+    expect(response.status).toBe(403);
+    expect(actionStore.infoCalls).toEqual([]);
+  });
+
+  it('reports a full queue and an already-resolved request', async () => {
+    store.access = { ...store.access, roles: ['orders'], permissions: [] };
+    actionStore.infoResult = 'too_many_pending';
+    const full = await fetch(path(), {
+      method: 'POST',
+      headers: headers(),
+      body: JSON.stringify({ fields: ['contact.phone'] }),
+    });
+    expect(full.status).toBe(409);
+    expect(apiErrorResponseSchema.parse(await full.json()).error.code).toBe(
+      'too_many_pending_requests',
+    );
+    const cancel = await fetch(`${path()}/${ORDER}/cancel`, { method: 'POST', headers: headers() });
+    expect(cancel.status).toBe(409);
+    expect(apiErrorResponseSchema.parse(await cancel.json()).error.code).toBe(
+      'info_request_resolved',
+    );
   });
 });
