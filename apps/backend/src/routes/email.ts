@@ -190,7 +190,14 @@ export function createResendWebhookRouter(dependencies: EmailRouteDependencies):
       hardBounce: eventType === 'bounce' && email.data.bounce?.type === 'Permanent',
       receivedAt: new Date(parsed.data.created_at),
     });
-    // Retry uncorrelated events rather than acknowledging and losing an early event.
+    // Every tracked send carries a cp_message_id tag (packages/adapters messaging).
+    // An untagged event that still matches no send is not ours: owner alerts go
+    // out outside the outbox. Acknowledge it so the provider stops retrying.
+    if (outcome === 'invalid' && tag === undefined) {
+      res.status(200).json({ status: 'ignored' });
+      return;
+    }
+    // Retry uncorrelated tagged events rather than acknowledging and losing an early event.
     res.status(outcome === 'invalid' ? 503 : 200).json({ status: outcome });
   });
   return router;

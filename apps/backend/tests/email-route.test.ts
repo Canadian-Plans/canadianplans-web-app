@@ -49,6 +49,8 @@ function event(type = 'email.bounced') {
 class FakeEmailStore implements EmailStore {
   unsubscribed: Array<{ contactHash: string; leadId?: string }> = [];
   events: ProviderEventInput[] = [];
+  /** When set, the next provider event resolves to this outcome instead of being applied. */
+  nextOutcome: ApplyProviderEventOutcome | undefined;
   private readonly seenEventIds = new Set<string>();
 
   async checkTransactional() {
@@ -59,6 +61,7 @@ class FakeEmailStore implements EmailStore {
   }
   async queueMessage(_input: QueueEmailMessageInput): Promise<void> {}
   async applyProviderEvent(input: ProviderEventInput): Promise<ApplyProviderEventOutcome> {
+    if (this.nextOutcome) return this.nextOutcome;
     if (this.seenEventIds.has(input.providerEventId)) return 'duplicate';
     this.seenEventIds.add(input.providerEventId);
     this.events.push(input);
@@ -246,6 +249,32 @@ describe('email routes', () => {
     expect(await (await send()).json()).toEqual({ status: 'applied' });
     expect(await (await send()).json()).toEqual({ status: 'duplicate' });
     expect(store.events).toHaveLength(1);
+  });
+  it('keeps retrying a tagged event that matches no send yet', async () => {
+    store.nextOutcome = 'invalid';
+    const body = JSON.stringify(event('email.delivered'));
+    const response = await fetch(`${baseUrl}/api/v1/webhooks/resend/launch`, {
+      method: 'POST',
+      headers: signed(body),
+      body,
+    });
+    expect(response.status).toBe(503);
+    expect(await response.json()).toEqual({ status: 'invalid' });
+  });
+  it('acknowledges an untagged event that matches no send, such as an owner alert', async () => {
+    store.nextOutcome = 'invalid';
+    const base = event('email.delivered');
+    const body = JSON.stringify({
+      ...base,
+      data: { email_id: base.data.email_id, to: base.data.to },
+    });
+    const response = await fetch(`${baseUrl}/api/v1/webhooks/resend/launch`, {
+      method: 'POST',
+      headers: signed(body),
+      body,
+    });
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ status: 'ignored' });
   });
   it('does not suppress temporary bounces', async () => {
     const payload = event();
