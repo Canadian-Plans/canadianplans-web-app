@@ -37,6 +37,27 @@ Still open from LAUNCH_PLANS §E: whether the "in store" prices and carrier name
 hold up as public claims. The pre-arrival page no longer shows in-store prices, so only the
 carrier names part remains.
 
+## Owner answers — 25 October 2026
+
+| Claim | Answer |
+| ----- | ------ |
+| Authorized Rogers, Fido & Chatr reseller / sales agent | Yes, keep |
+| No credit check | True for the **pre-arrival eSIM plans only** |
+| No SIN needed | True for the **pre-arrival eSIM plans only** |
+| Advisor confirms, usually the same day | Yes, keep |
+| Order in about 2 minutes | Yes, keep |
+| eSIM activated 24 hours before arrival | Yes, keep |
+| Number usually transfers the same day | Yes, keep |
+| Real people, no bots | Yes, keep |
+| Surrey address, 9981 Whalley Blvd | Yes, may be published |
+| No contract on home internet | **Not answered**; left unchanged |
+
+Scope audit (Claude, same day): all 71 "no credit check" and 8 "no SIN" mentions outside the
+component lab sit on pre-arrival eSIM pages, in pre-arrival sections of shared pages, or in
+calls to action that link to the eSIM plans. The shared "Before you order" checklist is used
+only by the pre-arrival landing pages. The mobile BYOD pages state that a credit check
+applies. No storefront text needed to change.
+
 ## How to close 2.12
 
 Answer each "Owner to confirm" row with keep, change (give the wording) or remove. Claude
