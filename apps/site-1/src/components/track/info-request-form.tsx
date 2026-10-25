@@ -16,7 +16,8 @@ const valueErrors: Readonly<Record<FieldValueError, string>> = {
 
 /**
  * The customer's answer to a staff request for missing details. It must fill
- * every requested field and becomes a pending change request for staff.
+ * every requested field and becomes a pending change request for staff. The
+ * parent confirms it, since the answered request leaves the order on refresh.
  */
 export function TrackInfoRequestForm({
   reference,
@@ -33,7 +34,6 @@ export function TrackInfoRequestForm({
   const [errors, setErrors] = useState<Partial<Record<AmendableFieldKey, string>>>({});
   const [failure, setFailure] = useState('');
   const [pending, setPending] = useState(false);
-  const [sent, setSent] = useState(false);
   const idFor = (field: AmendableFieldKey) => `track-info-${request.id}-${field.replace('.', '-')}`;
 
   async function submit() {
@@ -62,7 +62,6 @@ export function TrackInfoRequestForm({
         infoRequestId: request.id,
       });
       if (result.ok) {
-        setSent(true);
         onSent();
       } else if (result.code === 'session_expired') {
         onSessionExpired();
@@ -75,13 +74,6 @@ export function TrackInfoRequestForm({
       setPending(false);
     }
   }
-
-  if (sent)
-    return (
-      <p className="cp-track-info-sent" role="status">
-        {copy.info.sent}
-      </p>
-    );
 
   return (
     <form

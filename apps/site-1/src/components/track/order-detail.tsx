@@ -58,6 +58,7 @@ export function TrackOrderDetail({
   const human = useHumanChallenge();
   const [openCard, setOpenCard] = useState('documents');
   const [change, setChange] = useState<AmendableFieldKey | null>(null);
+  const [notice, setNotice] = useState('');
   const trigger = useRef<HTMLElement | null>(null);
   const refresh = useCallback(() => void onRefresh(), [onRefresh]);
   const uploads = useDocumentUpload(order.reference, human, refresh);
@@ -214,6 +215,11 @@ export function TrackOrderDetail({
         <p>{status.description}</p>
         <small>{fillTemplate(d.updated, { date: formatDate(order.updatedAt) })}</small>
       </section>
+      {notice ? (
+        <p className="cp-container cp-tracking-feedback" role="status">
+          {notice}
+        </p>
+      ) : null}
 
       {attention && (missing.length > 0 || order.infoRequests.length > 0) ? (
         <section className="cp-container cp-tracking-action-wrap">
@@ -240,7 +246,10 @@ export function TrackOrderDetail({
                 <TrackInfoRequestForm
                   reference={order.reference}
                   request={request}
-                  onSent={refresh}
+                  onSent={() => {
+                    setNotice(copy.info.sent);
+                    refresh();
+                  }}
                   onSessionExpired={onSessionExpired}
                 />
               </div>
