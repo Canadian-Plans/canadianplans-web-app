@@ -291,7 +291,7 @@ Depends on Stage 1 findings and the Stage 2 answers.
   serves site-1 over HTTPS; `NEXT_PUBLIC_SITE_URL=https://canadianplans.com` set on Vercel
   (owner approved) and site-1 rebuilt, so canonical links no longer say `localhost`.
   25 Oct: `/order` on the domain reaches the backend and lists plans._
-- ◐ **3.2 Email sending** _(Both)_ — verify the domain in Resend, SPF/DKIM/DMARC records,
+- ☑ **3.2 Email sending** _(Both)_ — verify the domain in Resend, SPF/DKIM/DMARC records,
   `EMAIL_PROVIDER=resend`, sender address from 2.8. **Before deploying the
   `website-improvements` backend** (it sends only through a registered Resend account):
   1. In the Resend dashboard, add a webhook to
@@ -323,6 +323,13 @@ Depends on Stage 1 findings and the Stage 2 answers.
   `RESEND_ACCOUNT_ID` is set. `RESEND_FROM_EMAIL=orders@canadianplans.com`,
   `RESEND_FROM_NAME=Canadian Plans` and `RESEND_REPLY_TO_EMAIL=info@canadianplans.com` set on
   Railway without a redeploy. Left: deploy the backend (1.2) and send a test email._
+  _25 Oct: done. The webhook entry's `verificationSecret` was still the placeholder
+  `PASTE_WHSEC_HERE` (every callback returned 401); the owner pasted the real `whsec_` and
+  callbacks now verify. `RESEND_ACCOUNT_ID=canadianplans-resend` matches the entry's
+  `providerAccount`. Owner alert emails from orders@canadianplans.com reached
+  info@canadianplans.com with `dkim=pass`, `spf=pass` (return path `rsend.`) and
+  `dmarc=pass`. A customer acknowledgement email is proven by the 5.2 test order; the
+  Supabase Auth SMTP sender was not re-checked._
 
 - ☑ **3.3 Turn on checkout** _(Both)_ — set `QUOTE_WITHDRAWAL_POLICY=honour_until_expiry`
   on Railway (decided 21 Sep, OPEN_INPUTS #14) and redeploy. _20 Oct: set and live
