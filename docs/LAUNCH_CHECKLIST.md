@@ -13,6 +13,39 @@ _(unverified)_ come from 23 September notes and must be re-checked in step 1.
 
 ---
 
+## Remaining work plan (written 25 October 2026)
+
+Everything below is still open on the TickTick board and in this file. Ordered by
+dependency and risk, grouped into sittings of one to two hours. **You** = owner clicks
+or decides · **Claude** = done in a session · **Both** = Claude drives, you approve.
+Estimated total: about ten to twelve hours of joint work, plus two decisions.
+
+| # | Sitting | Items | Who | Time | Done when |
+| - | ------- | ----- | --- | ---- | --------- |
+| 1 | Rotate the exposed keys | 4.0 | You click, Claude guides | 1 h | Old Cloudflare token and B2 keys revoked, new ones only in Railway / GitHub secrets / your password manager, TickTick "keys" note deleted, `RUNBOOKS/secret-rotation.md` dated |
+| 2 | Prove observability | 4.2, 4.3 | Both | 1 h | A test error from production shows in Sentry with no personal data; a test owner alert reaches your inbox; synthetic check configured or consciously skipped |
+| 3 | Restore rehearsal | 4.1 | You run, Claude beside you | 1.5 h | One backup restored into an isolated `restore_drill` target per `RUNBOOKS/restore.md`; timings in `EVIDENCE/A4-restore.md`; recovery key moved off OneDrive |
+| 4 | Analytics | 6.2 | Both | 30 min | Visits and order starts appear in Umami from production; OPEN_INPUTS #12 recorded |
+| 5 | Storefront claims | 2.12 | Claude lists, you confirm | 1 h | No bracketed placeholders; every speed/time/saving claim confirmed or removed; placeholder customer stories replaced or removed |
+| 6 | Unlock fulfilment | OPEN_INPUTS #15 + code | You decide, Claude codes | 2 h | Dispatch/activation prerequisites decided; `transitions-config.ts` production gate replaced by the decided rule; PR merged; e2e gates green |
+| 7 | Production test order | 5.2 | Both | 1.5 h | Order placed with test details on the live site, email arrives, visible in admin, document approved, status reaches ready_for_delivery, then archived; `EVIDENCE/A4-launch.md` written |
+| 8 | Runbook walk | 5.3 | You practise, Claude guides | 1.5 h | Four runbooks walked once in the real admin, corrected, plus `RUNBOOKS/first-order-cheatsheet.md` |
+| 9 | Go live | 6.3 | You | your call | Approved posts from `docs/marketing/launch-posts.md` go out; UTM links in place |
+
+Runs alongside, no sitting needed:
+
+- **2.10 Legal text** _(You)_: v2 terms and privacy are already published (3.10); this closes
+  when the lawyer replies. Record the outcome in OPEN_INPUTS #24.
+- **Sitemap submission** _(You, 5 min)_: Google Search Console and Bing Webmaster Tools,
+  the one unverified step of 6.1.
+- **Visitors / Super Visa guide cover** _(Both, 20 min)_: the only guide still on a placeholder.
+- **Stage 7 cards** stay closed until the first real order arrives; sitting 8 produces the
+  cheat sheet that walks them.
+
+Why this order: sitting 1 first because the exposed keys are the only live security risk.
+Sittings 2 to 4 make the site observable before anyone transacts on it. Sitting 6 must land
+before sitting 7 can exercise the whole order journey, and both must pass before announcing.
+
 ## Stage 1 — Find out what production really looks like (Claude, ~1 session)
 
 - ☑ **1.1 Re-check production config** _(Claude, read-only)_. Confirm or rule out the
