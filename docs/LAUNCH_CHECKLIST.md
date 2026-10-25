@@ -20,17 +20,17 @@ dependency and risk, grouped into sittings of one to two hours. **You** = owner 
 or decides · **Claude** = done in a session · **Both** = Claude drives, you approve.
 Estimated total: about ten to twelve hours of joint work, plus two decisions.
 
-| #   | Sitting                        | Items                  | Who                         | Time      | Done when                                                                                                                                                                              |
-| --- | ------------------------------ | ---------------------- | --------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Rotate the exposed keys        | 4.0                    | You click, Claude guides    | 1 h       | Old Cloudflare token and B2 keys revoked, new ones only in Railway / GitHub secrets / your password manager, TickTick "keys" note deleted, `RUNBOOKS/secret-rotation.md` dated         |
-| 2   | Prove observability            | 4.2, 4.3               | Both                        | 1 h       | A test error from production shows in Sentry with no personal data; a test owner alert reaches your inbox; synthetic check configured or consciously skipped                           |
-| 3   | Restore rehearsal              | 4.1                    | You run, Claude beside you  | 1.5 h     | One backup restored into an isolated `restore_drill` target per `RUNBOOKS/restore.md`; timings in `EVIDENCE/A4-restore.md`; recovery key moved off OneDrive                            |
-| 4   | Analytics                      | 6.2                    | Both                        | 30 min    | Visits and order starts appear in Umami from production; OPEN_INPUTS #12 recorded                                                                                                      |
-| 5   | Storefront claims              | 2.12                   | Claude lists, you confirm   | 1 h       | No bracketed placeholders; every speed/time/saving claim confirmed or removed; placeholder customer stories replaced or removed                                                        |
-| 6   | ~~Unlock fulfilment~~ **done** | OPEN_INPUTS #15 + code | resolved 21 Sep             | 0         | Dispatch/activation prerequisites decided; `transitions-config.ts` production gate replaced by the decided rule; PR merged; e2e gates green                                            |
-| 7   | Production test order          | 5.2                    | Both                        | 1.5 h     | Order placed with test details on the live site, email arrives, visible in admin, document approved, status reaches ready_for_delivery, then archived; `EVIDENCE/A4-launch.md` written |
-| 8   | Runbook walk                   | 5.3                    | You practise, Claude guides | 1.5 h     | Four runbooks walked once in the real admin, corrected, plus `RUNBOOKS/first-order-cheatsheet.md`                                                                                      |
-| 9   | Go live                        | 6.3                    | You                         | your call | Approved posts from `docs/marketing/launch-posts.md` go out; UTM links in place                                                                                                        |
+| #   | Sitting                          | Items                  | Who                         | Time      | Done when                                                                                                                                                                              |
+| --- | -------------------------------- | ---------------------- | --------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | ~~Rotate the exposed keys~~ done | 4.0                    | You click, Claude guides    | 1 h       | Old Cloudflare token and B2 keys revoked, new ones only in Railway / GitHub secrets / your password manager, TickTick "keys" note deleted, `RUNBOOKS/secret-rotation.md` dated         |
+| 2   | Prove observability              | 4.2, 4.3               | Both                        | 1 h       | A test error from production shows in Sentry with no personal data; a test owner alert reaches your inbox; synthetic check configured or consciously skipped                           |
+| 3   | Restore rehearsal                | 4.1                    | You run, Claude beside you  | 1.5 h     | One backup restored into an isolated `restore_drill` target per `RUNBOOKS/restore.md`; timings in `EVIDENCE/A4-restore.md`; recovery key moved off OneDrive                            |
+| 4   | Analytics                        | 6.2                    | Both                        | 30 min    | Visits and order starts appear in Umami from production; OPEN_INPUTS #12 recorded                                                                                                      |
+| 5   | Storefront claims                | 2.12                   | Claude lists, you confirm   | 1 h       | No bracketed placeholders; every speed/time/saving claim confirmed or removed; placeholder customer stories replaced or removed                                                        |
+| 6   | ~~Unlock fulfilment~~ **done**   | OPEN_INPUTS #15 + code | resolved 21 Sep             | 0         | Dispatch/activation prerequisites decided; `transitions-config.ts` production gate replaced by the decided rule; PR merged; e2e gates green                                            |
+| 7   | Production test order            | 5.2                    | Both                        | 1.5 h     | Order placed with test details on the live site, email arrives, visible in admin, document approved, status reaches ready_for_delivery, then archived; `EVIDENCE/A4-launch.md` written |
+| 8   | Runbook walk                     | 5.3                    | You practise, Claude guides | 1.5 h     | Four runbooks walked once in the real admin, corrected, plus `RUNBOOKS/first-order-cheatsheet.md`                                                                                      |
+| 9   | Go live                          | 6.3                    | You                         | your call | Approved posts from `docs/marketing/launch-posts.md` go out; UTM links in place                                                                                                        |
 
 Runs alongside, no sitting needed:
 
@@ -355,9 +355,17 @@ Depends on Stage 1 findings and the Stage 2 answers.
 
 ## Stage 4 — Safety net before real customer data (Both)
 
-- ☐ **4.0 Rotate exposed keys** _(You, Claude guides; owner chose later on 22 Oct)_ — Cloudflare, R2 and Backblaze B2
+- ☑ **4.0 Rotate exposed keys** _(You, Claude guides; owner chose later on 22 Oct)_ — Cloudflare, R2 and Backblaze B2
   credentials were stored in plain text outside a password manager. Create new keys,
   update Railway/Vercel/GitHub secrets, revoke the old ones. Do this first.
+  _25 Oct: done. The TickTick note held three live credentials. R2: new token limited to
+  object read/write on `canadian-plans-data`, set on Railway, old all-bucket admin token
+  deleted. B2: new writer key (list + write on the archive bucket) written straight into
+  the GitHub `backup` secrets by an owner-run API script; test backup and monitor passed;
+  the note's key was already absent. Backup recovery key: new age key pair made offline
+  with age 1.3.2 and round-trip tested, public half set as `RECOVERY_AGE_RECIPIENT`, test
+  backup passed; private key on the owner's USB and password manager. Note deleted.
+  Details in `RUNBOOKS/secret-rotation.md` (rotation log)._
 - ☐ **4.1 Backups** _(You provision, Claude verifies)_ — enable managed daily database
   backups (Supabase Pro baseline) **and** provision the T24 GitHub secrets for the
   separate encrypted daily DB/Auth, R2 and Sanity archive, independent alerts and a

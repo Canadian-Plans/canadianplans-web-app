@@ -148,6 +148,20 @@ from the Sentry project settings and update the three variables together
 between them just means errors from one app stop reporting until fixed, not
 a security exposure.
 
+## Rotation log
+
+Dates and scope only. Never record a value here.
+
+| Date (UTC)       | Credential                                                                                            | Reason                                              | New credential                                                                                                                                                                                        | Verified by                                                                                      | Old credential                                                                                                                                              |
+| ---------------- | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-10-25 05:23 | Cloudflare R2 API token (`R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY`, Railway backend)                | Stored in plain text in a TickTick note             | Account token `canadian-plans-backend-documents`: Object Read & Write, bucket `canadian-plans-data` only                                                                                              | Railway deployment `3b04c6be` SUCCESS, health ok. First real upload (task 5.2) still to prove it | `canadianplans-admin` (Admin Read & Write, all buckets, never used) deleted                                                                                 |
+| 2026-10-25 05:34 | B2 archive writer (`B2_ARCHIVE_WRITER_KEY_ID` / `B2_ARCHIVE_WRITER_APPLICATION_KEY`, GitHub `backup`) | Stored in plain text in a TickTick note             | Key `…0004` `canadian-plans-archive-writer`, exactly `listFiles` + `writeFiles` on the archive bucket, created with the native v4 API by an owner-run script and written straight into GitHub secrets | Backup run `40166011413` and monitor run `40166157021` succeeded                                 | The noted key `…0001` was already absent. Unused key `…0002` `archive-writer` remains; delete it at the next B2 session                                     |
+| 2026-10-25 05:45 | Backup recovery age key (`RECOVERY_AGE_RECIPIENT`, GitHub `backup`; private half offline)             | Private key stored in plain text in a TickTick note | New X25519 pair made with age 1.3.2 on the owner's PC, round-trip tested; public key `age159m6g7zxf9vcr2dkqskallm9yswf9h4xnj3yy62guu35lrdjmv9s5lttuf`                                                 | Backup run `40166655606` succeeded with the new recipient                                        | Old private key deleted from TickTick and OneDrive. Backups taken before 05:45 UTC on 25 Oct are readable only with the old key and hold no customer orders |
+
+**Backblaze gotcha:** keys created with the v4 API (`bucketIds` array) do not appear on
+the Backblaze website or in `b2_list_keys` v3. Use `b2api/v4/b2_list_keys` to see and
+delete them.
+
 ## Verify
 
 - Backend/jobs: confirm the relevant service redeployed successfully
