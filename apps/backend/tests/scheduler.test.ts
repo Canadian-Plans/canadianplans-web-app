@@ -92,6 +92,40 @@ it('alerts once when catalogue sync starts failing, and again only after a clean
   }
 });
 
+it('logs every failing catalogue workspace by id, without alerting more than once', async () => {
+  let failing = false;
+  const other = '10000000-0000-4000-8000-000000000902';
+  const catalogue = {
+    run: vi.fn(async () => ({
+      failures: [
+        { workspaceId: WORKSPACE, stage: 'reconcile', errorCode: 'provider_unavailable' },
+        { workspaceId: other, stage: 'drain', errorCode: 'drain_failed' },
+      ],
+    })),
+  };
+  const alerts = { send: vi.fn(async () => {}) };
+  const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+  try {
+    await runCatalogueSyncWithAlert(
+      catalogue,
+      alerts,
+      { authorizedWorkspaceIds: [WORKSPACE, other], actorId: ACTOR },
+      (next) => {
+        failing = next;
+      },
+      () => failing,
+    );
+    const records = logged.mock.calls.map(([line]) => JSON.parse(String(line)));
+    expect(records).toEqual([
+      expect.objectContaining({ workspaceId: WORKSPACE, code: 'provider_unavailable' }),
+      expect.objectContaining({ workspaceId: other, code: 'drain_failed' }),
+    ]);
+    expect(alerts.send).toHaveBeenCalledOnce();
+  } finally {
+    logged.mockRestore();
+  }
+});
+
 interface Deferred<T> {
   promise: Promise<T>;
   resolve: (value: T) => void;

@@ -417,12 +417,17 @@ export async function runCatalogueSyncWithAlert(
   const summary = await catalogue.run(input);
   const failing = summary.failures.length > 0;
   if (failing) {
-    logRequestError({
-      requestId: 'scheduler:catalogue_sync',
-      route: 'scheduler',
-      code: summary.failures[0]?.errorCode ?? 'catalogue_sync_failed',
-      flag: 'not_retryable',
-    });
+    // One line per failure, naming the workspace (an internal UUID, not PII), so
+    // a misconfigured scheduler entry is identifiable from the logs alone.
+    for (const failure of summary.failures) {
+      logRequestError({
+        requestId: 'scheduler:catalogue_sync',
+        workspaceId: failure.workspaceId,
+        route: 'scheduler',
+        code: failure.errorCode,
+        flag: 'not_retryable',
+      });
+    }
     if (!wasFailing()) {
       await alerts
         .send({
@@ -443,6 +448,7 @@ export async function runCatalogueSyncWithAlert(
 }
 
 interface CatalogueAlertFailure {
+  workspaceId?: string;
   stage: string;
   errorCode: string;
 }
