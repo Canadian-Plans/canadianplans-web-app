@@ -590,3 +590,35 @@ Every table uses the standard `FOR ALL` `app_runtime` tenant policy comparing
 commission_rules and commission_line_events are SELECT/INSERT only (like
 offer_versions/audit_events); commission_lines and invoices/invoice_lines add
 UPDATE where a later transition legitimately mutates state.
+
+## 0027_email_only_tracking.sql
+
+Task: email-only customer tracking (owner request, 25 Oct 2026)
+
+Date: 2026-10-25
+
+### Change
+
+- `tracking_challenges.order_id` is now nullable. New challenges are scoped to
+  workspace + the email's keyed hash and carry no order; rows created before
+  this migration keep their order and no longer verify.
+- Added `order_info_requests`: staff requests for missing customer details
+  (`fields` JSONB of amendable field keys, customer-facing `message`, `status`
+  pending|answered|cancelled, `requested_by`, `resolved_by`/`resolved_at`) with
+  a composite FK to `orders` and a `set null` FK to the answering
+  `order_change_requests` row (`change_request_id`).
+- `app_runtime` gets SELECT/INSERT/UPDATE, plus DELETE for the customer
+  deletion cleanup. The `guard_restricted_child` trigger refuses new rows for a
+  restricted (deleted) customer.
+
+### Why
+
+Customers track every order with only their email (REQ 05) and answer staff
+requests for missing details; answers become pending change requests that
+staff approve, so the submitted order stays immutable (REQ 14/21).
+
+### RLS
+
+`order_info_requests` uses the standard `FOR ALL` `app_runtime` tenant policy
+on `workspace_id` with a non-null `app.actor_id`, repeated in `WITH CHECK`, RLS
+enabled and forced.

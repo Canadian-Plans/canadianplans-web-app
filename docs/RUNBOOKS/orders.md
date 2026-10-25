@@ -78,10 +78,23 @@ Exact steps:
      transition gate is off. This is surfaced, not hidden.
 5. Notes and reminders are separate records; adding one does not change the
    order's version, so it never blocks a colleague's transition.
-6. A customer's emailed correction is recorded under **Change requests** and
-   approved or rejected there. Approval writes exactly one audited amendment and
-   applies contact changes to the originating lead; the submitted order envelope
-   stays immutable (REQ 14). Re-approving a resolved request is refused.
+6. **Change requests** holds corrections from two sources: ones you record from
+   a customer's email, and ones the customer sends from the website's order
+   tracking page (badge **From customer**, or **Customer answer** when it answers
+   your request for details). Approve or reject each there. Approval writes
+   exactly one audited amendment and applies contact changes to the originating
+   lead; the submitted order envelope stays immutable (REQ 14). Re-approving a
+   resolved request is refused. Approving an email change moves the order to the
+   new address in tracking: the old address can no longer see it.
+   - To ask the customer for missing details, open **Ask the customer for
+     details**, tick the fields, add a short message and **Send request**. The
+     request shows on the customer's tracking page; at most three can be open.
+     Move the order to **Awaiting customer** as well if you want the customer
+     emailed (that email points them to the tracking page). **Withdraw request**
+     cancels one the customer has not answered.
+   - Documents the customer uploads from tracking appear in the **Documents**
+     panel as order documents; review them as usual. A rejected document shows
+     the customer "Needs a new file" with an upload button.
 7. Finance or Orders records payment in the **Payment** panel; the amount shown
    comes from the snapshot, and recording writes `payment_records` and
    `payment_state` together.

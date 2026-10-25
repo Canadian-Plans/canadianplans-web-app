@@ -419,6 +419,8 @@ Tests: unknown recipient has indistinguishable response; guessing reference alon
 ```
 Done when: tracking works for a seeded order; enumeration tests pass.
 
+Update 25 Oct 2026 (owner request): tracking is email-only — one code shows every order of that email on the website, with change requests, info-request answers and document uploads. The reference + email flow and `GET /tracking` above are superseded; see docs/API.md "Customer order tracking".
+
 ### T23. A3 exit gate (S)
 
 **Prompt:**
