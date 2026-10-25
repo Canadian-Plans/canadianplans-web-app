@@ -38,6 +38,7 @@ const JANE_LEAD = '54000000-0000-4000-8000-000000000e01';
 const BOB_LEAD = '54000000-0000-4000-8000-000000000e02';
 const FOREIGN_LEAD = '54000000-0000-4000-8000-000000000e03';
 const GONE_LEAD = '54000000-0000-4000-8000-000000000e04';
+const JANE_OLDER_LEAD = '54000000-0000-4000-8000-000000000e05';
 const JANE_ORDER = '64000000-0000-4000-8000-000000000e01';
 const JANE_OLDER_ORDER = '64000000-0000-4000-8000-000000000e02';
 const BOB_ORDER = '64000000-0000-4000-8000-000000000e03';
@@ -129,13 +130,15 @@ databaseTest('DatabaseTrackingStore (email-only tracking)', () => {
       email: EMAIL,
       submittedAt: '2026-10-20T10:00:00.000Z',
     });
-    // A second order of the same email, through the same lead.
-    await admin`
-      insert into app.orders (id, workspace_id, reference, lead_id, status, payment_state, delivery_state, snapshot, payload, submitted_at)
-      values (${JANE_OLDER_ORDER}, ${WORKSPACE}, 'CP-TRACK00', ${JANE_LEAD}, 'submitted', 'not_required', 'none',
-        ${admin.json(snapshot)}, '{}'::jsonb, '2026-10-01T10:00:00.000Z')
-      on conflict (id) do nothing
-    `;
+    // A second order of the same email (its own lead: one order per lead).
+    await seedOrder({
+      workspaceId: WORKSPACE,
+      leadId: JANE_OLDER_LEAD,
+      orderId: JANE_OLDER_ORDER,
+      reference: 'CP-TRACK00',
+      email: EMAIL,
+      submittedAt: '2026-10-01T10:00:00.000Z',
+    });
     await seedOrder({
       workspaceId: WORKSPACE,
       leadId: BOB_LEAD,
@@ -680,9 +683,10 @@ databaseTest('DatabaseTrackingStore (email-only tracking)', () => {
       }),
     ).toMatchObject(inactive);
     // The queued address must still own an active order.
-    await admin`update app.leads set email = 'changed@example.test' where id = ${JANE_LEAD}`;
+    // (Both of Jane's orders, so the address owns no active order any more.)
+    await admin`update app.leads set email = 'changed@example.test' where id in ${admin([JANE_LEAD, JANE_OLDER_LEAD])}`;
     expect(await handle(scoped)).toMatchObject(inactive);
-    await admin`update app.leads set email = ${EMAIL} where id = ${JANE_LEAD}`;
+    await admin`update app.leads set email = ${EMAIL} where id in ${admin([JANE_LEAD, JANE_OLDER_LEAD])}`;
     await store.createChallengeAndQueue(queueInput('999999'));
     expect(await handle(scoped)).toMatchObject(inactive);
     expect(email.deliveries).toHaveLength(0);
