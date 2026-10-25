@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import type {
-  AmendableContactPatch,
-  AmendableFormPatch,
-  OrderChangeRequest,
-  OrderDetail,
+import {
+  amendableFieldKeySchema,
+  type AmendableContactPatch,
+  type AmendableFieldKey,
+  type AmendableFormPatch,
+  type OrderChangeRequest,
+  type OrderDetail,
 } from '@canadian-plans/contracts';
 import {
   Badge,
@@ -21,7 +23,9 @@ import {
 } from '@canadian-plans/ui';
 
 import {
+  cancelOrderInfoRequest,
   createOrderChangeRequest,
+  createOrderInfoRequest,
   createOrderNote,
   createOrderReminder,
   deleteOrderReminder,
@@ -184,6 +188,17 @@ export function OrderReminders({ workspaceId, accessToken, order, write }: Colla
   );
 }
 
+/** Staff-facing names for the fields a customer can be asked to supply or change. */
+const FIELD_LABELS: Record<AmendableFieldKey, string> = {
+  'contact.fullName': 'Full name',
+  'contact.email': 'Email',
+  'contact.phone': 'Phone',
+  'contact.countryCode': 'Country code',
+  'form.currentCountry': 'Current country',
+  'form.destination': 'Destination',
+  'form.arrivalDate': 'Arrival date',
+};
+
 function patchSummary(changeRequest: OrderChangeRequest): string {
   const parts: string[] = [];
   for (const [key, value] of Object.entries(changeRequest.patch.contact ?? {})) {
@@ -210,6 +225,8 @@ export function OrderChangeRequests({
   const [contact, setContact] = useState<AmendableContactPatch>({});
   const [form, setForm] = useState<AmendableFormPatch>({});
   const [note, setNote] = useState('');
+  const [askFields, setAskFields] = useState<AmendableFieldKey[]>([]);
+  const [askMessage, setAskMessage] = useState('');
   const canManage = order.capabilities.canManageOrders;
 
   const hasProposal =
@@ -248,6 +265,11 @@ export function OrderChangeRequests({
                   >
                     {changeRequest.status}
                   </Badge>
+                  {changeRequest.origin === 'customer' ? (
+                    <Badge variant="outline">
+                      {changeRequest.infoRequestId ? 'Customer answer' : 'From customer'}
+                    </Badge>
+                  ) : null}
                   <span>{patchSummary(changeRequest)}</span>
                 </div>
                 {changeRequest.note ? (
@@ -315,6 +337,105 @@ export function OrderChangeRequests({
             ))}
           </ul>
         )}
+
+        <div className="flex flex-col gap-2">
+          <h3 className="text-sm font-medium">Details requested from the customer</h3>
+          <p className="text-xs text-muted-foreground">
+            The customer answers on the website&apos;s order tracking page; the answer arrives above
+            as a change request for you to approve.
+          </p>
+          {order.infoRequests.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No requests for details.</p>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {order.infoRequests.map((info) => (
+                <li key={info.id} className="flex flex-col gap-1 rounded-md border p-3 text-sm">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant={info.status === 'pending' ? 'default' : 'secondary'}>
+                      {info.status}
+                    </Badge>
+                    <span>{info.fields.map((field) => FIELD_LABELS[field]).join(', ')}</span>
+                  </div>
+                  {info.message ? (
+                    <p className="text-xs text-muted-foreground">{info.message}</p>
+                  ) : null}
+                  <p className="text-xs text-muted-foreground">{formatDateTime(info.createdAt)}</p>
+                  {canManage && info.status === 'pending' ? (
+                    <div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={write.busy}
+                        onClick={() =>
+                          void write.run(() =>
+                            cancelOrderInfoRequest(accessToken, workspaceId, order.id, info.id),
+                          )
+                        }
+                      >
+                        Withdraw request
+                      </Button>
+                    </div>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          )}
+          {canManage ? (
+            <details className="rounded-md border p-3">
+              <summary className="cursor-pointer text-sm font-medium">
+                Ask the customer for details
+              </summary>
+              <fieldset className="mt-3 flex flex-col gap-2">
+                <legend className="text-sm">Which details are missing?</legend>
+                {amendableFieldKeySchema.options.map((field) => (
+                  <label key={field} className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={askFields.includes(field)}
+                      onChange={(event) =>
+                        setAskFields((current) =>
+                          event.target.checked
+                            ? [...current, field]
+                            : current.filter((value) => value !== field),
+                        )
+                      }
+                    />
+                    Ask for {FIELD_LABELS[field].toLowerCase()}
+                  </label>
+                ))}
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="ask-message">Message to the customer</Label>
+                  <Textarea
+                    id="ask-message"
+                    value={askMessage}
+                    maxLength={2000}
+                    onChange={(event) => setAskMessage(event.target.value)}
+                  />
+                </div>
+                <div>
+                  <Button
+                    type="button"
+                    disabled={write.busy || askFields.length === 0}
+                    onClick={async () => {
+                      const result = await write.run(() =>
+                        createOrderInfoRequest(accessToken, workspaceId, order.id, {
+                          fields: askFields,
+                          ...(askMessage.trim() ? { message: askMessage.trim() } : {}),
+                        }),
+                      );
+                      if (result) {
+                        setAskFields([]);
+                        setAskMessage('');
+                      }
+                    }}
+                  >
+                    Send request
+                  </Button>
+                </div>
+              </fieldset>
+            </details>
+          ) : null}
+        </div>
 
         {order.amendments.length > 0 ? (
           <div className="flex flex-col gap-2">
