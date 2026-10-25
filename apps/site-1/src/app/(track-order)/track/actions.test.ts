@@ -12,9 +12,10 @@ vi.mock('next/headers', () => ({
       const value = jar.get(name);
       return value === undefined ? undefined : { name, value };
     },
-    set: (name: string, value: string, options?: unknown) => {
+    set: (name: string, value: string, options?: { maxAge?: number }) => {
       cookieOptions.push(options);
-      jar.set(name, value);
+      if (options?.maxAge === 0) jar.delete(name);
+      else jar.set(name, value);
     },
     delete: (name: string) => void jar.delete(name),
   }),
@@ -296,9 +297,11 @@ describe('tracking uploads', () => {
 });
 
 describe('signOutTracking', () => {
-  it('clears the grant cookie', async () => {
+  it('expires the grant cookie on the path it was set on', async () => {
     signIn();
     await actions.signOutTracking();
     expect(jar.size).toBe(0);
+    expect(cookieOptions.at(-1)).toMatchObject({ maxAge: 0, path: '/track', httpOnly: true });
+    expect(await actions.loadTrackedOrders()).toMatchObject({ ok: false, code: 'session_expired' });
   });
 });

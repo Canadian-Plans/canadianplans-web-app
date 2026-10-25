@@ -29,22 +29,27 @@ export async function readTrackingGrant(): Promise<{ token: string } | undefined
   }
 }
 
+const cookieOptions = {
+  httpOnly: true,
+  sameSite: 'lax',
+  secure: process.env.NODE_ENV === 'production',
+  path: '/track',
+} as const;
+
 /** Persists the grant cookie. Only callable from a Server Action or Route Handler. */
 export async function writeTrackingGrant(grant: {
   token: string;
   expiresAt: string;
 }): Promise<void> {
   const store = await cookies();
-  store.set(GRANT_COOKIE, JSON.stringify(grant), {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    path: '/track',
-    maxAge: GRANT_TTL_SECONDS,
-  });
+  store.set(GRANT_COOKIE, JSON.stringify(grant), { ...cookieOptions, maxAge: GRANT_TTL_SECONDS });
 }
 
+/**
+ * Ends the session on this device. The cookie is expired on the same path it
+ * was set on: a delete without that path leaves the `/track` cookie in place.
+ */
 export async function clearTrackingGrant(): Promise<void> {
   const store = await cookies();
-  store.delete(GRANT_COOKIE);
+  store.set(GRANT_COOKIE, '', { ...cookieOptions, maxAge: 0 });
 }
