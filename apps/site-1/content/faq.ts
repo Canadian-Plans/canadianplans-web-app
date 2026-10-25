@@ -243,7 +243,7 @@ export const faqGroups: readonly HelpFaqGroup[] = [
       site(
         'internet-contract',
         'Is there a contract for home internet?',
-        'No. There is no contract, even with the 2-year price lock in BC, Alberta and Manitoba. In Saskatchewan the first two months are free. Your service agreement is with the provider, and your advisor explains it before anything is booked.',
+        'Yes. Home internet comes with a service agreement with the provider. In BC, Alberta and Manitoba the price is locked for 2 years, and in Saskatchewan the first two months are free. Your advisor explains the agreement’s length and terms before anything is booked.',
         ['contract', 'price lock'],
       ),
     ],

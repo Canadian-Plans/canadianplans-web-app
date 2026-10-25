@@ -327,7 +327,7 @@ export const homeRedesign = {
         description:
           'Bring your own phone and keep your number, or book home internet in BC, Alberta, Manitoba and Saskatchewan. A real advisor sets it up with you.',
         price: 'Mobile from $55/mo + tax',
-        chips: ['✓ No contract', '✓ Keep your number'],
+        chips: ['✓ No contract on mobile', '✓ Keep your number'],
         needs: ['A mobile plan', 'Home internet', 'Mobile + internet bundle', 'Business internet'],
         fieldLabel: 'Postal code',
         fieldHint: 'e.g. V3T 1Z2',
@@ -351,7 +351,7 @@ export const homeRedesign = {
     },
   },
   picker: {
-    eyebrow: 'No contract on any plan',
+    eyebrow: 'No contract on mobile plans',
     title: 'What do you need in Canada?',
     description: 'Pick a service to see every plan and its real monthly price.',
     cards: [
@@ -571,7 +571,7 @@ export const homeRedesign = {
       cta: {
         icon: 'cta-home-internet',
         title: 'Is home internet available at your address?',
-        subtitle: 'Free installation, unlimited data, no contract, nothing paid up front.',
+        subtitle: 'Free installation, unlimited data, nothing paid up front.',
         primary: { label: 'See plans by province →', href: '/home-internet' },
         secondary: { label: 'Talk to an advisor ›', href: '/contact' },
       },
@@ -741,7 +741,7 @@ export const homeRedesign = {
   how: {
     title: 'How to get a phone plan or home internet through Canadian Plans',
     description:
-      'Choose a plan, send one short form, and a real advisor does the rest. No contract, no store visit, and nothing is paid on this website.',
+      'Choose a plan, send one short form, and a real advisor does the rest. No store visit, and nothing is paid on this website.',
     primary: { label: 'Find my plan', href: '/pre-arrival-sim#plans' },
     secondary: { label: 'Talk to an advisor', href: '/contact' },
     stepLabel: 'Step',

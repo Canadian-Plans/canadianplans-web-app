@@ -276,15 +276,17 @@ These block the first order. Each is a row in `docs/OPEN_INPUTS.md`; answer ther
 - ☑ **2.11 Cancellation process** (#20) — what staff do if a customer cancels after paying
   or after activation. _22 Oct: free before activation; after activation the customer
   cancels with the provider. Steps in `RUNBOOKS/orders.md` → Cancellations._
-- ◐ **2.12 Storefront claims** — replace the bracketed placeholders on the site
+- ☑ **2.12 Storefront claims** — replace the bracketed placeholders on the site
   (`[PRICE]`, install timelines, marketing claims). Claude will list every one.
   _25 Oct: no placeholders remain. Owner confirmed: authorized Rogers/Fido/Chatr reseller,
   same-day advisor confirmation, order in about 2 minutes, eSIM active 24 hours before
   arrival, same-day number transfer, real people (no bots) and the Surrey address. "No credit
   check" and "no SIN" hold for the pre-arrival eSIM plans only; an audit of all 79 mentions
   found every one already scoped to those plans (mobile BYOD pages say a credit check
-  applies), so no text changed. Left: "no contract" on home internet plans is unconfirmed.
-  Details in `EVIDENCE/storefront-claims/README.md`._
+  applies), so no text changed. Home internet does have a contract (owner, 25 Oct), so every
+  "no contract" / "no term commitment" claim about home internet now says there is a service
+  agreement with the provider that the advisor explains before booking; mobile and pre-arrival
+  "no contract" claims stay. Details in `EVIDENCE/storefront-claims/README.md`._
 
 Not needed for the first direct order (can wait): commission rules #7/#17/#18, invoice
 identity #8, Umami/Sentry choice #12/#13, Phase B items.

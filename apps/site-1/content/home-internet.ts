@@ -55,7 +55,7 @@ export const internetCopy = {
       '✓ Unlimited data, no overage',
       '✓ WiFi router and modem, no rental fee',
       '✓ Free professional installation',
-      '✓ No upfront payment and no contract',
+      '✓ No upfront payment',
     ],
   },
   comparison: {
@@ -128,7 +128,7 @@ export const internetCopy = {
         id: 'internet-faq-0',
         question: 'Is there a contract?',
         answer:
-          'No. There is no contract, including with the 2-year price lock in Manitoba, British Columbia and Alberta. Your service agreement is with the provider, and your advisor explains it before anything is booked.',
+          'Yes. Home internet comes with a service agreement with the provider, including the 2-year price lock in Manitoba, British Columbia and Alberta. Your advisor explains its length and terms before anything is booked.',
       },
       {
         id: 'promo',

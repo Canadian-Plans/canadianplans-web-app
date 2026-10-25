@@ -50,13 +50,33 @@ carrier names part remains.
 | Number usually transfers the same day | Yes, keep |
 | Real people, no bots | Yes, keep |
 | Surrey address, 9981 Whalley Blvd | Yes, may be published |
-| No contract on home internet | **Not answered**; left unchanged |
+| No contract on home internet | **No: home internet has a contract.** Wording changed on 25 Oct (see below) |
 
 Scope audit (Claude, same day): all 71 "no credit check" and 8 "no SIN" mentions outside the
 component lab sit on pre-arrival eSIM pages, in pre-arrival sections of shared pages, or in
 calls to action that link to the eSIM plans. The shared "Before you order" checklist is used
 only by the pre-arrival landing pages. The mobile BYOD pages state that a credit check
 applies. No storefront text needed to change.
+
+### Home internet contract wording — changed 25 October 2026
+
+The owner confirmed home internet plans have a contract. The agreement's length is not
+recorded in `docs/LAUNCH_PLANS.md`, so the new text does not state one. Changes:
+
+- "Is there a contract?" answers (home internet FAQ, province pages, `/faq`, the internet
+  guide, the home internet page): now "Yes. Home internet comes with a service agreement with
+  the provider…", keeping the true details (2-year price lock, 15-day trial, Saskatchewan's
+  two free months) and saying the advisor explains its length and terms before booking.
+- Badges and taglines: "No contract" removed from internet price notes, hero chips (now
+  "Free install"), the sticky bar (now "Unlimited data"), page descriptions and the closing
+  call to action; "No contract or term" removed from the includes list.
+- Home page: "No contract on any plan" is now "No contract on mobile plans"; the resident tab
+  chip reads "No contract on mobile"; the general how-it-works line drops "No contract".
+- Mobile, pre-arrival and visitor "no contract" claims are unchanged.
+
+Verified on the local dev server: `/home-internet`, `/home-internet/british-columbia`,
+`/home-internet/saskatchewan`, `/home-internet/vancouver`, `/faq` and the internet cost guide
+contain no "no contract" or "term commitment"; site-1 typecheck, lint and 254 tests pass.
 
 ## How to close 2.12
 

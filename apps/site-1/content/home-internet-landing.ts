@@ -115,7 +115,7 @@ export const internetProvinceCards: readonly LandingPlanCard[] = internetProvinc
       currency: '$',
       price: `${lowestOf(plans)}`,
       period: '/mo',
-      priceNote: 'CAD · taxes extra · no contract',
+      priceNote: 'CAD · taxes extra',
       action: 'View plans & offers',
       includesTitle: 'Every plan includes:',
       includes: [
@@ -171,7 +171,7 @@ export function internetProvincePlanCards(province: InternetProvince): LandingPl
     currency: '$',
     price: `${plan.priceCad}`,
     period: '/mo',
-    priceNote: 'CAD · taxes extra · no contract',
+    priceNote: 'CAD · taxes extra',
     action: `Choose ${plan.allowance}`,
     includesTitle,
     includes,
@@ -275,7 +275,7 @@ const sharedFaq = {
     id: 'contract',
     question: 'Is there a contract?',
     answer:
-      'No. There is no term commitment on any plan, including the 2-year price lock in British Columbia, Alberta and Manitoba. Your service agreement is with the provider, and an advisor explains it before anything is booked.',
+      'Yes. Home internet comes with a service agreement with the provider, including the 2-year price lock in British Columbia, Alberta and Manitoba. An advisor explains its length and terms before anything is booked.',
   },
   equipment: {
     id: 'equipment',
@@ -299,7 +299,7 @@ const sharedFaq = {
     id: 'cancel',
     question: 'Can I cancel?',
     answer:
-      'Before activation, cancel with us at any time for free. After activation you cancel with the provider, and there is no contract holding you.',
+      'Before activation, cancel with us at any time for free. After activation you cancel with the provider under your service agreement, whose terms your advisor explains before anything is booked.',
   },
   move: {
     id: 'move',
@@ -350,8 +350,8 @@ export const internetLandingShared: LandingKitShared = {
       {
         id: 'moving',
         icon: 'feature-hi-moving',
-        title: 'No contract, and we stay your contact',
-        body: 'No term commitment. Moving again? Tell your advisor and they check your new address.',
+        title: 'We stay your contact',
+        body: 'Moving again? Tell your advisor and they check your new address.',
       },
     ],
   },
@@ -452,7 +452,6 @@ const includes = [
   'Unlimited data',
   'WiFi router and modem',
   'Free professional installation',
-  'No contract or term',
   'Nothing to pay online',
 ];
 
@@ -486,7 +485,7 @@ const costAnswer = (province?: InternetProvince): LandingFaq => ({
 export const internetLandingPage: LandingKitPage = {
   path: '/home-internet',
   title: 'Home Internet Plans by Province | Canadian Plans',
-  description: `Unlimited home internet from $${lowestPrice}/mo in ${provinceSentence}. WiFi router included, free professional install, no contract, nothing to pay online. An advisor books your install date.`,
+  description: `Unlimited home internet from $${lowestPrice}/mo in ${provinceSentence}. WiFi router included, free professional install, nothing to pay online. An advisor books your install date.`,
   breadcrumb: [{ label: 'Home', href: '/' }, { label: 'Home Internet' }],
   hero: {
     eyebrow: `Home internet · ${internetProvinces.join(', ')}`,
@@ -498,7 +497,7 @@ export const internetLandingPage: LandingKitPage = {
     priceLabel: 'From',
     price: `$${lowestPrice}`,
     priceSuffix: '/mo + tax',
-    chips: ['No contract', '$0 to order'],
+    chips: ['Free install', '$0 to order'],
     art: 'art-home-internet',
     artLabel: 'Illustration of a home WiFi router with a strong signal',
     badge: { top: 'Plans from', price: `$${lowestPrice}`, suffix: '/mo · CAD' },
@@ -534,12 +533,12 @@ export const internetLandingPage: LandingKitPage = {
   ],
   final: {
     title: 'Ready to be online from move-in day?',
-    subtitle: `Unlimited internet from $${lowestPrice}/mo. Free install, no contract, nothing to pay online.`,
+    subtitle: `Unlimited internet from $${lowestPrice}/mo. Free install, nothing to pay online.`,
     primary: { label: 'See plans for my province', href: '#plans' },
   },
   sticky: {
     title: `Home internet from $${lowestPrice}/mo`,
-    detail: 'Free install · No contract · $0 to order',
+    detail: 'Free install · Unlimited data · $0 to order',
   },
   moreLinks: otherProvinces(),
 };
@@ -553,7 +552,7 @@ export function internetProvincePage(province: InternetProvince): LandingKitPage
   return {
     path: internetProvinceHref(province),
     title: `Home Internet in ${name} from $${from}/mo | Canadian Plans`,
-    description: `High speed unlimited internet in ${name} from $${from}/month. ${offer.detail} Free WiFi router and modem, free professional install, no contract. Nothing to pay online.`,
+    description: `High speed unlimited internet in ${name} from $${from}/month. ${offer.detail} Free WiFi router and modem, free professional install. Nothing to pay online.`,
     breadcrumb: [
       { label: 'Home', href: '/' },
       { label: 'Home Internet', href: '/home-internet' },
@@ -569,7 +568,7 @@ export function internetProvincePage(province: InternetProvince): LandingKitPage
       priceLabel: 'From',
       price: `$${from}`,
       priceSuffix: '/mo + tax',
-      chips: ['No contract', '$0 to order'],
+      chips: ['Free install', '$0 to order'],
       art: 'art-home-internet',
       artLabel: 'Illustration of a home WiFi router with a strong signal',
       badge: { top: `${name} from`, price: `$${from}`, suffix: '/mo · CAD' },

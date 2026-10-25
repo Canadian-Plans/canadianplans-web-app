@@ -554,7 +554,7 @@ export const internetCostGuide: GuideArticle = {
       label: 'Installation:',
       text: 'free and professional, usually within about 3 days of your call.',
     },
-    { label: 'Up front:', text: 'nothing to pay, and no contract.' },
+    { label: 'Up front:', text: 'nothing to pay.' },
     { label: 'With TV:', text: 'Internet + TV bundles start at $90.' },
   ],
   blocks: [
@@ -659,7 +659,7 @@ export const internetCostGuide: GuideArticle = {
           id: 'contract',
           question: 'Is there a contract or a cancellation fee?',
           answer:
-            'No contract. In BC, Alberta and Manitoba your price is locked for 2 years and you have a 15-day trial after installation. Your service agreement is with the provider, and your advisor explains its terms before anything is booked.',
+            'Yes. Home internet comes with a service agreement with the provider. In BC, Alberta and Manitoba your price is locked for 2 years and you have a 15-day trial after installation. Your advisor explains the agreement’s length, terms and any cancellation fee before anything is booked.',
         },
         {
           id: 'tv',

@@ -75,7 +75,7 @@ const homeTypes: LandingBlock = {
     {
       id: 'student',
       title: 'Student housing',
-      body: 'Short lease? There is no contract, so tell your advisor your dates before you book.',
+      body: 'Short lease? Tell your advisor your dates before you book, and they explain the agreement term.',
       icon: 'feature-hi-unlimited',
     },
   ],
@@ -127,9 +127,9 @@ const guide = (region: string, facts: { price: string; speed: string }): Landing
 });
 
 const priceLockAnswer = (province: string) =>
-  `No. There is no contract. In ${province} your monthly price is locked for 2 years, your first bill comes 15 days after installation, and you have a 15-day trial if the service is not right for you.`;
+  `Yes. Home internet comes with a service agreement with the provider, and your advisor explains its length and terms before anything is booked. In ${province} your monthly price is locked for 2 years, your first bill comes 15 days after installation, and you have a 15-day trial if the service is not right for you.`;
 const twoMonthsAnswer =
-  'No. There is no contract. In Saskatchewan your first two months are free once service is active, and billing starts in month three at the agreed price. Taxes and government fees are extra.';
+  'Yes. Home internet comes with a service agreement with the provider, and your advisor explains its length and terms before anything is booked. In Saskatchewan your first two months are free once service is active, and billing starts in month three at the agreed price. Taxes and government fees are extra.';
 
 const faq = (
   region: string,
