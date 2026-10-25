@@ -20,17 +20,17 @@ dependency and risk, grouped into sittings of one to two hours. **You** = owner 
 or decides · **Claude** = done in a session · **Both** = Claude drives, you approve.
 Estimated total: about ten to twelve hours of joint work, plus two decisions.
 
-| # | Sitting | Items | Who | Time | Done when |
-| - | ------- | ----- | --- | ---- | --------- |
-| 1 | Rotate the exposed keys | 4.0 | You click, Claude guides | 1 h | Old Cloudflare token and B2 keys revoked, new ones only in Railway / GitHub secrets / your password manager, TickTick "keys" note deleted, `RUNBOOKS/secret-rotation.md` dated |
-| 2 | Prove observability | 4.2, 4.3 | Both | 1 h | A test error from production shows in Sentry with no personal data; a test owner alert reaches your inbox; synthetic check configured or consciously skipped |
-| 3 | Restore rehearsal | 4.1 | You run, Claude beside you | 1.5 h | One backup restored into an isolated `restore_drill` target per `RUNBOOKS/restore.md`; timings in `EVIDENCE/A4-restore.md`; recovery key moved off OneDrive |
-| 4 | Analytics | 6.2 | Both | 30 min | Visits and order starts appear in Umami from production; OPEN_INPUTS #12 recorded |
-| 5 | Storefront claims | 2.12 | Claude lists, you confirm | 1 h | No bracketed placeholders; every speed/time/saving claim confirmed or removed; placeholder customer stories replaced or removed |
-| 6 | Unlock fulfilment | OPEN_INPUTS #15 + code | You decide, Claude codes | 2 h | Dispatch/activation prerequisites decided; `transitions-config.ts` production gate replaced by the decided rule; PR merged; e2e gates green |
-| 7 | Production test order | 5.2 | Both | 1.5 h | Order placed with test details on the live site, email arrives, visible in admin, document approved, status reaches ready_for_delivery, then archived; `EVIDENCE/A4-launch.md` written |
-| 8 | Runbook walk | 5.3 | You practise, Claude guides | 1.5 h | Four runbooks walked once in the real admin, corrected, plus `RUNBOOKS/first-order-cheatsheet.md` |
-| 9 | Go live | 6.3 | You | your call | Approved posts from `docs/marketing/launch-posts.md` go out; UTM links in place |
+| #   | Sitting                        | Items                  | Who                         | Time      | Done when                                                                                                                                                                              |
+| --- | ------------------------------ | ---------------------- | --------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Rotate the exposed keys        | 4.0                    | You click, Claude guides    | 1 h       | Old Cloudflare token and B2 keys revoked, new ones only in Railway / GitHub secrets / your password manager, TickTick "keys" note deleted, `RUNBOOKS/secret-rotation.md` dated         |
+| 2   | Prove observability            | 4.2, 4.3               | Both                        | 1 h       | A test error from production shows in Sentry with no personal data; a test owner alert reaches your inbox; synthetic check configured or consciously skipped                           |
+| 3   | Restore rehearsal              | 4.1                    | You run, Claude beside you  | 1.5 h     | One backup restored into an isolated `restore_drill` target per `RUNBOOKS/restore.md`; timings in `EVIDENCE/A4-restore.md`; recovery key moved off OneDrive                            |
+| 4   | Analytics                      | 6.2                    | Both                        | 30 min    | Visits and order starts appear in Umami from production; OPEN_INPUTS #12 recorded                                                                                                      |
+| 5   | Storefront claims              | 2.12                   | Claude lists, you confirm   | 1 h       | No bracketed placeholders; every speed/time/saving claim confirmed or removed; placeholder customer stories replaced or removed                                                        |
+| 6   | ~~Unlock fulfilment~~ **done** | OPEN_INPUTS #15 + code | resolved 21 Sep             | 0         | Dispatch/activation prerequisites decided; `transitions-config.ts` production gate replaced by the decided rule; PR merged; e2e gates green                                            |
+| 7   | Production test order          | 5.2                    | Both                        | 1.5 h     | Order placed with test details on the live site, email arrives, visible in admin, document approved, status reaches ready_for_delivery, then archived; `EVIDENCE/A4-launch.md` written |
+| 8   | Runbook walk                   | 5.3                    | You practise, Claude guides | 1.5 h     | Four runbooks walked once in the real admin, corrected, plus `RUNBOOKS/first-order-cheatsheet.md`                                                                                      |
+| 9   | Go live                        | 6.3                    | You                         | your call | Approved posts from `docs/marketing/launch-posts.md` go out; UTM links in place                                                                                                        |
 
 Runs alongside, no sitting needed:
 
@@ -41,6 +41,35 @@ Runs alongside, no sitting needed:
 - **Visitors / Super Visa guide cover** _(Both, 20 min)_: the only guide still on a placeholder.
 - **Stage 7 cards** stay closed until the first real order arrives; sitting 8 produces the
   cheat sheet that walks them.
+
+### Findings from the first pass (25 October 2026, Claude, read-only)
+
+- **Sitting 6 is already done.** OPEN_INPUTS #15 was resolved on 21 Sep; `transitions-config.ts`
+  no longer blocks production, the document prerequisite is enforced, and
+  `ORDER_OPERATIONAL_TRANSITIONS` is set on Railway. Nothing to build. _(read + verified names)_
+- **1.2 exact commit:** the Railway backend runs `0ec3b3a` (deployment `bf3f2ffe`, SUCCESS),
+  and auto-deploy from `main` now works again. _(verified)_
+- **Sitting 1 scope is bigger than the card says.** The TickTick "keys" note holds three live
+  credentials, not old ones: the Cloudflare R2 API token with its S3 key pair (set on Railway
+  as `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY`), the B2 writer key
+  `canadian-plans-archive-writer` (GitHub environment `backup`), and the **backup recovery
+  private key** whose public half is `RECOVERY_AGE_RECIPIENT` (both created 23 Oct 03:17 UTC).
+  Anyone who can read the note can decrypt the backups. None of the values appear in the repo
+  or its git history. _(verified by fragment search; values not printed)_
+- **Owner alerts go nowhere.** Production logs `owner_alert_channel_unconfigured`:
+  `OWNER_ALERT_EMAIL` is not set on Railway (the three `RESEND_*` variables are). Setting it
+  is the fix for 4.3. _(verified from logs and variable names)_
+- **Catalogue sync fails every 5 minutes** with `provider_unavailable`, and would alert once
+  4.3 is fixed. site-1 reads the repo catalogue correctly; the failing workspace is most likely
+  the seeded demo workspace `…0102`, which is in the scheduler's workspace list but has no
+  catalogue. Fix by removing it from the `reconcile:run` entry in `MACHINE_REGISTRY_JSON`.
+  _(inferred: the database and registry values could not be read)_
+- **Synthetic check is off:** `SYNTHETIC_CHECK_SELECTOR` is unset, so it logs one startup
+  error and never runs. Optional; decide in sitting 2. _(verified)_
+- **4.2 not yet proven from production:** the two Sentry events (22 Oct) were manual setup
+  checks sent from Dhaka with release `setup-check`, not errors from the running services.
+- **2.12:** no placeholders remain; 12 claim types need a keep / change / remove answer, listed
+  in `docs/EVIDENCE/storefront-claims/README.md`.
 
 Why this order: sitting 1 first because the exposed keys are the only live security risk.
 Sittings 2 to 4 make the site observable before anyone transacts on it. Sitting 6 must land
