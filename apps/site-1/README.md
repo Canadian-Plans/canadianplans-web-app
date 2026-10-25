@@ -136,6 +136,13 @@ disabled until T20 implements sanitized events; the configured script still load
 This prevents raw paths/referrers from being collected by the placeholder scaffold.
 Search/hash exclusion and Do Not Track attributes are set as additional safeguards.
 
+Production uses the owner's self-hosted Umami at `https://umami.canadianplans.com`
+(OPEN_INPUTS #12, 25 October 2026): `NEXT_PUBLIC_UMAMI_SCRIPT_URL` is
+`https://umami.canadianplans.com/script.js` on the Vercel project, and the
+security policy allows that origin automatically (`next.config.ts`). The backend
+sends lead and order events to `https://umami.canadianplans.com/api/send`
+(`UMAMI_EVENTS_URL`, `UMAMI_WORKSPACE_WEBSITES` on Railway; see `docs/ENV.md`).
+
 ## Order form (T13)
 
 `/order` is a five-step journey: Plan → Details → Documents → Review + terms →
