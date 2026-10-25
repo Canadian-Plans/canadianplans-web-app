@@ -21,9 +21,12 @@ _(unverified)_ come from 23 September notes and must be re-checked in step 1.
   `QUOTE_WITHDRAWAL_POLICY`, `EMAIL_PROVIDER`, `ENABLE_SCHEDULER`, `NEXT_PUBLIC_SITE_URL`
   are set on Railway/Vercel. Output: an updated status column in this file. _Re-checked
   22 Oct, see the table below._
-- ◐ **1.2 Confirm `main` is green** _(Claude)_. CI on the newest `main` commit, and
+- ☑ **1.2 Confirm `main` is green** _(Claude)_. CI on the newest `main` commit, and
   production deploys of backend, admin and site-1 from that commit. _22 Oct: CI green on
   `5fc4397`; admin and site-1 run it; the Railway backend is still on `6a76a1d`._
+  _25 Oct: CI `verify` green on `9e5510d`; the backend health endpoint returns
+  `{"ok":true}` and live `/order` serves the real plans, so the backend has been
+  redeployed past `6a76a1d` (exact Railway commit not read)._
 
 ### Production status (22 October 2026)
 
@@ -221,11 +224,11 @@ identity #8, Umami/Sentry choice #12/#13, Phase B items.
 
 Depends on Stage 1 findings and the Stage 2 answers.
 
-- ◐ **3.1 Point the domain at site-1** _(You buy / Both configure)_ — Vercel domain,
+- ☑ **3.1 Point the domain at site-1** _(You buy / Both configure)_ — Vercel domain,
   `NEXT_PUBLIC_SITE_URL`, `ADMIN_ORIGIN`/CORS origins updated. _22 Oct: `canadianplans.com`
   serves site-1 over HTTPS; `NEXT_PUBLIC_SITE_URL=https://canadianplans.com` set on Vercel
-  (owner approved) and site-1 rebuilt, so canonical links no longer say `localhost`. Left:
-  confirm `/order` reaches the backend after the backend deploy (1.2)._
+  (owner approved) and site-1 rebuilt, so canonical links no longer say `localhost`.
+  25 Oct: `/order` on the domain reaches the backend and lists plans._
 - ◐ **3.2 Email sending** _(Both)_ — verify the domain in Resend, SPF/DKIM/DMARC records,
   `EMAIL_PROVIDER=resend`, sender address from 2.8. **Before deploying the
   `website-improvements` backend** (it sends only through a registered Resend account):
@@ -259,14 +262,15 @@ Depends on Stage 1 findings and the Stage 2 answers.
   `RESEND_FROM_NAME=Canadian Plans` and `RESEND_REPLY_TO_EMAIL=info@canadianplans.com` set on
   Railway without a redeploy. Left: deploy the backend (1.2) and send a test email._
 
-- ◐ **3.3 Turn on checkout** _(Both)_ — set `QUOTE_WITHDRAWAL_POLICY=honour_until_expiry`
+- ☑ **3.3 Turn on checkout** _(Both)_ — set `QUOTE_WITHDRAWAL_POLICY=honour_until_expiry`
   on Railway (decided 21 Sep, OPEN_INPUTS #14) and redeploy. _20 Oct: set and live
-  (deployment `4267deeb`); the no-`checkout_disabled` check waits for real offers (3.7)
-  and the site-1 credential (3.5)._
-- ◐ **3.4 Turn on the scheduler** _(Both)_ — `ENABLE_SCHEDULER=1` on the backend and the
+  (deployment `4267deeb`). 25 Oct: live `/order` renders priced plans with no
+  `checkout_disabled`._
+- ☑ **3.4 Turn on the scheduler** _(Both)_ — `ENABLE_SCHEDULER=1` on the backend and the
   machine registry entries for `outbox:run` / `reconcile:run` for site-1. Without it, no
-  catalogue sync and no customer emails. _20 Oct: scheduler runs; catalogue sync still
-  needs a Sanity integration in the registry (`provider_unavailable`)._
+  catalogue sync and no customer emails. _20 Oct: scheduler runs. The Sanity sync
+  (`provider_unavailable`) is moot: the launch catalogue lives in the repo (ADR 0005),
+  so nothing is left for this item. Closed 25 Oct._
 - ☑ **3.5 site-1 service credential** _(You, needs MFA)_ — create in admin → Settings,
   Claude sets `SITE_1_SERVICE_CREDENTIAL` on Vercel site-1 and redeploys. _22 Oct: one
   active credential, and the Vercel production variable is set._
@@ -276,8 +280,11 @@ Depends on Stage 1 findings and the Stage 2 answers.
 - ☑ **3.7 Real plans in Sanity `production`** _(Both)_ — siteSettings + the launch offers
   from 2.2–2.6, published. Claude prepares the documents, you review and publish.
   _Superseded: Sanity is deferred; the real plans live in the repo catalogue (ADR 0005)._
-- ☐ **3.8 Catalogue sync check** _(Claude)_ — offer_versions appear for site-1 and `/order`
-  lists the real plans (no "Plans are unavailable").
+- ☑ **3.8 Catalogue sync check** _(Claude)_ — offer_versions appear for site-1 and `/order`
+  lists the real plans (no "Plans are unavailable"). _25 Oct: live `/order` lists the
+  100 GB, 175 GB and Unlimited mobile plans with prices matching the repo catalogue; no
+  "Plans are unavailable". The offer_versions query does not apply to the repo catalogue
+  (ADR 0005)._
 - ☑ **3.9 Make static pages match the catalogue** _(Claude)_ — the redesigned landing
   pages are static; their plan names and prices must match what `/order` sells. _22 Oct:
   PR #22; every plan button links to its plan in `/order`._
@@ -324,10 +331,12 @@ Depends on Stage 1 findings and the Stage 2 answers.
 
 ## Stage 6 — Go live (Both)
 
-- ☐ **6.1 Open to search engines** _(Claude)_ — production robots/sitemap allow indexing;
+- ☑ **6.1 Open to search engines** _(Claude)_ — production robots/sitemap allow indexing;
   only `/business-internet` stays noindex. One switch: flip `STOREFRONT_INDEXING_OPEN`
   in `apps/site-1/src/lib/seo.ts` to `true` and deploy; the commercial pages and the
-  sitemap follow it (`publicRobots()` / `INDEXABLE_PATHS`).
+  sitemap follow it (`publicRobots()` / `INDEXABLE_PATHS`). _25 Oct: live robots.txt is
+  `Allow: /` with `/studio` and `/api` disallowed; sitemap.xml returns 200. Not verified:
+  sitemap submission to Google Search Console / Bing._
 - ☐ **6.2 Analytics** _(Both)_ — Umami (or chosen tool) recording visits and order starts.
 - ◐ **6.3 Announce** _(You)_ — first customers usually come from people you can reach _22 Oct: skipped for now (owner)._
   directly: newcomer and student groups, WhatsApp/Facebook communities, friends and
