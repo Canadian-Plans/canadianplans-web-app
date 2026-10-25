@@ -373,14 +373,24 @@ Depends on Stage 1 findings and the Stage 2 answers.
   Today there is **no restorable backup** of production. _22 Oct: owner decided no backup for
   now and stays on Supabase Free. Risk accepted: a database loss before this is done cannot
   be recovered._
-- ◐ **4.2 Error tracking** _(Both)_ — connect Sentry (or chosen tool) so production errors
+- ☑ **4.2 Error tracking** _(Both)_ — connect Sentry (or chosen tool) so production errors
   reach you. _22 Oct: Sentry org `canadian-plans` with projects `canadian-plans-backend` and
   `canadian-plans-admin`. `SENTRY_DSN` set on Railway (live with the next backend deploy) and
   `NEXT_PUBLIC_SENTRY_DSN` on Vercel admin (live with the next admin build). The code posts
   scrubbed events itself; no Sentry SDK. A test event reached each project. Not covered: the
   storefront (site-1) and the GitHub Actions jobs, which have no DSN._
-- ☐ **4.3 Alerts** _(Claude)_ — confirm owner alerts and the synthetic order check are
-  green with the scheduler on.
+  _25 Oct: proven from production. One malformed JSON request to the live backend arrived as
+  `CANADIAN-PLANS-BACKEND-2` (environment production, request id and route only, no personal
+  data). Not verified: an admin browser error from production. Follow-up: `release` reads
+  `unknown` because Railway does not set `RELEASE_SHA`._
+- ◐ **4.3 Alerts** _(Claude)_ — confirm owner alerts and the synthetic order check are
+  green with the scheduler on. _25 Oct: owner alerts live. `OWNER_ALERT_EMAIL` =
+  info@canadianplans.com (owner choice); the first `catalogue_sync_failed` alerts reached that
+  inbox (owner confirmed). Their cause, the seeded demo workspace `…0102` in the scheduler
+  entry of `MACHINE_REGISTRY_JSON`, was removed; catalogue sync now runs clean. Same edit
+  replaced the Resend webhook placeholder `PASTE_WHSEC_HERE` with the real signing secret, so
+  delivery reports pass verification; untagged alert reports are now acknowledged instead of
+  retried (`3fa947b`). Left: the synthetic order check (`SYNTHETIC_CHECK_SELECTOR` unset)._
 - ☑ **4.4 Staff accounts** _(You)_ — invite staff in admin with the right roles; MFA on for
   you and Finance. _22 Oct: owner-only at launch; the owner is the only account that can sign
   in, with MFA. Three 14 Sep seed memberships point to deleted users and cannot log in._
