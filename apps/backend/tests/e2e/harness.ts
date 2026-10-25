@@ -435,6 +435,9 @@ const staffSessionVerifier: StaffSessionVerifier = {
 const staff: StaffRouteDependencies = {
   ...createDefaultStaffRouteDependencies(),
   sessionVerifier: staffSessionVerifier,
+  // The same harness document service (seam 6), so the admin Documents panel
+  // lists what the customer uploaded.
+  documentService,
 };
 
 // Seam 5: a harness-owned outbox runner. The analytics handler and store are
