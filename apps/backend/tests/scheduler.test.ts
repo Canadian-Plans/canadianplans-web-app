@@ -10,7 +10,9 @@ import {
   runDataRetention,
   runDocumentCleanup,
   runOutboxWithQueueMonitor,
+  runSyntheticCheckWithAlert,
 } from '../src/scheduler.js';
+import type { SyntheticCheckResult } from '../src/synthetic/check.js';
 import { INITIAL_QUEUE_HEALTH_STATE, type QueueHealthState } from '../src/jobs/queueMonitor.js';
 import { operationalRetentionEnabled } from '../src/retention/operational.js';
 
@@ -87,6 +89,87 @@ it('alerts once when catalogue sync starts failing, and again only after a clean
     expect(failing).toBe(false);
     await tick();
     expect(alerts.send).toHaveBeenCalledTimes(2);
+  } finally {
+    logged.mockRestore();
+  }
+});
+
+it('alerts once when the scheduled synthetic check starts failing, and again only after a pass', async () => {
+  let failing = false;
+  const synthetic = {
+    run: vi.fn(async (): Promise<SyntheticCheckResult> => ({
+      status: 'failed',
+      step: 'quote',
+      code: 'cms_unavailable',
+      durationMs: 5,
+    })),
+  };
+  const alerts = { send: vi.fn(async () => {}) };
+  const input = { actorId: ACTOR, requestId: 'run-1' };
+  const tick = () =>
+    runSyntheticCheckWithAlert(
+      synthetic,
+      alerts,
+      input,
+      (next) => {
+        failing = next;
+      },
+      () => failing,
+    );
+  const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+  try {
+    await tick();
+    await tick();
+    expect(alerts.send).toHaveBeenCalledOnce();
+    expect(alerts.send).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: 'synthetic_check_failed', detail: 'quote:cms_unavailable' }),
+    );
+    expect(logged).toHaveBeenCalledTimes(2);
+
+    synthetic.run.mockResolvedValueOnce({
+      status: 'ok',
+      orderId: '30000000-0000-4000-8000-000000000901',
+      reference: 'CP-TEST',
+      durationMs: 5,
+    });
+    await tick();
+    expect(failing).toBe(false);
+    await tick();
+    expect(alerts.send).toHaveBeenCalledTimes(2);
+  } finally {
+    logged.mockRestore();
+  }
+});
+
+it('treats a thrown synthetic check as a failure that alerts instead of a silent task error', async () => {
+  let failing = false;
+  const synthetic = {
+    run: vi.fn(async (): Promise<SyntheticCheckResult> => {
+      throw new Error('synthetic_check_not_configured');
+    }),
+  };
+  const alerts = { send: vi.fn(async () => {}) };
+  const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+  try {
+    await runSyntheticCheckWithAlert(
+      synthetic,
+      alerts,
+      { actorId: ACTOR, requestId: 'run-2' },
+      (next) => {
+        failing = next;
+      },
+      () => failing,
+    );
+    expect(failing).toBe(true);
+    expect(alerts.send).toHaveBeenCalledWith(
+      expect.objectContaining({ detail: 'run:synthetic_check_not_configured' }),
+    );
+    expect(JSON.parse(String(logged.mock.calls[0]?.[0]))).toEqual(
+      expect.objectContaining({
+        requestId: 'scheduler:synthetic_check',
+        code: 'synthetic_check_not_configured',
+      }),
+    );
   } finally {
     logged.mockRestore();
   }

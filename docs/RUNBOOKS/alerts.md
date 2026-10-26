@@ -146,7 +146,7 @@ channel every alert source sends through:
 
 | Trigger                                                 | Where                                                                           |
 | ------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| Synthetic check step failed                             | `apps/backend/src/routes/synthetic-check.ts`                                    |
+| Synthetic check step failed                             | `apps/backend/src/routes/synthetic-check.ts`; scheduled runs via `scheduler.ts` |
 | Backup snapshot older than 26h, missing, or malformed   | `jobs/src/monitor/cli.ts` (`.github/workflows/backup-monitor.yml`)              |
 | Failed/uncertain outbox jobs persisting for 10+ minutes | `apps/backend/src/jobs/queueMonitor.ts`, wired into the scheduler's `runOutbox` |
 | Error-rate spike                                        | _(not yet wired — see below)_                                                   |

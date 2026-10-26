@@ -18,6 +18,7 @@ import type { MachineRegistry } from './machines/registry.js';
 import { createDefaultCatalogueSyncRouteDependencies } from './routes/catalogue-sync.js';
 import { createDefaultJobsRouteDependencies } from './routes/jobs.js';
 import { createDefaultSyntheticCheckRouteDependencies } from './routes/synthetic-check.js';
+import type { SyntheticCheckResult } from './synthetic/check.js';
 
 /**
  * In-process scheduler for the long-lived Railway deployment (plan D2). Railway
@@ -315,6 +316,7 @@ export function createDefaultSchedulerDependencies(): BackendSchedulerDependenci
   const operational = operationalRetentionEnabled() ? new DatabaseOperationalPruner() : undefined;
   let queueHealth = INITIAL_QUEUE_HEALTH_STATE;
   let catalogueFailing = false;
+  let syntheticFailing = false;
   return {
     registry: jobs.registry,
     runOutbox: (input) =>
@@ -333,7 +335,14 @@ export function createDefaultSchedulerDependencies(): BackendSchedulerDependenci
         (failing) => (catalogueFailing = failing),
         () => catalogueFailing,
       ),
-    runSyntheticCheck: (input) => synthetic.run(input),
+    runSyntheticCheck: (input) =>
+      runSyntheticCheckWithAlert(
+        synthetic,
+        alerts,
+        input,
+        (failing) => (syntheticFailing = failing),
+        () => syntheticFailing,
+      ),
     runDocumentCleanup: (input) => runDocumentCleanup(documents, input),
     runDataRetention: (input) =>
       runDataRetention({ abandonedLeads, operational }, input, new Date()),
@@ -451,6 +460,56 @@ interface CatalogueAlertFailure {
   workspaceId?: string;
   stage: string;
   errorCode: string;
+}
+
+/**
+ * The synthetic check reports a failed step as a resolved result, and only the
+ * HTTP route alerted on it, so a scheduled run that failed was dropped without
+ * a log line or an alert. Same edge-triggered shape as catalogue sync: every
+ * failed run is logged, the owner is alerted when the check starts failing,
+ * and again only after a passing run. A thrown error (the check is not
+ * configured) counts as a failed `run` step rather than a bare task error.
+ */
+export async function runSyntheticCheckWithAlert(
+  synthetic: { run(input: SyntheticCheckRunInput): Promise<SyntheticCheckResult> },
+  alerts: OwnerAlertChannel,
+  input: SyntheticCheckRunInput,
+  setFailing: (failing: boolean) => void,
+  wasFailing: () => boolean,
+): Promise<unknown> {
+  let failure: { step: string; code: string } | undefined;
+  let result: SyntheticCheckResult | undefined;
+  try {
+    result = await synthetic.run(input);
+    if (result.status === 'failed') failure = { step: result.step, code: result.code };
+  } catch (error) {
+    const code =
+      error instanceof Error && /^[a-z][a-z0-9_]{0,63}$/.test(error.message)
+        ? error.message
+        : 'unexpected_error';
+    failure = { step: 'run', code };
+  }
+  if (failure) {
+    logRequestError({
+      requestId: 'scheduler:synthetic_check',
+      route: 'scheduler',
+      code: failure.code,
+      flag: 'not_retryable',
+    });
+    if (!wasFailing()) {
+      await alerts
+        .send({
+          kind: 'synthetic_check_failed',
+          detail: `${failure.step}:${failure.code}`,
+          occurredAt: new Date().toISOString(),
+        })
+        .catch(() => {
+          // Best-effort — the failure is already in the log line above.
+        });
+    }
+  }
+  setFailing(failure !== undefined);
+  return result;
 }
 
 /**
