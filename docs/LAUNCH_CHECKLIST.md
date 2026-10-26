@@ -399,14 +399,20 @@ Depends on Stage 1 findings and the Stage 2 answers.
   `CANADIAN-PLANS-BACKEND-2` (environment production, request id and route only, no personal
   data). Not verified: an admin browser error from production. Follow-up: `release` reads
   `unknown` because Railway does not set `RELEASE_SHA`._
-- ◐ **4.3 Alerts** _(Claude)_ — confirm owner alerts and the synthetic order check are
+- ☑ **4.3 Alerts** _(Claude)_ — confirm owner alerts and the synthetic order check are
   green with the scheduler on. _25 Oct: owner alerts live. `OWNER_ALERT_EMAIL` =
   info@canadianplans.com (owner choice); the first `catalogue_sync_failed` alerts reached that
   inbox (owner confirmed). Their cause, the seeded demo workspace `…0102` in the scheduler
   entry of `MACHINE_REGISTRY_JSON`, was removed; catalogue sync now runs clean. Same edit
   replaced the Resend webhook placeholder `PASTE_WHSEC_HERE` with the real signing secret, so
   delivery reports pass verification; untagged alert reports are now acknowledged instead of
-  retried (`3fa947b`). Left: the synthetic order check (`SYNTHETIC_CHECK_SELECTOR` unset)._
+  retried (`3fa947b`). 26 Oct: synthetic order check live. Owner-created workspace
+  `d18f876f-…` (slug `synthetic-check`) and product `7a2e8601-…`; `synthetic:check` scope and
+  that workspace added to the `outbox-runner` scheduler entry; `SYNTHETIC_*` set on Railway.
+  #35 keeps catalogue sync off that workspace; #36 makes a failed scheduled run log and alert
+  the owner (before it, scheduled failures were silent). Production: 23 runs after the #36
+  deploy, every order cancelled, its analytics jobs completed as skipped, no errors logged. Not
+  exercised live: a failing run's alert email (unit-tested only)._
 - ☑ **4.4 Staff accounts** _(You)_ — invite staff in admin with the right roles; MFA on for
   you and Finance. _22 Oct: owner-only at launch; the owner is the only account that can sign
   in, with MFA. Three 14 Sep seed memberships point to deleted users and cannot log in._
