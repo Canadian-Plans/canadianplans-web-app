@@ -417,10 +417,15 @@ Depends on Stage 1 findings and the Stage 2 answers.
   need a Postgres harness (none on this PC; use CI or a temporary database). _22 Oct: CI
   runs them on every push against a disposable Postgres; on `main` `1af1773` all 84 site-1
   e2e tests passed (desktop and mobile), both specs included._
-- ☐ **5.2 Production test order** _(Both)_ — a controlled, non-billable order on the live
+- ☑ **5.2 Production test order** _(Both)_ — a controlled, non-billable order on the live
   site: submit → acknowledgement email arrives → appears in admin → documents uploaded
   and approved → status moves to ready/dispatched. No real carrier activation; cancel it
   through the approved process afterwards. Evidence in `docs/EVIDENCE/A4-launch.md`.
+  _25 Oct: order `CP-9YUMTFF_BCFQNDIU` went submit → email at info@ → admin → ID approved
+  → Ready for delivery → cancelled; no carrier call, no payment. The run found uploads
+  broken (no R2 CORS policy) and fixed it. 26 Oct: email-only `/track` (PR #34) live and
+  checked by the owner. Open: archive the order; follow-ups in the evidence file
+  (TEST consent version, APAC region in privacy text, stuck upload revisions, Turnstile reset error)._
 - ☐ **5.3 Walk the runbooks once** _(You, Claude beside you)_ — `RUNBOOKS/orders.md`,
   `dispatch-and-activation.md`, `failed-email-recovery.md`, `release-rollback.md`.
 - ☐ **5.4 Stock and supplies** _(You)_ — SIM cards on hand, packaging, courier account.

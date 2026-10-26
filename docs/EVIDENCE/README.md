@@ -13,6 +13,7 @@ run, when, and what it showed; evidence never authorizes a production action by 
   Phase A gate evidence (recovery feasibility, isolation and preview boundary, order journey
   and pricing integrity, accessibility and SEO, backup and restore rehearsal in an isolated
   harness).
+- `A4-launch.md` — the production test order on the live site (launch item 5.2).
 - `T2-screenshots/`, `A2-screenshots/` — browser captures the admin and site-1 e2e suites
   refresh when `CAPTURE_SCREENSHOTS=1` is set.
 
