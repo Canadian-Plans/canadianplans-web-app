@@ -216,17 +216,69 @@ export type OrderChangeRequestPatch = z.infer<typeof orderChangeRequestPatchSche
 export const orderChangeRequestStatusSchema = z.enum(['pending', 'approved', 'rejected']);
 export type OrderChangeRequestStatus = z.infer<typeof orderChangeRequestStatusSchema>;
 
+/**
+ * Who raised a change request: staff recording one, or the customer through
+ * verified order tracking. Absent on rows that predate the field (staff).
+ */
+export const orderChangeRequestOriginSchema = z.enum(['staff', 'customer']);
+export type OrderChangeRequestOrigin = z.infer<typeof orderChangeRequestOriginSchema>;
+
 export const orderChangeRequestSchema = z.object({
   id: z.uuid(),
   requestedBy: z.uuid(),
   status: orderChangeRequestStatusSchema,
   patch: orderChangeRequestPatchSchema,
   note: z.string().max(2000).nullable(),
+  origin: orderChangeRequestOriginSchema.optional(),
+  /** Set when the request answers a staff request for missing information. */
+  infoRequestId: z.uuid().nullable().optional(),
   resolvedBy: z.uuid().nullable(),
   resolvedAt: isoDateTimeSchema.nullable(),
   createdAt: isoDateTimeSchema,
 });
 export type OrderChangeRequest = z.infer<typeof orderChangeRequestSchema>;
+
+/** The amendable fields as flat keys, the vocabulary info requests and summaries use. */
+export const amendableFieldKeySchema = z.enum([
+  'contact.fullName',
+  'contact.email',
+  'contact.phone',
+  'contact.countryCode',
+  'form.currentCountry',
+  'form.destination',
+  'form.arrivalDate',
+]);
+export type AmendableFieldKey = z.infer<typeof amendableFieldKeySchema>;
+
+/** The flat field keys a patch proposes, sorted, never the proposed values. */
+export function patchFieldKeys(patch: OrderChangeRequestPatch): AmendableFieldKey[] {
+  return [
+    ...Object.keys(patch.contact ?? {}).map((key) => `contact.${key}`),
+    ...Object.keys(patch.form ?? {}).map((key) => `form.${key}`),
+  ]
+    .filter((key): key is AmendableFieldKey => amendableFieldKeySchema.safeParse(key).success)
+    .sort();
+}
+
+export const orderInfoRequestStatusSchema = z.enum(['pending', 'answered', 'cancelled']);
+export type OrderInfoRequestStatus = z.infer<typeof orderInfoRequestStatusSchema>;
+
+/**
+ * Staff asking the customer for missing details (REQ 21). The customer answers
+ * through verified order tracking; the answer becomes a pending change request
+ * that staff still approve, so the submitted order is never edited directly.
+ */
+export const orderInfoRequestSchema = z.object({
+  id: z.uuid(),
+  requestedBy: z.uuid(),
+  status: orderInfoRequestStatusSchema,
+  fields: z.array(amendableFieldKeySchema).min(1),
+  message: z.string().max(2000).nullable(),
+  changeRequestId: z.uuid().nullable(),
+  resolvedAt: isoDateTimeSchema.nullable(),
+  createdAt: isoDateTimeSchema,
+});
+export type OrderInfoRequest = z.infer<typeof orderInfoRequestSchema>;
 
 /**
  * A staff adjustment recorded as its own audited row (REQ 14). The submitted
@@ -281,6 +333,7 @@ export const orderDetailSchema = orderSummarySchema.extend({
   notes: z.array(orderNoteSchema),
   reminders: z.array(orderReminderSchema),
   changeRequests: z.array(orderChangeRequestSchema),
+  infoRequests: z.array(orderInfoRequestSchema),
   amendments: z.array(orderAmendmentSchema),
   payments: z.array(orderPaymentSchema),
   dispatch: orderDispatchSchema.nullable(),
@@ -431,6 +484,28 @@ export const createOrderChangeRequestResponseSchema = z.object({
 export type CreateOrderChangeRequestResponse = z.infer<
   typeof createOrderChangeRequestResponseSchema
 >;
+
+export const createOrderInfoRequestRequestSchema = z.object({
+  fields: z
+    .array(amendableFieldKeySchema)
+    .min(1)
+    .max(amendableFieldKeySchema.options.length)
+    .refine((fields) => new Set(fields).size === fields.length, 'Each field once.'),
+  message: z.string().trim().min(1).max(2000).optional(),
+});
+export type CreateOrderInfoRequestRequest = z.infer<typeof createOrderInfoRequestRequestSchema>;
+
+export const createOrderInfoRequestResponseSchema = z.object({
+  infoRequest: orderInfoRequestSchema,
+  requestId: requestIdSchema,
+});
+export type CreateOrderInfoRequestResponse = z.infer<typeof createOrderInfoRequestResponseSchema>;
+
+export const cancelOrderInfoRequestResponseSchema = z.object({
+  infoRequest: orderInfoRequestSchema,
+  requestId: requestIdSchema,
+});
+export type CancelOrderInfoRequestResponse = z.infer<typeof cancelOrderInfoRequestResponseSchema>;
 
 /**
  * Resolving a change request. Approval writes exactly one audited amendment row

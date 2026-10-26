@@ -3,8 +3,11 @@ import {
   createBackendClient,
   type BulkAssignOrdersRequest,
   type BulkAssignOrdersResponse,
+  type CancelOrderInfoRequestResponse,
   type CreateOrderChangeRequestRequest,
   type CreateOrderChangeRequestResponse,
+  type CreateOrderInfoRequestRequest,
+  type CreateOrderInfoRequestResponse,
   type CreateOrderNoteRequest,
   type CreateOrderReminderRequest,
   type CreateOrderReminderResponse,
@@ -301,6 +304,24 @@ export async function createOrderChangeRequest(
   body: CreateOrderChangeRequestRequest,
 ): Promise<CreateOrderChangeRequestResponse> {
   return client(accessToken).staff.createOrderChangeRequest(workspaceId, orderId, body);
+}
+
+export async function createOrderInfoRequest(
+  accessToken: string,
+  workspaceId: string,
+  orderId: string,
+  body: CreateOrderInfoRequestRequest,
+): Promise<CreateOrderInfoRequestResponse> {
+  return client(accessToken).staff.createOrderInfoRequest(workspaceId, orderId, body);
+}
+
+export async function cancelOrderInfoRequest(
+  accessToken: string,
+  workspaceId: string,
+  orderId: string,
+  infoRequestId: string,
+): Promise<CancelOrderInfoRequestResponse> {
+  return client(accessToken).staff.cancelOrderInfoRequest(workspaceId, orderId, infoRequestId);
 }
 
 export async function resolveOrderChangeRequest(

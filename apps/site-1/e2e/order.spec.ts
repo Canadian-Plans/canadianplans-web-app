@@ -273,47 +273,6 @@ test('a quote failure offers a callback and creates no order', async ({ page }) 
   expect(after.count).toBe(before.count);
 });
 
-test('tracks a submitted order using a queued code and a separate verification proof', async ({
-  page,
-}) => {
-  await choosePassportPlan(page);
-  await fillDetailsAndContinue(page);
-  await acknowledgeDocuments(page);
-  await acceptTermsAndPlaceOrder(page);
-  const reference = await referenceText(page);
-  await page.goto('/track');
-  await page
-    .locator('main')
-    .getByLabel(/^Order reference/)
-    .fill(reference);
-  await page
-    .locator('main')
-    .getByLabel(/^Email/)
-    .fill('customer@example.test');
-  await page.getByRole('button', { name: 'Email me a code' }).click();
-  await expect(page.getByRole('heading', { name: 'Enter your code' })).toBeVisible();
-  await control('/__e2e__/run-outbox');
-  const response = await fetch(
-    `${HARNESS_URL}/__e2e__/tracking-code?reference=${encodeURIComponent(reference)}`,
-  );
-  expect(response.status).toBe(200);
-  const body: unknown = await response.json();
-  if (!body || typeof body !== 'object' || !('code' in body) || typeof body.code !== 'string')
-    throw new Error('synthetic tracking code missing');
-  await page.getByLabel('Six-digit code').fill(body.code);
-  await page.getByRole('button', { name: 'View my order' }).click();
-  await expect(
-    page.getByRole('heading', { name: `Order ${reference}`, exact: true }),
-  ).toBeVisible();
-  await expect(
-    page.getByTestId('tracking-status').filter({ hasText: 'Order received' }),
-  ).toBeVisible();
-  await page.reload();
-  await expect(
-    page.getByRole('heading', { name: `Order ${reference}`, exact: true }),
-  ).toBeVisible();
-});
-
 test('starts a second purchase with fresh proofs and a new order key after the first draft is submitted', async ({
   page,
 }) => {

@@ -43,9 +43,17 @@ import {
   resolveOrderChangeRequestRequestSchema,
   submitOrderRequestSchema,
   submitOrderResponseSchema,
+  createOrderInfoRequestRequestSchema,
+  orderInfoRequestSchema,
+  patchFieldKeys,
+  trackingChangeRequestRequestSchema,
+  trackingChangeRequestResponseSchema,
+  trackingOrderResponseSchema,
+  trackingOrdersResponseSchema,
   trackingOtpRequestSchema,
   trackingOtpResponseSchema,
-  trackingStatusResponseSchema,
+  trackingUploadFinalizeResponseSchema,
+  trackingUploadIntentRequestSchema,
   trackingVerifyRequestSchema,
   trackingVerifyResponseSchema,
   updateLeadRequestSchema,
@@ -153,11 +161,25 @@ const orderDetail = {
   notes: [{ id: UUID_A, authorId: UUID_C, body: 'called customer', createdAt: NOW }],
   reminders: [],
   changeRequests: [],
+  infoRequests: [],
   amendments: [],
   payments: [],
   dispatch: null,
   allowedTransitions: ['in_progress', 'cancelled'],
   capabilities: orderCapabilities,
+};
+
+const trackingSummary = {
+  reference: 'CP-000123',
+  productTitle: 'Rogers Basic',
+  offerName: 'Basic 10 GB',
+  productType: 'sim',
+  fulfilmentStatus: 'in_progress',
+  paymentState: 'paid',
+  deliveryState: 'dispatched',
+  actionNeeded: true,
+  submittedAt: NOW,
+  updatedAt: NOW,
 };
 
 /** [name, schema, a valid value]. Each must parse and round-trip through JSON unchanged. */
@@ -537,16 +559,8 @@ const cases: ReadonlyArray<readonly [string, z.ZodType, unknown]> = [
       requestId: UUID_C,
     },
   ],
-  [
-    'trackingOtpRequest',
-    trackingOtpRequestSchema,
-    { email: 'a@b.co', orderReference: 'CP-000123' },
-  ],
-  [
-    'trackingVerifyRequest',
-    trackingVerifyRequestSchema,
-    { email: 'a@b.co', orderReference: 'CP-000123', code: '123456' },
-  ],
+  ['trackingOtpRequest', trackingOtpRequestSchema, { email: 'a@b.co' }],
+  ['trackingVerifyRequest', trackingVerifyRequestSchema, { email: 'a@b.co', code: '123456' }],
   [
     'trackingOtpResponse',
     trackingOtpResponseSchema,
@@ -558,17 +572,87 @@ const cases: ReadonlyArray<readonly [string, z.ZodType, unknown]> = [
     { status: 'verified', grant: { token: 't', expiresAt: NOW }, requestId: UUID_C },
   ],
   [
-    'trackingStatusResponse',
-    trackingStatusResponseSchema,
+    'trackingOrdersResponse',
+    trackingOrdersResponseSchema,
+    { orders: [trackingSummary], requestId: UUID_C },
+  ],
+  [
+    'trackingOrderResponse',
+    trackingOrderResponseSchema,
     {
-      reference: 'CP-000123',
-      fulfilmentStatus: 'in_progress',
-      paymentState: 'paid',
-      deliveryState: 'dispatched',
-      trackingReference: 'TRACK-1',
-      documentsRequired: ['passport'],
-      updatedAt: NOW,
+      order: {
+        ...trackingSummary,
+        billingPeriod: 'month',
+        price: {
+          recurring: CAD(4500),
+          total: CAD(4500),
+          amountPayableToday: CAD(0),
+          paymentRequired: false,
+        },
+        trackingReference: 'TRACK-1',
+        customer: { fullName: 'A B', email: 'a@b.co', phone: null, countryCode: 'IN' },
+        details: { currentCountry: 'India', destination: 'Toronto', arrivalDate: null },
+        documentChecklist: ['passport', 'study_permit'],
+        documentsRequired: ['study_permit'],
+        documents: [{ id: UUID_A, documentType: 'passport', status: 'approved', uploadedAt: NOW }],
+        infoRequests: [
+          {
+            id: UUID_B,
+            fields: ['form.arrivalDate'],
+            message: 'When do you land?',
+            createdAt: NOW,
+          },
+        ],
+        changeRequests: [
+          { id: UUID_C, status: 'pending', fields: ['contact.phone'], createdAt: NOW },
+        ],
+      },
       requestId: UUID_C,
+    },
+  ],
+  [
+    'trackingChangeRequestRequest',
+    trackingChangeRequestRequestSchema,
+    { patch: { contact: { phone: '+15550100' } }, note: 'new phone' },
+  ],
+  [
+    'trackingChangeRequestResponse',
+    trackingChangeRequestResponseSchema,
+    {
+      changeRequest: { id: UUID_A, status: 'pending', fields: ['contact.phone'], createdAt: NOW },
+      requestId: UUID_C,
+    },
+  ],
+  [
+    'trackingUploadIntentRequest',
+    trackingUploadIntentRequestSchema,
+    { documentType: 'passport', fileName: 'p.pdf', contentType: 'application/pdf', sizeBytes: 10 },
+  ],
+  [
+    'trackingUploadFinalizeResponse',
+    trackingUploadFinalizeResponseSchema,
+    {
+      document: { id: UUID_A, documentType: 'passport', status: 'received', uploadedAt: NOW },
+      requestId: UUID_C,
+    },
+  ],
+  [
+    'createOrderInfoRequestRequest',
+    createOrderInfoRequestRequestSchema,
+    { fields: ['contact.phone', 'form.arrivalDate'], message: 'Please add these.' },
+  ],
+  [
+    'orderInfoRequest',
+    orderInfoRequestSchema,
+    {
+      id: UUID_A,
+      requestedBy: UUID_B,
+      status: 'answered',
+      fields: ['form.arrivalDate'],
+      message: null,
+      changeRequestId: UUID_C,
+      resolvedAt: NOW,
+      createdAt: NOW,
     },
   ],
   [
@@ -635,10 +719,36 @@ describe('contract schemas reject invalid input', () => {
     expect(
       trackingVerifyRequestSchema.safeParse({
         email: 'a@b.co',
-        orderReference: 'CP-1',
         code: '12',
       }).success,
     ).toBe(false);
+  });
+
+  it('asks staff info requests for each amendable field once', () => {
+    expect(
+      createOrderInfoRequestRequestSchema.safeParse({ fields: ['contact.phone', 'contact.phone'] })
+        .success,
+    ).toBe(false);
+    expect(createOrderInfoRequestRequestSchema.safeParse({ fields: [] }).success).toBe(false);
+    expect(
+      createOrderInfoRequestRequestSchema.safeParse({ fields: ['snapshot.total'] }).success,
+    ).toBe(false);
+  });
+
+  it('names the fields a patch proposes without its values', () => {
+    expect(
+      patchFieldKeys({ form: { arrivalDate: '2026-11-14' }, contact: { phone: '+1555' } }),
+    ).toEqual(['contact.phone', 'form.arrivalDate']);
+  });
+
+  it('never accepts a commercial field in a customer change request', () => {
+    expect(trackingChangeRequestRequestSchema.safeParse({ patch: { contact: {} } }).success).toBe(
+      false,
+    );
+    const parsed = trackingChangeRequestRequestSchema.parse({
+      patch: { contact: { phone: '+1555' }, snapshot: { total: 0 } },
+    });
+    expect(parsed).toEqual({ patch: { contact: { phone: '+1555' } } });
   });
 
   it('accepts an optional error details object and omits it when absent', () => {

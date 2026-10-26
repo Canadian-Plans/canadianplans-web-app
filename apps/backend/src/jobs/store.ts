@@ -238,7 +238,7 @@ export class DatabaseOutboxStore implements OutboxStore, JobAdminStore {
             ...update,
             ...(terminal
               ? {
-                  payload: sql`case when ${outboxJobs.jobType} = 'tracking_otp_email' then jsonb_build_object('orderId', ${outboxJobs.payload}->>'orderId', 'challengeId', ${outboxJobs.payload}->>'challengeId') else ${outboxJobs.payload} end`,
+                  payload: sql`case when ${outboxJobs.jobType} = 'tracking_otp_email' then jsonb_strip_nulls(jsonb_build_object('orderId', ${outboxJobs.payload}->>'orderId', 'challengeId', ${outboxJobs.payload}->>'challengeId')) else ${outboxJobs.payload} end`,
                 }
               : {}),
           })

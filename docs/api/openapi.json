@@ -122,6 +122,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -301,6 +305,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -486,6 +494,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -637,6 +649,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -817,6 +833,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -1005,6 +1025,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -1189,6 +1213,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -1373,6 +1401,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -1636,6 +1668,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -1887,6 +1923,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -2098,6 +2138,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -2306,6 +2350,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -2458,6 +2506,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -2610,6 +2662,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -3037,6 +3093,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -3212,6 +3272,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -3381,6 +3445,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -4215,6 +4283,17 @@
                                   { "type": "null" }
                                 ]
                               },
+                              "origin": { "type": "string", "enum": ["staff", "customer"] },
+                              "infoRequestId": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
                               "resolvedBy": {
                                 "anyOf": [
                                   {
@@ -4248,6 +4327,86 @@
                               "patch",
                               "note",
                               "resolvedBy",
+                              "resolvedAt",
+                              "createdAt"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "infoRequests": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "requestedBy": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": ["pending", "answered", "cancelled"]
+                              },
+                              "fields": {
+                                "minItems": 1,
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "contact.fullName",
+                                    "contact.email",
+                                    "contact.phone",
+                                    "contact.countryCode",
+                                    "form.currentCountry",
+                                    "form.destination",
+                                    "form.arrivalDate"
+                                  ]
+                                }
+                              },
+                              "message": {
+                                "anyOf": [
+                                  { "type": "string", "maxLength": 2000 },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "changeRequestId": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "resolvedAt": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "requestedBy",
+                              "status",
+                              "fields",
+                              "message",
+                              "changeRequestId",
                               "resolvedAt",
                               "createdAt"
                             ],
@@ -4512,6 +4671,7 @@
                         "notes",
                         "reminders",
                         "changeRequests",
+                        "infoRequests",
                         "amendments",
                         "payments",
                         "dispatch",
@@ -4599,6 +4759,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -5387,6 +5551,17 @@
                                   { "type": "null" }
                                 ]
                               },
+                              "origin": { "type": "string", "enum": ["staff", "customer"] },
+                              "infoRequestId": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
                               "resolvedBy": {
                                 "anyOf": [
                                   {
@@ -5420,6 +5595,86 @@
                               "patch",
                               "note",
                               "resolvedBy",
+                              "resolvedAt",
+                              "createdAt"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "infoRequests": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "requestedBy": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": ["pending", "answered", "cancelled"]
+                              },
+                              "fields": {
+                                "minItems": 1,
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "contact.fullName",
+                                    "contact.email",
+                                    "contact.phone",
+                                    "contact.countryCode",
+                                    "form.currentCountry",
+                                    "form.destination",
+                                    "form.arrivalDate"
+                                  ]
+                                }
+                              },
+                              "message": {
+                                "anyOf": [
+                                  { "type": "string", "maxLength": 2000 },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "changeRequestId": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "resolvedAt": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "requestedBy",
+                              "status",
+                              "fields",
+                              "message",
+                              "changeRequestId",
                               "resolvedAt",
                               "createdAt"
                             ],
@@ -5684,6 +5939,7 @@
                         "notes",
                         "reminders",
                         "changeRequests",
+                        "infoRequests",
                         "amendments",
                         "payments",
                         "dispatch",
@@ -5771,6 +6027,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -6656,6 +6916,17 @@
                                   { "type": "null" }
                                 ]
                               },
+                              "origin": { "type": "string", "enum": ["staff", "customer"] },
+                              "infoRequestId": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
                               "resolvedBy": {
                                 "anyOf": [
                                   {
@@ -6689,6 +6960,86 @@
                               "patch",
                               "note",
                               "resolvedBy",
+                              "resolvedAt",
+                              "createdAt"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "infoRequests": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "requestedBy": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": ["pending", "answered", "cancelled"]
+                              },
+                              "fields": {
+                                "minItems": 1,
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "contact.fullName",
+                                    "contact.email",
+                                    "contact.phone",
+                                    "contact.countryCode",
+                                    "form.currentCountry",
+                                    "form.destination",
+                                    "form.arrivalDate"
+                                  ]
+                                }
+                              },
+                              "message": {
+                                "anyOf": [
+                                  { "type": "string", "maxLength": 2000 },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "changeRequestId": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "resolvedAt": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "requestedBy",
+                              "status",
+                              "fields",
+                              "message",
+                              "changeRequestId",
                               "resolvedAt",
                               "createdAt"
                             ],
@@ -6953,6 +7304,7 @@
                         "notes",
                         "reminders",
                         "changeRequests",
+                        "infoRequests",
                         "amendments",
                         "payments",
                         "dispatch",
@@ -7040,6 +7392,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -7858,6 +8214,17 @@
                                   { "type": "null" }
                                 ]
                               },
+                              "origin": { "type": "string", "enum": ["staff", "customer"] },
+                              "infoRequestId": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
                               "resolvedBy": {
                                 "anyOf": [
                                   {
@@ -7891,6 +8258,86 @@
                               "patch",
                               "note",
                               "resolvedBy",
+                              "resolvedAt",
+                              "createdAt"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "infoRequests": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "requestedBy": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": ["pending", "answered", "cancelled"]
+                              },
+                              "fields": {
+                                "minItems": 1,
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "contact.fullName",
+                                    "contact.email",
+                                    "contact.phone",
+                                    "contact.countryCode",
+                                    "form.currentCountry",
+                                    "form.destination",
+                                    "form.arrivalDate"
+                                  ]
+                                }
+                              },
+                              "message": {
+                                "anyOf": [
+                                  { "type": "string", "maxLength": 2000 },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "changeRequestId": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "resolvedAt": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "requestedBy",
+                              "status",
+                              "fields",
+                              "message",
+                              "changeRequestId",
                               "resolvedAt",
                               "createdAt"
                             ],
@@ -8155,6 +8602,7 @@
                         "notes",
                         "reminders",
                         "changeRequests",
+                        "infoRequests",
                         "amendments",
                         "payments",
                         "dispatch",
@@ -8242,6 +8690,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -8433,6 +8885,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -8603,6 +9059,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -8791,6 +9251,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -8962,6 +9426,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -9084,6 +9552,17 @@
                         "note": {
                           "anyOf": [{ "type": "string", "maxLength": 2000 }, { "type": "null" }]
                         },
+                        "origin": { "type": "string", "enum": ["staff", "customer"] },
+                        "infoRequestId": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uuid",
+                              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                            },
+                            { "type": "null" }
+                          ]
+                        },
                         "resolvedBy": {
                           "anyOf": [
                             {
@@ -9201,6 +9680,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -9285,6 +9768,491 @@
                   "note": { "type": "string", "minLength": 1, "maxLength": 2000 }
                 },
                 "required": ["patch"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/staff/workspaces/{workspaceId}/orders/{orderId}/info-requests": {
+      "post": {
+        "operationId": "createOrderInfoRequest",
+        "summary": "Ask the customer for missing details through order tracking.",
+        "tags": ["staff"],
+        "security": [{ "staffSession": [] }],
+        "parameters": [
+          { "name": "workspaceId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "orderId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "infoRequest": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "requestedBy": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": ["pending", "answered", "cancelled"]
+                        },
+                        "fields": {
+                          "minItems": 1,
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "contact.fullName",
+                              "contact.email",
+                              "contact.phone",
+                              "contact.countryCode",
+                              "form.currentCountry",
+                              "form.destination",
+                              "form.arrivalDate"
+                            ]
+                          }
+                        },
+                        "message": {
+                          "anyOf": [{ "type": "string", "maxLength": 2000 }, { "type": "null" }]
+                        },
+                        "changeRequestId": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uuid",
+                              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                            },
+                            { "type": "null" }
+                          ]
+                        },
+                        "resolvedAt": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            { "type": "null" }
+                          ]
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "requestedBy",
+                        "status",
+                        "fields",
+                        "message",
+                        "changeRequestId",
+                        "resolvedAt",
+                        "createdAt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["infoRequest", "requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "region_not_served",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "job_not_uncertain",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "documents_incomplete",
+                            "document_override_reason_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fields": {
+                    "minItems": 1,
+                    "maxItems": 7,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "contact.fullName",
+                        "contact.email",
+                        "contact.phone",
+                        "contact.countryCode",
+                        "form.currentCountry",
+                        "form.destination",
+                        "form.arrivalDate"
+                      ]
+                    }
+                  },
+                  "message": { "type": "string", "minLength": 1, "maxLength": 2000 }
+                },
+                "required": ["fields"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/staff/workspaces/{workspaceId}/orders/{orderId}/info-requests/{infoRequestId}/cancel": {
+      "post": {
+        "operationId": "cancelOrderInfoRequest",
+        "summary": "Withdraw a pending request for missing details.",
+        "tags": ["staff"],
+        "security": [{ "staffSession": [] }],
+        "parameters": [
+          { "name": "workspaceId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "orderId", "in": "path", "required": true, "schema": { "type": "string" } },
+          {
+            "name": "infoRequestId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "infoRequest": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "requestedBy": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": ["pending", "answered", "cancelled"]
+                        },
+                        "fields": {
+                          "minItems": 1,
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "contact.fullName",
+                              "contact.email",
+                              "contact.phone",
+                              "contact.countryCode",
+                              "form.currentCountry",
+                              "form.destination",
+                              "form.arrivalDate"
+                            ]
+                          }
+                        },
+                        "message": {
+                          "anyOf": [{ "type": "string", "maxLength": 2000 }, { "type": "null" }]
+                        },
+                        "changeRequestId": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uuid",
+                              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                            },
+                            { "type": "null" }
+                          ]
+                        },
+                        "resolvedAt": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            { "type": "null" }
+                          ]
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "requestedBy",
+                        "status",
+                        "fields",
+                        "message",
+                        "changeRequestId",
+                        "resolvedAt",
+                        "createdAt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["infoRequest", "requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "region_not_served",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "job_not_uncertain",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "documents_incomplete",
+                            "document_override_reason_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
               }
             }
           }
@@ -10038,6 +11006,17 @@
                                   { "type": "null" }
                                 ]
                               },
+                              "origin": { "type": "string", "enum": ["staff", "customer"] },
+                              "infoRequestId": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
                               "resolvedBy": {
                                 "anyOf": [
                                   {
@@ -10071,6 +11050,86 @@
                               "patch",
                               "note",
                               "resolvedBy",
+                              "resolvedAt",
+                              "createdAt"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "infoRequests": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "requestedBy": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": ["pending", "answered", "cancelled"]
+                              },
+                              "fields": {
+                                "minItems": 1,
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "contact.fullName",
+                                    "contact.email",
+                                    "contact.phone",
+                                    "contact.countryCode",
+                                    "form.currentCountry",
+                                    "form.destination",
+                                    "form.arrivalDate"
+                                  ]
+                                }
+                              },
+                              "message": {
+                                "anyOf": [
+                                  { "type": "string", "maxLength": 2000 },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "changeRequestId": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "resolvedAt": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "requestedBy",
+                              "status",
+                              "fields",
+                              "message",
+                              "changeRequestId",
                               "resolvedAt",
                               "createdAt"
                             ],
@@ -10335,6 +11394,7 @@
                         "notes",
                         "reminders",
                         "changeRequests",
+                        "infoRequests",
                         "amendments",
                         "payments",
                         "dispatch",
@@ -10422,6 +11482,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -11237,6 +12301,17 @@
                                   { "type": "null" }
                                 ]
                               },
+                              "origin": { "type": "string", "enum": ["staff", "customer"] },
+                              "infoRequestId": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
                               "resolvedBy": {
                                 "anyOf": [
                                   {
@@ -11270,6 +12345,86 @@
                               "patch",
                               "note",
                               "resolvedBy",
+                              "resolvedAt",
+                              "createdAt"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "infoRequests": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "requestedBy": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": ["pending", "answered", "cancelled"]
+                              },
+                              "fields": {
+                                "minItems": 1,
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "contact.fullName",
+                                    "contact.email",
+                                    "contact.phone",
+                                    "contact.countryCode",
+                                    "form.currentCountry",
+                                    "form.destination",
+                                    "form.arrivalDate"
+                                  ]
+                                }
+                              },
+                              "message": {
+                                "anyOf": [
+                                  { "type": "string", "maxLength": 2000 },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "changeRequestId": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "resolvedAt": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "requestedBy",
+                              "status",
+                              "fields",
+                              "message",
+                              "changeRequestId",
                               "resolvedAt",
                               "createdAt"
                             ],
@@ -11534,6 +12689,7 @@
                         "notes",
                         "reminders",
                         "changeRequests",
+                        "infoRequests",
                         "amendments",
                         "payments",
                         "dispatch",
@@ -11621,6 +12777,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -12430,6 +13590,17 @@
                                   { "type": "null" }
                                 ]
                               },
+                              "origin": { "type": "string", "enum": ["staff", "customer"] },
+                              "infoRequestId": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
                               "resolvedBy": {
                                 "anyOf": [
                                   {
@@ -12463,6 +13634,86 @@
                               "patch",
                               "note",
                               "resolvedBy",
+                              "resolvedAt",
+                              "createdAt"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "infoRequests": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "requestedBy": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": ["pending", "answered", "cancelled"]
+                              },
+                              "fields": {
+                                "minItems": 1,
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "contact.fullName",
+                                    "contact.email",
+                                    "contact.phone",
+                                    "contact.countryCode",
+                                    "form.currentCountry",
+                                    "form.destination",
+                                    "form.arrivalDate"
+                                  ]
+                                }
+                              },
+                              "message": {
+                                "anyOf": [
+                                  { "type": "string", "maxLength": 2000 },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "changeRequestId": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "resolvedAt": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                                  },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "requestedBy",
+                              "status",
+                              "fields",
+                              "message",
+                              "changeRequestId",
                               "resolvedAt",
                               "createdAt"
                             ],
@@ -12727,6 +13978,7 @@
                         "notes",
                         "reminders",
                         "changeRequests",
+                        "infoRequests",
                         "amendments",
                         "payments",
                         "dispatch",
@@ -12814,6 +14066,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -12997,6 +14253,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -13185,6 +14445,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -13378,6 +14642,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -13585,6 +14853,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -13894,6 +15166,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -14203,6 +15479,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -14487,6 +15767,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -14702,6 +15986,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -15115,6 +16403,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -15309,6 +16601,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -15552,6 +16848,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -15821,6 +17121,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -15979,6 +17283,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -16297,6 +17605,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -16616,6 +17928,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -16846,6 +18162,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -17109,6 +18429,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -17295,6 +18619,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -17562,6 +18890,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -17823,6 +19155,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -17990,6 +19326,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -18149,6 +19489,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -18208,10 +19552,9 @@
                     "maxLength": 254,
                     "format": "email",
                     "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
-                  },
-                  "orderReference": { "type": "string", "minLength": 1, "maxLength": 32 }
+                  }
                 },
-                "required": ["email", "orderReference"]
+                "required": ["email"]
               }
             }
           }
@@ -18341,6 +19684,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -18401,20 +19748,19 @@
                     "format": "email",
                     "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
                   },
-                  "orderReference": { "type": "string", "minLength": 1, "maxLength": 32 },
                   "code": { "type": "string", "pattern": "^\\d{6}$" }
                 },
-                "required": ["email", "orderReference", "code"]
+                "required": ["email", "code"]
               }
             }
           }
         }
       }
     },
-    "/api/v1/website/tracking": {
+    "/api/v1/website/tracking/orders": {
       "get": {
-        "operationId": "getTracking",
-        "summary": "Read order-tracking status with a verified customer grant.",
+        "operationId": "listTrackingOrders",
+        "summary": "List the verified email's orders on this website, newest first.",
         "tags": ["website"],
         "security": [{ "websiteCredential": [] }],
         "parameters": [
@@ -18441,40 +19787,61 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "reference": { "type": "string", "minLength": 1, "maxLength": 32 },
-                    "fulfilmentStatus": {
-                      "type": "string",
-                      "enum": [
-                        "submitted",
-                        "in_progress",
-                        "awaiting_customer",
-                        "ready_for_delivery",
-                        "dispatched",
-                        "activated",
-                        "cancelled"
-                      ]
-                    },
-                    "paymentState": {
-                      "type": "string",
-                      "enum": ["not_required", "pending", "paid"]
-                    },
-                    "deliveryState": { "type": "string", "enum": ["none", "dispatched"] },
-                    "trackingReference": {
-                      "anyOf": [{ "type": "string", "maxLength": 120 }, { "type": "null" }]
-                    },
-                    "documentsRequired": {
+                    "orders": {
                       "type": "array",
                       "items": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 64,
-                        "pattern": "^[a-z0-9_]+$"
+                        "type": "object",
+                        "properties": {
+                          "reference": { "type": "string", "minLength": 1, "maxLength": 32 },
+                          "productTitle": { "type": "string", "minLength": 1, "maxLength": 200 },
+                          "offerName": { "type": "string", "minLength": 1, "maxLength": 200 },
+                          "productType": {
+                            "type": "string",
+                            "enum": ["sim", "mobile", "internet"]
+                          },
+                          "fulfilmentStatus": {
+                            "type": "string",
+                            "enum": [
+                              "submitted",
+                              "in_progress",
+                              "awaiting_customer",
+                              "ready_for_delivery",
+                              "dispatched",
+                              "activated",
+                              "cancelled"
+                            ]
+                          },
+                          "paymentState": {
+                            "type": "string",
+                            "enum": ["not_required", "pending", "paid"]
+                          },
+                          "deliveryState": { "type": "string", "enum": ["none", "dispatched"] },
+                          "actionNeeded": { "type": "boolean" },
+                          "submittedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          }
+                        },
+                        "required": [
+                          "reference",
+                          "productTitle",
+                          "offerName",
+                          "productType",
+                          "fulfilmentStatus",
+                          "paymentState",
+                          "deliveryState",
+                          "actionNeeded",
+                          "submittedAt",
+                          "updatedAt"
+                        ],
+                        "additionalProperties": false
                       }
-                    },
-                    "updatedAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
                     },
                     "requestId": {
                       "type": "string",
@@ -18482,16 +19849,7 @@
                       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                     }
                   },
-                  "required": [
-                    "reference",
-                    "fulfilmentStatus",
-                    "paymentState",
-                    "deliveryState",
-                    "trackingReference",
-                    "documentsRequired",
-                    "updatedAt",
-                    "requestId"
-                  ],
+                  "required": ["orders", "requestId"],
                   "additionalProperties": false
                 }
               }
@@ -18564,6 +19922,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",
@@ -18607,6 +19969,1370 @@
                   "required": ["error"],
                   "additionalProperties": false
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/website/tracking/orders/{reference}": {
+      "get": {
+        "operationId": "getTrackingOrder",
+        "summary": "Read one of the verified email’s orders: plan, price, states and what is needed.",
+        "tags": ["website"],
+        "security": [{ "websiteCredential": [] }],
+        "parameters": [
+          { "name": "reference", "in": "path", "required": true, "schema": { "type": "string" } },
+          {
+            "name": "X-Customer-Grant",
+            "in": "header",
+            "required": true,
+            "description": "Scoped customer grant issued after order-tracking OTP verification.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "X-Website-Visitor-Id",
+            "in": "header",
+            "required": false,
+            "description": "Server-owned keyed visitor digest from the authenticated website; never raw browser forwarding headers.",
+            "schema": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "order": {
+                      "type": "object",
+                      "properties": {
+                        "reference": { "type": "string", "minLength": 1, "maxLength": 32 },
+                        "productTitle": { "type": "string", "minLength": 1, "maxLength": 200 },
+                        "offerName": { "type": "string", "minLength": 1, "maxLength": 200 },
+                        "productType": { "type": "string", "enum": ["sim", "mobile", "internet"] },
+                        "fulfilmentStatus": {
+                          "type": "string",
+                          "enum": [
+                            "submitted",
+                            "in_progress",
+                            "awaiting_customer",
+                            "ready_for_delivery",
+                            "dispatched",
+                            "activated",
+                            "cancelled"
+                          ]
+                        },
+                        "paymentState": {
+                          "type": "string",
+                          "enum": ["not_required", "pending", "paid"]
+                        },
+                        "deliveryState": { "type": "string", "enum": ["none", "dispatched"] },
+                        "actionNeeded": { "type": "boolean" },
+                        "submittedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        },
+                        "billingPeriod": {
+                          "type": "string",
+                          "enum": ["month", "30_days", "90_days"]
+                        },
+                        "price": {
+                          "type": "object",
+                          "properties": {
+                            "recurring": {
+                              "type": "object",
+                              "properties": {
+                                "amountMinor": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991
+                                },
+                                "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+                              },
+                              "required": ["amountMinor", "currency"],
+                              "additionalProperties": false
+                            },
+                            "total": {
+                              "type": "object",
+                              "properties": {
+                                "amountMinor": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991
+                                },
+                                "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+                              },
+                              "required": ["amountMinor", "currency"],
+                              "additionalProperties": false
+                            },
+                            "amountPayableToday": {
+                              "type": "object",
+                              "properties": {
+                                "amountMinor": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991
+                                },
+                                "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+                              },
+                              "required": ["amountMinor", "currency"],
+                              "additionalProperties": false
+                            },
+                            "paymentRequired": { "type": "boolean" }
+                          },
+                          "required": [
+                            "recurring",
+                            "total",
+                            "amountPayableToday",
+                            "paymentRequired"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "trackingReference": {
+                          "anyOf": [{ "type": "string", "maxLength": 120 }, { "type": "null" }]
+                        },
+                        "customer": {
+                          "type": "object",
+                          "properties": {
+                            "fullName": {
+                              "anyOf": [{ "type": "string", "maxLength": 160 }, { "type": "null" }]
+                            },
+                            "email": {
+                              "anyOf": [{ "type": "string", "maxLength": 254 }, { "type": "null" }]
+                            },
+                            "phone": {
+                              "anyOf": [{ "type": "string", "maxLength": 32 }, { "type": "null" }]
+                            },
+                            "countryCode": {
+                              "anyOf": [{ "type": "string", "maxLength": 2 }, { "type": "null" }]
+                            }
+                          },
+                          "required": ["fullName", "email", "phone", "countryCode"],
+                          "additionalProperties": false
+                        },
+                        "details": {
+                          "type": "object",
+                          "properties": {
+                            "currentCountry": {
+                              "anyOf": [{ "type": "string", "maxLength": 120 }, { "type": "null" }]
+                            },
+                            "destination": {
+                              "anyOf": [{ "type": "string", "maxLength": 120 }, { "type": "null" }]
+                            },
+                            "arrivalDate": {
+                              "anyOf": [{ "type": "string", "maxLength": 64 }, { "type": "null" }]
+                            }
+                          },
+                          "required": ["currentCountry", "destination", "arrivalDate"],
+                          "additionalProperties": false
+                        },
+                        "documentChecklist": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 64,
+                            "pattern": "^[a-z0-9_]+$"
+                          }
+                        },
+                        "documentsRequired": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 64,
+                            "pattern": "^[a-z0-9_]+$"
+                          }
+                        },
+                        "documents": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "documentType": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 64,
+                                "pattern": "^[a-z0-9_]+$"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": ["received", "approved", "needs_replacement"]
+                              },
+                              "uploadedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                              }
+                            },
+                            "required": ["id", "documentType", "status", "uploadedAt"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "infoRequests": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "fields": {
+                                "minItems": 1,
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "contact.fullName",
+                                    "contact.email",
+                                    "contact.phone",
+                                    "contact.countryCode",
+                                    "form.currentCountry",
+                                    "form.destination",
+                                    "form.arrivalDate"
+                                  ]
+                                }
+                              },
+                              "message": {
+                                "anyOf": [
+                                  { "type": "string", "maxLength": 2000 },
+                                  { "type": "null" }
+                                ]
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                              }
+                            },
+                            "required": ["id", "fields", "message", "createdAt"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "changeRequests": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": ["pending", "approved", "rejected"]
+                              },
+                              "fields": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "contact.fullName",
+                                    "contact.email",
+                                    "contact.phone",
+                                    "contact.countryCode",
+                                    "form.currentCountry",
+                                    "form.destination",
+                                    "form.arrivalDate"
+                                  ]
+                                }
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                              }
+                            },
+                            "required": ["id", "status", "fields", "createdAt"],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "reference",
+                        "productTitle",
+                        "offerName",
+                        "productType",
+                        "fulfilmentStatus",
+                        "paymentState",
+                        "deliveryState",
+                        "actionNeeded",
+                        "submittedAt",
+                        "updatedAt",
+                        "billingPeriod",
+                        "price",
+                        "trackingReference",
+                        "customer",
+                        "details",
+                        "documentChecklist",
+                        "documentsRequired",
+                        "documents",
+                        "infoRequests",
+                        "changeRequests"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["order", "requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "region_not_served",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "job_not_uncertain",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "documents_incomplete",
+                            "document_override_reason_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/website/tracking/orders/{reference}/change-requests": {
+      "post": {
+        "operationId": "createTrackingChangeRequest",
+        "summary": "Ask for a change to the customer’s details; staff approve or reject it.",
+        "tags": ["website"],
+        "security": [{ "websiteCredential": [] }],
+        "parameters": [
+          { "name": "reference", "in": "path", "required": true, "schema": { "type": "string" } },
+          {
+            "name": "X-Customer-Grant",
+            "in": "header",
+            "required": true,
+            "description": "Scoped customer grant issued after order-tracking OTP verification.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "X-Website-Visitor-Id",
+            "in": "header",
+            "required": false,
+            "description": "Server-owned keyed visitor digest from the authenticated website; never raw browser forwarding headers.",
+            "schema": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          },
+          {
+            "name": "X-Turnstile-Token",
+            "in": "header",
+            "required": true,
+            "description": "Fresh single-use challenge token bound to this route action. Obtain a new token before each request or retry.",
+            "schema": { "type": "string", "minLength": 1, "maxLength": 2048 }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "changeRequest": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+                        "fields": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "contact.fullName",
+                              "contact.email",
+                              "contact.phone",
+                              "contact.countryCode",
+                              "form.currentCountry",
+                              "form.destination",
+                              "form.arrivalDate"
+                            ]
+                          }
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": ["id", "status", "fields", "createdAt"],
+                      "additionalProperties": false
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["changeRequest", "requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "region_not_served",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "job_not_uncertain",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "documents_incomplete",
+                            "document_override_reason_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patch": {
+                    "type": "object",
+                    "properties": {
+                      "contact": {
+                        "type": "object",
+                        "properties": {
+                          "fullName": { "type": "string", "minLength": 1, "maxLength": 160 },
+                          "email": {
+                            "type": "string",
+                            "maxLength": 254,
+                            "format": "email",
+                            "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                          },
+                          "phone": { "type": "string", "minLength": 1, "maxLength": 32 },
+                          "countryCode": { "type": "string", "pattern": "^[A-Z]{2}$" }
+                        }
+                      },
+                      "form": {
+                        "type": "object",
+                        "properties": {
+                          "currentCountry": { "type": "string", "minLength": 1, "maxLength": 120 },
+                          "destination": { "type": "string", "minLength": 1, "maxLength": 120 },
+                          "arrivalDate": { "type": "string", "minLength": 1, "maxLength": 64 }
+                        }
+                      }
+                    }
+                  },
+                  "note": { "type": "string", "minLength": 1, "maxLength": 2000 }
+                },
+                "required": ["patch"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/website/tracking/orders/{reference}/info-requests/{infoRequestId}/response": {
+      "post": {
+        "operationId": "answerTrackingInfoRequest",
+        "summary": "Supply the details staff asked for, as a pending change request.",
+        "tags": ["website"],
+        "security": [{ "websiteCredential": [] }],
+        "parameters": [
+          { "name": "reference", "in": "path", "required": true, "schema": { "type": "string" } },
+          {
+            "name": "infoRequestId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "X-Customer-Grant",
+            "in": "header",
+            "required": true,
+            "description": "Scoped customer grant issued after order-tracking OTP verification.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "X-Website-Visitor-Id",
+            "in": "header",
+            "required": false,
+            "description": "Server-owned keyed visitor digest from the authenticated website; never raw browser forwarding headers.",
+            "schema": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          },
+          {
+            "name": "X-Turnstile-Token",
+            "in": "header",
+            "required": true,
+            "description": "Fresh single-use challenge token bound to this route action. Obtain a new token before each request or retry.",
+            "schema": { "type": "string", "minLength": 1, "maxLength": 2048 }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "changeRequest": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+                        "fields": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "contact.fullName",
+                              "contact.email",
+                              "contact.phone",
+                              "contact.countryCode",
+                              "form.currentCountry",
+                              "form.destination",
+                              "form.arrivalDate"
+                            ]
+                          }
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": ["id", "status", "fields", "createdAt"],
+                      "additionalProperties": false
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["changeRequest", "requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "region_not_served",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "job_not_uncertain",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "documents_incomplete",
+                            "document_override_reason_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patch": {
+                    "type": "object",
+                    "properties": {
+                      "contact": {
+                        "type": "object",
+                        "properties": {
+                          "fullName": { "type": "string", "minLength": 1, "maxLength": 160 },
+                          "email": {
+                            "type": "string",
+                            "maxLength": 254,
+                            "format": "email",
+                            "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                          },
+                          "phone": { "type": "string", "minLength": 1, "maxLength": 32 },
+                          "countryCode": { "type": "string", "pattern": "^[A-Z]{2}$" }
+                        }
+                      },
+                      "form": {
+                        "type": "object",
+                        "properties": {
+                          "currentCountry": { "type": "string", "minLength": 1, "maxLength": 120 },
+                          "destination": { "type": "string", "minLength": 1, "maxLength": 120 },
+                          "arrivalDate": { "type": "string", "minLength": 1, "maxLength": 64 }
+                        }
+                      }
+                    }
+                  },
+                  "note": { "type": "string", "minLength": 1, "maxLength": 2000 }
+                },
+                "required": ["patch"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/website/tracking/orders/{reference}/uploads/intents": {
+      "post": {
+        "operationId": "createTrackingUploadIntent",
+        "summary": "Authorise a direct-to-R2 upload of a checklist document for the order.",
+        "tags": ["website"],
+        "security": [{ "websiteCredential": [] }],
+        "parameters": [
+          { "name": "reference", "in": "path", "required": true, "schema": { "type": "string" } },
+          {
+            "name": "X-Customer-Grant",
+            "in": "header",
+            "required": true,
+            "description": "Scoped customer grant issued after order-tracking OTP verification.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "X-Website-Visitor-Id",
+            "in": "header",
+            "required": false,
+            "description": "Server-owned keyed visitor digest from the authenticated website; never raw browser forwarding headers.",
+            "schema": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          },
+          {
+            "name": "X-Turnstile-Token",
+            "in": "header",
+            "required": true,
+            "description": "Fresh single-use challenge token bound to this route action. Obtain a new token before each request or retry.",
+            "schema": { "type": "string", "minLength": 1, "maxLength": 2048 }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "uploadId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "url": { "type": "string", "format": "uri" },
+                    "method": { "type": "string", "const": "PUT" },
+                    "headers": {
+                      "type": "object",
+                      "propertyNames": { "type": "string" },
+                      "additionalProperties": { "type": "string" }
+                    },
+                    "expiresAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["uploadId", "url", "method", "headers", "expiresAt", "requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "region_not_served",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "job_not_uncertain",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "documents_incomplete",
+                            "document_override_reason_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "documentType": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "pattern": "^[a-z0-9_]+$"
+                  },
+                  "fileName": { "type": "string", "minLength": 1, "maxLength": 255 },
+                  "contentType": {
+                    "type": "string",
+                    "enum": ["application/pdf", "image/jpeg", "image/png"]
+                  },
+                  "sizeBytes": { "type": "integer", "exclusiveMinimum": 0, "maximum": 10485760 }
+                },
+                "required": ["documentType", "fileName", "contentType", "sizeBytes"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/website/tracking/orders/{reference}/uploads/{uploadId}/finalize": {
+      "post": {
+        "operationId": "finalizeTrackingUpload",
+        "summary": "Verify and attach an order document by signature and checksum.",
+        "tags": ["website"],
+        "security": [{ "websiteCredential": [] }],
+        "parameters": [
+          { "name": "reference", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "uploadId", "in": "path", "required": true, "schema": { "type": "string" } },
+          {
+            "name": "X-Customer-Grant",
+            "in": "header",
+            "required": true,
+            "description": "Scoped customer grant issued after order-tracking OTP verification.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "X-Website-Visitor-Id",
+            "in": "header",
+            "required": false,
+            "description": "Server-owned keyed visitor digest from the authenticated website; never raw browser forwarding headers.",
+            "schema": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          },
+          {
+            "name": "X-Turnstile-Token",
+            "in": "header",
+            "required": true,
+            "description": "Fresh single-use challenge token bound to this route action. Obtain a new token before each request or retry.",
+            "schema": { "type": "string", "minLength": 1, "maxLength": 2048 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "document": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "documentType": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "pattern": "^[a-z0-9_]+$"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": ["received", "approved", "needs_replacement"]
+                        },
+                        "uploadedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": ["id", "documentType", "status", "uploadedAt"],
+                      "additionalProperties": false
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["document", "requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "region_not_served",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "job_not_uncertain",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "documents_incomplete",
+                            "document_override_reason_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "checksumSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+                },
+                "required": ["checksumSha256"]
               }
             }
           }
@@ -18742,6 +21468,10 @@
                             "reminder_not_found",
                             "change_request_not_found",
                             "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
                             "persistence_unavailable",
                             "terms_version_unsupported",
                             "upload_not_found",

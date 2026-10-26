@@ -497,40 +497,65 @@ tick is skipped while a run is still in flight. The response reports bounded
 counters (`workspaces`, `listed`, `processed`, `drainFailed`, `reconciled`,
 `failures`) and contains no PII. An equivalent authenticated `POST` is accepted.
 
-### Customer order tracking (T22)
+### Customer order tracking (T22, email-only since 25 Oct 2026)
 
-`POST /api/v1/website/tracking/otp` (`tracking:otp` scope) takes
-`{ email, orderReference }` and sends a six-digit code only when the reference
-and email match an order in the credential's workspace. It **always** answers
-`200 { status: "challenge_sent" }` so the endpoint cannot be used to enumerate
-orders — including timing: the response is held to a minimum latency
-(`TRACKING_OTP_MIN_LATENCY_MS`, default 500 ms) so a matched and unmatched
-request take the same time. The code is keyed-hashed (bound to workspace, order
-and normalized email), expires in 10 minutes, is invalidated by a resend and
-permits at most five attempts. Requests are rate-limited per email and authenticated visitor.
+The customer proves an email address with a six-digit code and then sees every
+order placed with that email **on the credential's own website** (workspace),
+never another brand's. All routes need the `tracking:otp` scope.
 
-A matching request atomically writes the challenge and a `tracking_otp_email`
-outbox job; no provider is called in the request transaction. The queue stores
-the code encrypted with an authenticated, challenge-bound key derived from
-`TRACKING_HASH_SECRET`. The worker rechecks expiry, pending status, current
-recipient, code hash and deliverability suppression before sending through the
-selected transactional provider. Resends cancel older pending email jobs. Completed
-or uncertain jobs retain identifiers only; a delayed or expired code requires a
-fresh request. `EMAIL_CONTACT_HASH_SECRET`, the email provider and the scheduler
-must be configured as documented in ENV.md.
+`POST /api/v1/website/tracking/otp` takes `{ email }` and sends a code only when
+the email has at least one active (not deletion-restricted) order in the
+workspace. It **always** answers `200 { status: "challenge_sent" }` so the
+endpoint cannot be used to enumerate customers — including timing: the response
+is held to a minimum latency (`TRACKING_OTP_MIN_LATENCY_MS`, default 500 ms).
+The Turnstile bot check (`tracking-request`) stays on. The code is keyed-hashed
+(bound to workspace and normalized email), expires in 10 minutes, is invalidated
+by a resend (resends for one email are serialized) and permits at most five
+attempts. Requests are rate-limited per email and authenticated visitor.
 
-`POST /api/v1/website/tracking/verify` (`tracking:otp` scope) takes
-`{ email, orderReference, code }`; on success it atomically consumes the code
-and returns a 30-minute scoped grant. Verifications are rate-limited per email
-and authenticated visitor before any consumption, and every non-verified outcome returns the
-same generic `tracking_challenge_invalid` (never whether the challenge exists
-or how it ended).
+A matching request atomically writes the challenge (`order_id` null) and a
+`tracking_otp_email` outbox job (payload version 2: challenge id, address,
+contact hash, sealed code, expiry; no order). No provider is called in the
+request transaction. The worker rechecks expiry, pending status, that the
+address still owns an active order, the code hash and deliverability
+suppression before sending. The email names no order. Completed or uncertain
+jobs keep only the challenge id. Version-1 jobs queued before the release send
+nothing; the customer requests a new code.
 
-`GET /api/v1/website/tracking` requires the grant in `X-Customer-Grant` and
-returns the order's reference, fulfilment/payment/delivery states, the dispatch
-tracking reference and the documents still required — never internal notes or
-staff names. The grant is bound to one workspace; a foreign-workspace grant is
-denied, and codes and grants are never logged.
+`POST /api/v1/website/tracking/verify` takes `{ email, code }` (bot check
+`tracking-verify`); on success it atomically consumes the code and returns a
+30-minute grant. The grant is an HMAC-signed token bound to workspace + the
+email's keyed hash, carrying the email sealed with AES-GCM (never readable in
+the token). Verifications are rate-limited per email and visitor before any
+consumption, and every non-verified outcome returns the same generic
+`tracking_challenge_invalid`. Grants issued before email-only tracking (bound
+to one order) are refused.
+
+Every route below requires the grant in `X-Customer-Grant`. A missing, forged,
+expired or foreign-workspace grant answers `401 not_found`. Each call
+re-resolves the order by reference **and** the verified email inside the
+workspace, so another email's order, another website's order and an unknown
+reference all answer `404 order_not_found` alike. Codes and grants are never
+logged.
+
+| Route                                                                                     | Purpose                                                                                                                                                                                                                                                                                                                                                                                            |
+| ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/v1/website/tracking/orders`                                                     | The email's orders, newest first (at most 50): reference, plan, the three state dimensions, `actionNeeded`, dates.                                                                                                                                                                                                                                                                                 |
+| `GET /api/v1/website/tracking/orders/{reference}`                                         | One order: plan and frozen price, states, provider reference, the customer's current details (submitted values plus approved amendments), document checklist, documents still required, per-document status (`received`, `approved`, `needs_replacement`), open staff info requests, and change requests (field names and status only). No notes, staff names or audit rows.                       |
+| `POST /api/v1/website/tracking/orders/{reference}/change-requests`                        | `{ patch, note? }` with only the amendable fields (REQ 21). Creates a pending row in `order_change_requests` with `payload.origin = "customer"`; staff approve or reject it in admin's Change requests panel and approval writes the audited amendment (REQ 14). At most three open customer requests per order (`409 too_many_pending_requests`). The response carries field names, never values. |
+| `POST /api/v1/website/tracking/orders/{reference}/info-requests/{infoRequestId}/response` | Answers a staff request for missing details. The patch must supply exactly the requested fields (`422 info_request_fields_mismatch`); it becomes a pending change request linked to the info request, which is marked answered.                                                                                                                                                                    |
+| `POST /api/v1/website/tracking/orders/{reference}/uploads/intents`                        | `{ documentType, fileName, contentType, sizeBytes }` (bot check `upload-intent`). The type must be on the order's frozen checklist. Returns the same signed direct-to-R2 PUT as the order form, attached to the order.                                                                                                                                                                             |
+| `POST /api/v1/website/tracking/orders/{reference}/uploads/{uploadId}/finalize`            | `{ checksumSha256 }` (bot check `upload-finalize`). Copy-verifies signature and checksum (invariant 8); an upload belonging to another order answers `404 upload_not_found`. Returns the document as `received`; it appears in admin's Documents panel for review.                                                                                                                                 |
+
+Customer writes are additionally limited per email (30 per 10 minutes).
+`GET /api/v1/website/tracking` (single order bound to a reference) was removed.
+
+Staff ask for missing details with
+`POST /api/v1/staff/workspaces/{workspaceId}/orders/{orderId}/info-requests`
+(`{ fields, message? }`, `order.manage`; at most three open per order) and
+withdraw one with `.../info-requests/{infoRequestId}/cancel`. The staff order
+detail lists `infoRequests` and marks each change request's `origin`
+(`staff` or `customer`) and `infoRequestId`. The audit keeps field names only.
 
 ## Staff permission matrix
 

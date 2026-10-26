@@ -1,0 +1,178 @@
+@reference '../../(storefront)/globals.css';
+
+/*
+ * Live /track additions to the /track-order design: the order list, the code
+ * step's secondary actions, staff info-request forms and change history.
+ * Tokens only (apps/site-1/AGENTS.md rule 4).
+ */
+.cp-track-loading {
+  padding-block: var(--cp-space-40);
+  color: var(--cp-color-muted);
+}
+
+.cp-track-code-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--cp-space-12);
+}
+
+.cp-track-code-actions button {
+  font-size: var(--cp-text-14);
+  font-weight: var(--cp-weight-bold);
+  color: var(--cp-color-blue);
+}
+
+.cp-track-orders {
+  padding-block: var(--cp-space-16) var(--cp-space-40);
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-space-24);
+}
+
+.cp-track-orders-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--cp-space-12);
+}
+
+.cp-track-orders-header h1 {
+  font-size: var(--cp-text-36);
+  line-height: var(--cp-leading-heading);
+  font-weight: var(--cp-weight-extra-bold);
+}
+
+.cp-track-orders-header p:not(.cp-tracking-eyebrow) {
+  color: var(--cp-color-muted);
+  overflow-wrap: anywhere;
+}
+
+.cp-track-order-cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--cp-space-16);
+}
+
+.cp-track-order-card {
+  width: 100%;
+  padding: var(--cp-space-20);
+  border-radius: var(--cp-radius-28);
+  background: var(--cp-color-white);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--cp-space-8);
+  text-align: left;
+  min-width: 0;
+}
+
+.cp-track-order-card:focus-visible {
+  outline: var(--cp-border-strong) solid var(--cp-color-blue);
+  outline-offset: var(--cp-space-2);
+}
+
+.cp-track-order-card-top {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cp-space-8);
+}
+
+.cp-track-order-card-top strong {
+  font-size: var(--cp-text-18);
+}
+
+.cp-track-order-card small {
+  color: var(--cp-color-muted);
+}
+
+.cp-track-order-card-open {
+  font-size: var(--cp-text-14);
+  font-weight: var(--cp-weight-bold);
+  color: var(--cp-color-blue);
+}
+
+.cp-track-info {
+  padding: var(--cp-space-16);
+  border-radius: var(--cp-radius-16);
+  background: var(--cp-color-white);
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-space-12);
+}
+
+.cp-track-info h3 {
+  font-size: var(--cp-text-17);
+  font-weight: var(--cp-weight-bold);
+}
+
+.cp-track-info-form fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-space-12);
+}
+
+.cp-track-info-message {
+  padding: var(--cp-space-12);
+  border-radius: var(--cp-radius-12);
+  background: var(--cp-color-snow);
+  overflow-wrap: anywhere;
+}
+
+.cp-track-upload-note {
+  font-size: var(--cp-text-14);
+  color: var(--cp-color-muted);
+}
+
+.cp-track-changes {
+  margin-top: var(--cp-space-24);
+  padding: var(--cp-space-20);
+  border-radius: var(--cp-radius-28);
+  background: var(--cp-color-white);
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-space-12);
+}
+
+.cp-track-changes h3 {
+  font-size: var(--cp-text-17);
+  font-weight: var(--cp-weight-bold);
+}
+
+.cp-track-changes ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-space-8);
+}
+
+.cp-track-changes li {
+  padding: var(--cp-space-12) var(--cp-space-16);
+  border-radius: var(--cp-radius-14);
+  background: var(--cp-color-snow);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--cp-space-8);
+}
+
+.cp-track-changes small {
+  color: var(--cp-color-muted);
+}
+
+@variant cp-tracking-desktop {
+  .cp-track-orders {
+    padding-block: var(--cp-space-32) var(--cp-space-64);
+  }
+
+  .cp-track-order-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cp-track-order-card {
+    padding: var(--cp-space-28);
+  }
+}

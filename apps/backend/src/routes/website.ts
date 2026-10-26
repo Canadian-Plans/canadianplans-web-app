@@ -11,7 +11,10 @@ import {
   isOfferSoldIn,
   listWebsiteOffersQuerySchema,
   submitOrderRequestSchema,
+  trackingChangeRequestRequestSchema,
+  trackingOrderReferenceSchema,
   trackingOtpRequestSchema,
+  trackingUploadIntentRequestSchema,
   trackingVerifyRequestSchema,
   updateLeadRequestSchema,
 } from '@canadian-plans/contracts';
@@ -40,13 +43,14 @@ import {
   emailRateBucket,
   loadTrackingSecret,
   normalizeEmail,
-  verifyTrackingGrant,
+  type TrackingGrantIdentity,
 } from '../tracking/secrets.js';
 import { DatabaseTrackingStore } from '../tracking/store.js';
 import {
   TRACKING_OTP_EMAIL_MAX_REQUESTS,
   TRACKING_OTP_EMAIL_WINDOW_SECONDS,
   TRACKING_OTP_VERIFY_EMAIL_MAX_REQUESTS,
+  TRACKING_WRITE_EMAIL_MAX_REQUESTS,
   TrackingService,
 } from '../tracking/service.js';
 import {
@@ -795,23 +799,74 @@ async function settleUntil(startMs: number, floorMs: number): Promise<void> {
 }
 
 /**
- * Customer order tracking (T22, REQ 05). `POST /tracking/otp` always answers the
- * same neutral acknowledgement so a caller cannot tell whether the reference +
- * email matched an order; the code is only sent on a match. `verify` consumes
- * the code atomically and returns a 30-minute grant; `GET /tracking` requires
- * the grant and is bound to the credential's own workspace.
+ * Customer order tracking (T22, REQ 05/21). `POST /tracking/otp` always answers
+ * the same neutral acknowledgement so a caller cannot tell whether the email has
+ * orders; the code is only sent on a match. `verify` consumes the code
+ * atomically and returns a 30-minute grant bound to the credential's workspace
+ * and the verified email. Every other route requires that grant and re-resolves
+ * the order by reference **and** email inside the workspace, so a grant never
+ * reaches another email's or another website's order. Unknown references
+ * answer 404 whether the order is absent or belongs to someone else.
  */
 export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Router {
   const router = Router();
   const tracking = dependencies.tracking;
   if (!tracking) return router;
+  const service = tracking.service;
+  const documents = dependencies.documents;
+  const credential = requireWebsiteCredential(dependencies.auth);
+  const limited = requireEndpointRateLimit(
+    dependencies.auth,
+    'tracking',
+    endpointRateLimits.tracking,
+  );
+
+  /** The verified identity, or a response already sent (503 unconfigured, 401 no grant). */
+  function identity(req: Request, res: Response): TrackingGrantIdentity | undefined {
+    if (!service.configured) {
+      sendDomainError(res, req.id, 'persistence_unavailable', 503, { retryable: true });
+      return undefined;
+    }
+    const verified = service.identify(req.get('x-customer-grant'), websiteContext(req).workspaceId);
+    if (!verified) {
+      // Missing, forged, expired and foreign-workspace grants look identical.
+      sendDomainError(res, req.id, 'not_found', 401);
+      return undefined;
+    }
+    return verified;
+  }
+
+  /** A per-email budget on customer writes, on top of the per-visitor endpoint limit. */
+  async function writeAllowed(
+    req: Request,
+    res: Response,
+    verified: TrackingGrantIdentity,
+  ): Promise<boolean> {
+    const secret = loadTrackingSecret();
+    if (!secret) return true;
+    const limit = await dependencies.auth.rateLimit({
+      bucketKey: emailRateBucket(secret, verified.workspaceId, verified.normalizedEmail, 'write'),
+      windowSeconds: TRACKING_OTP_EMAIL_WINDOW_SECONDS,
+      maxCount: TRACKING_WRITE_EMAIL_MAX_REQUESTS,
+    });
+    if (limit.allowed) return true;
+    sendWebsiteError(res, req.id, 'rate_limited', 429, {
+      'retry-after': String(limit.retryAfterSeconds),
+    });
+    return false;
+  }
+
+  function reference(req: Request): string | undefined {
+    const parsed = trackingOrderReferenceSchema.safeParse(req.params['reference']);
+    return parsed.success ? parsed.data : undefined;
+  }
 
   router.post(
     '/tracking/otp',
-    requireWebsiteCredential(dependencies.auth),
+    credential,
     requireHumanProof(dependencies.auth, 'tracking-request'),
     requireScope('tracking:otp'),
-    requireEndpointRateLimit(dependencies.auth, 'tracking', endpointRateLimits.tracking),
+    limited,
     async (req, res) => {
       const startedAt = Date.now();
       const body = trackingOtpRequestSchema.safeParse(req.body);
@@ -821,7 +876,7 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
       }
       try {
         const ctx = websiteContext(req);
-        if (tracking.service.configured) {
+        if (service.configured) {
           const secret = loadTrackingSecret();
           const ipKey = websiteVisitorKey(req);
           const emailLimit = secret
@@ -842,11 +897,7 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
             maxCount: TRACKING_OTP_EMAIL_MAX_REQUESTS * 4,
           });
           if (emailLimit.allowed && ipLimit.allowed) {
-            await tracking.service.requestCode({
-              workspaceId: ctx.workspaceId,
-              email: body.data.email,
-              orderReference: body.data.orderReference,
-            });
+            await service.requestCode({ workspaceId: ctx.workspaceId, email: body.data.email });
           }
         }
       } catch (error) {
@@ -868,17 +919,17 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
 
   router.post(
     '/tracking/verify',
-    requireWebsiteCredential(dependencies.auth),
+    credential,
     requireHumanProof(dependencies.auth, 'tracking-verify'),
     requireScope('tracking:otp'),
-    requireEndpointRateLimit(dependencies.auth, 'tracking', endpointRateLimits.tracking),
+    limited,
     async (req, res) => {
       const body = trackingVerifyRequestSchema.safeParse(req.body);
       if (!body.success) {
         sendDomainError(res, req.id, 'validation_error', 400);
         return;
       }
-      if (!tracking.service.configured) {
+      if (!service.configured) {
         sendDomainError(res, req.id, 'persistence_unavailable', 503, { retryable: true });
         return;
       }
@@ -912,10 +963,9 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
           sendWebsiteError(res, req.id, 'rate_limited', 429, { 'retry-after': retryAfter });
           return;
         }
-        const outcome = await tracking.service.verifyCode({
+        const outcome = await service.verifyCode({
           workspaceId: ctx.workspaceId,
           email: body.data.email,
-          orderReference: body.data.orderReference,
           code: body.data.code,
         });
         if (outcome.status === 'verified') {
@@ -932,43 +982,259 @@ export function createTrackingRouter(dependencies: WebsiteRouteDependencies): Ro
   );
 
   router.get(
-    '/tracking',
-    requireWebsiteCredential(dependencies.auth),
+    '/tracking/orders',
+    credential,
     requireScope('tracking:otp'),
+    limited,
     async (req, res) => {
-      if (!tracking.service.configured) {
-        sendDomainError(res, req.id, 'persistence_unavailable', 503, { retryable: true });
-        return;
+      const verified = identity(req, res);
+      if (!verified) return;
+      try {
+        const orders = await service.listOrders(verified);
+        res.status(200).json({ orders, requestId: req.id });
+      } catch (error) {
+        failRequest(req, res, '/api/v1/website/tracking/orders', error);
       }
-      const secret = loadTrackingSecret();
-      const token = req.get('x-customer-grant');
-      if (!secret || !token) {
-        sendDomainError(res, req.id, 'not_found', 401);
-        return;
-      }
-      const ctx = websiteContext(req);
-      const payload = verifyTrackingGrant(secret, token, Date.now());
-      // The grant is bound to one workspace; a foreign-workspace grant is denied.
-      if (!payload || payload.workspaceId !== ctx.workspaceId) {
-        sendDomainError(res, req.id, 'not_found', 401);
+    },
+  );
+
+  router.get(
+    '/tracking/orders/:reference',
+    credential,
+    requireScope('tracking:otp'),
+    limited,
+    async (req, res) => {
+      const verified = identity(req, res);
+      if (!verified) return;
+      const ref = reference(req);
+      if (!ref) {
+        sendDomainError(res, req.id, 'validation_error', 400);
         return;
       }
       try {
-        const status = await tracking.service.status({
-          workspaceId: ctx.workspaceId,
-          orderId: payload.orderId,
-        });
-        if (!status) {
+        const order = await service.order(verified, ref);
+        if (!order) {
           sendDomainError(res, req.id, 'order_not_found', 404);
           return;
         }
-        res.status(200).json({
-          ...status,
-          updatedAt: status.updatedAt.toISOString(),
-          requestId: req.id,
-        });
+        res.status(200).json({ order, requestId: req.id });
       } catch (error) {
-        failRequest(req, res, '/api/v1/website/tracking', error);
+        failRequest(req, res, '/api/v1/website/tracking/orders/:reference', error);
+      }
+    },
+  );
+
+  async function customerChange(
+    req: Request,
+    res: Response,
+    infoRequestId?: string,
+  ): Promise<void> {
+    const route = infoRequestId
+      ? '/api/v1/website/tracking/orders/:reference/info-requests/:infoRequestId/response'
+      : '/api/v1/website/tracking/orders/:reference/change-requests';
+    const verified = identity(req, res);
+    if (!verified) return;
+    const ref = reference(req);
+    const body = trackingChangeRequestRequestSchema.safeParse(req.body);
+    if (!ref || !body.success) {
+      sendDomainError(res, req.id, 'validation_error', 400);
+      return;
+    }
+    try {
+      if (!(await writeAllowed(req, res, verified))) return;
+      const outcome = await service.requestChange(verified, {
+        actorId: websiteContext(req).credentialId,
+        requestId: req.id,
+        reference: ref,
+        patch: body.data.patch,
+        ...(body.data.note ? { note: body.data.note } : {}),
+        ...(infoRequestId ? { infoRequestId } : {}),
+      });
+      switch (outcome.status) {
+        case 'created':
+          res.status(201).json({ changeRequest: outcome.changeRequest, requestId: req.id });
+          return;
+        case 'not_found':
+          sendDomainError(res, req.id, 'order_not_found', 404);
+          return;
+        case 'info_request_not_found':
+          sendDomainError(res, req.id, 'info_request_not_found', 404);
+          return;
+        case 'fields_mismatch':
+          sendDomainError(res, req.id, 'info_request_fields_mismatch', 422);
+          return;
+        case 'too_many_pending':
+          sendDomainError(res, req.id, 'too_many_pending_requests', 409);
+          return;
+      }
+    } catch (error) {
+      failRequest(req, res, route, error);
+    }
+  }
+
+  router.post(
+    '/tracking/orders/:reference/change-requests',
+    credential,
+    requireScope('tracking:otp'),
+    limited,
+    (req, res) => customerChange(req, res),
+  );
+
+  router.post(
+    '/tracking/orders/:reference/info-requests/:infoRequestId/response',
+    credential,
+    requireScope('tracking:otp'),
+    limited,
+    async (req, res) => {
+      const infoRequestId = z.uuid().safeParse(req.params['infoRequestId']);
+      if (!infoRequestId.success) {
+        sendDomainError(res, req.id, 'validation_error', 400);
+        return;
+      }
+      await customerChange(req, res, infoRequestId.data);
+    },
+  );
+
+  // ---- Documents for an existing order ------------------------------------
+  // The same signed-upload + signature-verified finalize pipeline as the order
+  // form (invariant 8), attached to the order itself so it appears in the admin
+  // Documents panel. The checklist comes from the order's frozen snapshot.
+  router.post(
+    '/tracking/orders/:reference/uploads/intents',
+    credential,
+    requireHumanProof(dependencies.auth, 'upload-intent'),
+    requireScope('tracking:otp'),
+    limited,
+    async (req, res) => {
+      if (!documents) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const verified = identity(req, res);
+      if (!verified) return;
+      const ref = reference(req);
+      const body = trackingUploadIntentRequestSchema.safeParse(req.body);
+      if (!ref || !body.success) {
+        sendDomainError(res, req.id, 'validation_error', 400);
+        return;
+      }
+      try {
+        if (!(await writeAllowed(req, res, verified))) return;
+        const orderId = await service.orderId(verified, ref);
+        if (!orderId) {
+          sendDomainError(res, req.id, 'order_not_found', 404);
+          return;
+        }
+        const ctx = websiteContext(req);
+        const outcome = await documents.service.createIntent({
+          workspaceId: ctx.workspaceId,
+          actorId: ctx.credentialId,
+          requestId: req.id,
+          recordType: 'order',
+          recordId: orderId,
+          documentType: body.data.documentType,
+          declaredContentType: body.data.contentType,
+          declaredSizeBytes: body.data.sizeBytes,
+        });
+        switch (outcome.status) {
+          case 'created':
+            res.status(201).json({
+              uploadId: outcome.uploadId,
+              url: outcome.url,
+              method: 'PUT',
+              headers: outcome.headers,
+              expiresAt: outcome.expiresAt.toISOString(),
+              requestId: req.id,
+            });
+            return;
+          case 'parent_not_found':
+            sendDomainError(res, req.id, 'order_not_found', 404);
+            return;
+          case 'too_large':
+            sendDomainError(res, req.id, 'document_too_large', 413);
+            return;
+          case 'checklist_mismatch':
+            sendDomainError(res, req.id, 'checklist_mismatch', 409);
+            return;
+        }
+      } catch (error) {
+        failRequest(req, res, '/api/v1/website/tracking/orders/:reference/uploads/intents', error);
+      }
+    },
+  );
+
+  router.post(
+    '/tracking/orders/:reference/uploads/:uploadId/finalize',
+    credential,
+    requireHumanProof(dependencies.auth, 'upload-finalize'),
+    requireScope('tracking:otp'),
+    limited,
+    async (req, res) => {
+      if (!documents) {
+        sendDomainError(res, req.id, 'feature_not_ready', 409);
+        return;
+      }
+      const verified = identity(req, res);
+      if (!verified) return;
+      const ref = reference(req);
+      const uploadId = z.uuid().safeParse(req.params['uploadId']);
+      const body = finalizeUploadRequestSchema.safeParse(req.body);
+      if (!ref || !uploadId.success || !body.success) {
+        sendDomainError(res, req.id, 'validation_error', 400);
+        return;
+      }
+      try {
+        const orderId = await service.orderId(verified, ref);
+        if (!orderId) {
+          sendDomainError(res, req.id, 'order_not_found', 404);
+          return;
+        }
+        const ctx = websiteContext(req);
+        // The file must belong to this email's order: another customer's upload
+        // id answers exactly like an unknown one.
+        const outcome = await documents.service.finalize({
+          workspaceId: ctx.workspaceId,
+          actorId: ctx.credentialId,
+          requestId: req.id,
+          fileId: uploadId.data,
+          checksumSha256: body.data.checksumSha256,
+          ownedOrderId: orderId,
+        });
+        switch (outcome.status) {
+          case 'available':
+            res.json({
+              document: {
+                id: outcome.file.id,
+                documentType: outcome.file.documentType,
+                status: 'received',
+                uploadedAt: (outcome.file.finalizedAt ?? outcome.file.createdAt).toISOString(),
+              },
+              requestId: req.id,
+            });
+            return;
+          case 'rejected':
+            sendDomainError(res, req.id, 'document_verification_failed', 422, {
+              reason: outcome.reason,
+            });
+            return;
+          case 'in_progress':
+            res.setHeader('retry-after', '2');
+            sendDomainError(res, req.id, 'verification_in_progress', 409, { retryable: true });
+            return;
+          case 'expired':
+            sendDomainError(res, req.id, 'upload_expired', 410);
+            return;
+          case 'not_found':
+            sendDomainError(res, req.id, 'upload_not_found', 404);
+            return;
+        }
+      } catch (error) {
+        failRequest(
+          req,
+          res,
+          '/api/v1/website/tracking/orders/:reference/uploads/:uploadId/finalize',
+          error,
+        );
       }
     },
   );

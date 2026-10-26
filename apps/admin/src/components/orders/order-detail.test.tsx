@@ -26,6 +26,8 @@ const mocks = vi.hoisted(() => {
     createOrderReminder: vi.fn(),
     deleteOrderReminder: vi.fn(),
     createOrderChangeRequest: vi.fn(),
+    createOrderInfoRequest: vi.fn(),
+    cancelOrderInfoRequest: vi.fn(),
     resolveOrderChangeRequest: vi.fn(),
     recordOrderPayment: vi.fn(),
     listOrderFiles: vi.fn(),
@@ -45,6 +47,8 @@ vi.mock('../../lib/api', () => ({
   createOrderReminder: mocks.createOrderReminder,
   deleteOrderReminder: mocks.deleteOrderReminder,
   createOrderChangeRequest: mocks.createOrderChangeRequest,
+  createOrderInfoRequest: mocks.createOrderInfoRequest,
+  cancelOrderInfoRequest: mocks.cancelOrderInfoRequest,
   resolveOrderChangeRequest: mocks.resolveOrderChangeRequest,
   recordOrderPayment: mocks.recordOrderPayment,
   listOrderFiles: mocks.listOrderFiles,
@@ -142,6 +146,7 @@ function order(overrides: Partial<OrderDetail> = {}): OrderDetail {
     audit: [],
     notes: [],
     reminders: [],
+    infoRequests: [],
     changeRequests: [],
     amendments: [],
     payments: [],
@@ -179,6 +184,8 @@ beforeEach(() => {
   mocks.createOrderReminder.mockReset();
   mocks.deleteOrderReminder.mockReset();
   mocks.createOrderChangeRequest.mockReset();
+  mocks.createOrderInfoRequest.mockReset();
+  mocks.cancelOrderInfoRequest.mockReset();
   mocks.resolveOrderChangeRequest.mockReset();
   mocks.recordOrderPayment.mockReset();
   mocks.listOrderFiles.mockReset();
@@ -434,6 +441,63 @@ describe('OrderDetailView payment recording', () => {
         ORDER,
         { paymentState: 'pending', method: 'interac', amountMinor: 2500, expectedVersion: 1 },
       ),
+    );
+  });
+});
+
+describe('OrderDetailView customer tracking requests', () => {
+  it('labels a customer change and asks the customer for chosen details', async () => {
+    current = order({
+      changeRequests: [
+        {
+          id: '60000000-0000-4000-8000-000000000001',
+          requestedBy: '80000000-0000-4000-8000-000000000001',
+          status: 'pending',
+          patch: { form: { arrivalDate: '2026-11-20' } },
+          note: null,
+          origin: 'customer',
+          infoRequestId: '70000000-0000-4000-8000-000000000001',
+          resolvedBy: null,
+          resolvedAt: null,
+          createdAt: '2026-10-25T12:00:00.000Z',
+        },
+      ],
+      infoRequests: [
+        {
+          id: '70000000-0000-4000-8000-000000000002',
+          requestedBy: '30000000-0000-4000-8000-000000000001',
+          status: 'pending',
+          fields: ['contact.phone'],
+          message: 'Which number should the carrier call?',
+          changeRequestId: null,
+          resolvedAt: null,
+          createdAt: '2026-10-25T12:00:00.000Z',
+        },
+      ],
+    });
+    refreshFromState();
+    mocks.createOrderInfoRequest.mockResolvedValue({ infoRequest: { id: 'x' } });
+    mocks.cancelOrderInfoRequest.mockResolvedValue({ infoRequest: { id: 'x' } });
+    await renderDetail();
+    expect(screen.getByText('Customer answer')).toBeTruthy();
+    expect(screen.getByText('Which number should the carrier call?')).toBeTruthy();
+
+    expect(isDisabled(screen.getByRole('button', { name: 'Send request' }))).toBe(true);
+    fireEvent.click(screen.getByLabelText('Ask for arrival date'));
+    fireEvent.change(screen.getByLabelText('Message to the customer'), {
+      target: { value: 'When do you land?' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Send request' }));
+    await waitFor(() => expect(mocks.createOrderInfoRequest).toHaveBeenCalledOnce());
+    expect(mocks.createOrderInfoRequest.mock.calls[0]?.[3]).toEqual({
+      fields: ['form.arrivalDate'],
+      message: 'When do you land?',
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Withdraw request' }));
+    await waitFor(() => expect(mocks.cancelOrderInfoRequest).toHaveBeenCalledOnce());
+    expect(mocks.cancelOrderInfoRequest.mock.calls[0]?.[3]).toBe(
+      '70000000-0000-4000-8000-000000000002',
     );
   });
 });

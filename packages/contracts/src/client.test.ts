@@ -237,10 +237,7 @@ describe('website proof transport', () => {
   it('forwards a fresh proof per call in a fixed header, without putting it in the body', async () => {
     const { client, calls } = harness(200, { status: 'challenge_sent', requestId: UUID });
     for (const turnstileToken of ['proof-first', 'proof-second']) {
-      await client.tracking.otp(
-        { email: 'test@example.test', orderReference: 'CP-TEST' },
-        { turnstileToken },
-      );
+      await client.tracking.otp({ email: 'test@example.test' }, { turnstileToken });
     }
     expect(calls.map((entry) => entry.headers.get('x-turnstile-token'))).toEqual([
       'proof-first',
@@ -248,10 +245,7 @@ describe('website proof transport', () => {
     ]);
     expect(calls.every((entry) => !entry.body?.includes('proof-'))).toBe(true);
     expect(() =>
-      client.tracking.otp(
-        { email: 'test@example.test', orderReference: 'CP-TEST' },
-        { turnstileToken: 'x'.repeat(2049) },
-      ),
+      client.tracking.otp({ email: 'test@example.test' }, { turnstileToken: 'x'.repeat(2049) }),
     ).toThrow();
     expect(calls).toHaveLength(2);
   });

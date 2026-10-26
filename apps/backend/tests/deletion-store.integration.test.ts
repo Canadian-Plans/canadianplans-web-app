@@ -148,6 +148,7 @@ describe.skipIf(!databaseUrl)('complete customer deletion under runtime RLS', ()
       await admin`insert into app.order_notes(workspace_id,order_id,author_id,body) values(${WORKSPACE},${orderId},${ACTOR},${EMAIL})`;
       await admin`insert into app.order_amendments(workspace_id,order_id,actor_id,reason,patch,before,after) values(${WORKSPACE},${orderId},${ACTOR},'customer correction',${admin.json({ contact: { email: EMAIL } })},${admin.json({ email: EMAIL })},${admin.json({ email: EMAIL })})`;
       await admin`insert into app.order_change_requests(workspace_id,order_id,requested_by,payload) values(${WORKSPACE},${orderId},${ACTOR},${admin.json({ patch: { contact: { email: EMAIL } }, note: EMAIL })})`;
+      await admin`insert into app.order_info_requests(workspace_id,order_id,requested_by,fields,message) values(${WORKSPACE},${orderId},${ACTOR},${admin.json(['contact.email'])},${EMAIL})`;
       await admin`insert into app.order_reminders(workspace_id,order_id,created_by,remind_at,note) values(${WORKSPACE},${orderId},${ACTOR},now(),${EMAIL})`;
       await admin`insert into app.order_status_history(workspace_id,order_id,actor_id,to_status,order_version,reason) values(${WORKSPACE},${orderId},${ACTOR},'submitted',1,${EMAIL})`;
       await admin`insert into app.payment_records(workspace_id,order_id,actor_id,from_state,to_state,method,payment_reference,amount_minor,currency,recorded_at) values(${WORKSPACE},${orderId},${ACTOR},'pending','paid','manual',${EMAIL},4500,'CAD',now())`;
@@ -191,7 +192,7 @@ describe.skipIf(!databaseUrl)('complete customer deletion under runtime RLS', ()
         store: new DatabaseTrackingStore(database),
         secret: TRACKING_SECRET,
         contactHashSecret: () => HASH_SECRET,
-      }).requestCode({ workspaceId: WORKSPACE, email: EMAIL, orderReference: reference });
+      }).requestCode({ workspaceId: WORKSPACE, email: EMAIL });
       await admin`insert into app.audit_events(workspace_id,actor_id,actor_label,action,entity,entity_id,after,request_id) values(${WORKSPACE},${ACTOR},'staff','order.submitted','order',${orderId},${admin.json({ email: EMAIL })},${REQUEST})`;
     }
     const documents = new DatabaseDocumentStore(database);
@@ -317,10 +318,12 @@ describe.skipIf(!databaseUrl)('complete customer deletion under runtime RLS', ()
     };
     const deletion = await request();
     expect(deletion.cleanupStatus).toBe('pending');
+    // Restriction hides the order from its customer's tracking at once.
     expect(
-      await new DatabaseTrackingStore(database).status({
+      await new DatabaseTrackingStore(database).orderId({
         workspaceId: WORKSPACE,
-        orderId: fixture.orderId,
+        normalizedEmail: EMAIL,
+        reference: fixture.reference,
       }),
     ).toBeUndefined();
     expect(
@@ -435,6 +438,7 @@ describe.skipIf(!databaseUrl)('complete customer deletion under runtime RLS', ()
       'order_notes',
       'order_amendments',
       'order_change_requests',
+      'order_info_requests',
       'order_reminders',
       'tracking_challenges',
       'dispatch_records',

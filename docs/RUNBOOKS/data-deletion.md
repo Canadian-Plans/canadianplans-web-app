@@ -42,8 +42,8 @@ beginning with `/api/v1/staff/workspaces/{workspaceId}`, are:
    commit together. Missing/unavailable ledger leaves access restricted and
    work pending/failed; it never authorizes erasure or reports completion.
 3. **Database cleanup:** remove contact/form/consent/attribution, document rows,
-   revisions and reviews, notes/corrections/reminders, dispatch details, tracking
-   challenges, linked email/provider events, consent/follow-up records and grants.
+   revisions and reviews, notes/corrections/requests for details/reminders,
+   dispatch details, order-bound tracking challenges, linked email/provider events, consent/follow-up records and grants.
    Scrub linked job payloads/outcomes and personal audit before/after values;
    null history reasons and payment references/methods. Keep commercial snapshots,
    reference, payment amount/currency, status/time/actor and minimal audit evidence.
@@ -115,7 +115,11 @@ restore runbook's independent checkpoint and provider checks pass.
 - Inspect `deletion_intents`: acknowledgement, `local_cleaned_at`, `completed_at`.
 - Inspect pending `deletion_objects` and failed/retrying cleanup jobs.
 - Confirm old tracking/grants/download issuance are denied and staff detail still
-  opens with only the retained commercial record.
+  opens with only the retained commercial record. Email-only tracking codes are
+  keyed to the email hash, not the order: restriction hides the order from the
+  customer's tracking at once, a pending code for an email with no other active
+  order no longer verifies or sends, and the hash-only row is pruned after 7
+  days with other used or expired codes.
 - Verify absence of linked personal rows and physical R2 keys before confirming
   active-system completion to the customer.
 

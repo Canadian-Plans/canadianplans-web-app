@@ -57,6 +57,10 @@ import { DatabaseTrackingStore } from '../../src/tracking/store.js';
 import { TrackingService } from '../../src/tracking/service.js';
 import { createTrackingOtpHandler } from '../../src/tracking/delivery.js';
 import { DatabaseEmailStore } from '../../src/email/store.js';
+import { DatabaseDraftGrantVerifier } from '../../src/documents/grant.js';
+import { DatabaseDocumentContextResolver } from '../../src/documents/resolver.js';
+import { DocumentService } from '../../src/documents/service.js';
+import { DatabaseDocumentStore } from '../../src/documents/store.js';
 import type { WebsiteRouteDependencies } from '../../src/routes/website.js';
 import {
   createDefaultStaffRouteDependencies,
@@ -67,7 +71,13 @@ import { hashServiceSecret } from '../../src/website/credential.js';
 import type { PublishedOffer } from '@canadian-plans/contracts';
 import { commercialOfferSchema } from '@canadian-plans/contracts';
 import type { SanityCatalogue, SiteRevalidator } from '@canadian-plans/adapters';
-import { FakeAnalyticsSink, FakeEmailAdapter } from '@canadian-plans/adapters';
+import {
+  FakeAnalyticsSink,
+  FakeEmailAdapter,
+  InMemoryR2DocumentStore,
+  type CreateUploadInput,
+  type PresignedUpload,
+} from '@canadian-plans/adapters';
 import {
   createJobHandlerRegistry,
   JobHandlerError,
@@ -363,6 +373,26 @@ const E2E_RATE_LIMITS = {
   credentialMaxCount: 20_000,
 };
 
+/**
+ * Seam 6: private storage. The real document service and DB store run; only
+ * R2 is the in-memory fake. Its signed PUT names an https origin (the site's
+ * CSP allows only https uploads), which a browser test intercepts and forwards
+ * to `PUT /__e2e__/r2/<key>` here.
+ */
+const E2E_STORAGE_ORIGIN = 'https://storage.e2e.test';
+class HarnessR2DocumentStore extends InMemoryR2DocumentStore {
+  override async createUpload(input: CreateUploadInput): Promise<PresignedUpload> {
+    const upload = await super.createUpload(input);
+    return { ...upload, url: `${E2E_STORAGE_ORIGIN}/${encodeURIComponent(input.stagingKey)}` };
+  }
+}
+const r2 = new HarnessR2DocumentStore();
+const documentService = new DocumentService(
+  new DatabaseDocumentStore(),
+  r2,
+  new DatabaseDocumentContextResolver(),
+);
+
 const usedProofs = new Set<string>();
 const website: WebsiteRouteDependencies = {
   auth: {
@@ -388,6 +418,7 @@ const website: WebsiteRouteDependencies = {
   orders: { service: { submit: (input) => orderService.submit(input) } },
   // The website-scoped published-offer read the order form's step 1 uses.
   catalogue: { store: new DatabaseCatalogueStore() },
+  documents: { service: documentService, grants: new DatabaseDraftGrantVerifier() },
   tracking: {
     service: new TrackingService({ store: new DatabaseTrackingStore(), secret: TRACKING_SECRET }),
   },
@@ -404,6 +435,9 @@ const staffSessionVerifier: StaffSessionVerifier = {
 const staff: StaffRouteDependencies = {
   ...createDefaultStaffRouteDependencies(),
   sessionVerifier: staffSessionVerifier,
+  // The same harness document service (seam 6), so the admin Documents panel
+  // lists what the customer uploaded.
+  documentService,
 };
 
 // Seam 5: a harness-owned outbox runner. The analytics handler and store are
@@ -471,6 +505,7 @@ const DATA_TABLES = [
   'app.marketing_consents',
   'app.follow_up_schedules',
   'app.tracking_challenges',
+  'app.files',
   // OTP limits must start with the rest of each disposable journey's state.
   // Otherwise earlier desktop/mobile runs consume the same ten-minute bucket.
   'app.rate_limit_buckets',
@@ -687,11 +722,30 @@ async function main(): Promise<void> {
         ok(res, { ok: true, ...summary });
         return;
       }
-      if (path === '/__e2e__/tracking-code' && req.method === 'GET') {
+      if (path.startsWith('/__e2e__/r2/')) {
+        if (req.method === 'PUT') {
+          const chunks: Buffer[] = [];
+          for await (const chunk of req) chunks.push(Buffer.from(chunk));
+          r2.putStagingObject(
+            decodeURIComponent(path.slice('/__e2e__/r2/'.length)),
+            new Uint8Array(Buffer.concat(chunks)),
+          );
+          ok(res);
+          return;
+        }
+      }
+      // The newest code emailed to an address. POST, so the synthetic address
+      // stays out of the URL like every real one (invariant 12).
+      if (path === '/__e2e__/tracking-code' && req.method === 'POST') {
+        const chunks: Buffer[] = [];
+        for await (const chunk of req) chunks.push(Buffer.from(chunk));
+        const body: unknown = JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}');
+        const email =
+          body && typeof body === 'object' && 'email' in body && typeof body.email === 'string'
+            ? body.email.trim().toLowerCase()
+            : '';
         const message = emailAdapter.deliveries.findLast(
-          (entry) =>
-            entry.template === 'tracking_otp' &&
-            entry.reference === url.searchParams.get('reference'),
+          (entry) => entry.template === 'tracking_otp' && entry.toAddress === email,
         );
         if (!message?.variables?.code) {
           res.writeHead(404).end();
