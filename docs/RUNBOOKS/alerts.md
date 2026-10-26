@@ -114,7 +114,9 @@ other internal job routes.
    `JOB_RUNNER_SELECTOR`/`CATALOGUE_SYNC_SELECTOR` already point at (one
    `CRON_SECRET`, one entry — the registry rejects duplicate active
    scheduler secrets), and add `SYNTHETIC_WORKSPACE_ID` to that entry's
-   `workspaceIds`.
+   `workspaceIds` so the outbox runs (and retention prunes) its jobs.
+   Catalogue sync skips that workspace whenever `SYNTHETIC_WORKSPACE_ID` is
+   set, because it has no catalogue source to reconcile.
 4. Set `SYNTHETIC_CHECK_SELECTOR` to that same selector string.
 
 Unset or missing the scope means the scheduler logs

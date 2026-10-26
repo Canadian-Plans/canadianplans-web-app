@@ -27,7 +27,11 @@ export function createDefaultCatalogueSyncRouteDependencies(): CatalogueSyncRout
     catalogueProviderResolver(registry),
     loadQuoteWithdrawalPolicy(),
   );
-  const runner = new CatalogueSyncRunner({ handlers: service });
+  const syntheticWorkspaceId = process.env.SYNTHETIC_WORKSPACE_ID?.trim();
+  const runner = new CatalogueSyncRunner({
+    handlers: service,
+    excludedWorkspaceIds: syntheticWorkspaceId ? [syntheticWorkspaceId] : [],
+  });
   return {
     registry,
     run: (input) => runner.run(input),
