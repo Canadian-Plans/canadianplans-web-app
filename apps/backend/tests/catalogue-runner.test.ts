@@ -46,6 +46,26 @@ describe('CatalogueSyncRunner', () => {
     });
   });
 
+  it('skips excluded workspaces such as the synthetic-check workspace', async () => {
+    const drainEvents = vi.fn(async () => drainResult());
+    const reconcile = vi.fn(async () => undefined);
+    const runner = new CatalogueSyncRunner({
+      handlers: { drainEvents, reconcile },
+      excludedWorkspaceIds: [WORKSPACE_B.toUpperCase()],
+    });
+
+    const summary = await runner.run({
+      authorizedWorkspaceIds: [WORKSPACE_A, WORKSPACE_B],
+      actorId: ACTOR,
+    });
+
+    expect(drainEvents).toHaveBeenCalledTimes(1);
+    expect(drainEvents).toHaveBeenCalledWith(WORKSPACE_A, ACTOR);
+    expect(reconcile).toHaveBeenCalledTimes(1);
+    expect(summary.workspaces).toBe(1);
+    expect(summary.failures).toEqual([]);
+  });
+
   it('stops starting new workspaces once the run deadline passes', async () => {
     let clock = 0;
     const drainEvents = vi.fn(async () => {

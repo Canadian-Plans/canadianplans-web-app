@@ -14,28 +14,28 @@ four follow-ups.
 
 ## The order
 
-| Field | Value |
-| --- | --- |
-| Reference | `CP-9YUMTFF_BCFQNDIU` |
-| Site | https://canadianplans.com/order (site-1 on Vercel, backend on Railway) |
-| Plan | 5G+ Complete 100 GB, $55.00/month, eSIM, new number |
-| Customer | "Test Order Do Not Fulfil", `info@canadianplans.com`, the business phone, the business address in Surrey |
-| Document | `SAMPLE-not-a-real-ID.pdf`, a blank sample PDF, not a real ID |
-| Placed by | Claude in the owner's Chrome; the owner ticked the Turnstile check |
+| Field     | Value                                                                                                    |
+| --------- | -------------------------------------------------------------------------------------------------------- |
+| Reference | `CP-9YUMTFF_BCFQNDIU`                                                                                    |
+| Site      | https://canadianplans.com/order (site-1 on Vercel, backend on Railway)                                   |
+| Plan      | 5G+ Complete 100 GB, $55.00/month, eSIM, new number                                                      |
+| Customer  | "Test Order Do Not Fulfil", `info@canadianplans.com`, the business phone, the business address in Surrey |
+| Document  | `SAMPLE-not-a-real-ID.pdf`, a blank sample PDF, not a real ID                                            |
+| Placed by | Claude in the owner's Chrome; the owner ticked the Turnstile check                                       |
 
 ## Steps and what was observed
 
-| Step | Observed | Source |
-| --- | --- | --- |
-| Document upload | First two attempts failed: the browser's CORS preflight to R2 got 403. Fixed by adding the bucket CORS policy (below); the third attempt showed "Uploaded… Verified". | Browser network log; Cloudflare dashboard confirmation |
-| Submit | Order saved as `CP-9YUMTFF_BCFQNDIU` (~11:46). | Storefront confirmation step |
-| Acknowledgement email | "We received your order CP-9YUMTFF_BCFQNDIU" arrived in info@ at 11:46 from `orders@canadianplans.com`; reference, tracking link and contact details correct. (Domain authentication was checked separately on an earlier email, item 3.2.) | Owner's inbox screenshot |
-| Admin order page | Snapshot correct: 100 GB plan, $55.00/month, $0.00 payable today, no payment required, government ID required, terms version v2. | apex.canadianplans.com, owner signed in with MFA |
-| Approve document | Owner approved "government id, Verified, rev 3"; order moved Submitted → In progress at 14:11, version 2, owner as actor. | Admin order history |
-| Ready for delivery | Owner moved it to Ready for delivery; the move is only allowed once the required document is approved, and that rule held. | Admin order history |
-| Cancel | Owner cancelled with reason "test" at 14:12. | Admin order history |
-| Background jobs | Two analytics jobs (lead saved, order submitted) failed with `provider_not_configured` and set off two "failed job queue is not draining" owner alerts (alerts proven, item 4.3). After Umami was configured (item 6.2) both were retried from admin and succeeded; the jobs page showed "No failed jobs". | Owner alert emails; admin Settings → Jobs |
-| Customer tracking | Re-checked on 2026-10-26 after PR #34 (email-only tracking, merge `252f9a6`, migration 0027) went live: `/track` asks for the email only. The owner requested a code in their own browser and reported the flow working ("all good for now"). Claude did not see the order list itself, because Turnstile fails in the in-app browser pane (error 600010). | Live page; owner report |
+| Step                  | Observed                                                                                                                                                                                                                                                                                                                                                   | Source                                                 |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Document upload       | First two attempts failed: the browser's CORS preflight to R2 got 403. Fixed by adding the bucket CORS policy (below); the third attempt showed "Uploaded… Verified".                                                                                                                                                                                      | Browser network log; Cloudflare dashboard confirmation |
+| Submit                | Order saved as `CP-9YUMTFF_BCFQNDIU` (~11:46).                                                                                                                                                                                                                                                                                                             | Storefront confirmation step                           |
+| Acknowledgement email | "We received your order CP-9YUMTFF_BCFQNDIU" arrived in info@ at 11:46 from `orders@canadianplans.com`; reference, tracking link and contact details correct. (Domain authentication was checked separately on an earlier email, item 3.2.)                                                                                                                | Owner's inbox screenshot                               |
+| Admin order page      | Snapshot correct: 100 GB plan, $55.00/month, $0.00 payable today, no payment required, government ID required, terms version v2.                                                                                                                                                                                                                           | apex.canadianplans.com, owner signed in with MFA       |
+| Approve document      | Owner approved "government id, Verified, rev 3"; order moved Submitted → In progress at 14:11, version 2, owner as actor.                                                                                                                                                                                                                                  | Admin order history                                    |
+| Ready for delivery    | Owner moved it to Ready for delivery; the move is only allowed once the required document is approved, and that rule held.                                                                                                                                                                                                                                 | Admin order history                                    |
+| Cancel                | Owner cancelled with reason "test" at 14:12.                                                                                                                                                                                                                                                                                                               | Admin order history                                    |
+| Background jobs       | Two analytics jobs (lead saved, order submitted) failed with `provider_not_configured` and set off two "failed job queue is not draining" owner alerts (alerts proven, item 4.3). After Umami was configured (item 6.2) both were retried from admin and succeeded; the jobs page showed "No failed jobs".                                                 | Owner alert emails; admin Settings → Jobs              |
+| Customer tracking     | Re-checked on 2026-10-26 after PR #34 (email-only tracking, merge `252f9a6`, migration 0027) went live: `/track` asks for the email only. The owner requested a code in their own browser and reported the flow working ("all good for now"). Claude did not see the order list itself, because Turnstile fails in the in-app browser pane (error 600010). | Live page; owner report                                |
 
 ## Fix made during the run
 

@@ -32,6 +32,12 @@ export interface CatalogueSyncRunnerOptions {
    * in flight is still completed and recorded. `0` disables the bound.
    */
   runDeadlineMs?: number;
+  /**
+   * Authorized workspaces that have no catalogue source of their own and are
+   * never synced — the synthetic-check workspace (REQ 40), which shares the
+   * scheduler entry so its outbox jobs run, but serves a fixed in-code offer.
+   */
+  excludedWorkspaceIds?: readonly string[];
   now?: () => number;
 }
 
@@ -55,7 +61,12 @@ export class CatalogueSyncRunner {
     authorizedWorkspaceIds: readonly string[];
     actorId: string;
   }): Promise<CatalogueSyncRunSummary> {
-    const workspaceIds = [...new Set(input.authorizedWorkspaceIds)];
+    const excluded = new Set(
+      (this.options.excludedWorkspaceIds ?? []).map((id) => id.toLowerCase()),
+    );
+    const workspaceIds = [...new Set(input.authorizedWorkspaceIds)].filter(
+      (id) => !excluded.has(id.toLowerCase()),
+    );
     const failures: CatalogueSyncFailure[] = [];
     const summary = {
       workspaces: workspaceIds.length,
