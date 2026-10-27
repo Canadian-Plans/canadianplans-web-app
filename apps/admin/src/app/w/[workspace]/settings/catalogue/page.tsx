@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@canadian-plans/ui';
 
 import { CatalogueStatus } from '../../../../../components/catalogue-status';
+import { PageBody } from '../../../../../components/crm/page-body';
 
 export default async function CatalogueSettingsPage({
   params,
@@ -9,18 +10,20 @@ export default async function CatalogueSettingsPage({
 }) {
   const { workspace } = await params;
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle asChild>
-          <h1>Catalogue sync</h1>
-        </CardTitle>
-        <CardDescription>
-          Read-only state from the backend. Catalogue changes are made in Sanity.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <CatalogueStatus workspaceSlug={workspace} />
-      </CardContent>
-    </Card>
+    <PageBody>
+      <Card>
+        <CardHeader>
+          <CardTitle asChild>
+            <h1>Catalogue sync</h1>
+          </CardTitle>
+          <CardDescription>
+            Read-only state from the backend. Catalogue changes are made in Sanity.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <CatalogueStatus workspaceSlug={workspace} />
+        </CardContent>
+      </Card>
+    </PageBody>
   );
 }

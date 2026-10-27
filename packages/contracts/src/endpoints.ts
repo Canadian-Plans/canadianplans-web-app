@@ -97,6 +97,14 @@ import {
   resolveOrderChangeRequestRequestSchema,
   resolveOrderChangeRequestResponseSchema,
 } from './workspace-orders';
+import {
+  createSavedViewRequestSchema,
+  deleteSavedViewResponseSchema,
+  listSavedViewsQuerySchema,
+  listSavedViewsResponseSchema,
+  savedViewResponseSchema,
+  updateSavedViewRequestSchema,
+} from './saved-views';
 import { listWorkspaceLeadsQuerySchema, listWorkspaceLeadsResponseSchema } from './workspace-leads';
 import { sourceReportQuerySchema, sourceReportResponseSchema } from './reports';
 import {
@@ -323,6 +331,46 @@ export const endpoints: readonly EndpointDef[] = [
     successStatus: 200,
     query: listWorkspaceOrdersQuerySchema,
     response: listWorkspaceOrdersResponseSchema,
+  },
+  // Staff — saved list views (private to their creator)
+  {
+    operationId: 'listSavedViews',
+    method: 'GET',
+    path: '/api/v1/staff/workspaces/{workspaceId}/views',
+    summary: "List the caller's own saved views for one list.",
+    auth: 'staff',
+    successStatus: 200,
+    query: listSavedViewsQuerySchema,
+    response: listSavedViewsResponseSchema,
+  },
+  {
+    operationId: 'createSavedView',
+    method: 'POST',
+    path: '/api/v1/staff/workspaces/{workspaceId}/views',
+    summary: 'Save a private list view (filters, sort and hidden columns; never the search).',
+    auth: 'staff',
+    successStatus: 201,
+    request: createSavedViewRequestSchema,
+    response: savedViewResponseSchema,
+  },
+  {
+    operationId: 'updateSavedView',
+    method: 'PATCH',
+    path: '/api/v1/staff/workspaces/{workspaceId}/views/{viewId}',
+    summary: "Rename or update one of the caller's saved views at the expected version.",
+    auth: 'staff',
+    successStatus: 200,
+    request: updateSavedViewRequestSchema,
+    response: savedViewResponseSchema,
+  },
+  {
+    operationId: 'deleteSavedView',
+    method: 'DELETE',
+    path: '/api/v1/staff/workspaces/{workspaceId}/views/{viewId}',
+    summary: "Delete one of the caller's saved views.",
+    auth: 'staff',
+    successStatus: 200,
+    response: deleteSavedViewResponseSchema,
   },
   {
     operationId: 'listOrderAssignees',

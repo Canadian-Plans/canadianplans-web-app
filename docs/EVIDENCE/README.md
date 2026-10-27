@@ -27,6 +27,11 @@ One folder per storefront page or page group (`home`, `pre-arrival`, `mobile-pla
 read, the browser captures taken at 390 and 1440, and the checks recorded in
 `verification.json` (headings, keyboard interaction, axe, image geometry).
 
+## Admin CRM
+
+- [admin-crm-phase-1/](admin-crm-phase-1/README.md) — Twenty-style orders list, filters,
+  saved views and side panel at 1440 and 375 pixels against a local fixture backend.
+
 ## Storefront audits
 
 - [guide-covers/](guide-covers/README.md) — six approved branded guide covers,

@@ -521,6 +521,35 @@ databaseDescribe('staff order actions against Postgres', () => {
     expect(foreign.orders.map((order) => order.id)).toEqual([ORDER_FOREIGN]);
   });
 
+  test('sorts by reference, and by status in lifecycle order with a stable id tie-break', async () => {
+    const byReference = await query.listOrders({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      includeContactSearch: false,
+      sortBy: 'reference',
+      sortDirection: 'asc',
+    });
+    expect(byReference.orders.map((order) => order.reference)).toEqual([
+      'CP-ACTIONS-MAIN',
+      'CP-ACTIONS-SECOND',
+      'CP-ACTIONS-THIRD',
+    ]);
+
+    // in_progress comes after submitted in the lifecycle, so it leads a descending sort.
+    const byStatus = await query.listOrders({
+      workspaceId: WORKSPACE,
+      actorId: ACTOR,
+      includeContactSearch: false,
+      sortBy: 'status',
+      sortDirection: 'desc',
+    });
+    expect(byStatus.orders.map((order) => order.id)).toEqual([
+      ORDER_SECOND,
+      ORDER_THIRD,
+      ORDER_MAIN,
+    ]);
+  });
+
   test('the archive dimension is a visibility filter, not a status change', async () => {
     const archived = await actions.archive({
       workspaceId: WORKSPACE,

@@ -10,6 +10,8 @@ import { useStaffSession } from '../staff-session-provider';
 import { OrderActions } from './order-actions';
 import { OrderChangeRequests, OrderNotes, OrderReminders } from './order-collaboration';
 import { OrderDocuments } from './order-documents';
+import { PAYMENT_STATE_LABELS } from './format';
+import { StatusTag } from './orders-table';
 import {
   OrderCustomerPanel,
   OrderPlanPanel,
@@ -19,12 +21,21 @@ import {
 import { OrderPayment } from './order-payment';
 import { useOrderWrite } from './order-write';
 
+/**
+ * One order with every staff action. `page` is the full two-column page;
+ * `panel` is the single column shown in the orders list's side panel, which
+ * also reports writes so the list behind it can refresh.
+ */
 export function OrderDetailView({
   workspaceSlug,
   orderId,
+  variant = 'page',
+  onChanged,
 }: {
   workspaceSlug: string;
   orderId: string;
+  variant?: 'page' | 'panel';
+  onChanged?(): void;
 }) {
   const staff = useStaffSession();
   const workspace = staff.workspaces.find((item) => item.slug === workspaceSlug);
@@ -71,7 +82,12 @@ export function OrderDetailView({
     };
   }, [accessToken, workspaceId]);
 
-  const write = useOrderWrite(refresh);
+  const refreshAfterWrite = useCallback(async () => {
+    await refresh();
+    onChanged?.();
+  }, [refresh, onChanged]);
+
+  const write = useOrderWrite(refreshAfterWrite);
 
   if (loading && !order) {
     return <p className="text-sm text-muted-foreground">Loading order…</p>;
@@ -89,19 +105,32 @@ export function OrderDetailView({
     );
   }
 
+  const panel = variant === 'panel';
+  const scope = { workspaceId: workspaceId ?? '', accessToken: accessToken ?? '' };
+  const showDocuments =
+    order.customerDataState !== 'restricted' && order.customerDataState !== 'deleted';
+
   return (
     <section className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-2xl font-semibold">{order.reference}</h1>
-          <Badge>{order.fulfilmentStatus}</Badge>
-          <Badge variant="outline">{order.paymentState}</Badge>
+      {panel ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <StatusTag status={order.fulfilmentStatus} />
+          <Badge variant="outline">{PAYMENT_STATE_LABELS[order.paymentState]}</Badge>
           {order.archiveState === 'archived' ? <Badge variant="secondary">Archived</Badge> : null}
         </div>
-        <Button asChild variant="outline" size="sm">
-          <Link href={`/w/${workspaceSlug}/orders`}>Back to orders</Link>
-        </Button>
-      </div>
+      ) : (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-2xl font-semibold">{order.reference}</h1>
+            <Badge>{order.fulfilmentStatus}</Badge>
+            <Badge variant="outline">{order.paymentState}</Badge>
+            {order.archiveState === 'archived' ? <Badge variant="secondary">Archived</Badge> : null}
+          </div>
+          <Button asChild variant="outline" size="sm">
+            <Link href={`/w/${workspaceSlug}/orders`}>Back to orders</Link>
+          </Button>
+        </div>
+      )}
 
       {write.message ? (
         <div
@@ -124,54 +153,69 @@ export function OrderDetailView({
         </div>
       ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      {panel ? (
         <div className="flex flex-col gap-4">
+          <OrderActions {...scope} order={order} members={members} write={write} />
           <OrderSnapshotPanel order={order} />
           <OrderCustomerPanel order={order} />
+          <OrderPayment {...scope} order={order} write={write} />
+          {showDocuments ? <OrderDocuments {...scope} orderId={orderId} /> : null}
+          <OrderNotes {...scope} order={order} write={write} />
+          <OrderReminders {...scope} order={order} write={write} />
+          <OrderChangeRequests {...scope} order={order} write={write} />
           <OrderPlanPanel order={order} />
           <OrderTimelinePanel order={order} />
         </div>
-        <div className="flex flex-col gap-4">
-          <OrderActions
-            workspaceId={workspaceId ?? ''}
-            accessToken={accessToken ?? ''}
-            order={order}
-            members={members}
-            write={write}
-          />
-          <OrderPayment
-            workspaceId={workspaceId ?? ''}
-            accessToken={accessToken ?? ''}
-            order={order}
-            write={write}
-          />
-          {order.customerDataState !== 'restricted' && order.customerDataState !== 'deleted' ? (
-            <OrderDocuments
+      ) : (
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="flex flex-col gap-4">
+            <OrderSnapshotPanel order={order} />
+            <OrderCustomerPanel order={order} />
+            <OrderPlanPanel order={order} />
+            <OrderTimelinePanel order={order} />
+          </div>
+          <div className="flex flex-col gap-4">
+            <OrderActions
               workspaceId={workspaceId ?? ''}
               accessToken={accessToken ?? ''}
-              orderId={orderId}
+              order={order}
+              members={members}
+              write={write}
             />
-          ) : null}
-          <OrderNotes
-            workspaceId={workspaceId ?? ''}
-            accessToken={accessToken ?? ''}
-            order={order}
-            write={write}
-          />
-          <OrderReminders
-            workspaceId={workspaceId ?? ''}
-            accessToken={accessToken ?? ''}
-            order={order}
-            write={write}
-          />
-          <OrderChangeRequests
-            workspaceId={workspaceId ?? ''}
-            accessToken={accessToken ?? ''}
-            order={order}
-            write={write}
-          />
+            <OrderPayment
+              workspaceId={workspaceId ?? ''}
+              accessToken={accessToken ?? ''}
+              order={order}
+              write={write}
+            />
+            {order.customerDataState !== 'restricted' && order.customerDataState !== 'deleted' ? (
+              <OrderDocuments
+                workspaceId={workspaceId ?? ''}
+                accessToken={accessToken ?? ''}
+                orderId={orderId}
+              />
+            ) : null}
+            <OrderNotes
+              workspaceId={workspaceId ?? ''}
+              accessToken={accessToken ?? ''}
+              order={order}
+              write={write}
+            />
+            <OrderReminders
+              workspaceId={workspaceId ?? ''}
+              accessToken={accessToken ?? ''}
+              order={order}
+              write={write}
+            />
+            <OrderChangeRequests
+              workspaceId={workspaceId ?? ''}
+              accessToken={accessToken ?? ''}
+              order={order}
+              write={write}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }

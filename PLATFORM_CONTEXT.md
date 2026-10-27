@@ -46,7 +46,7 @@ The three storefronts are **separate brands** with their own names, domains, loo
 | ORM / validation / tests | **Drizzle**, **Zod**, **Vitest**, **Playwright** | Vitest for unit/component; Playwright for e2e. In backend and every frontend. |
 | Error tracking | Sentry-class tool | No PII in traces. |
 | Backups | **GitHub Actions → Backblaze B2** | Custom job (T24). Independent of Supabase plan tier. |
-| Automation | **n8n** | Phase B only. Not at launch. |
+| Automation | **In-app automations** (ADR 0006) | Built into the backend (outbox, scheduler, transition service) and edited in admin; roadmap in `docs/superpowers/specs/2026-10-27-admin-crm-and-automations.md`. n8n stays optional, Phase B, for outside connections only. |
 | Monorepo | **pnpm workspaces**, one repo | `apps/*` + `packages/*`. Shared code lives in packages, not copied. |
 
 **Outside the current baseline:** VPS / always-on hosting, self-hosted Supabase, form builders, shared content across brands, universal customer accounts, multilingual content, SMS/WhatsApp, refunds/cancellation logic, publishing shared packages to an external registry (they stay in-repo as workspace packages).
@@ -105,7 +105,7 @@ Backend + admin + **site-1 only**. One workspace (site-1). Everything needed to 
 | Hourly backups / PITR | Backup job parameterized by frequency; daily now. |
 | Delivery / payment providers | Behind adapter interfaces; manual courier + manual/flagged payment now. |
 | Ad conversion events (Google/Meta) | `AnalyticsSink` interface; only a log/Umami sink now. |
-| n8n automations | Not wired in Phase A. |
+| n8n (outside connections) | Not wired. Internal automations are in-app instead (ADR 0006). |
 | Load test | Deferred; keep endpoints measurable. |
 
 ## 7. Decisions already made (don't re-ask)

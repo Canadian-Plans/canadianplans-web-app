@@ -30,6 +30,13 @@ import { staffRoleNameSchema } from './staff-auth';
 export const orderArchiveFilterSchema = archiveStateSchema.or(z.literal('all'));
 export type OrderArchiveFilter = z.infer<typeof orderArchiveFilterSchema>;
 
+/** Columns the staff orders list can be sorted by; the backend defaults to `submittedAt` descending. */
+export const orderSortFieldSchema = z.enum(['submittedAt', 'updatedAt', 'reference', 'status']);
+export type OrderSortField = z.infer<typeof orderSortFieldSchema>;
+
+export const sortDirectionSchema = z.enum(['asc', 'desc']);
+export type SortDirection = z.infer<typeof sortDirectionSchema>;
+
 export const listWorkspaceOrdersQuerySchema = z.object({
   status: orderFulfilmentStatusSchema.optional(),
   paymentState: paymentStateSchema.optional(),
@@ -46,6 +53,8 @@ export const listWorkspaceOrdersQuerySchema = z.object({
   archiveState: orderArchiveFilterSchema.optional(),
   /** Bounded, workspace-scoped search over reference and customer contact fields. */
   search: z.string().min(1).max(120).optional(),
+  sortBy: orderSortFieldSchema.optional(),
+  sortDirection: sortDirectionSchema.optional(),
   page: z.coerce.number().int().positive().optional(),
   pageSize: z.coerce.number().int().positive().max(200).optional(),
 });

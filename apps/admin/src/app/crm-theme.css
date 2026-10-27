@@ -1,0 +1,55 @@
+/*
+ * Admin-only CRM theme (admin CRM Phase 1, owner decisions of 27 Oct 2026):
+ * dark only, with the greys, borders and indigo accent of Twenty's dark theme.
+ * Values are sRGB approximations of Twenty's published display-p3 tokens; no
+ * Twenty file is copied (spec §3). Storefronts never import this file, so the
+ * shared tokens in @canadian-plans/ui stay as they are.
+ */
+.dark {
+  --background: #171717;
+  --foreground: #ebebeb;
+  --card: #1b1b1b;
+  --card-foreground: #ebebeb;
+  --popover: #1d1d1d;
+  --popover-foreground: #ebebeb;
+  --primary: #4a63d6;
+  --primary-foreground: #ffffff;
+  --secondary: #222222;
+  --secondary-foreground: #ebebeb;
+  --muted: #1d1d1d;
+  --muted-foreground: #8c8c8c;
+  --accent: #232323;
+  --accent-foreground: #ebebeb;
+  --destructive: #d4544f;
+  --border: #2a2a2a;
+  --input: #333333;
+  --ring: #4a63d6;
+
+  --sidebar: #121212;
+  --sidebar-foreground: #b3b3b3;
+  --sidebar-primary: #4a63d6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1f1f1f;
+  --sidebar-accent-foreground: #ebebeb;
+  --sidebar-border: #222222;
+  --sidebar-ring: #4a63d6;
+
+  /* CRM list surfaces */
+  --crm-header: #1b1b1b;
+  --crm-row-border: #222222;
+  --crm-row-hover: #1c1c1c;
+  --crm-selected: #161a2c;
+  --crm-chip: #1b2447;
+  --crm-chip-border: #2a3870;
+  --crm-chip-foreground: #a1b0ff;
+}
+
+@theme inline {
+  --color-crm-header: var(--crm-header);
+  --color-crm-row-border: var(--crm-row-border);
+  --color-crm-row-hover: var(--crm-row-hover);
+  --color-crm-selected: var(--crm-selected);
+  --color-crm-chip: var(--crm-chip);
+  --color-crm-chip-border: var(--crm-chip-border);
+  --color-crm-chip-foreground: var(--crm-chip-foreground);
+}

@@ -56,6 +56,9 @@ Move rows here once decided, with the date. Don't delete them; a decided input t
 
 | # | Input | Answer | Decided |
 |---|---|---|---|
+| — | Admin look and behaviour | Twenty CRM style, dark only: saved views (private to each staff member), records open in a side panel, board view where a drag moves the order straight away. Orders first. No Twenty code copied (AGPL). See `superpowers/specs/2026-10-27-admin-crm-and-automations.md` | 27 Oct 2026 |
+| — | Automations | Built into the admin and backend now (ADR 0006), not n8n. General builder (trigger, conditions, actions); first uses reminder alerts, owner alerts, customer follow-ups. Full canvas editor | 27 Oct 2026 |
+| — | Automation limits | Customer emails: approve once when switching on (preview + aal2), then automatic. Any allowed order status change. No outside apps, custom code, deletes, payments or commission changes. Email text: starter templates plus owner-edited text with fill-ins. "Manage automations" permission for owner plus chosen staff | 27 Oct 2026 |
 | 1 | Website 1 name | Canadian Plans; public code configuration and Studio title updated. Technical identifier remains `site-1`; domain and legal billing identity remain separate inputs | 12 Oct 2026 |
 | — | Website 1 visual design and service sequence | Owner-supplied Canadian Plans Figma reference; mobility first, internet and TV later (superseded 20 Oct 2026: all Canada Wide plans from launch, see `LAUNCH_PLANS.md`). Implementation followed `apps/site-1/docs/DESIGN_TO_CODE_PLAN.md` and the platform invariants | 12 Oct 2026 |
 | — | Region for data and functions | Canada preferred; superseded 14 Sep 2026 — Supabase project provisioned in us-west-2 is acceptable | 9 Sep 2026 |

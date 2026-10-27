@@ -1,12 +1,24 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useEffect, type ReactNode } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, type CSSProperties, type ReactNode } from 'react';
 import { SidebarInset, SidebarProvider } from '@canadian-plans/ui';
 
 import { AppSidebar } from './app-sidebar';
 import { useStaffSession } from './staff-session-provider';
 import { TopBar } from './top-bar';
+import { WorkspaceSwitcher } from './workspace-switcher';
+
+/** Twenty's 220px navigation width, set through the shared sidebar's CSS variable. */
+const SIDEBAR_STYLE: CSSProperties & Record<'--sidebar-width', string> = {
+  '--sidebar-width': '220px',
+};
+
+/** The section to keep when switching workspace, e.g. `orders` or `reports/sources`. */
+function currentSection(pathname: string): string {
+  const section = pathname.split('/')[3] ?? 'orders';
+  return section === 'reports' ? 'reports/sources' : section;
+}
 
 export function ProtectedWorkspaceShell({
   children,
@@ -16,6 +28,7 @@ export function ProtectedWorkspaceShell({
   workspaceSlug: string;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const staff = useStaffSession();
   const workspace = staff.workspaces.find((item) => item.slug === workspaceSlug);
 
@@ -47,11 +60,25 @@ export function ProtectedWorkspaceShell({
   }
 
   return (
-    <SidebarProvider>
-      <AppSidebar workspace={workspace.slug} />
+    <SidebarProvider style={SIDEBAR_STYLE}>
+      <AppSidebar
+        workspace={workspace.slug}
+        switcher={
+          <WorkspaceSwitcher
+            currentWorkspace={workspace}
+            currentSection={currentSection(pathname)}
+            workspaces={staff.workspaces}
+          />
+        }
+        onSignOut={() => void staff.signOut()}
+      />
       <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar workspace={workspace} workspaces={staff.workspaces} onSignOut={staff.signOut} />
-        <SidebarInset id="main-content" tabIndex={-1} className="flex-1 p-6 outline-none">
+        <TopBar workspace={workspace} />
+        <SidebarInset
+          id="main-content"
+          tabIndex={-1}
+          className="min-h-0 flex-1 outline-none md:border-l md:border-sidebar-border"
+        >
           {children}
         </SidebarInset>
       </div>

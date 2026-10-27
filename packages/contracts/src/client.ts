@@ -204,6 +204,19 @@ import {
   type JoinRegionWaitlistResponse,
 } from './region-waitlist';
 import {
+  createSavedViewRequestSchema,
+  deleteSavedViewResponseSchema,
+  listSavedViewsResponseSchema,
+  savedViewResponseSchema,
+  updateSavedViewRequestSchema,
+  type CreateSavedViewRequest,
+  type DeleteSavedViewResponse,
+  type ListSavedViewsResponse,
+  type SavedViewObject,
+  type SavedViewResponse,
+  type UpdateSavedViewRequest,
+} from './saved-views';
+import {
   listWebsiteOffersQuerySchema,
   listWebsiteOffersResponseSchema,
   type ListWebsiteOffersQuery,
@@ -385,6 +398,14 @@ export interface BackendClient {
       query?: ListWorkspaceOrdersQuery,
     ): Promise<ListWorkspaceOrdersResponse>;
     listOrderAssignees(workspaceId: string): Promise<ListAssignableMembersResponse>;
+    listSavedViews(workspaceId: string, object: SavedViewObject): Promise<ListSavedViewsResponse>;
+    createSavedView(workspaceId: string, body: CreateSavedViewRequest): Promise<SavedViewResponse>;
+    updateSavedView(
+      workspaceId: string,
+      viewId: string,
+      body: UpdateSavedViewRequest,
+    ): Promise<SavedViewResponse>;
+    deleteSavedView(workspaceId: string, viewId: string): Promise<DeleteSavedViewResponse>;
     getOrder(workspaceId: string, orderId: string): Promise<GetWorkspaceOrderResponse>;
     patchOrder(
       workspaceId: string,
@@ -842,10 +863,39 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
             submittedTo: query?.submittedTo,
             archiveState: query?.archiveState,
             search: query?.search,
+            sortBy: query?.sortBy,
+            sortDirection: query?.sortDirection,
             page: query?.page,
             pageSize: query?.pageSize,
           },
           responseSchema: listWorkspaceOrdersResponseSchema,
+        }),
+      listSavedViews: (workspaceId, object) =>
+        call({
+          method: 'GET',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/views`,
+          query: { object },
+          responseSchema: listSavedViewsResponseSchema,
+        }),
+      createSavedView: (workspaceId, body) =>
+        call({
+          method: 'POST',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/views`,
+          body: createSavedViewRequestSchema.parse(body),
+          responseSchema: savedViewResponseSchema,
+        }),
+      updateSavedView: (workspaceId, viewId, body) =>
+        call({
+          method: 'PATCH',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/views/${encode(viewId)}`,
+          body: updateSavedViewRequestSchema.parse(body),
+          responseSchema: savedViewResponseSchema,
+        }),
+      deleteSavedView: (workspaceId, viewId) =>
+        call({
+          method: 'DELETE',
+          path: `/api/v1/staff/workspaces/${encode(workspaceId)}/views/${encode(viewId)}`,
+          responseSchema: deleteSavedViewResponseSchema,
         }),
       listOrderAssignees: (workspaceId) =>
         call({

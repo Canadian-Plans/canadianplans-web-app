@@ -1,35 +1,18 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
 import type { StaffWorkspace } from '@canadian-plans/contracts';
-import { Button, SidebarTrigger } from '@canadian-plans/ui';
+import { SidebarTrigger } from '@canadian-plans/ui';
 
-import { WorkspaceSwitcher } from './workspace-switcher';
-
-export function TopBar({
-  workspace,
-  workspaces,
-  onSignOut,
-}: {
-  workspace: StaffWorkspace;
-  workspaces: readonly StaffWorkspace[];
-  onSignOut(): Promise<void>;
-}) {
-  const pathname = usePathname();
-  const section = pathname.split('/')[3] ?? 'orders';
-
+/**
+ * Phone-only bar. On a computer the sidebar carries the workspace switcher,
+ * Sign out and its own collapse button (Twenty layout); on a phone the sidebar
+ * is a drawer, so this bar opens it.
+ */
+export function TopBar({ workspace }: { workspace: StaffWorkspace }) {
   return (
-    <header className="flex h-14 shrink-0 items-center gap-3 border-b bg-background px-4">
+    <header className="flex h-12 shrink-0 items-center gap-2 border-b bg-crm-header px-3 md:hidden">
       <SidebarTrigger />
-      <div className="h-6 w-px bg-border" aria-hidden="true" />
-      <WorkspaceSwitcher
-        currentWorkspace={workspace}
-        currentSection={section === 'reports' ? 'reports/sources' : section}
-        workspaces={workspaces}
-      />
-      <Button variant="ghost" className="ml-auto" onClick={() => void onSignOut()}>
-        Sign out
-      </Button>
+      <span className="truncate text-[13px] font-semibold">{workspace.name}</span>
     </header>
   );
 }

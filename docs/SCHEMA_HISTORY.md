@@ -622,3 +622,34 @@ staff approve, so the submitted order stays immutable (REQ 14/21).
 `order_info_requests` uses the standard `FOR ALL` `app_runtime` tenant policy
 on `workspace_id` with a non-null `app.actor_id`, repeated in `WITH CHECK`, RLS
 enabled and forced.
+
+## 0028_saved_views.sql
+
+Task: admin CRM Phase 1, private saved views (owner decisions, 27 Oct 2026)
+
+Date: 2026-10-27
+
+### Change
+
+- Added `saved_views`: one staff member's named view of a list (`object`,
+  currently only `orders`), with `state` JSONB (structured filters, sort and
+  hidden columns, validated by `orderViewStateSchema`), `version` for
+  optimistic updates, and `created_at`/`updated_at`.
+- Composite FK `(workspace_id, actor_id)` → `memberships(workspace_id,
+user_id)` with cascade; unique `(workspace_id, actor_id, object,
+lower(name))`; index on `(workspace_id, actor_id, object)`.
+- `app_runtime` gets SELECT/INSERT/UPDATE/DELETE (a deleted view is gone; the
+  audit row remains).
+
+### Why
+
+The owner chose private saved views for the Twenty-style admin (spec
+`docs/superpowers/specs/2026-10-27-admin-crm-and-automations.md`). Views hold no
+customer data: the free-text search is never stored (invariant 12).
+
+### RLS
+
+`saved_views_owner_policy` is `FOR ALL TO app_runtime` and requires both
+`workspace_id = app.workspace_id` **and** `actor_id = app.actor_id` in `USING`
+and `WITH CHECK`, so a colleague in the same workspace cannot read or change
+the row even through a direct query. RLS enabled and forced.

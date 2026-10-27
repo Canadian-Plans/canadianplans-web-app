@@ -613,6 +613,24 @@ describe('staff order list and permission-aware search', () => {
     expect(queryStore.listCalls[0]?.includeContactSearch).toBe(true);
   });
 
+  it('passes the chosen sort to the query store', async () => {
+    const response = await fetch(
+      `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/orders?sortBy=status&sortDirection=asc`,
+      { headers: headers() },
+    );
+    expect(response.status).toBe(200);
+    expect(queryStore.listCalls[0]).toMatchObject({ sortBy: 'status', sortDirection: 'asc' });
+  });
+
+  it('rejects a sort field the list does not offer', async () => {
+    const response = await fetch(
+      `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/orders?sortBy=total`,
+      { headers: headers() },
+    );
+    expect(response.status).toBe(400);
+    expect(queryStore.listCalls).toEqual([]);
+  });
+
   it('rejects an unknown archive filter value instead of silently ignoring it', async () => {
     const response = await fetch(
       `${baseUrl}/api/v1/staff/workspaces/${WORKSPACE}/orders?archiveState=everything`,

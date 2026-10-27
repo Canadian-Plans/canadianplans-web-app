@@ -8,6 +8,7 @@ export { cn } from './lib/utils';
 export { Avatar, AvatarImage, AvatarFallback } from './components/avatar';
 export { Badge, badgeVariants, type BadgeProps } from './components/badge';
 export { Button, buttonVariants, type ButtonProps } from './components/button';
+export { Checkbox } from './components/checkbox';
 export {
   Card,
   CardHeader,
@@ -46,6 +47,7 @@ export {
 export { Input } from './components/input';
 export { NativeSelect } from './components/native-select';
 export { Label } from './components/label';
+export { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from './components/popover';
 export { ReviewCard, type ReviewCardProps } from './components/review-card';
 export {
   Select,

@@ -17,7 +17,8 @@ session workflow; this page only tells you where things are.
 | [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md) | From "code on `main`" to the first real order fulfilled, with production status checks.                    |
 | [LAUNCH_PLANS.md](LAUNCH_PLANS.md)         | The plans, prices and promotions confirmed for launch (feeds the repo catalogue, ADR 0005).                |
 | [RETENTION_POLICY.md](RETENTION_POLICY.md) | Customer-data retention and deletion rules (request-only deletion, 21 October 2026).                       |
-| [ADR/](ADR/)                               | Architecture decision records 0000–0005 (planning baseline, split architecture, design system, catalogue/orders/outbox, Railway backend, repo catalogue). |
+| [ADR/](ADR/)                               | Architecture decision records 0000–0006 (planning baseline, split architecture, design system, catalogue/orders/outbox, Railway backend, repo catalogue, in-app automations). |
+| [superpowers/](superpowers/specs/2026-10-27-admin-crm-and-automations.md) | Admin CRM refresh and automations: owner decisions, roadmap ([spec](superpowers/specs/2026-10-27-admin-crm-and-automations.md)) and per-phase build plans ([Phase 1](superpowers/plans/2026-10-27-admin-crm-phase-1-orders-list.md)). |
 
 ## Reference
 
