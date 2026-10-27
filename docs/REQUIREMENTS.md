@@ -188,7 +188,7 @@ Payment, delivery, commission, and archive states are separate dimensions from f
 
 **REQ 29 Payments.** The per-offer payment-required setting drives the workflow. In Phase A, payment is collected manually and its status recorded by staff. In Phase B an online payment adapter (provider to be selected) creates a session from the backend quote amount, confirms only via trusted webhook, and records audited payment status. There is no refund or cancellation-fee logic.
 
-**REQ 30 Automation.** Future n8n workflows consume authorised events or scoped APIs, never raw database or storage credentials. An automation outage must not lose or block a saved order.
+**REQ 30 Automation.** Future n8n workflows consume authorised events or scoped APIs, never raw database or storage credentials. An automation outage must not lose or block a saved order. Internal automations built into the backend and admin (ADR 0006, decided 27 October 2026) follow the same rule: they act only through the backend's services, outbox and audit.
 
 # 10 Partner operations (SIM workspace)
 
