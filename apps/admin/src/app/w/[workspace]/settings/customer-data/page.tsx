@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@canadian-plans/ui';
 
 import { CustomerDataDeletion } from '../../../../../components/customer-data-deletion';
+import { PageBody } from '../../../../../components/crm/page-body';
 
 export default async function CustomerDataSettingsPage({
   params,
@@ -9,19 +10,21 @@ export default async function CustomerDataSettingsPage({
 }) {
   const { workspace } = await params;
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle asChild>
-          <h1>Customer data deletion</h1>
-        </CardTitle>
-        <CardDescription>
-          Owner or Finance with verified multi-factor access. Find a requester&apos;s records and
-          delete each one you have verified.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <CustomerDataDeletion workspaceSlug={workspace} />
-      </CardContent>
-    </Card>
+    <PageBody>
+      <Card>
+        <CardHeader>
+          <CardTitle asChild>
+            <h1>Customer data deletion</h1>
+          </CardTitle>
+          <CardDescription>
+            Owner or Finance with verified multi-factor access. Find a requester&apos;s records and
+            delete each one you have verified.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <CustomerDataDeletion workspaceSlug={workspace} />
+        </CardContent>
+      </Card>
+    </PageBody>
   );
 }

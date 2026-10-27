@@ -27,9 +27,14 @@ export function WorkspaceSwitcher({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" aria-label="Switch workspace" className="min-w-0 max-w-64">
+        <Button
+          variant="ghost"
+          size="sm"
+          aria-label="Switch workspace"
+          className="h-7 w-full min-w-0 justify-between gap-1 px-1.5 text-[13px] font-medium"
+        >
           <span className="truncate">{currentWorkspace.name}</span>
-          <ChevronsUpDownIcon className="size-4 text-muted-foreground" />
+          <ChevronsUpDownIcon className="size-3.5 text-muted-foreground" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="min-w-56">
