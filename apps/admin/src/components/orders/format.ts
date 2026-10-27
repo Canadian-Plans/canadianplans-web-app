@@ -50,3 +50,24 @@ export function customerLabel(customer: {
 }): string {
   return customer.fullName ?? customer.email ?? customer.phone ?? '—';
 }
+
+const relativeFormat = new Intl.RelativeTimeFormat('en-CA', { numeric: 'auto' });
+
+const RELATIVE_STEPS: readonly [Intl.RelativeTimeFormatUnit, number][] = [
+  ['year', 365 * 24 * 60 * 60],
+  ['month', 30 * 24 * 60 * 60],
+  ['week', 7 * 24 * 60 * 60],
+  ['day', 24 * 60 * 60],
+  ['hour', 60 * 60],
+  ['minute', 60],
+];
+
+/** "3 days ago", "now": the list's compact dates; the exact time goes in a tooltip. */
+export function formatRelative(value: string, now: Date = new Date()): string {
+  const seconds = Math.round((new Date(value).getTime() - now.getTime()) / 1000);
+  if (Math.abs(seconds) < 60) return 'now';
+  for (const [unit, size] of RELATIVE_STEPS) {
+    if (Math.abs(seconds) >= size) return relativeFormat.format(Math.round(seconds / size), unit);
+  }
+  return 'now';
+}
