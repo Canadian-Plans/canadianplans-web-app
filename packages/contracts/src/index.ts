@@ -301,6 +301,7 @@ export {
   orderPaymentSchema,
   orderReminderSchema,
   orderSnapshotSchema,
+  orderSortFieldSchema,
   patchFieldKeys,
   patchOrderArchiveRequestSchema,
   patchOrderAssigneeRequestSchema,
@@ -310,6 +311,7 @@ export {
   recordOrderPaymentResponseSchema,
   resolveOrderChangeRequestRequestSchema,
   resolveOrderChangeRequestResponseSchema,
+  sortDirectionSchema,
   type AmendableContactPatch,
   type AmendableFieldKey,
   type CancelOrderInfoRequestResponse,
@@ -350,6 +352,7 @@ export {
   type OrderPayment,
   type OrderReminder,
   type OrderSnapshot,
+  type OrderSortField,
   type PatchOrderArchiveRequest,
   type PatchOrderAssigneeRequest,
   type PatchWorkspaceOrderRequest,
@@ -358,6 +361,7 @@ export {
   type RecordOrderPaymentResponse,
   type ResolveOrderChangeRequestRequest,
   type ResolveOrderChangeRequestResponse,
+  type SortDirection,
 } from './workspace-orders';
 
 export {

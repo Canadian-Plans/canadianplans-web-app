@@ -36,8 +36,10 @@ import {
   type OrderDetail,
   type OrderFulfilmentStatus,
   type OrderListItem,
+  type OrderSortField,
   type PageInfo,
   type PaymentState,
+  type SortDirection,
 } from '@canadian-plans/contracts';
 import { z } from 'zod';
 
@@ -62,6 +64,9 @@ export interface ListOrdersInput {
   search?: string;
   /** Contact-field matching requires the actor's contact-search capability (permission-aware search). */
   includeContactSearch: boolean;
+  /** Defaults to `submittedAt`, newest first. */
+  sortBy?: OrderSortField;
+  sortDirection?: SortDirection;
   page?: number;
   pageSize?: number;
 }
@@ -140,6 +145,26 @@ function searchCondition(term: string, includeContact: boolean) {
   );
 }
 
+/** Status sorts follow the order lifecycle, not the alphabet. */
+function statusRankSql() {
+  const ranks = orderFulfilmentStatusSchema.options.map(
+    (status, index) => sql`when ${status} then ${sql.raw(String(index))}`,
+  );
+  return sql`case ${orders.status} ${sql.join(ranks, sql` `)} end`;
+}
+
+/** The chosen column, then the id in the same direction, so pages never overlap or skip rows. */
+function orderByFor(sortBy: OrderSortField = 'submittedAt', direction: SortDirection = 'desc') {
+  const by = direction === 'asc' ? asc : desc;
+  const column = {
+    submittedAt: orders.submittedAt,
+    updatedAt: orders.updatedAt,
+    reference: orders.reference,
+    status: statusRankSql(),
+  }[sortBy];
+  return [by(column), by(orders.id)];
+}
+
 function archiveCondition(archiveState: OrderArchiveFilter | undefined) {
   if (archiveState === 'archived') return isNotNull(orders.archivedAt);
   if (archiveState === 'all') return undefined;
@@ -196,7 +221,7 @@ export class DatabaseOrderQueryStore implements OrderQueryStore {
             and(eq(partners.workspaceId, orders.workspaceId), eq(partners.id, orders.partnerId)),
           )
           .where(where)
-          .orderBy(desc(orders.submittedAt))
+          .orderBy(...orderByFor(input.sortBy, input.sortDirection))
           .limit(pageSize)
           .offset(offset);
 

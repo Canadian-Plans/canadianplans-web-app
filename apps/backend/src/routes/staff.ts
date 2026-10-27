@@ -709,6 +709,8 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         archiveState: query.data.archiveState,
         search: query.data.search,
         includeContactSearch: capabilities.canSearchContact,
+        sortBy: query.data.sortBy,
+        sortDirection: query.data.sortDirection,
         page: query.data.page,
         pageSize: query.data.pageSize,
       });

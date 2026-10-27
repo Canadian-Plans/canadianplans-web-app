@@ -2828,6 +2828,21 @@
             "schema": { "type": "string", "minLength": 1, "maxLength": 120 }
           },
           {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["submittedAt", "updatedAt", "reference", "status"]
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "enum": ["asc", "desc"] }
+          },
+          {
             "name": "page",
             "in": "query",
             "required": false,
