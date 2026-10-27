@@ -254,5 +254,38 @@ invited address.
 
 ## Implementation evidence
 
-Implementation and check results are recorded here after verification. The design
-above is a specification, not a claim that all checks already passed.
+Verified on 27 October 2026 with Node 22.19.0, pnpm 9.15.0 and synthetic data in
+local disposable PostgreSQL databases. No production database was accessed and
+no deployment was performed.
+
+| Check                                                                                    | Result                                                         |
+| ---------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `pnpm run test` on a fresh disposable database                                           | 197 files, 1,611 tests passed; none skipped                    |
+| New lead backend and populated-backfill suites, repeated on a used database              | 25 tests passed                                                |
+| `pnpm run test:tooling`                                                                  | 74 tests passed                                                |
+| `pnpm run typecheck`, `lint`, `format`, `check:frontend-db-boundary`                     | Passed                                                         |
+| `pnpm run build`                                                                         | Backend, admin and site-1 production builds passed             |
+| Contracts/OpenAPI generation                                                             | Repeated generation produced identical output                  |
+| `pnpm --filter @canadian-plans/db db:generate`                                           | No schema changes after the checked-in migration/snapshot      |
+| Preview-isolation inventory, forbidden service-role scan, admin browser-bundle seam scan | Passed                                                         |
+| Admin shell browser tests                                                                | 18 passed                                                      |
+| Admin lead and order browser journeys                                                    | 5 passed, including the full owner/granted-member lead journey |
+| Website browser journeys                                                                 | 86 passed on desktop/mobile                                    |
+
+The website security check also builds both analytics configurations, rejects a
+deliberate client import of server configuration, and scans browser/rendered
+assets for a synthetic service credential. Its final results are recorded in the
+pull request. [Screenshots](EVIDENCE/lead-data-model/README.md) show the saved layout
+and reloaded personal view using synthetic records and the real backend.
+
+The populated-backfill test creates and removes its own temporary database and
+coordinates historical cluster-wide role changes with the integration setup.
+New lead fixtures use unique workspaces; their repeatability was verified. The
+entire existing suite uses a fresh database because some pre-existing suites
+retain fixed fixtures between invocations.
+
+Local database checks ran on PostgreSQL 18.4; CI remains the PostgreSQL 15.14
+compatibility gate. Live backfill classification and migration execution are
+deliberately left to the release owner, using the read-only checks and release
+order above. External catalogue, bot verification and staff identity are test
+harness substitutes; authorization, persistence, RLS and workflow code are real.
