@@ -376,7 +376,7 @@ export function OrdersIndex({
                   value={searchInput}
                   maxLength={120}
                   placeholder="Search"
-                  className="h-7 w-32 rounded-md sm:w-44 border border-transparent bg-transparent pr-2 pl-7 text-[13px] outline-none placeholder:text-muted-foreground hover:bg-accent focus:border-input focus:bg-background"
+                  className="h-7 w-24 rounded-md sm:w-44 border border-transparent bg-transparent pr-2 pl-7 text-[13px] outline-none placeholder:text-muted-foreground hover:bg-accent focus:border-input focus:bg-background"
                   onChange={(event) => {
                     setSearchInput(event.target.value);
                     if (event.target.value === '' && search) {

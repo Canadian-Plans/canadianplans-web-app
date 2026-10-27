@@ -82,7 +82,7 @@ export function OrdersFilterMenu({
       <PopoverTrigger asChild>
         <BarButton>
           <ListFilterIcon aria-hidden="true" />
-          Filter
+          <span className="max-sm:sr-only">Filter</span>
         </BarButton>
       </PopoverTrigger>
       <MenuPanel aria-label="Filter orders">
@@ -244,7 +244,7 @@ export function OrdersSortMenu({ state, onChange }: MenuProps) {
       <PopoverTrigger asChild>
         <BarButton>
           <ArrowDownWideNarrowIcon aria-hidden="true" />
-          Sort
+          <span className="max-sm:sr-only">Sort</span>
         </BarButton>
       </PopoverTrigger>
       <MenuPanel aria-label="Sort orders">
@@ -285,7 +285,7 @@ export function OrdersOptionsMenu({ state, onChange }: MenuProps) {
       <PopoverTrigger asChild>
         <BarButton>
           <SlidersHorizontalIcon aria-hidden="true" />
-          Options
+          <span className="max-sm:sr-only">Options</span>
         </BarButton>
       </PopoverTrigger>
       <MenuPanel align="end" aria-label="List options">
