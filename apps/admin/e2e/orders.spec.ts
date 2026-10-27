@@ -106,3 +106,62 @@ test('a stale tab is told the order changed and can reload it', async ({ page, c
   await expect(statusBadge(stale, order.reference)).toHaveText('in_progress');
   await expect(reload).toHaveCount(0);
 });
+
+test('opens an order in the side panel and moves it on without leaving the list', async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  const order = await placeOrder();
+
+  await page.goto(`/w/${WORKSPACE_SLUG}/orders`);
+  const list = page.getByRole('table', { name: 'Orders' });
+  await list.getByRole('row', { name: new RegExp(order.reference) }).click();
+  const panel = page.getByRole('complementary', { name: order.reference });
+  await expect(panel).toBeVisible();
+  await expect(page).toHaveURL(new RegExp(`[?&]order=${order.id}`));
+
+  await panel.getByRole('button', { name: 'Move to In progress' }).click();
+  await expect(panel.getByText('In progress', { exact: true }).first()).toBeVisible();
+  // The list behind the panel refreshes after the change.
+  await expect(
+    list
+      .getByRole('row', { name: new RegExp(order.reference) })
+      .getByText('In progress', { exact: true }),
+  ).toBeVisible();
+
+  await page.keyboard.press('Escape');
+  await expect(panel).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('saves a private view with a status filter and finds it again after a reload', async ({
+  page,
+}) => {
+  const order = await placeOrder();
+  const name = `Submitted ${randomUUID().slice(0, 8)}`;
+
+  await page.goto(`/w/${WORKSPACE_SLUG}/orders`);
+  await page.getByRole('button', { name: 'Filter' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Status' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Submitted' }).click();
+  await expect(page.getByRole('button', { name: 'Remove Status filter' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Save as new view' }).click();
+  await page.getByRole('textbox', { name: 'New view name' }).fill(name);
+  await page.getByRole('button', { name: 'Save view' }).click();
+  await expect(page).toHaveURL(/[?&]view=[0-9a-f-]{36}/);
+
+  await page.reload();
+  await expect(page.getByRole('button', { name: new RegExp(name) })).toBeVisible();
+  await expect(
+    page
+      .getByRole('table', { name: 'Orders' })
+      .getByRole('row', { name: new RegExp(order.reference) }),
+  ).toBeVisible();
+
+  await page.getByRole('button', { name: new RegExp(name) }).click();
+  await page.getByRole('button', { name: `Delete view ${name}` }).click();
+  await page.getByRole('button', { name: `Confirm delete ${name}` }).click();
+  await expect(page.getByRole('button', { name: /All orders/ })).toBeVisible();
+});

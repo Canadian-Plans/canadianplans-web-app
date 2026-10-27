@@ -197,6 +197,7 @@ export function OrdersTable({
               return (
                 <tr
                   key={order.id}
+                  data-order-id={order.id}
                   tabIndex={0}
                   data-active={isActive || undefined}
                   className="group cursor-pointer outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
