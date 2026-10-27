@@ -11,6 +11,7 @@ import {
   type CreateOrderNoteRequest,
   type CreateOrderReminderRequest,
   type CreateOrderReminderResponse,
+  type CreateSavedViewRequest,
   type CreateDownloadLinkResponse,
   type CreateServiceCredentialRequest,
   type CreateServiceCredentialResponse,
@@ -19,6 +20,7 @@ import {
   type ChangeCommissionStateResponse,
   type DeleteCustomerDataRequest,
   type DeleteOrderReminderResponse,
+  type DeleteSavedViewResponse,
   type DeletionSubjectType,
   type FindDeletionSubjectsRequest,
   type FindDeletionSubjectsResponse,
@@ -33,6 +35,7 @@ import {
   type InviteStaffResponse,
   type ListAssignableMembersResponse,
   type ListOrderNotesResponse,
+  type ListSavedViewsResponse,
   type ListServiceCredentialsResponse,
   type ListWorkspaceLeadsQuery,
   type ListWorkspaceLeadsResponse,
@@ -52,10 +55,13 @@ import {
   type ResolveUncertainJobResponse,
   type RevokeServiceCredentialResponse,
   type RevokeStaffResponse,
+  type SavedViewObject,
+  type SavedViewResponse,
   type SourceReportQuery,
   type SourceReportResponse,
   type StaffWorkspaceAccessResponse,
   type StaffWorkspacesResponse,
+  type UpdateSavedViewRequest,
 } from '@canadian-plans/contracts';
 
 const API_BASE_URL =
@@ -210,6 +216,40 @@ export async function listWorkspaceOrders(
   query?: ListWorkspaceOrdersQuery,
 ): Promise<ListWorkspaceOrdersResponse> {
   return client(accessToken).staff.listOrders(workspaceId, query);
+}
+
+/** The caller's own saved views for one list (private to them). */
+export async function listSavedViews(
+  accessToken: string,
+  workspaceId: string,
+  object: SavedViewObject,
+): Promise<ListSavedViewsResponse> {
+  return client(accessToken).staff.listSavedViews(workspaceId, object);
+}
+
+export async function createSavedView(
+  accessToken: string,
+  workspaceId: string,
+  body: CreateSavedViewRequest,
+): Promise<SavedViewResponse> {
+  return client(accessToken).staff.createSavedView(workspaceId, body);
+}
+
+export async function updateSavedView(
+  accessToken: string,
+  workspaceId: string,
+  viewId: string,
+  body: UpdateSavedViewRequest,
+): Promise<SavedViewResponse> {
+  return client(accessToken).staff.updateSavedView(workspaceId, viewId, body);
+}
+
+export async function deleteSavedView(
+  accessToken: string,
+  workspaceId: string,
+  viewId: string,
+): Promise<DeleteSavedViewResponse> {
+  return client(accessToken).staff.deleteSavedView(workspaceId, viewId);
 }
 
 export async function listOrderAssignees(
