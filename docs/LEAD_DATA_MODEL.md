@@ -272,10 +272,18 @@ no deployment was performed.
 | Admin lead and order browser journeys                                                    | 5 passed, including the full owner/granted-member lead journey |
 | Website browser journeys                                                                 | 86 passed on desktop/mobile                                    |
 
-The website security check also builds both analytics configurations, rejects a
-deliberate client import of server configuration, and scans browser/rendered
-assets for a synthetic service credential. Its final results are recorded in the
-pull request. [Screenshots](EVIDENCE/lead-data-model/README.md) show the saved layout
+The complete website security command passed: 86 browser tests in each of the
+analytics-enabled and analytics-disabled configurations (172 executions). Both
+production builds passed scans of 327 browser assets and 325 rendered payloads
+for a synthetic service credential. A deliberate client import of server
+configuration correctly failed to build. Across all browser suites and these
+configurations, 281 test executions passed.
+
+The first combined browser run encountered a rate-limit database lock timeout in
+one final website journey while other database tests were running. The full
+security command then passed without competing integration tests; no application
+change or weakened assertion was needed. The admin order/lead suite passed
+separately. [Screenshots](EVIDENCE/lead-data-model/README.md) show the saved layout
 and reloaded personal view using synthetic records and the real backend.
 
 The populated-backfill test creates and removes its own temporary database and
