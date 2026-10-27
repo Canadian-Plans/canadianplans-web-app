@@ -120,6 +120,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -303,6 +306,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -492,6 +498,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -647,6 +656,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -831,6 +843,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -1023,6 +1038,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -1211,6 +1229,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -1399,6 +1420,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -1666,6 +1690,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -1921,6 +1948,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -2136,6 +2166,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -2348,6 +2381,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -2504,6 +2540,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -2660,6 +2699,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -3106,6 +3148,1149 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/staff/workspaces/{workspaceId}/views": {
+      "get": {
+        "operationId": "listSavedViews",
+        "summary": "List the caller's own saved views for one list.",
+        "tags": ["staff"],
+        "security": [{ "staffSession": [] }],
+        "parameters": [
+          { "name": "workspaceId", "in": "path", "required": true, "schema": { "type": "string" } },
+          {
+            "name": "object",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "enum": ["orders"] }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "views": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                          },
+                          "object": { "type": "string", "enum": ["orders"] },
+                          "name": { "type": "string", "minLength": 1, "maxLength": 60 },
+                          "state": {
+                            "type": "object",
+                            "properties": {
+                              "filters": {
+                                "type": "object",
+                                "properties": {
+                                  "status": {
+                                    "type": "string",
+                                    "enum": [
+                                      "submitted",
+                                      "in_progress",
+                                      "awaiting_customer",
+                                      "ready_for_delivery",
+                                      "dispatched",
+                                      "activated",
+                                      "cancelled"
+                                    ]
+                                  },
+                                  "paymentState": {
+                                    "type": "string",
+                                    "enum": ["not_required", "pending", "paid"]
+                                  },
+                                  "assigneeId": {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                  },
+                                  "partnerCode": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 64
+                                  },
+                                  "source": { "type": "string", "minLength": 1, "maxLength": 160 },
+                                  "submittedFrom": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                                  },
+                                  "submittedTo": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                                  },
+                                  "archiveState": {
+                                    "anyOf": [
+                                      { "type": "string", "enum": ["active", "archived"] },
+                                      { "type": "string", "const": "all" }
+                                    ]
+                                  }
+                                },
+                                "additionalProperties": false
+                              },
+                              "sort": {
+                                "type": "object",
+                                "properties": {
+                                  "field": {
+                                    "type": "string",
+                                    "enum": ["submittedAt", "updatedAt", "reference", "status"]
+                                  },
+                                  "direction": { "type": "string", "enum": ["asc", "desc"] }
+                                },
+                                "required": ["field", "direction"],
+                                "additionalProperties": false
+                              },
+                              "hiddenColumns": {
+                                "maxItems": 7,
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "customer",
+                                    "status",
+                                    "payment",
+                                    "assignee",
+                                    "source",
+                                    "submittedAt",
+                                    "total"
+                                  ]
+                                }
+                              }
+                            },
+                            "required": ["filters", "sort", "hiddenColumns"],
+                            "additionalProperties": false
+                          },
+                          "version": {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          }
+                        },
+                        "required": ["id", "object", "name", "state", "version", "updatedAt"],
+                        "additionalProperties": false
+                      }
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["views", "requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "region_not_served",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "job_not_uncertain",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "documents_incomplete",
+                            "document_override_reason_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createSavedView",
+        "summary": "Save a private list view (filters, sort and hidden columns; never the search).",
+        "tags": ["staff"],
+        "security": [{ "staffSession": [] }],
+        "parameters": [
+          { "name": "workspaceId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "view": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "object": { "type": "string", "enum": ["orders"] },
+                        "name": { "type": "string", "minLength": 1, "maxLength": 60 },
+                        "state": {
+                          "type": "object",
+                          "properties": {
+                            "filters": {
+                              "type": "object",
+                              "properties": {
+                                "status": {
+                                  "type": "string",
+                                  "enum": [
+                                    "submitted",
+                                    "in_progress",
+                                    "awaiting_customer",
+                                    "ready_for_delivery",
+                                    "dispatched",
+                                    "activated",
+                                    "cancelled"
+                                  ]
+                                },
+                                "paymentState": {
+                                  "type": "string",
+                                  "enum": ["not_required", "pending", "paid"]
+                                },
+                                "assigneeId": {
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                },
+                                "partnerCode": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 64
+                                },
+                                "source": { "type": "string", "minLength": 1, "maxLength": 160 },
+                                "submittedFrom": {
+                                  "type": "string",
+                                  "format": "date",
+                                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                                },
+                                "submittedTo": {
+                                  "type": "string",
+                                  "format": "date",
+                                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                                },
+                                "archiveState": {
+                                  "anyOf": [
+                                    { "type": "string", "enum": ["active", "archived"] },
+                                    { "type": "string", "const": "all" }
+                                  ]
+                                }
+                              },
+                              "additionalProperties": false
+                            },
+                            "sort": {
+                              "type": "object",
+                              "properties": {
+                                "field": {
+                                  "type": "string",
+                                  "enum": ["submittedAt", "updatedAt", "reference", "status"]
+                                },
+                                "direction": { "type": "string", "enum": ["asc", "desc"] }
+                              },
+                              "required": ["field", "direction"],
+                              "additionalProperties": false
+                            },
+                            "hiddenColumns": {
+                              "maxItems": 7,
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "customer",
+                                  "status",
+                                  "payment",
+                                  "assignee",
+                                  "source",
+                                  "submittedAt",
+                                  "total"
+                                ]
+                              }
+                            }
+                          },
+                          "required": ["filters", "sort", "hiddenColumns"],
+                          "additionalProperties": false
+                        },
+                        "version": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": ["id", "object", "name", "state", "version", "updatedAt"],
+                      "additionalProperties": false
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["view", "requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "region_not_served",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "job_not_uncertain",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "documents_incomplete",
+                            "document_override_reason_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "object": { "type": "string", "enum": ["orders"] },
+                  "name": { "type": "string", "minLength": 1, "maxLength": 60 },
+                  "state": {
+                    "type": "object",
+                    "properties": {
+                      "filters": {
+                        "type": "object",
+                        "properties": {
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "submitted",
+                              "in_progress",
+                              "awaiting_customer",
+                              "ready_for_delivery",
+                              "dispatched",
+                              "activated",
+                              "cancelled"
+                            ]
+                          },
+                          "paymentState": {
+                            "type": "string",
+                            "enum": ["not_required", "pending", "paid"]
+                          },
+                          "assigneeId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                          },
+                          "partnerCode": { "type": "string", "minLength": 1, "maxLength": 64 },
+                          "source": { "type": "string", "minLength": 1, "maxLength": 160 },
+                          "submittedFrom": {
+                            "type": "string",
+                            "format": "date",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                          },
+                          "submittedTo": {
+                            "type": "string",
+                            "format": "date",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                          },
+                          "archiveState": {
+                            "anyOf": [
+                              { "type": "string", "enum": ["active", "archived"] },
+                              { "type": "string", "const": "all" }
+                            ]
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "sort": {
+                        "type": "object",
+                        "properties": {
+                          "field": {
+                            "type": "string",
+                            "enum": ["submittedAt", "updatedAt", "reference", "status"]
+                          },
+                          "direction": { "type": "string", "enum": ["asc", "desc"] }
+                        },
+                        "required": ["field", "direction"],
+                        "additionalProperties": false
+                      },
+                      "hiddenColumns": {
+                        "maxItems": 7,
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "customer",
+                            "status",
+                            "payment",
+                            "assignee",
+                            "source",
+                            "submittedAt",
+                            "total"
+                          ]
+                        }
+                      }
+                    },
+                    "required": ["filters", "sort", "hiddenColumns"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["object", "name", "state"],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/staff/workspaces/{workspaceId}/views/{viewId}": {
+      "patch": {
+        "operationId": "updateSavedView",
+        "summary": "Rename or update one of the caller's saved views at the expected version.",
+        "tags": ["staff"],
+        "security": [{ "staffSession": [] }],
+        "parameters": [
+          { "name": "workspaceId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "viewId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "view": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "object": { "type": "string", "enum": ["orders"] },
+                        "name": { "type": "string", "minLength": 1, "maxLength": 60 },
+                        "state": {
+                          "type": "object",
+                          "properties": {
+                            "filters": {
+                              "type": "object",
+                              "properties": {
+                                "status": {
+                                  "type": "string",
+                                  "enum": [
+                                    "submitted",
+                                    "in_progress",
+                                    "awaiting_customer",
+                                    "ready_for_delivery",
+                                    "dispatched",
+                                    "activated",
+                                    "cancelled"
+                                  ]
+                                },
+                                "paymentState": {
+                                  "type": "string",
+                                  "enum": ["not_required", "pending", "paid"]
+                                },
+                                "assigneeId": {
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                },
+                                "partnerCode": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 64
+                                },
+                                "source": { "type": "string", "minLength": 1, "maxLength": 160 },
+                                "submittedFrom": {
+                                  "type": "string",
+                                  "format": "date",
+                                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                                },
+                                "submittedTo": {
+                                  "type": "string",
+                                  "format": "date",
+                                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                                },
+                                "archiveState": {
+                                  "anyOf": [
+                                    { "type": "string", "enum": ["active", "archived"] },
+                                    { "type": "string", "const": "all" }
+                                  ]
+                                }
+                              },
+                              "additionalProperties": false
+                            },
+                            "sort": {
+                              "type": "object",
+                              "properties": {
+                                "field": {
+                                  "type": "string",
+                                  "enum": ["submittedAt", "updatedAt", "reference", "status"]
+                                },
+                                "direction": { "type": "string", "enum": ["asc", "desc"] }
+                              },
+                              "required": ["field", "direction"],
+                              "additionalProperties": false
+                            },
+                            "hiddenColumns": {
+                              "maxItems": 7,
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "customer",
+                                  "status",
+                                  "payment",
+                                  "assignee",
+                                  "source",
+                                  "submittedAt",
+                                  "total"
+                                ]
+                              }
+                            }
+                          },
+                          "required": ["filters", "sort", "hiddenColumns"],
+                          "additionalProperties": false
+                        },
+                        "version": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": ["id", "object", "name", "state", "version", "updatedAt"],
+                      "additionalProperties": false
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["view", "requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "region_not_served",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "job_not_uncertain",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "documents_incomplete",
+                            "document_override_reason_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
+                            "change_request_not_found",
+                            "change_request_resolved",
+                            "info_request_not_found",
+                            "info_request_resolved",
+                            "info_request_fields_mismatch",
+                            "too_many_pending_requests",
+                            "persistence_unavailable",
+                            "terms_version_unsupported",
+                            "upload_not_found",
+                            "upload_invalid",
+                            "unsupported_media_type",
+                            "file_not_found",
+                            "file_not_available",
+                            "download_denied",
+                            "checklist_mismatch",
+                            "document_too_large",
+                            "document_verification_failed",
+                            "verification_in_progress",
+                            "upload_expired",
+                            "commission_not_found",
+                            "commission_state_invalid",
+                            "invoice_not_found",
+                            "invoice_conflict",
+                            "export_denied",
+                            "tracking_challenge_invalid",
+                            "tracking_expired",
+                            "tracking_attempts_exceeded",
+                            "webhook_rejected"
+                          ]
+                        },
+                        "message": { "type": "string" },
+                        "requestId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "details": {
+                          "type": "object",
+                          "propertyNames": { "type": "string" },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["code", "message", "requestId"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "expectedVersion": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "name": { "type": "string", "minLength": 1, "maxLength": 60 },
+                  "state": {
+                    "type": "object",
+                    "properties": {
+                      "filters": {
+                        "type": "object",
+                        "properties": {
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "submitted",
+                              "in_progress",
+                              "awaiting_customer",
+                              "ready_for_delivery",
+                              "dispatched",
+                              "activated",
+                              "cancelled"
+                            ]
+                          },
+                          "paymentState": {
+                            "type": "string",
+                            "enum": ["not_required", "pending", "paid"]
+                          },
+                          "assigneeId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                          },
+                          "partnerCode": { "type": "string", "minLength": 1, "maxLength": 64 },
+                          "source": { "type": "string", "minLength": 1, "maxLength": 160 },
+                          "submittedFrom": {
+                            "type": "string",
+                            "format": "date",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                          },
+                          "submittedTo": {
+                            "type": "string",
+                            "format": "date",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                          },
+                          "archiveState": {
+                            "anyOf": [
+                              { "type": "string", "enum": ["active", "archived"] },
+                              { "type": "string", "const": "all" }
+                            ]
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "sort": {
+                        "type": "object",
+                        "properties": {
+                          "field": {
+                            "type": "string",
+                            "enum": ["submittedAt", "updatedAt", "reference", "status"]
+                          },
+                          "direction": { "type": "string", "enum": ["asc", "desc"] }
+                        },
+                        "required": ["field", "direction"],
+                        "additionalProperties": false
+                      },
+                      "hiddenColumns": {
+                        "maxItems": 7,
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "customer",
+                            "status",
+                            "payment",
+                            "assignee",
+                            "source",
+                            "submittedAt",
+                            "total"
+                          ]
+                        }
+                      }
+                    },
+                    "required": ["filters", "sort", "hiddenColumns"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["expectedVersion"],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteSavedView",
+        "summary": "Delete one of the caller's saved views.",
+        "tags": ["staff"],
+        "security": [{ "staffSession": [] }],
+        "parameters": [
+          { "name": "workspaceId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "viewId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "viewId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "required": ["viewId", "requestId"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope `{ error: { code, message, requestId, details? } }`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "invalid_request",
+                            "missing_session",
+                            "invalid_session",
+                            "workspace_not_found",
+                            "membership_missing",
+                            "membership_pending",
+                            "membership_revoked",
+                            "permission_denied",
+                            "mfa_required",
+                            "membership_not_found",
+                            "membership_conflict",
+                            "internal_error",
+                            "missing_credential",
+                            "invalid_credential",
+                            "credential_revoked",
+                            "credential_not_found",
+                            "scope_denied",
+                            "caller_forbidden",
+                            "rate_limited",
+                            "payload_too_large",
+                            "machine_unknown",
+                            "machine_signature_invalid",
+                            "machine_account_mismatch",
+                            "machine_workspace_mismatch",
+                            "validation_error",
+                            "not_found",
+                            "conflict",
+                            "idempotency_conflict",
+                            "draft_not_found",
+                            "draft_expired",
+                            "draft_already_submitted",
+                            "offer_unavailable",
+                            "region_not_served",
+                            "unpriced_lead_required",
+                            "priced_checkout_disabled",
+                            "quote_not_found",
+                            "quote_expired",
+                            "quote_withdrawn",
+                            "quote_consumed",
+                            "order_not_found",
+                            "job_not_found",
+                            "job_not_retryable",
+                            "job_not_uncertain",
+                            "version_conflict",
+                            "illegal_transition",
+                            "cancellation_reason_required",
+                            "dispatch_details_required",
+                            "documents_incomplete",
+                            "document_override_reason_required",
+                            "feature_not_ready",
+                            "assignee_not_found",
+                            "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -3285,6 +4470,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -3458,6 +4646,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -4772,6 +5963,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -6040,6 +7234,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -7405,6 +8602,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -8703,6 +9903,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -8898,6 +10101,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -9072,6 +10278,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -9264,6 +10473,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -9439,6 +10651,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -9693,6 +10908,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -9958,6 +11176,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -10219,6 +11440,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -11495,6 +12719,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -12790,6 +14017,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -14079,6 +15309,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -14266,6 +15499,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -14458,6 +15694,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -14655,6 +15894,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -14866,6 +16108,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -15179,6 +16424,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -15492,6 +16740,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -15780,6 +17031,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -15999,6 +17253,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -16416,6 +17673,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -16614,6 +17874,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -16861,6 +18124,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -17134,6 +18400,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -17296,6 +18565,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -17618,6 +18890,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -17941,6 +19216,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -18175,6 +19453,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -18442,6 +19723,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -18632,6 +19916,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -18903,6 +20190,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -19168,6 +20458,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -19339,6 +20632,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -19502,6 +20798,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -19697,6 +20996,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -19935,6 +21237,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -20381,6 +21686,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -20584,6 +21892,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -20834,6 +22145,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -21062,6 +22376,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -21285,6 +22602,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",
@@ -21481,6 +22801,9 @@
                             "feature_not_ready",
                             "assignee_not_found",
                             "reminder_not_found",
+                            "saved_view_not_found",
+                            "saved_view_name_taken",
+                            "saved_view_limit",
                             "change_request_not_found",
                             "change_request_resolved",
                             "info_request_not_found",

@@ -14,6 +14,9 @@ import {
   inviteStaffRequestSchema,
   listWorkspaceLeadsQuerySchema,
   listWorkspaceOrdersQuerySchema,
+  listSavedViewsQuerySchema,
+  createSavedViewRequestSchema,
+  updateSavedViewRequestSchema,
   orderDetailSchema,
   patchOrderArchiveRequestSchema,
   patchOrderAssigneeRequestSchema,
@@ -69,6 +72,7 @@ import {
 } from '../orders/transitions.js';
 import { createAuthorize, denyReasonOf, type StaffAction } from '../staff/authorization.js';
 import { DatabaseStaffStore, type StaffStore } from '../staff/store.js';
+import { DatabaseSavedViewStore, type SavedViewStore } from '../views/store.js';
 import { generateServiceSecret } from '../website/credential.js';
 import {
   DatabaseWebsiteCredentialStore,
@@ -92,6 +96,7 @@ export interface StaffRouteDependencies {
   partnerStore?: PartnerStore;
   jobStore?: JobAdminStore;
   documentService?: Pick<DocumentService, 'listForOrder' | 'review' | 'issueDownload'>;
+  savedViewStore?: SavedViewStore;
   /** Kept beside the transition store so the rendered action set matches what the write path accepts. */
   operationalTransitionsEnabled?: boolean;
   /** Receives every unexpected handler failure; optional so tests can omit it. */
@@ -117,6 +122,7 @@ export function createDefaultStaffRouteDependencies(): StaffRouteDependencies {
       new DatabaseCommissionActivationHook(),
     ),
     orderActionStore: new DatabaseStaffOrderActionStore(),
+    savedViewStore: new DatabaseSavedViewStore(),
     partnerStore: new DatabasePartnerStore(),
     jobStore: new DatabaseOutboxStore(),
     documentService: createDocumentServiceFromEnv(),
@@ -720,6 +726,134 @@ export function createStaffRouter(dependencies: StaffRouteDependencies): Router 
         capabilities,
         requestId: req.id,
       });
+    } catch (error) {
+      reportFailure(req, error);
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  /** Saved list views (admin CRM Phase 1). Private: each actor sees only their own. */
+  async function prepareViewRequest(
+    req: Request,
+    res: Response,
+  ): Promise<{ workspaceId: string; store: SavedViewStore } | undefined> {
+    const workspaceId = z.uuid().safeParse(req.params['workspaceId']);
+    if (!workspaceId.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return undefined;
+    }
+    const { decision } = await decide(req, workspaceId.data, 'workspace.read');
+    if (!decision.allowed) {
+      sendStaffAuthError(res, req.id, denyReasonOf(decision), 403);
+      return undefined;
+    }
+    if (!dependencies.savedViewStore) {
+      sendDomainError(res, req.id, 'feature_not_ready', 409);
+      return undefined;
+    }
+    return { workspaceId: workspaceId.data, store: dependencies.savedViewStore };
+  }
+
+  router.get('/workspaces/:workspaceId/views', async (req, res) => {
+    const query = listSavedViewsQuerySchema.safeParse(req.query);
+    if (!query.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const context = await prepareViewRequest(req, res);
+      if (!context) return;
+      const views = await context.store.list(
+        { workspaceId: context.workspaceId, actorId: session(req).actorId },
+        query.data.object,
+      );
+      res.json({ views, requestId: req.id });
+    } catch (error) {
+      reportFailure(req, error);
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.post('/workspaces/:workspaceId/views', async (req, res) => {
+    const body = createSavedViewRequestSchema.safeParse(req.body);
+    if (!body.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const context = await prepareViewRequest(req, res);
+      if (!context) return;
+      const outcome = await context.store.create(
+        { workspaceId: context.workspaceId, actorId: session(req).actorId, requestId: req.id },
+        body.data,
+      );
+      if (outcome.status === 'name_taken') {
+        sendDomainError(res, req.id, 'saved_view_name_taken', 409);
+        return;
+      }
+      if (outcome.status === 'limit_reached') {
+        sendDomainError(res, req.id, 'saved_view_limit', 409);
+        return;
+      }
+      res.status(201).json({ view: outcome.view, requestId: req.id });
+    } catch (error) {
+      reportFailure(req, error);
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.patch('/workspaces/:workspaceId/views/:viewId', async (req, res) => {
+    const viewId = z.uuid().safeParse(req.params['viewId']);
+    const body = updateSavedViewRequestSchema.safeParse(req.body);
+    if (!viewId.success || !body.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const context = await prepareViewRequest(req, res);
+      if (!context) return;
+      const outcome = await context.store.update(
+        { workspaceId: context.workspaceId, actorId: session(req).actorId, requestId: req.id },
+        viewId.data,
+        body.data,
+      );
+      switch (outcome.status) {
+        case 'not_found':
+          sendDomainError(res, req.id, 'saved_view_not_found', 404);
+          return;
+        case 'version_conflict':
+          sendDomainError(res, req.id, 'version_conflict', 409);
+          return;
+        case 'name_taken':
+          sendDomainError(res, req.id, 'saved_view_name_taken', 409);
+          return;
+        case 'updated':
+          res.json({ view: outcome.view, requestId: req.id });
+      }
+    } catch (error) {
+      reportFailure(req, error);
+      sendStaffAuthError(res, req.id, 'internal_error', 500);
+    }
+  });
+
+  router.delete('/workspaces/:workspaceId/views/:viewId', async (req, res) => {
+    const viewId = z.uuid().safeParse(req.params['viewId']);
+    if (!viewId.success) {
+      sendStaffAuthError(res, req.id, 'invalid_request', 400);
+      return;
+    }
+    try {
+      const context = await prepareViewRequest(req, res);
+      if (!context) return;
+      const outcome = await context.store.delete(
+        { workspaceId: context.workspaceId, actorId: session(req).actorId, requestId: req.id },
+        viewId.data,
+      );
+      if (outcome.status === 'not_found') {
+        sendDomainError(res, req.id, 'saved_view_not_found', 404);
+        return;
+      }
+      res.json({ viewId: viewId.data, requestId: req.id });
     } catch (error) {
       reportFailure(req, error);
       sendStaffAuthError(res, req.id, 'internal_error', 500);

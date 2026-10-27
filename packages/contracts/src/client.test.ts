@@ -91,6 +91,28 @@ describe('createBackendClient transport', () => {
     expect(calls).toHaveLength(1);
   });
 
+  it('sends the orders list sort to the backend', async () => {
+    const { client, calls } = harness(200, {
+      orders: [],
+      page: { page: 1, pageSize: 50, total: 0 },
+      capabilities: { canManageOrders: false, canRecordPayment: false, canSearchContact: false },
+      requestId: UUID,
+    });
+    await client.staff.listOrders(UUID, { sortBy: 'reference', sortDirection: 'asc' });
+    const url = new URL(calls[0]?.url ?? '');
+    expect(url.searchParams.get('sortBy')).toBe('reference');
+    expect(url.searchParams.get('sortDirection')).toBe('asc');
+  });
+
+  it('lists saved views for one list without sending a body', async () => {
+    const { client, calls } = harness(200, { views: [], requestId: UUID });
+    await client.staff.listSavedViews(UUID, 'orders');
+    expect(calls[0]?.method).toBe('GET');
+    expect(calls[0]?.url).toBe(
+      `https://api.example.test/api/v1/staff/workspaces/${UUID}/views?object=orders`,
+    );
+  });
+
   it('serialises a JSON body with content-type on writes', async () => {
     const { client, calls } = harness(201, {
       lead: {

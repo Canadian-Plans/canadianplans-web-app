@@ -241,6 +241,36 @@ export {
 } from './region-waitlist';
 
 export {
+  SAVED_VIEW_LIMIT,
+  calendarDaySchema,
+  createSavedViewRequestSchema,
+  deleteSavedViewResponseSchema,
+  listSavedViewsQuerySchema,
+  listSavedViewsResponseSchema,
+  orderColumnKeySchema,
+  orderViewFiltersSchema,
+  orderViewSortSchema,
+  orderViewStateSchema,
+  savedViewNameSchema,
+  savedViewObjectSchema,
+  savedViewResponseSchema,
+  savedViewSchema,
+  updateSavedViewRequestSchema,
+  type CreateSavedViewRequest,
+  type DeleteSavedViewResponse,
+  type ListSavedViewsQuery,
+  type ListSavedViewsResponse,
+  type OrderColumnKey,
+  type OrderViewFilters,
+  type OrderViewSort,
+  type OrderViewState,
+  type SavedView,
+  type SavedViewObject,
+  type SavedViewResponse,
+  type UpdateSavedViewRequest,
+} from './saved-views';
+
+export {
   listWebsiteOffersQuerySchema,
   listWebsiteOffersResponseSchema,
   websiteOfferSchema,

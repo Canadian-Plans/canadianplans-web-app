@@ -2241,6 +2241,69 @@ export type MarketingConsentRow = typeof marketingConsents.$inferSelect;
 export type FollowUpScheduleRow = typeof followUpSchedules.$inferSelect;
 export type EmailProviderEventRow = typeof emailProviderEvents.$inferSelect;
 
+/**
+ * A staff member's saved list view (admin CRM Phase 1, owner decision 27 Oct
+ * 2026: views are private). `actor_id` is the staff user id that the backend
+ * sets as `app.actor_id`, so the policy below limits every row to its owner as
+ * well as to the workspace. `state` holds only structured, non-personal filters;
+ * the free-text search is never stored (invariant 12).
+ */
+export const savedViews = appSchema
+  .table(
+    'saved_views',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      actorId: uuid('actor_id').notNull(),
+      object: text('object').notNull(),
+      name: text('name').notNull(),
+      state: jsonb('state').notNull(),
+      version: integer('version').default(1).notNull(),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+        .defaultNow()
+        .notNull(),
+    },
+    (table) => [
+      unique('saved_views_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'saved_views_workspace_actor_membership_fk',
+        columns: [table.workspaceId, table.actorId],
+        foreignColumns: [memberships.workspaceId, memberships.userId],
+      }).onDelete('cascade'),
+      check('saved_views_object_check', sql`${table.object} in ('orders')`),
+      check('saved_views_name_check', sql`char_length(${table.name}) between 1 and 60`),
+      uniqueIndex('saved_views_owner_name_unique').on(
+        table.workspaceId,
+        table.actorId,
+        table.object,
+        sql`lower(${table.name})`,
+      ),
+      index('saved_views_owner_object_idx').on(table.workspaceId, table.actorId, table.object),
+      pgPolicy('saved_views_owner_policy', {
+        for: 'all',
+        to: appRuntimeRole,
+        using: sql`${table.workspaceId} = nullif(
+      (select current_setting('app.workspace_id', true)),
+      ''
+    )::uuid and ${table.actorId} = nullif(
+      (select current_setting('app.actor_id', true)),
+      ''
+    )::uuid`,
+        withCheck: sql`${table.workspaceId} = nullif(
+      (select current_setting('app.workspace_id', true)),
+      ''
+    )::uuid and ${table.actorId} = nullif(
+      (select current_setting('app.actor_id', true)),
+      ''
+    )::uuid`,
+      }),
+    ],
+  )
+  .enableRLS();
+
 export const schema = {
   workspaces,
   memberships,
@@ -2293,4 +2356,5 @@ export const schema = {
   marketingConsents,
   followUpSchedules,
   emailProviderEvents,
+  savedViews,
 };
