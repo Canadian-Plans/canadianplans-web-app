@@ -1,3 +1,4 @@
+import { fieldKeySchema, leadTypeSchema } from './lead-fields';
 import { z } from 'zod';
 
 import { leadStatuses } from '@canadian-plans/types';
@@ -92,6 +93,11 @@ export const draftGrantSchema = z.object({
 export type DraftGrant = z.infer<typeof draftGrantSchema>;
 
 export const createLeadRequestSchema = z.object({
+  leadType: leadTypeSchema.optional(),
+  customValues: z
+    .record(fieldKeySchema, z.unknown())
+    .refine((values) => Object.keys(values).length <= 100)
+    .optional(),
   attribution: rawAttributionSchema.optional(),
   contact: leadContactSchema.optional(),
   form: leadFormSchema.optional(),
@@ -108,6 +114,11 @@ export const createLeadResponseSchema = z.object({
 export type CreateLeadResponse = z.infer<typeof createLeadResponseSchema>;
 
 export const updateLeadRequestSchema = z.object({
+  leadType: leadTypeSchema.optional(),
+  customValues: z
+    .record(fieldKeySchema, z.unknown())
+    .refine((values) => Object.keys(values).length <= 100)
+    .optional(),
   contact: leadContactSchema.optional(),
   form: leadFormSchema.optional(),
   attribution: rawAttributionSchema.optional(),
@@ -124,6 +135,7 @@ export type UpdateLeadResponse = z.infer<typeof updateLeadResponseSchema>;
 
 /** Personal draft data requires both the website identity and this lead's grant. */
 export const leadDraftSchema = z.object({
+  customValues: z.record(fieldKeySchema, z.unknown()).optional(),
   leadId: z.uuid(),
   productId: z.uuid().nullable(),
   contact: leadContactSchema,

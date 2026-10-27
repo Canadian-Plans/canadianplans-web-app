@@ -321,3 +321,10 @@ S8 PIPEDA overview (Office of the Privacy Commissioner): https://www.priv.gc.ca/
 Code-pattern reference (not a business reference): https://github.com/Md-Takibuddin/canadaesim
 
 Hosting, database, email and CMS pricing sources were rechecked during the 14 September 2026 review; verify actual quotas and terms at each provisioning milestone. External sources support provider constraints; they are not a performance or recovery guarantee.
+
+Lead data model terms: a **field** has a stable key and typed value; a **built-in
+field** is code-owned and may be hidden, while a **custom field** is staff-defined
+and may be deleted only when empty. A **lead type** identifies a code-defined
+website flow. A **layout** arranges detail-page sections and fields per site/type.
+A **view** saves one staff member's list columns, filters and sort on the server.
+See [the lead data model specification](LEAD_DATA_MODEL.md).

@@ -1,3 +1,4 @@
+import { auditLeadChange, type LeadContext } from '../leads/model.js';
 import { and, eq, isNull, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import {
@@ -722,6 +723,7 @@ export class DatabaseStaffOrderActionStore implements StaffOrderActionStore {
             input.orderId,
             stored.patch,
             now,
+            input,
           );
           const formPatch = amendableFormPatchSchema.parse(stored.patch.form ?? {});
           // The submitted order envelope is immutable (invariant 5), so the
@@ -907,6 +909,7 @@ async function applyContactPatch(
   orderId: string,
   patch: OrderChangeRequestPatch,
   now: Date,
+  context: LeadContext,
 ): Promise<{ before: Record<string, unknown>; after: Record<string, unknown> }> {
   const contact = amendableContactPatchSchema.parse(patch.contact ?? {});
   const [order] = await tx
@@ -950,5 +953,7 @@ async function applyContactPatch(
       .set({ ...updates, updatedAt: now })
       .where(and(eq(leads.workspaceId, workspaceId), eq(leads.id, order.leadId)));
   }
+  if (Object.keys(updates).length)
+    await auditLeadChange(tx, context, 'lead.contact_amended', order.leadId, Object.keys(updates));
   return { before, after };
 }

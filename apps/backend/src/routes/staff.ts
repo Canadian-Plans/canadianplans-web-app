@@ -1,3 +1,8 @@
+import {
+  createLeadModelRouter,
+  defaultLeadModelDependencies,
+  type LeadModelRouteDependencies,
+} from './lead-model.js';
 import { createErrorTrackerFromEnv, type ErrorTracker } from '@canadian-plans/adapters';
 import { Router, type Request, type Response } from 'express';
 import {
@@ -97,6 +102,7 @@ export interface StaffRouteDependencies {
   jobStore?: JobAdminStore;
   documentService?: Pick<DocumentService, 'listForOrder' | 'review' | 'issueDownload'>;
   savedViewStore?: SavedViewStore;
+  leadModel?: LeadModelRouteDependencies;
   /** Kept beside the transition store so the rendered action set matches what the write path accepts. */
   operationalTransitionsEnabled?: boolean;
   /** Receives every unexpected handler failure; optional so tests can omit it. */
@@ -123,6 +129,7 @@ export function createDefaultStaffRouteDependencies(): StaffRouteDependencies {
     ),
     orderActionStore: new DatabaseStaffOrderActionStore(),
     savedViewStore: new DatabaseSavedViewStore(),
+    leadModel: defaultLeadModelDependencies(),
     partnerStore: new DatabasePartnerStore(),
     jobStore: new DatabaseOutboxStore(),
     documentService: createDocumentServiceFromEnv(),
@@ -156,6 +163,12 @@ function isUniqueViolation(error: unknown): boolean {
 export function createStaffRouter(dependencies: StaffRouteDependencies): Router {
   const router = Router();
   router.use(requireStaffSession(dependencies.sessionVerifier, dependencies.rateLimit));
+  router.use(
+    createLeadModelRouter(
+      dependencies.store,
+      dependencies.leadModel ?? defaultLeadModelDependencies(),
+    ),
+  );
 
   const operationalTransitionsEnabled = () =>
     dependencies.operationalTransitionsEnabled ?? loadOperationalTransitionsEnabled();

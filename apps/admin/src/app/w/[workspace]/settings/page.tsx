@@ -1,3 +1,4 @@
+import { DataModelSettingsLink } from '@/components/leads/data-model';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@canadian-plans/ui';
 import Link from 'next/link';
 
@@ -34,6 +35,7 @@ export default async function SettingsPage({ params }: { params: Promise<{ works
           >
             Delete customer data on request
           </Link>
+          <DataModelSettingsLink workspaceSlug={workspace} />
           <StaffInviteForm workspaceSlug={workspace} />
           <ServiceCredentialsManager workspaceSlug={workspace} />
         </CardContent>

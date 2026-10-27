@@ -441,3 +441,7 @@ export async function changeCommissionState(
 ): Promise<ChangeCommissionStateResponse> {
   return client(accessToken).staff.changeCommissionState(workspaceId, partnerId, body);
 }
+
+export function leadDataClient(accessToken: string) {
+  return client(accessToken).leadData;
+}

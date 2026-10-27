@@ -1,3 +1,4 @@
+import { LeadFieldValidationError } from '@canadian-plans/contracts';
 import { websiteBotActions, type WebsiteBotAction } from '@canadian-plans/contracts';
 import { Router, type Request, type Response } from 'express';
 import { rateLimitHit, resolveWebsiteCredential } from '@canadian-plans/db';
@@ -436,6 +437,8 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
           workspaceId: ctx.workspaceId,
           actorId: ctx.credentialId,
           requestId: req.id,
+          leadType: body.data.leadType,
+          customValues: body.data.customValues,
           contact: body.data.contact,
           form: body.data.form,
           productId: body.data.productId,
@@ -448,6 +451,10 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
           requestId: req.id,
         });
       } catch (error) {
+        if (error instanceof LeadFieldValidationError) {
+          sendDomainError(res, req.id, 'validation_error', 400);
+          return;
+        }
         failRequest(req, res, '/api/v1/website/leads', error);
       }
     },
@@ -516,6 +523,8 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
           requestId: req.id,
           leadId: leadId.data,
           grantToken,
+          leadType: body.data.leadType,
+          customValues: body.data.customValues,
           contact: body.data.contact,
           form: body.data.form,
           productId: body.data.productId,
@@ -538,6 +547,10 @@ export function createWebsiteRouter(dependencies: WebsiteRouteDependencies): Rou
 
         res.json({ lead: outcome.lead, requestId: req.id });
       } catch (error) {
+        if (error instanceof LeadFieldValidationError) {
+          sendDomainError(res, req.id, 'validation_error', 400);
+          return;
+        }
         failRequest(req, res, '/api/v1/website/leads/:leadId', error);
       }
     },

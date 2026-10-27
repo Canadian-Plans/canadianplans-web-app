@@ -6,7 +6,7 @@ export default defineConfig({
   testDir: './e2e',
   // The order journeys need the backend harness and the e2e build; they run
   // from playwright.orders.config.ts (pnpm --filter admin test:e2e:orders).
-  testIgnore: ['orders.spec.ts'],
+  testIgnore: ['orders.spec.ts', 'lead-data-model.spec.ts'],
   workers: 1,
   use: {
     ...basePlaywrightConfig.use,

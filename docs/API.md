@@ -596,3 +596,35 @@ Individual permission rows map to document download, financial data, bulk
 export, deletion, invoice approval and integration management. An explicit
 individual `deny` wins over the matrix; otherwise an explicit `allow` can add
 the mapped action. No match denies by default.
+
+## Lead data model and personal views
+
+Under `/api/v1/staff/workspaces/{workspaceId}`:
+
+| Method and path                                  | Purpose and access                                                                                                                                 |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET/POST /data-model/leads/fields`              | List/create definitions; `data_model.manage` and verified MFA.                                                                                     |
+| `PATCH/DELETE /data-model/leads/fields/{id}`     | Edit, deactivate/reactivate, or delete an empty custom field; same permission. PATCH requires `expectedVersion`; key/type/origin are immutable.    |
+| `GET/PATCH /data-model/leads/settings`           | Object name/default sort; same permission.                                                                                                         |
+| `GET/PATCH /data-model/leads/layouts/{leadType}` | Sections and field order; same permission.                                                                                                         |
+| `GET /leads/model`                               | Definitions/layouts/settings and current capabilities for reading leads.                                                                           |
+| `POST /leads/search`                             | Body contains columns, filters, one sort, type/status and paging. Field queries require personal-data access and reject sensitive/inactive fields. |
+| `GET /leads/{id}`                                | Merged typed values, preserved legacy answers and value-free history. Personal values are redacted without access.                                 |
+| `PATCH /leads/{id}`                              | `order.manage`; optimistic `expectedVersion`, typed values, `null` clears.                                                                         |
+| `GET/POST /leads/views`                          | Own views only; personal-data access.                                                                                                              |
+| `PATCH/DELETE /leads/views/{id}`                 | Update/remove own view; updates require its version.                                                                                               |
+| `GET /memberships/data-model`                    | Owner's staff permission list.                                                                                                                     |
+| `PATCH /memberships/{membershipId}/data-model`   | Owner grants/denies `manage_data_model` with `{ allowed }`; verified MFA.                                                                          |
+
+The permission is stored in existing per-member permission rows. Explicit deny
+wins, including for an owner. It grants no personal-data access or field-edit
+permission. Personal-data access remains `order.manage` or `financial.read`.
+Limits: ten filters, twelve columns, one sort, thirty views per actor/site.
+Conflict responses expose a usage count only to staff with personal-data access.
+
+Website lead create/update accept `leadType` and optional `customValues`. Legacy
+clients may omit the type. Form keys are allowlisted against built-in fields and
+active, applicable, website-accepted custom fields. Unknown old answers may survive
+unchanged. Custom answers never enter the order snapshot or payload. The website
+remains developer-built. Complete shapes are in the generated OpenAPI document;
+[LEAD_DATA_MODEL.md](LEAD_DATA_MODEL.md) explains compatibility and erasure.

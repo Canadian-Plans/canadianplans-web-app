@@ -1,3 +1,5 @@
+import { prepareLeadIntake } from './intake.js';
+import { loadLeadFields, lockLeadModel, recordSchema } from './model.js';
 import { and, desc, eq, isNotNull, isNull, sql } from 'drizzle-orm';
 import {
   auditEvents,
@@ -11,7 +13,10 @@ import {
   type TenantTransaction,
 } from '@canadian-plans/db';
 import {
+  fieldApplies,
   attributionSchema,
+  leadTypeSchema,
+  type LeadType,
   leadContactSchema,
   leadFormSchema,
   leadStatusSchema,
@@ -33,6 +38,8 @@ import { generateDraftGrantToken, hashDraftGrantToken } from './token.js';
 const DEFAULT_DRAFT_GRANT_TTL_SECONDS = 60 * 60 * 24 * 30;
 
 export interface CreateLeadInput {
+  leadType?: LeadType;
+  customValues?: Record<string, unknown>;
   workspaceId: string;
   actorId: string;
   requestId: string;
@@ -55,6 +62,8 @@ export type UpdateLeadOutcome =
   | { status: 'draft_submitted' };
 
 export interface UpdateLeadInput {
+  leadType?: LeadType;
+  customValues?: Record<string, unknown>;
   workspaceId: string;
   actorId: string;
   requestId: string;
@@ -176,6 +185,7 @@ export class DatabaseLeadStore implements LeadStore {
     return this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.actorId },
       async (tx) => {
+        await lockLeadModel(tx, input.workspaceId, true);
         const [row] = await tx
           .select({
             lead: leads,
@@ -208,9 +218,24 @@ export class DatabaseLeadStore implements LeadStore {
         if (row.revokedAt || row.expiresAt.getTime() <= Date.now())
           return { status: 'grant_expired' };
         if (row.lead.status !== 'incomplete') return { status: 'draft_submitted' };
+        const fields = await loadLeadFields(tx, input.workspaceId);
+        const customValues = Object.fromEntries(
+          Object.entries(recordSchema.parse(row.lead.customValues)).filter(([key]) =>
+            fields.some(
+              (field) =>
+                field.key === key &&
+                field.origin === 'custom' &&
+                field.active &&
+                field.websiteAccepted &&
+                fieldApplies(field, leadTypeSchema.parse(row.lead.leadType)),
+            ),
+          ),
+        );
+
         return {
           status: 'read',
           draft: {
+            ...(Object.keys(customValues).length ? { customValues } : {}),
             leadId: row.lead.id,
             productId: row.productId,
             contact: leadContactSchema.parse({
@@ -230,6 +255,7 @@ export class DatabaseLeadStore implements LeadStore {
     return this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.actorId },
       async (tx) => {
+        await lockLeadModel(tx, input.workspaceId);
         const { attribution, partnerId } = await prepareAttribution(
           tx,
           input.workspaceId,
@@ -239,6 +265,13 @@ export class DatabaseLeadStore implements LeadStore {
           ? await resolveOfferVersionId(tx, input.workspaceId, input.productId)
           : undefined;
 
+        const intake = await prepareLeadIntake(tx, {
+          workspaceId: input.workspaceId,
+          leadType: input.leadType,
+          form: input.form,
+          customValues: input.customValues,
+          selectedOfferVersionId,
+        });
         const [leadRow] = await tx
           .insert(leads)
           .values({
@@ -250,7 +283,9 @@ export class DatabaseLeadStore implements LeadStore {
             countryCode: input.contact?.countryCode,
             partnerId: partnerId ?? null,
             selectedOfferVersionId: selectedOfferVersionId ?? null,
-            payload: input.form ?? null,
+            payload: intake.form,
+            leadType: intake.leadType,
+            customValues: intake.customValues,
             attribution,
             consentVersion: input.consentVersion,
           })
@@ -271,10 +306,7 @@ export class DatabaseLeadStore implements LeadStore {
           entityId: leadRow.id,
           requestId: input.requestId,
           after: {
-            status: 'incomplete',
-            partnerId: partnerId ?? null,
-            selectedOfferVersionId: selectedOfferVersionId ?? null,
-            consentVersion: input.consentVersion,
+            changedFields: ['leadType', ...Object.keys(input.contact ?? {}), ...intake.changedKeys],
           },
         });
 
@@ -305,6 +337,7 @@ export class DatabaseLeadStore implements LeadStore {
     return this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.actorId },
       async (tx) => {
+        await lockLeadModel(tx, input.workspaceId);
         const tokenHash = hashDraftGrantToken(input.grantToken);
         // Matching on lead_id AND token_hash together means a real grant that
         // simply belongs to a *different* lead is indistinguishable from a
@@ -317,6 +350,10 @@ export class DatabaseLeadStore implements LeadStore {
             expiresAt: draftGrants.expiresAt,
             revokedAt: draftGrants.revokedAt,
             leadStatus: leads.status,
+            leadType: leads.leadType,
+            leadPayload: leads.payload,
+            customValues: leads.customValues,
+            selectedOfferVersionId: leads.selectedOfferVersionId,
           })
           .from(draftGrants)
           .innerJoin(
@@ -374,6 +411,20 @@ export class DatabaseLeadStore implements LeadStore {
           changedFields.push('selectedOfferVersionId');
         }
 
+        const intake = await prepareLeadIntake(tx, {
+          workspaceId: input.workspaceId,
+          leadType: input.leadType,
+          form: input.form,
+          customValues: input.customValues,
+          previousForm: grant.leadPayload,
+          previousCustom: grant.customValues,
+          previousType: leadTypeSchema.parse(grant.leadType),
+          selectedOfferVersionId: updates.selectedOfferVersionId ?? grant.selectedOfferVersionId,
+        });
+        updates.leadType = intake.leadType;
+        updates.customValues = intake.customValues;
+        if (input.form) updates.payload = intake.form;
+        changedFields.push(...intake.changedKeys, ...Object.keys(input.contact ?? {}));
         const [row] = await tx
           .update(leads)
           .set(updates)
@@ -408,6 +459,10 @@ export class DatabaseLeadStore implements LeadStore {
     return this.database.withTenantTx(
       { workspaceId: input.workspaceId, actorId: input.actorId },
       async (tx) => {
+        await lockLeadModel(tx, input.workspaceId, true);
+        const fields = await loadLeadFields(tx, input.workspaceId);
+        const active = (key: string) =>
+          fields.some((field) => field.key === key && field.active && !field.sensitive);
         const page = input.page ?? 1;
         const pageSize = input.pageSize ?? 25;
         const offset = (page - 1) * pageSize;
@@ -451,10 +506,10 @@ export class DatabaseLeadStore implements LeadStore {
             workspaceId: row.workspaceId,
             status: leadStatusSchema.parse(row.status),
             contact: leadContactSchema.parse({
-              fullName: row.fullName ?? undefined,
-              email: row.email ?? undefined,
-              phone: row.phone ?? undefined,
-              countryCode: row.countryCode ?? undefined,
+              fullName: active('fullName') ? (row.fullName ?? undefined) : undefined,
+              email: active('email') ? (row.email ?? undefined) : undefined,
+              phone: active('phone') ? (row.phone ?? undefined) : undefined,
+              countryCode: active('countryCode') ? (row.countryCode ?? undefined) : undefined,
             }),
             source: deriveSource(attribution),
             attribution,

@@ -1,117 +1,130 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-
+import { builtInLeadFields } from '@canadian-plans/contracts';
 import { LeadsList } from './leads-list';
 
 const mocks = vi.hoisted(() => ({
-  getStaffLeads: vi.fn(),
+  model: vi.fn(),
+  search: vi.fn(),
+  views: vi.fn(),
+  createView: vi.fn(),
 }));
-
-vi.mock('../lib/api', () => ({
-  getStaffLeads: mocks.getStaffLeads,
-  BackendError: class extends Error {},
+vi.mock('./leads/shared', async (original) => ({
+  ...(await original<typeof import('./leads/shared')>()),
+  useLeadWorkspace: () => ({ api: mocks, workspaceId: '10000000-0000-4000-8000-000000000001' }),
 }));
-
-vi.mock('./staff-session-provider', () => ({
-  useStaffSession: () => ({
-    accessToken: 'staff-token',
-    workspaces: [
-      {
-        id: '10000000-0000-4000-8000-000000000001',
-        slug: 'site-1',
-        name: 'Site 1',
-        roles: ['owner'],
-        permissions: [],
-      },
-    ],
-  }),
-}));
-
+const response = {
+  leads: [
+    {
+      id: '90000000-0000-4000-8000-000000000001',
+      leadType: 'sim',
+      status: 'incomplete',
+      fields: { fullName: 'Synthetic Customer' },
+    },
+  ],
+  page: { page: 1, pageSize: 25, total: 26 },
+};
 describe('LeadsList', () => {
   beforeEach(() => {
-    mocks.getStaffLeads.mockReset();
-    mocks.getStaffLeads.mockResolvedValue({
-      leads: [
-        {
-          id: '90000000-0000-4000-8000-000000000001',
-          workspaceId: '10000000-0000-4000-8000-000000000001',
-          status: 'incomplete',
-          contact: { fullName: 'Synthetic Customer' },
-          source: 'utm:google/cpc',
-          attribution: { utmSource: 'google', utmMedium: 'cpc' },
-          selectedOfferVersionId: null,
-          consentVersion: 'terms-test',
-          createdAt: '2026-09-16T00:00:00.000Z',
-          updatedAt: '2026-09-16T00:00:00.000Z',
-        },
-      ],
-      page: { page: 1, pageSize: 25, total: 1 },
+    vi.resetAllMocks();
+    window.history.replaceState(null, '', '/');
+    mocks.model.mockResolvedValue({
+      fields: builtInLeadFields,
+      settings: { name: 'Leads' },
+      capabilities: { canReadPersonal: true, canManageDataModel: true },
     });
+    mocks.views.mockResolvedValue({ views: [] });
+    mocks.search.mockResolvedValue(response);
   });
-
-  it('renders lead attribution and requests the incomplete filter', async () => {
-    render(<LeadsList workspaceSlug="site-1" />);
-
-    expect(await screen.findByText('Synthetic Customer')).toBeTruthy();
-    expect(screen.getByText('utm:google/cpc')).toBeTruthy();
-
-    fireEvent.click(screen.getByRole('button', { name: 'Incomplete' }));
-
-    await waitFor(() =>
-      expect(mocks.getStaffLeads).toHaveBeenLastCalledWith(
-        'staff-token',
-        '10000000-0000-4000-8000-000000000001',
-        { status: 'incomplete', page: 1, pageSize: 25 },
-      ),
-    );
-  });
-
-  it('loads the next page and resets pagination when the status filter changes', async () => {
-    const response = await mocks.getStaffLeads();
-    mocks.getStaffLeads.mockClear();
-    mocks.getStaffLeads
-      .mockResolvedValueOnce({ ...response, page: { page: 1, pageSize: 25, total: 26 } })
-      .mockResolvedValueOnce({ ...response, page: { page: 2, pageSize: 25, total: 26 } });
+  it('paginates and resets the page when status changes', async () => {
     render(<LeadsList workspaceSlug="site-1" />);
     await screen.findByText('Synthetic Customer');
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     await waitFor(() =>
-      expect(mocks.getStaffLeads).toHaveBeenLastCalledWith(
-        'staff-token',
-        '10000000-0000-4000-8000-000000000001',
-        { status: undefined, page: 2, pageSize: 25 },
+      expect(mocks.search).toHaveBeenLastCalledWith(
+        expect.any(String),
+        expect.objectContaining({ page: 2 }),
       ),
     );
-    await screen.findByText('Page 2 of 2 · 26 lead(s)');
-    fireEvent.click(screen.getByRole('button', { name: 'Incomplete' }));
+    fireEvent.change(screen.getByRole('combobox', { name: 'Lead status' }), {
+      target: { value: 'incomplete' },
+    });
     await waitFor(() =>
-      expect(mocks.getStaffLeads).toHaveBeenLastCalledWith(
-        'staff-token',
-        '10000000-0000-4000-8000-000000000001',
-        { status: 'incomplete', page: 1, pageSize: 25 },
+      expect(mocks.search).toHaveBeenLastCalledWith(
+        expect.any(String),
+        expect.objectContaining({ status: 'incomplete', page: 1 }),
       ),
     );
   });
-
   it('keeps newer filter results when the initial response arrives late', async () => {
-    const oldResponse = await mocks.getStaffLeads();
-    type Response = Awaited<ReturnType<typeof import('../lib/api').getStaffLeads>>;
-    let resolveStale: (value: Response) => void = () => undefined;
-    const stale = new Promise<Response>((resolve) => {
-      resolveStale = resolve;
+    let resolveStale: (value: typeof response) => void = () => undefined;
+    mocks.search
+      .mockReturnValueOnce(
+        new Promise<typeof response>((resolve) => {
+          resolveStale = resolve;
+        }),
+      )
+      .mockResolvedValueOnce({ leads: [], page: { page: 1, pageSize: 25, total: 0 } });
+    render(<LeadsList workspaceSlug="site-1" />);
+    await waitFor(() => expect(mocks.search).toHaveBeenCalledOnce());
+    fireEvent.change(screen.getByRole('combobox', { name: 'Lead status' }), {
+      target: { value: 'submitted' },
     });
-    mocks.getStaffLeads.mockReset();
-    mocks.getStaffLeads.mockReturnValueOnce(stale).mockResolvedValueOnce({
-      leads: [],
-      page: { page: 1, pageSize: 25, total: 0 },
+    await screen.findByText('No leads match this view.');
+    await act(async () => resolveStale(response));
+    expect(screen.queryByText('Synthetic Customer')).toBeNull();
+  });
+  it('sends personal filters in the request body and keeps them out of the URL', async () => {
+    render(<LeadsList workspaceSlug="site-1" />);
+    await screen.findByText('Synthetic Customer');
+    fireEvent.click(screen.getByRole('button', { name: 'Add filter' }));
+    fireEvent.change(screen.getByRole('combobox', { name: 'Field' }), {
+      target: { value: 'email' },
+    });
+    fireEvent.change(screen.getByLabelText('Filter value'), {
+      target: { value: 'private@example.test' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Apply filter' }));
+    await waitFor(() =>
+      expect(mocks.search).toHaveBeenLastCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          filters: [expect.objectContaining({ key: 'email', value: 'private@example.test' })],
+        }),
+      ),
+    );
+    expect(window.location.search).toBe('');
+  });
+  it('does not load personal views or show field controls without personal access', async () => {
+    mocks.model.mockResolvedValue({
+      fields: [],
+      settings: { name: 'Leads' },
+      capabilities: { canReadPersonal: false, canManageDataModel: false },
     });
     render(<LeadsList workspaceSlug="site-1" />);
-    await waitFor(() => expect(mocks.getStaffLeads).toHaveBeenCalledOnce());
-    fireEvent.click(screen.getByRole('button', { name: 'Incomplete' }));
-    await screen.findByText('No leads yet.');
-    await act(async () => {
-      resolveStale(oldResponse);
-    });
-    expect(screen.queryByText('Synthetic Customer')).toBeNull();
+    await screen.findByText('incomplete');
+    expect(mocks.views).not.toHaveBeenCalled();
+    expect(screen.queryByRole('button', { name: 'Add filter' })).toBeNull();
+    expect(screen.queryByText('Manage fields')).toBeNull();
+    expect(mocks.search).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ columns: [], filters: [] }),
+    );
+  });
+  it('announces the selected sort on the column header', async () => {
+    render(<LeadsList workspaceSlug="site-1" />);
+    await screen.findByText('Synthetic Customer');
+    fireEvent.click(screen.getByRole('button', { name: 'Full name' }));
+    await waitFor(() =>
+      expect(
+        screen.getByRole('columnheader', { name: /Full name/ }).getAttribute('aria-sort'),
+      ).toBe('ascending'),
+    );
+    fireEvent.click(screen.getByRole('button', { name: /^Full name/ }));
+    await waitFor(() =>
+      expect(
+        screen.getByRole('columnheader', { name: /Full name/ }).getAttribute('aria-sort'),
+      ).toBe('descending'),
+    );
   });
 });

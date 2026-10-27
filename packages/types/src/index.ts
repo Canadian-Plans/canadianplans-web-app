@@ -19,6 +19,7 @@ export const staffPermissionNames = tuple(
   'deletion',
   'invoice_approval',
   'integration_management',
+  'manage_data_model',
 );
 export type StaffPermissionName = (typeof staffPermissionNames)[number];
 
@@ -65,6 +66,9 @@ export type InvoiceStatus = (typeof invoiceStatuses)[number];
  * converts to an order (T12). There is no separate "abandoned" state — an
  * incomplete lead that is never resumed simply stays incomplete.
  */
+export const leadTypes = tuple('sim', 'mobile', 'internet', 'legacy');
+export type LeadType = (typeof leadTypes)[number];
+
 export const leadStatuses = tuple('incomplete', 'submitted');
 export type LeadStatus = (typeof leadStatuses)[number];
 

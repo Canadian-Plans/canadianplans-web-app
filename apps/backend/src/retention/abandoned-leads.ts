@@ -65,6 +65,7 @@ export class DatabaseAbandonedLeadPruner {
             phone: null,
             countryCode: null,
             payload: null,
+            customValues: {},
             customerDataRestrictedAt: input.now,
             updatedAt: input.now,
           })

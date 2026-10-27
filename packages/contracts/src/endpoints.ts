@@ -1,3 +1,4 @@
+import { leadDataEndpoints } from './lead-data-endpoints';
 import type { z } from 'zod';
 import { catalogueStatusResponseSchema } from './catalogue';
 
@@ -184,6 +185,7 @@ const DELIVERY_ID: EndpointHeader = {
 };
 
 export const endpoints: readonly EndpointDef[] = [
+  ...leadDataEndpoints,
   {
     operationId: 'getHealth',
     method: 'GET',
