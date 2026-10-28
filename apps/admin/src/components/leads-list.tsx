@@ -48,7 +48,8 @@ export function LeadsList({ workspaceSlug }: { workspaceSlug: string }) {
     [filterOpen, setFilterOpen] = useState(false),
     [saveOpen, setSaveOpen] = useState(false),
     [name, setName] = useState(''),
-    [rename, setRename] = useState(false),
+    [dialog, setDialog] = useState<'create' | 'rename'>('create'),
+    [notice, setNotice] = useState(''),
     [busy, setBusy] = useState(false);
   const generation = useRef(0),
     queryGeneration = useRef(0);
@@ -121,17 +122,26 @@ export function LeadsList({ workspaceSlug }: { workspaceSlug: string }) {
       queryGeneration.current += 1;
     };
   }, [api, workspaceId, model, state, page]);
+  /** Edits stay attached to the open view until saved, saved as new, or switched away. */
   const change = (next: LeadViewState) => {
     setState(next);
     setPage(1);
-    setViewId(undefined);
-    updateUrl(next);
+    setNotice('');
+    updateUrl(next, viewId);
   };
   const available =
     model?.fields.filter(
       (f) => f.active && !f.sensitive && (!state.leadType || fieldApplies(f, state.leadType)),
     ) ?? [];
   const activeView = views.find((v) => v.id === viewId);
+  const dirty =
+    activeView !== undefined && JSON.stringify(activeView.state) !== JSON.stringify(state);
+  const openDialog = (mode: 'create' | 'rename') => {
+    setDialog(mode);
+    setName(mode === 'rename' && activeView ? activeView.name : '');
+    setMessage('');
+    setSaveOpen(true);
+  };
   const reorder = (key: string, offset: number) => {
     const columns = [...state.columns];
     const index = columns.indexOf(key);
@@ -139,23 +149,24 @@ export function LeadsList({ workspaceSlug }: { workspaceSlug: string }) {
     columns.splice(index + offset, 0, key);
     change({ ...state, columns });
   };
-  async function saveView() {
+  /** With `view`, updates that saved view (its version guards lost updates); otherwise creates one. */
+  async function persistView(input: { view?: LeadView; name: string; state: LeadViewState }) {
     if (!api || !workspaceId || busy) return;
     setBusy(true);
     setMessage('');
     try {
-      const result =
-        rename && activeView
-          ? await api.updateView(workspaceId, activeView.id, {
-              name,
-              state: activeView.state,
-              expectedVersion: activeView.version,
-            })
-          : await api.createView(workspaceId, { name, state });
+      const result = input.view
+        ? await api.updateView(workspaceId, input.view.id, {
+            name: input.name,
+            state: input.state,
+            expectedVersion: input.view.version,
+          })
+        : await api.createView(workspaceId, { name: input.name, state: input.state });
       setViews((v) => [...v.filter((item) => item.id !== result.view.id), result.view]);
       setViewId(result.view.id);
       updateUrl(result.view.state, result.view.id);
       setSaveOpen(false);
+      setNotice(input.view ? 'View saved.' : 'View created.');
     } catch (e) {
       setMessage(leadError(e));
     } finally {
@@ -255,26 +266,24 @@ export function LeadsList({ workspaceSlug }: { workspaceSlug: string }) {
                 ))}
               </NativeSelect>
             </label>
+            {dirty && <span className="text-xs text-muted-foreground">Unsaved changes</span>}
             <Button
               variant="outline"
-              onClick={() => {
-                setRename(false);
-                setName('');
-                setSaveOpen(true);
-              }}
+              disabled={busy || (activeView !== undefined && !dirty)}
+              onClick={() =>
+                activeView
+                  ? void persistView({ view: activeView, name: activeView.name, state })
+                  : openDialog('create')
+              }
             >
               Save view
             </Button>
             {activeView && (
               <>
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setRename(true);
-                    setName(activeView.name);
-                    setSaveOpen(true);
-                  }}
-                >
+                <Button variant="ghost" disabled={busy} onClick={() => openDialog('create')}>
+                  Save as new view
+                </Button>
+                <Button variant="ghost" disabled={busy} onClick={() => openDialog('rename')}>
                   Rename view
                 </Button>
                 <Button
@@ -287,6 +296,7 @@ export function LeadsList({ workspaceSlug }: { workspaceSlug: string }) {
                       await api.deleteView(workspaceId, activeView.id);
                       setViews(views.filter((v) => v.id !== activeView.id));
                       setViewId(undefined);
+                      setNotice('View deleted.');
                       updateUrl(state);
                     } catch (e) {
                       setMessage(leadError(e));
@@ -490,6 +500,11 @@ export function LeadsList({ workspaceSlug }: { workspaceSlug: string }) {
           Next
         </Button>
       </nav>
+      {notice && (
+        <p role="status" className="text-sm text-muted-foreground">
+          {notice}
+        </p>
+      )}
       {message && (
         <p role="alert" className="text-sm">
           {message}
@@ -512,13 +527,19 @@ export function LeadsList({ workspaceSlug }: { workspaceSlug: string }) {
       </Dialog>
       <Dialog open={saveOpen} onOpenChange={setSaveOpen}>
         <DialogContent>
-          <DialogTitle>{rename ? 'Rename view' : 'Save view'}</DialogTitle>
+          <DialogTitle>
+            {dialog === 'rename' ? 'Rename view' : activeView ? 'Save as new view' : 'Save view'}
+          </DialogTitle>
           <DialogDescription>This view is visible only to you.</DialogDescription>
           <form
             className="space-y-4"
             onSubmit={(e) => {
               e.preventDefault();
-              void saveView();
+              void persistView(
+                dialog === 'rename' && activeView
+                  ? { view: activeView, name, state: activeView.state }
+                  : { name, state },
+              );
             }}
           >
             <label className="block text-sm">

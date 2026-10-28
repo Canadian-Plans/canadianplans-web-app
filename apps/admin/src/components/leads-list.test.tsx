@@ -8,6 +8,8 @@ const mocks = vi.hoisted(() => ({
   search: vi.fn(),
   views: vi.fn(),
   createView: vi.fn(),
+  updateView: vi.fn(),
+  deleteView: vi.fn(),
 }));
 vi.mock('./leads/shared', async (original) => ({
   ...(await original<typeof import('./leads/shared')>()),
@@ -125,6 +127,98 @@ describe('LeadsList', () => {
       expect(
         screen.getByRole('columnheader', { name: /Full name/ }).getAttribute('aria-sort'),
       ).toBe('descending'),
+    );
+  });
+  const savedView = {
+    id: '80000000-0000-4000-8000-000000000001',
+    name: 'Arriving soon',
+    version: 3,
+    state: { columns: ['fullName'], filters: [] },
+  };
+  const selectedView = () => {
+    const select = screen.getByRole('combobox', { name: 'Personal view' });
+    return select instanceof HTMLSelectElement ? select.value : '';
+  };
+  it('saves changed filters into the open view and keeps it selected', async () => {
+    mocks.views.mockResolvedValue({ views: [savedView] });
+    mocks.updateView.mockImplementation(
+      async (_workspace: string, id: string, body: { name: string; state: unknown }) => ({
+        view: { id, name: body.name, state: body.state, version: 4 },
+      }),
+    );
+    window.history.replaceState(null, '', `/?view=${savedView.id}`);
+    render(<LeadsList workspaceSlug="site-1" />);
+    await screen.findByText('Synthetic Customer');
+    expect(selectedView()).toBe(savedView.id);
+    expect(screen.getByRole('button', { name: 'Save view' }).hasAttribute('disabled')).toBe(true);
+    fireEvent.change(screen.getByRole('combobox', { name: 'Lead status' }), {
+      target: { value: 'submitted' },
+    });
+    expect(selectedView()).toBe(savedView.id);
+    expect(screen.getByText('Unsaved changes')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Save view' }).hasAttribute('disabled')).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: 'Save view' }));
+    await waitFor(() =>
+      expect(mocks.updateView).toHaveBeenCalledWith(expect.any(String), savedView.id, {
+        name: 'Arriving soon',
+        state: expect.objectContaining({ status: 'submitted', columns: ['fullName'] }),
+        expectedVersion: 3,
+      }),
+    );
+    await screen.findByText('View saved.');
+    expect(mocks.createView).not.toHaveBeenCalled();
+    expect(screen.queryByText('Unsaved changes')).toBeNull();
+    expect(window.location.search).toBe(`?view=${savedView.id}`);
+  });
+  it('saves changes as a new view and leaves the open view untouched', async () => {
+    const created = '80000000-0000-4000-8000-000000000002';
+    mocks.views.mockResolvedValue({ views: [savedView] });
+    mocks.createView.mockImplementation(
+      async (_workspace: string, body: { name: string; state: unknown }) => ({
+        view: { id: created, name: body.name, state: body.state, version: 1 },
+      }),
+    );
+    window.history.replaceState(null, '', `/?view=${savedView.id}`);
+    render(<LeadsList workspaceSlug="site-1" />);
+    await screen.findByText('Synthetic Customer');
+    fireEvent.change(screen.getByRole('combobox', { name: 'Lead status' }), {
+      target: { value: 'incomplete' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Save as new view' }));
+    fireEvent.change(screen.getByLabelText('View name'), { target: { value: 'Incomplete only' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() =>
+      expect(mocks.createView).toHaveBeenCalledWith(expect.any(String), {
+        name: 'Incomplete only',
+        state: expect.objectContaining({ status: 'incomplete' }),
+      }),
+    );
+    expect(mocks.updateView).not.toHaveBeenCalled();
+    await waitFor(() => expect(window.location.search).toBe(`?view=${created}`));
+    expect(selectedView()).toBe(created);
+  });
+  it('renames the open view without saving unsaved filter changes into it', async () => {
+    mocks.views.mockResolvedValue({ views: [savedView] });
+    mocks.updateView.mockImplementation(
+      async (_workspace: string, id: string, body: { name: string; state: unknown }) => ({
+        view: { id, name: body.name, state: body.state, version: 4 },
+      }),
+    );
+    window.history.replaceState(null, '', `/?view=${savedView.id}`);
+    render(<LeadsList workspaceSlug="site-1" />);
+    await screen.findByText('Synthetic Customer');
+    fireEvent.change(screen.getByRole('combobox', { name: 'Lead status' }), {
+      target: { value: 'submitted' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Rename view' }));
+    fireEvent.change(screen.getByLabelText('View name'), { target: { value: 'Renamed' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() =>
+      expect(mocks.updateView).toHaveBeenCalledWith(expect.any(String), savedView.id, {
+        name: 'Renamed',
+        state: savedView.state,
+        expectedVersion: 3,
+      }),
     );
   });
 });
