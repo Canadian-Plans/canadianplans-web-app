@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { sql } from 'drizzle-orm';
 import postgres from 'postgres';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
@@ -23,27 +24,27 @@ function disposableDatabaseUrl(): string | undefined {
 
 const databaseUrl = disposableDatabaseUrl();
 const databaseDescribe = databaseUrl ? describe : describe.skip;
-const WORKSPACE = '10000000-0000-4000-8000-000000000612';
-const ACTOR = '20000000-0000-4000-8000-000000000612';
-const PRODUCT = '30000000-0000-4000-8000-000000000612';
-const OFFER = '40000000-0000-4000-8000-000000000612';
-const LEAD = '50000000-0000-4000-8000-000000000612';
-const QUOTE = '60000000-0000-4000-8000-000000000612';
-const SECOND_QUOTE = '60000000-0000-4000-8000-000000000613';
-const ROLLBACK_LEAD = '50000000-0000-4000-8000-000000000614';
-const ROLLBACK_QUOTE = '60000000-0000-4000-8000-000000000614';
-const REQUEST = '70000000-0000-4000-8000-000000000612';
-const GRANT = 'cpldg_database-integration-test-grant-token';
-const ROLLBACK_GRANT = 'cpldg_database-integration-rollback-grant';
-const FOREIGN_WORKSPACE = '10000000-0000-4000-8000-000000000614';
-const FOREIGN_ACTOR = '20000000-0000-4000-8000-000000000614';
+const WORKSPACE = randomUUID();
+const ACTOR = randomUUID();
+const PRODUCT = randomUUID();
+const OFFER = randomUUID();
+const LEAD = randomUUID();
+const QUOTE = randomUUID();
+const SECOND_QUOTE = randomUUID();
+const ROLLBACK_LEAD = randomUUID();
+const ROLLBACK_QUOTE = randomUUID();
+const REQUEST = randomUUID();
+const GRANT = `cpldg_${randomUUID()}`;
+const ROLLBACK_GRANT = `cpldg_${randomUUID()}`;
+const FOREIGN_WORKSPACE = randomUUID();
+const FOREIGN_ACTOR = randomUUID();
 const NOW = new Date('2026-09-16T12:00:00.000Z');
 // G16 retry-window fixture: a completed key whose `completedAt` the injected
 // clock can move past the fixed window.
-const RETRY_LEAD = '50000000-0000-4000-8000-000000000615';
-const RETRY_QUOTE = '60000000-0000-4000-8000-000000000615';
-const RETRY_REQUEST = '70000000-0000-4000-8000-000000000615';
-const RETRY_GRANT = 'cpldg_database-integration-retry-window-grant';
+const RETRY_LEAD = randomUUID();
+const RETRY_QUOTE = randomUUID();
+const RETRY_REQUEST = randomUUID();
+const RETRY_GRANT = `cpldg_${randomUUID()}`;
 const RETRY_NOW = new Date('2026-09-20T12:00:00.000Z');
 
 const offer = {
@@ -68,7 +69,10 @@ const offer = {
 const requestBody = {
   quoteId: QUOTE,
   termsVersion: 'terms-1',
-  form: { schemaVersion: 1, payload: { fixture: true } },
+  form: {
+    schemaVersion: 1,
+    payload: { fixture: true, custom_order_answer: 'Private lead answer' },
+  },
   consent: { termsVersion: 'terms-1', marketingOptIn: false },
 };
 
@@ -87,7 +91,7 @@ databaseDescribe('orders database transaction', () => {
     await setTestRuntimePassword(admin);
     await admin`
       insert into app.workspaces (id, slug, name)
-      values (${WORKSPACE}, 'orders-integration', 'Orders Integration')
+      values (${WORKSPACE}, ${`orders-integration-${WORKSPACE}`}, 'Orders Integration')
       on conflict (id) do nothing
     `;
     await admin`
@@ -201,7 +205,7 @@ databaseDescribe('orders database transaction', () => {
     // deferred until these order tables existed.
     await admin`
       insert into app.workspaces (id, slug, name)
-      values (${FOREIGN_WORKSPACE}, 'orders-integration-foreign', 'Orders Integration Foreign')
+      values (${FOREIGN_WORKSPACE}, ${`orders-integration-${FOREIGN_WORKSPACE}`}, 'Orders Integration Foreign')
       on conflict (id) do nothing
     `;
     // G16: a fresh lead/quote/grant/key, seeded once, whose completed key is
@@ -256,6 +260,7 @@ databaseDescribe('orders database transaction', () => {
   });
 
   it('parallel retries commit one order, one consumption, and the two required jobs', async () => {
+    await admin`insert into app.lead_fields(workspace_id,key,type,origin,config) values (${WORKSPACE},'custom_order_answer','text','custom','{"label":"Order exclusion","type":"text"}'::jsonb) on conflict (workspace_id,key) do nothing`;
     const serviceA = new OrderService(
       new DatabaseOrderStore(clientA),
       'honour_until_expiry',
@@ -299,6 +304,9 @@ databaseDescribe('orders database transaction', () => {
       select consent from app.orders where workspace_id = ${WORKSPACE} and lead_id = ${LEAD}
     `;
     expect(consentRow?.consent).toEqual(requestBody.consent);
+    const [storedForm] =
+      await admin`select payload from app.orders where workspace_id=${WORKSPACE} and lead_id=${LEAD}`;
+    expect(storedForm?.payload).toEqual({ schemaVersion: 1, payload: { fixture: true } });
 
     await expect(
       admin`
@@ -371,7 +379,7 @@ databaseDescribe('orders database transaction', () => {
     expect(rejected).toEqual({ status: 'draft_submitted' });
 
     const [after] = await probe();
-    expect(after?.fullName).toBeNull();
+    expect(after?.fullName).toBe(before?.fullName);
     expect(after?.updatedAt.getTime()).toBe(before?.updatedAt.getTime());
     expect(after?.audits).toBe(before?.audits);
 

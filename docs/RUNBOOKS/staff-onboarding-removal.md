@@ -94,3 +94,12 @@ removal of the last remaining Owner-role member, or any request to bypass the
 invitation email flow (there is no bypass — do not create a database row by
 hand). For lost credentials/MFA on an existing account, use
 [staff-auth-recovery.md](staff-auth-recovery.md) instead of this runbook.
+
+## Lead data model permission
+
+An owner with verified MFA opens Settings → Data model → Leads → Settings and
+grants **Manage data model** to the intended staff member. The backend stores the
+existing per-member `allow`/`deny` override for `manage_data_model`; it checks the
+current membership and MFA on every model request. Revoking it immediately blocks
+future model calls. This permission does not grant access to personal details or
+permission to edit lead values. Owners have model access by default unless denied.

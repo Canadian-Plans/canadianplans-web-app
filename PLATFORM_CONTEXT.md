@@ -199,3 +199,9 @@ Each Vercel project points at one `apps/*` directory. Only `apps/backend` among 
 - **Outbox** — the table of queued side-effect jobs run by the background runner.
 - **Commission line** — one earned commission for one activated order, with the rule snapshotted.
 - **Evidence file** — `docs/EVIDENCE/*.md`, the proof a gate passed.
+- **Field** — a stable key and typed lead value with a label and visibility rules.
+- **Built-in field** — a code-owned field; a site may relabel or hide it, but cannot delete it.
+- **Custom field** — a staff-defined lead field whose values live in the lead's custom JSON map.
+- **Lead type** — a code-defined website flow (SIM, mobile, internet, or unclassified legacy).
+- **Layout** — a site's sections and field order for one lead type's detail page.
+- **View** — one staff member's saved lead-list columns, filters and sort, stored on the server.

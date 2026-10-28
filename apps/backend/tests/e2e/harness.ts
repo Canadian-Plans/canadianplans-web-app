@@ -98,6 +98,8 @@ const PUBLIC_PORT = Number(process.env['E2E_HARNESS_PORT'] ?? 4100);
 const WORKSPACE_ID = process.env['E2E_WORKSPACE_ID'] ?? '10000000-0000-4000-8000-000000000e01';
 const ACTOR_ID = process.env['E2E_ACTOR_ID'] ?? '20000000-0000-4000-8000-000000000e02';
 const STAFF_ACTOR_ID = process.env['E2E_STAFF_ACTOR_ID'] ?? '20000000-0000-4000-8000-000000000e03';
+const MEMBER_ACTOR_ID = '20000000-0000-4000-8000-000000000e04';
+const MEMBER_BEARER = 'e2e-staff-session-member-aal2';
 const STAFF_EMAIL = process.env['E2E_STAFF_EMAIL'] ?? 'staff@example.test';
 const STAFF_BEARER = process.env['E2E_STAFF_BEARER'] ?? 'e2e-staff-session-owner-aal2';
 const SERVICE_SECRET =
@@ -429,7 +431,13 @@ const staffSessionVerifier: StaffSessionVerifier = {
   verify: async (token: string): Promise<VerifiedStaffSession | undefined> =>
     token === STAFF_BEARER
       ? { actorId: STAFF_ACTOR_ID, verifiedEmail: STAFF_EMAIL, assuranceLevel: 'aal2' }
-      : undefined,
+      : token === MEMBER_BEARER
+        ? {
+            actorId: MEMBER_ACTOR_ID,
+            verifiedEmail: 'model-member@example.test',
+            assuranceLevel: 'aal2',
+          }
+        : undefined,
 };
 
 const staff: StaffRouteDependencies = {
@@ -484,6 +492,11 @@ const outboxRunner = new OutboxRunner({
 });
 
 const DATA_TABLES = [
+  'app.lead_views',
+  'app.lead_layouts',
+  'app.lead_fields',
+  'app.lead_object_settings',
+  'app.membership_permissions',
   'app.orders',
   'app.quotes',
   'app.leads',
@@ -572,6 +585,17 @@ async function seedStaticRows(admin: ReturnType<typeof postgres>): Promise<void>
   }
 }
 
+async function seedModelMember(admin: ReturnType<typeof postgres>): Promise<void> {
+  const [role] = await admin<
+    { id: string }[]
+  >`insert into app.roles(workspace_id,name) values (${WORKSPACE_ID},'orders') on conflict (workspace_id,name) do update set name = excluded.name returning id`;
+  const [member] = await admin<
+    { id: string }[]
+  >`insert into app.memberships(workspace_id,user_id,membership_type,status,accepted_at) values (${WORKSPACE_ID},${MEMBER_ACTOR_ID},'staff','active',now()) on conflict (workspace_id,user_id) do update set status = 'active' returning id`;
+  if (role && member)
+    await admin`insert into app.membership_roles(workspace_id,membership_id,role_id) values (${WORKSPACE_ID},${member.id},${role.id}) on conflict do nothing`;
+}
+
 async function main(): Promise<void> {
   const adminUrl = ADMIN_URL;
   if (!adminUrl) throw new Error('TEST_MIGRATION_DATABASE_URL is required');
@@ -581,6 +605,7 @@ async function main(): Promise<void> {
   // on a fresh disposable database it must be set before the app connects.
   await setTestRuntimePassword(admin);
   await seedStaticRows(admin);
+  await seedModelMember(admin);
   await reseed(admin);
 
   // Built only after the runtime role is ready, so no connection is opened

@@ -547,3 +547,5 @@ export {
   type WebsiteBotAction,
   type WebsiteBotProof,
 } from './website-bot';
+
+export * from './lead-fields';

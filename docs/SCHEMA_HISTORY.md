@@ -653,3 +653,31 @@ customer data: the free-text search is never stored (invariant 12).
 `workspace_id = app.workspace_id` **and** `actor_id = app.actor_id` in `USING`
 and `WITH CHECK`, so a colleague in the same workspace cannot read or change
 the row even through a direct query. RLS enabled and forced.
+
+## 0029 — Lead data model
+
+Adds the `manage_data_model` permission, per-workspace field definitions, object
+settings, layouts and actor-scoped views, with explicit grants and forced RLS.
+Adds checked/indexed `lead_type`, dedicated JSON `custom_values` and a field edit
+version to leads. Built-ins are seeded from code. Tombstones permanently reserve
+keys; a trigger protects key/type/origin. Guarded SQL value readers support typed
+search. Restriction clears custom answers (0029 also deleted private views, which
+0030 corrects); marking a field sensitive removes its saved column/filter/sort
+references across actors.
+
+Backfill uses form category, offer type, then the SIM signature; ambiguous rows
+stay `legacy`. Existing payloads are not rewritten. A five-second lock timeout and
+100,000-row guard require a separately reviewed batched release for a larger
+installation. Apply before the backend, then admin/website. Roll back application
+versions while retaining this additive schema. See [release checks](LEAD_DATA_MODEL.md#release-and-rollback).
+
+## 0030 — Lead view scrub
+
+Replaces 0029's restriction trigger, which deleted every personal lead view in a
+workspace whenever any lead became restricted, including by the daily
+abandoned-draft prune. Restriction now only clears the lead's `custom_values`.
+The customer-deletion workflow calls `app.scrub_lead_view_filters(workspace)`, a
+security-definer function that checks its argument against the transaction's
+tenant context like 0023's cleanup functions, removes free-text filter values
+from every view in the workspace and bumps each changed view's version. No table
+or column changes; apply with the 0029 release.

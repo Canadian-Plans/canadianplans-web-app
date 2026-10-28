@@ -304,6 +304,10 @@ export async function restrictSubject(tx: TenantTransaction, scope: DeletionScop
           isNull(draftGrants.revokedAt),
         ),
       );
+    // Staff may have typed this customer's details into a personal lead view
+    // filter. The definer function strips free-text filter values from every
+    // view in the workspace (other actors' included) and keeps the views.
+    await tx.execute(sql`select app.scrub_lead_view_filters(${scope.workspaceId})`);
   }
   if (scope.orderId) {
     await tx

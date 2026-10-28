@@ -142,6 +142,7 @@ describe.skipIf(!databaseUrl)('complete customer deletion under runtime RLS', ()
       messageId = randomUUID();
     const grant = generateDraftGrantToken();
     await admin`insert into app.leads(id,workspace_id,status,consent_version,full_name,email,phone,country_code,payload,attribution,selected_offer_version_id) values(${leadId},${WORKSPACE},${withOrder ? 'submitted' : 'incomplete'},'privacy-2026-10-v2','Saved Customer',${EMAIL},'1712345678','BD',${admin.json(FORM)},${admin.json({ utmSource: 'private-source' })},${OFFER})`;
+    await admin`update app.leads set custom_values = '{"custom_erasure":"Private sentinel"}'::jsonb where id=${leadId}`;
     await admin`insert into app.draft_grants(workspace_id,lead_id,token_hash,expires_at) values(${WORKSPACE},${leadId},${grant.tokenHash},now()+interval '1 day')`;
     if (withOrder) {
       await admin`insert into app.orders(id,workspace_id,reference,lead_id,status,payment_state,delivery_state,snapshot,payload,submitted_at) values(${orderId},${WORKSPACE},${reference},${leadId},'submitted','not_required','none',${admin.json(z.json().parse(SNAPSHOT))},${admin.json(FORM)},now())`;
@@ -457,8 +458,9 @@ describe.skipIf(!databaseUrl)('complete customer deletion under runtime RLS', ()
       expect(row?.count, table).toBe(0);
     }
     const [lead] =
-      await admin`select full_name,email,phone,payload,attribution from app.leads where id=${fixture.leadId}`;
+      await admin`select full_name,email,phone,payload,attribution,custom_values from app.leads where id=${fixture.leadId}`;
     expect(lead).toMatchObject({
+      custom_values: {},
       full_name: null,
       email: null,
       phone: null,

@@ -460,6 +460,7 @@ async function erasePersonalCopies(
         phone: null,
         countryCode: null,
         payload: null,
+        customValues: {},
         attribution: {},
         partnerId: null,
         selectedOfferVersionId: null,

@@ -1,3 +1,4 @@
+import { createLeadDataClient } from './lead-data-client';
 import { websiteBotTokenSchema, type WebsiteBotProof } from './website-bot';
 import type { z } from 'zod';
 import { catalogueStatusResponseSchema, type CatalogueStatusResponse } from './catalogue';
@@ -243,6 +244,7 @@ export class BackendError extends Error {
     readonly code: ApiErrorCode | 'internal_error',
     readonly status: number,
     readonly requestId: string,
+    readonly details?: Record<string, unknown>,
   ) {
     super(code);
     this.name = 'BackendError';
@@ -288,6 +290,7 @@ function assertApiPath(url: URL, origin: string): void {
 }
 
 export interface BackendClient {
+  leadData: ReturnType<typeof createLeadDataClient>;
   health(): Promise<HealthResponse>;
   leads: {
     read(leadId: string, options: { draftGrant: string }): Promise<ReadLeadResponse>;
@@ -576,6 +579,7 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
           parsed.data.error.code,
           response.status,
           parsed.data.error.requestId,
+          parsed.data.error.details,
         );
       }
       throw new BackendError('internal_error', response.status, requestId);
@@ -764,6 +768,7 @@ export function createBackendClient(options: BackendClientOptions): BackendClien
         }),
     },
 
+    leadData: createLeadDataClient(call),
     staff: {
       listWorkspaces: () =>
         call({

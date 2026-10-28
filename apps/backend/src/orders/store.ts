@@ -1,9 +1,11 @@
+import { auditLeadChange } from '../leads/model.js';
 import { and, eq, isNull } from 'drizzle-orm';
 import {
   auditEvents,
   draftGrants,
   idempotencyKeys,
   leads,
+  leadFields,
   offerVersions,
   orders,
   orderStatusHistory,
@@ -330,6 +332,19 @@ async function submitInTransaction(
     termsVersion: quote.termsVersion,
   });
 
+  // Custom lead answers are operational data and never enter the immutable order.
+  // This runs after every retry-return path, so new definitions cannot block retries.
+  const customDefinitions = await tx
+    .select({ key: leadFields.key })
+    .from(leadFields)
+    .where(and(eq(leadFields.workspaceId, input.workspaceId), eq(leadFields.origin, 'custom')));
+  const customKeys = new Set(customDefinitions.map((field) => field.key));
+  const submissionForm = {
+    ...input.body.form,
+    payload: Object.fromEntries(
+      Object.entries(input.body.form.payload).filter(([key]) => !customKeys.has(key)),
+    ),
+  };
   const [order] = await tx
     .insert(orders)
     .values({
@@ -340,7 +355,7 @@ async function submitInTransaction(
       paymentState: quote.paymentRequired ? 'pending' : 'not_required',
       deliveryState: 'none',
       snapshot,
-      payload: input.body.form,
+      payload: submissionForm,
       consent: input.body.consent,
       partnerId: quote.partnerId,
       submittedAt: input.now,
@@ -378,6 +393,13 @@ async function submitInTransaction(
     )
     .returning({ id: leads.id });
   if (!submittedLead[0]) throw new Error('lead_submission_race');
+  await auditLeadChange(
+    tx,
+    { workspaceId: input.workspaceId, actorId: input.actorId, requestId: input.requestId },
+    'lead.submitted',
+    quote.draftId,
+    ['status'],
+  );
 
   await tx.insert(orderStatusHistory).values({
     workspaceId: input.workspaceId,

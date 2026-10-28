@@ -56,11 +56,11 @@ databaseTest('abandoned order forms (SEC-12)', () => {
     const insertLead = (id: string, status: string, updatedAt: Date) => admin`
       insert into app.leads (
         id, workspace_id, status, full_name, email, phone, country_code, payload,
-        consent_version, attribution, updated_at
+        consent_version, attribution, updated_at, custom_values
       ) values (
         ${id}, ${WORKSPACE}, ${status}, 'Synthetic Visitor', 'visitor@example.test',
         '+16045550100', 'IN', ${admin.json({ plan: 'synthetic' })}, 'terms-1',
-        ${admin.json({ source: 'google' })}, ${updatedAt}
+        ${admin.json({ source: 'google' })}, ${updatedAt}, '{"custom_retention":"Private answer"}'::jsonb
       )
     `;
     await insertLead(OLD_DRAFT, 'incomplete', new Date(NOW.getTime() - 100 * DAY));
@@ -98,11 +98,12 @@ databaseTest('abandoned order forms (SEC-12)', () => {
         phone: string | null;
         country_code: string | null;
         payload: unknown;
+        custom_values: unknown;
         attribution: unknown;
         restricted: boolean;
       }[]
     >`
-      select id, full_name, email, phone, country_code, payload, attribution,
+      select id, full_name, email, phone, country_code, payload, custom_values, attribution,
         customer_data_restricted_at is not null as restricted
       from app.leads where workspace_id = ${WORKSPACE}
     `;
@@ -113,6 +114,7 @@ databaseTest('abandoned order forms (SEC-12)', () => {
       phone: null,
       country_code: null,
       payload: null,
+      custom_values: {},
       attribution: { source: 'google' },
       restricted: true,
     });

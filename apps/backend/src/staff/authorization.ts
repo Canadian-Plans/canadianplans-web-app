@@ -21,6 +21,7 @@ const actionNames = tuple(
   'record.delete',
   'invoice.approve',
   'integration.manage',
+  'data_model.manage',
 );
 
 export type StaffAction = (typeof actionNames)[number];
@@ -43,6 +44,7 @@ const permissionActions = {
   deletion: 'record.delete',
   invoice_approval: 'invoice.approve',
   integration_management: 'integration.manage',
+  manage_data_model: 'data_model.manage',
 } satisfies Record<StaffPermissionName, StaffAction>;
 
 const privilegedActions = new Set<StaffAction>([
@@ -55,6 +57,7 @@ const privilegedActions = new Set<StaffAction>([
   'record.delete',
   'invoice.approve',
   'integration.manage',
+  'data_model.manage',
 ]);
 
 export interface IndividualPermission {

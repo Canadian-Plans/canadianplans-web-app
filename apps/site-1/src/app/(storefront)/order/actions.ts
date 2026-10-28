@@ -257,7 +257,7 @@ export async function saveDetails(
       try {
         const updated = await client.leads.update(
           existing.leadId,
-          { contact, form, productId: productId.data },
+          { leadType: order.category, contact, form, productId: productId.data },
           { draftGrant: existing.draftGrant, turnstileToken: input.turnstileToken },
         );
         // Same draft, same grant, same submission key — only the plan may change.
@@ -276,6 +276,7 @@ export async function saveDetails(
     }
     const created = await client.leads.create(
       {
+        leadType: order.category,
         contact,
         form,
         productId: productId.data,
@@ -312,6 +313,7 @@ export async function saveDocuments(
     const updated = await getBackendClient().leads.update(
       draft.leadId,
       {
+        leadType: checked.order.category,
         contact: checked.order.contact,
         form: formFor(checked.order, input.documentKeys, input.acknowledged),
         productId: draft.productId,
@@ -450,6 +452,7 @@ export async function requestCallback(
     await getBackendClient().leads.update(
       draft.leadId,
       {
+        leadType: checked.order.category,
         contact: checked.order.contact,
         form: formFor(checked.order, input.documentKeys, false, { callbackRequested: true }),
         productId: draft.productId,

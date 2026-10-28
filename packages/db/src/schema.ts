@@ -5,6 +5,7 @@ import {
   deliveryStates,
   invoiceStatuses,
   leadStatuses,
+  leadTypes,
   membershipStatuses,
   orderStatuses,
   partnerStatuses,
@@ -609,6 +610,9 @@ export const leads = appSchema
       partnerId: uuid('partner_id'),
       selectedOfferVersionId: uuid('selected_offer_version_id'),
       payload: jsonb('payload'),
+      leadType: text('lead_type').notNull().default('legacy'),
+      customValues: jsonb('custom_values').notNull().default({}),
+      fieldVersion: integer('field_version').notNull().default(1),
       attribution: jsonb('attribution').notNull().default({}),
       consentVersion: text('consent_version').notNull(),
       customerDataRestrictedAt: timestamp('customer_data_restricted_at', {
@@ -623,6 +627,12 @@ export const leads = appSchema
     (table) => [
       unique('leads_workspace_id_id_unique').on(table.workspaceId, table.id),
       check('leads_status_check', sql`${table.status} in (${leadStatusList})`),
+      check(
+        'leads_type_check',
+        sql`${table.leadType} in (${sql.raw(leadTypes.map((type) => `'${type}'`).join(', '))})`,
+      ),
+      check('leads_custom_values_check', sql`jsonb_typeof(${table.customValues}) = 'object'`),
+      index('leads_workspace_type_idx').on(table.workspaceId, table.leadType),
       foreignKey({
         name: 'leads_workspace_partner_fk',
         columns: [table.workspaceId, table.partnerId],
@@ -2304,7 +2314,127 @@ export const savedViews = appSchema
   )
   .enableRLS();
 
+/** Stable field keys survive deletion as tombstones. Built-ins only store permitted overrides. */
+export const leadFields = appSchema
+  .table(
+    'lead_fields',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      key: text('key').notNull(),
+      type: text('type').notNull(),
+      origin: text('origin').notNull(),
+      config: jsonb('config').notNull(),
+      version: integer('version').notNull().default(1),
+      createdBy: uuid('created_by'),
+      updatedBy: uuid('updated_by'),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+      deletedAt: timestamp('deleted_at', { withTimezone: true }),
+    },
+    (table) => [
+      unique('lead_fields_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('lead_fields_workspace_key_unique').on(table.workspaceId, table.key),
+      check('lead_fields_origin_check', sql`${table.origin} in ('builtin', 'custom')`),
+      check('lead_fields_config_check', sql`jsonb_typeof(${table.config}) = 'object'`),
+      tenantPolicy('lead_fields_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+export const leadLayouts = appSchema
+  .table(
+    'lead_layouts',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      leadType: text('lead_type').notNull(),
+      layout: jsonb('layout').notNull(),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+      updatedBy: uuid('updated_by'),
+    },
+    (table) => [
+      unique('lead_layouts_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('lead_layouts_workspace_type_unique').on(table.workspaceId, table.leadType),
+      check(
+        'lead_layouts_type_check',
+        sql`${table.leadType} in (${sql.raw(leadTypes.map((type) => `'${type}'`).join(', '))})`,
+      ),
+      tenantPolicy('lead_layouts_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+export const leadObjectSettings = appSchema
+  .table(
+    'lead_object_settings',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      settings: jsonb('settings').notNull(),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+      updatedBy: uuid('updated_by'),
+    },
+    (table) => [
+      unique('lead_object_settings_workspace_id_id_unique').on(table.workspaceId, table.id),
+      unique('lead_object_settings_workspace_unique').on(table.workspaceId),
+      tenantPolicy('lead_object_settings_tenant_policy', table.workspaceId),
+    ],
+  )
+  .enableRLS();
+
+/** Lead filter values can be personal data: actor RLS and deletion cleanup are mandatory. */
+export const leadViews = appSchema
+  .table(
+    'lead_views',
+    {
+      id: uuid('id').defaultRandom().primaryKey(),
+      workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+      actorId: uuid('actor_id').notNull(),
+      name: text('name').notNull(),
+      state: jsonb('state').notNull(),
+      version: integer('version').notNull().default(1),
+      createdAt: createdAt(),
+      updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+    },
+    (table) => [
+      unique('lead_views_workspace_id_id_unique').on(table.workspaceId, table.id),
+      foreignKey({
+        name: 'lead_views_workspace_actor_fk',
+        columns: [table.workspaceId, table.actorId],
+        foreignColumns: [memberships.workspaceId, memberships.userId],
+      }).onDelete('cascade'),
+      uniqueIndex('lead_views_owner_name_unique').on(
+        table.workspaceId,
+        table.actorId,
+        sql`lower(${table.name})`,
+      ),
+      check('lead_views_name_check', sql`char_length(${table.name}) between 1 and 60`),
+      pgPolicy('lead_views_owner_policy', {
+        for: 'all',
+        to: appRuntimeRole,
+        using: sql`${table.workspaceId} = nullif(current_setting('app.workspace_id', true), '')::uuid and ${table.actorId} = nullif(current_setting('app.actor_id', true), '')::uuid`,
+        withCheck: sql`${table.workspaceId} = nullif(current_setting('app.workspace_id', true), '')::uuid and ${table.actorId} = nullif(current_setting('app.actor_id', true), '')::uuid`,
+      }),
+    ],
+  )
+  .enableRLS();
+
 export const schema = {
+  leadFields,
+  leadLayouts,
+  leadObjectSettings,
+  leadViews,
   workspaces,
   memberships,
   roles,

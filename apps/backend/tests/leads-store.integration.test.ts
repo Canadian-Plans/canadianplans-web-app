@@ -305,7 +305,7 @@ databaseTest('DatabaseLeadStore (T11)', () => {
       'lead.updated',
     ]);
     expect(audits.every((event) => event.after.fullName === undefined)).toBe(true);
-    expect(audits[1]?.after.changedFields).toEqual(['contact']);
+    expect(audits[1]?.after.changedFields).toEqual(['contact', 'email']);
   });
 
   test('a save waiting behind submission rejects the committed draft', async () => {
