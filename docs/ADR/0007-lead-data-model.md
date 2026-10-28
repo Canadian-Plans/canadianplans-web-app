@@ -26,8 +26,12 @@ and any future trashed rows. Built-ins can only be hidden.
 Use separate lead views rather than widening the existing order-view schema:
 lead views may contain personal filter values and need field-aware validation on
 every read/write/use. Tenant-and-actor RLS protects them. Neither their names nor
-filters enter audit values. Customer erasure also clears personal lead views in
-that workspace: arbitrary filters cannot reliably be attributed to one customer.
+filters enter audit values. Customer erasure also scrubs free-text filter values
+from every personal lead view in that workspace (migration 0030): typed text
+cannot reliably be attributed to one customer, while the views themselves, their
+columns, sort and option, date, number and yes/no filters hold no customer data
+and stay. Ordinary restriction, including the abandoned-draft prune, leaves views
+untouched.
 
 The existing website already supports SIM, mobile and internet. Preserve these
 code-defined types, plus a code-only legacy type for rows that cannot be classified.

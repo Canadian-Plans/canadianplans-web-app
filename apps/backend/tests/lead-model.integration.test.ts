@@ -19,6 +19,8 @@ import { DatabaseLeadFieldStore, type LeadContext } from '../src/leads/model.js'
 import { DatabaseStaffLeadStore } from '../src/leads/staff-store.js';
 import { DatabaseDataModelPermissions } from '../src/leads/permissions.js';
 import { DatabaseLeadStore } from '../src/leads/store.js';
+import { restrictSubject } from '../src/deletion/store.js';
+import { DatabaseAbandonedLeadPruner } from '../src/retention/abandoned-leads.js';
 import { DatabaseStaffStore } from '../src/staff/store.js';
 import { requireStaffSession } from '../src/auth/session.js';
 import { createLeadModelRouter } from '../src/routes/lead-model.js';
@@ -366,7 +368,71 @@ suite('lead data model with real Postgres and restricted-role HTTP handlers', ()
     ).not.toContain('Private filter text');
     const id = await createLead();
     await admin`update app.leads set customer_data_restricted_at=now() where id=${id}`;
-    expect(await staff.listViews(ctx)).toEqual([]);
+    expect((await staff.listViews(ctx)).some((v) => v.id === view.id)).toBe(true);
+  });
+  test('restriction keeps personal views; customer deletion removes only free-text filter values', async () => {
+    const text = await createField('Erasure text');
+    const choice = await createField('Erasure choice', 'select', {
+      options: [{ value: 'soon', label: 'Soon' }],
+    });
+    const state = {
+      columns: [text.key, choice.key],
+      filters: [
+        { key: text.key, operator: 'contains' as const, value: 'Private customer text' },
+        { key: choice.key, operator: 'eq' as const, value: 'soon' },
+        { key: 'updatedAt', operator: 'gt' as const, value: '2026-01-01T00:00:00Z' },
+      ],
+      sort: { key: text.key, direction: 'asc' as const },
+    };
+    const view = await staff.saveView(ctx, { name: 'Erasure view', state });
+    const mine = async () => (await staff.listViews(ctx)).find((v) => v.id === view.id);
+
+    // The daily abandoned-draft prune restricts leads with the same column.
+    const abandoned = await createLead();
+    await setValue(abandoned, text, 'Old answer');
+    await admin`update app.leads set updated_at = now() - interval '100 days' where id=${abandoned}`;
+    const pruned = await new DatabaseAbandonedLeadPruner(database).restrictAbandoned({
+      workspaceId,
+      actorId,
+      now: new Date(),
+    });
+    expect(pruned.restrictedLeads).toBeGreaterThanOrEqual(1);
+    const [prunedRow] =
+      await admin`select custom_values, customer_data_restricted_at from app.leads where id=${abandoned}`;
+    expect(prunedRow?.['custom_values']).toEqual({});
+    expect(prunedRow?.['customer_data_restricted_at']).not.toBeNull();
+    expect(await mine()).toEqual(view);
+
+    // A customer deletion request scrubs typed text but keeps the view.
+    const erased = await createLead();
+    await setValue(erased, text, 'Erase me');
+    await database.withTenantTx(ctx, (tx) =>
+      restrictSubject(tx, {
+        workspaceId,
+        subjectType: 'lead',
+        subjectId: erased,
+        leadId: erased,
+        orderId: undefined,
+      }),
+    );
+    const [erasedRow] = await admin`select custom_values from app.leads where id=${erased}`;
+    expect(erasedRow?.['custom_values']).toEqual({});
+    expect(await mine()).toEqual({
+      ...view,
+      version: 2,
+      state: { ...state, filters: state.filters.slice(1) },
+    });
+    expect(
+      JSON.stringify(
+        await admin`select state from app.lead_views where workspace_id=${workspaceId}`,
+      ),
+    ).not.toContain('Private customer text');
+    // The definer function refuses a workspace that is not the transaction's context.
+    await expect(
+      database.withTenantTx(ctx, (tx) =>
+        tx.execute(sql`select app.scrub_lead_view_filters(${otherWorkspace})`),
+      ),
+    ).rejects.toThrow();
   });
   test('layout isolation and website allowlist retain unknown old draft answers', async () => {
     const f = await createField('Website answer', 'text', {

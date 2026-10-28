@@ -246,11 +246,17 @@ read only aggregates. The migration does not rewrite any submitted form payload.
 
 Switching a field to sensitive removes its references and filter values from
 persisted personal views, including other actors' views, while preserving each
-view's name and unrelated state. Restricting a customer clears all lead views in
-that workspace because arbitrary free-text filters can contain their personal data.
-This conservative erasure is intentional. Grants identify active staff by the
-same user ID as the existing membership system; pending invitations show the
-invited address.
+view's name and unrelated state. Restricting a lead (a deletion request or the
+daily abandoned-draft prune) clears its custom answers and leaves views alone.
+The audited customer-deletion workflow additionally calls
+`app.scrub_lead_view_filters`, which removes free-text filter values (text, long
+text, phone, email, address and links) from every personal view in that
+workspace while keeping the views, their columns, sort and select, date, number
+and yes/no filters. Free text is the only place staff can type a customer's data
+into a view. Migration 0029 deleted whole views on any restriction, which the
+daily prune would have triggered routinely; migration 0030 corrects this. Grants
+identify active staff by the same user ID as the existing membership system;
+pending invitations show the invited address.
 
 ## Implementation evidence
 
@@ -297,3 +303,17 @@ compatibility gate. Live backfill classification and migration execution are
 deliberately left to the release owner, using the read-only checks and release
 order above. External catalogue, bot verification and staff identity are test
 harness substitutes; authorization, persistence, RLS and workflow code are real.
+
+### Review follow-up, 28 October 2026
+
+Review found two defects. Migration 0029's restriction trigger deleted every
+personal lead view in the workspace, and the daily abandoned-draft prune sets the
+same restriction column, so views would have been wiped routinely; migration 0030
+replaces it with the free-text scrub described above, called only by the deletion
+workflow. The leads list could not save changed filters into the open view; it now
+updates the open view with its version, offers "Save as new view", and renames
+without touching unsaved changes. Added tests: the integration suite covers prune
+versus deletion and the context check on the scrub function; the admin suite
+covers save, save-as-new and rename. Contracts, admin and db unit suites, both
+typechecks, lint and formatting passed locally; the integration suite runs in CI
+because the review machine has no PostgreSQL.
