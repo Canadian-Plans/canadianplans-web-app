@@ -80,7 +80,8 @@ function buildCsp(scope: 'storefront' | 'studio'): string {
     // Inline event-handler attributes are never used (React attaches listeners in
     // script), so an injected `onclick="…"` cannot run even though inline <script>
     // blocks, which Next's streamed payload needs on static pages, stay allowed.
-    'script-src-attr': ["'none'"],
+    // The Studio is third-party code that was not checked against it, so it is left out there.
+    ...(scope === 'storefront' ? { 'script-src-attr': ["'none'"] } : {}),
     'script-src': dedupe([
       "'self'",
       "'unsafe-inline'",
