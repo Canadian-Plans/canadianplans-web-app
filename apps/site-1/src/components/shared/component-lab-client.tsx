@@ -224,6 +224,12 @@ export function Navigation({
             <SheetContent
               className="cp-design cp-mobile-menu"
               showCloseButton={false}
+              // Focus the panel, not the search field: a focused field opens the
+              // phone keyboard over the links the visitor came for.
+              onOpenAutoFocus={(event) => {
+                event.preventDefault();
+                if (event.currentTarget instanceof HTMLElement) event.currentTarget.focus();
+              }}
               onCloseAutoFocus={(event) => {
                 if (finderOpening.current) {
                   event.preventDefault();

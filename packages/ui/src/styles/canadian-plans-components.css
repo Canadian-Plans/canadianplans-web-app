@@ -747,6 +747,18 @@
   outline: var(--cp-border-strong) solid var(--cp-focus-color);
   outline-offset: var(--cp-space-2);
 }
+/* The pill carries the focus ring; the field inside must not draw a second one. */
+.cp-search input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+/* 16px in the phone menu, so iOS does not zoom the page when the field is tapped. */
+.cp-mobile-menu .cp-search {
+  width: 100%;
+}
+.cp-mobile-menu .cp-search input {
+  font-size: var(--cp-text-16);
+}
 .cp-search input::placeholder {
   color: var(--cp-color-muted);
   opacity: 1;
@@ -1937,5 +1949,14 @@
   display: none;
   @variant cp-chrome {
     display: none;
+  }
+}
+
+/* Phones: a text field below 16px makes iOS Safari zoom the whole page when it
+   is tapped, and the page stays zoomed. One floor for every field, whatever the
+   page's own type scale says. */
+@media (width < 48rem) {
+  .cp-design :is(input, select, textarea) {
+    font-size: var(--cp-text-16) !important;
   }
 }
