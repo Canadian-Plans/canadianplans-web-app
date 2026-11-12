@@ -27,6 +27,9 @@ export function GuideCover({
       />
     );
   }
+  // The article's own cover spans the container (75rem) on desktop; cards sit in columns.
+  const articleCover =
+    className === 'cp-guide-header-image' || className === 'cp-guide-mobile-image';
   return (
     <div className={`cp-guide-cover ${className}`}>
       <Image
@@ -34,7 +37,9 @@ export function GuideCover({
         alt={cover.alt}
         width={1672}
         height={941}
-        sizes="(min-width: 1024px) 50vw, 100vw"
+        sizes={
+          articleCover ? '(min-width: 1248px) 1200px, 100vw' : '(min-width: 1024px) 50vw, 100vw'
+        }
         loading={featured || className === 'cp-guide-header-image' ? 'eager' : 'lazy'}
       />
     </div>
