@@ -6,11 +6,15 @@ import { SystemShell } from '@/components/system/shell';
 import { SystemLinkCard } from '@/components/system/link-card';
 import { SiteSearchForm } from '@/components/shared/site-search-form';
 import './(system)/system.css';
-export const metadata = pageMetadata('/', {
-  title: metadataCopy.missingTitle,
-  description: metadataCopy.missingDescription,
-  robots: { index: false, follow: false },
-});
+export const metadata = {
+  ...pageMetadata('/', {
+    title: metadataCopy.missingTitle,
+    description: metadataCopy.missingDescription,
+    robots: { index: false, follow: false },
+  }),
+  // A missing page is not a copy of the home page: it must not name `/` as its canonical.
+  alternates: undefined,
+};
 export default function NotFound() {
   return (
     <div className="cp-design cp-system">

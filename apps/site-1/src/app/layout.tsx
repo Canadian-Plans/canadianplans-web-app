@@ -8,7 +8,11 @@ import { PlanFinderProvider } from '@/components/shared/plan-finder-provider';
 import { CookieConsentProvider } from '@/components/shared/cookie-consent';
 import { metadataCopy } from '@content/metadata';
 import { cookieBootstrapScript } from '@/lib/cookie-bootstrap';
-import { buildOrganizationSchema, serializeOrganizationSchema } from '@/lib/organization-schema';
+import {
+  buildOrganizationSchema,
+  buildWebSiteSchema,
+  serializeOrganizationSchema,
+} from '@/lib/organization-schema';
 import './(storefront)/globals.css';
 export const metadata: Metadata = {
   metadataBase: new URL(siteBaseUrl()),
@@ -40,6 +44,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: serializeOrganizationSchema(buildOrganizationSchema(siteBaseUrl())),
+          }}
+        />
+        <script
+          id="cp-website-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: serializeOrganizationSchema(buildWebSiteSchema(siteBaseUrl())),
           }}
         />
       </head>

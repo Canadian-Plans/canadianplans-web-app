@@ -52,7 +52,15 @@ describe('sitemap once indexing is open', () => {
       body: [],
       source: 'sanity',
     });
-    const urls = (await openSitemap()).map((row) => row.url);
+    const rows = await openSitemap();
+    const urls = rows.map((row) => row.url);
+    // Guides carry the date they were last revised; pages without one give no date.
+    const guide = rows.find((row) => row.url.endsWith('/guides/best-sim-for-students-from-india'));
+    expect(guide?.lastModified).toMatch(/^\d{4}-\d{2}-\d{2}$/u);
+    expect(rows.find((row) => row.url === 'https://example.test/faq')?.lastModified).toBe(
+      undefined,
+    );
+    expect(new Set(urls).size).toBe(urls.length);
     for (const path of INDEXABLE_PATHS) expect(urls).toContain(`https://example.test${path}`);
     expect(urls).toContain('https://example.test/guides/best-sim-for-students-from-india');
     expect(urls).toContain('https://example.test/privacy');
