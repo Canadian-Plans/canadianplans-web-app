@@ -59,12 +59,18 @@ pnpm run format
 pnpm run test:tooling
 pnpm run test
 pnpm run build
+pnpm run test:e2e
 ```
 
-The browser journeys in `apps/site-1/e2e` and the security suite
-(`pnpm --filter site-1 run test:security`) boot the old backend's test harness, which is no
-longer in this repository, so they do not run until the storefront calls the Canadian Plans
-CRM ([docs/STOREFRONT_ONLY.md](docs/STOREFRONT_ONLY.md)).
+`pnpm run test:e2e` builds the storefront and runs its browser suites
+(`apps/site-1/e2e`: order, tracking, accessibility and security journeys at a desktop and a
+mobile width), then the client-bundle security check
+(`pnpm --filter site-1 run test:security`). It needs no database and no secret: the
+storefront talks to a contract-checking stub of the CRM's website API
+(`apps/site-1/e2e/crm-stub`), not to the real CRM. Install the browser once with
+`pnpm --filter site-1 exec playwright install chromium`. A test order of each kind against
+the live CRM is still the owner's final check
+([docs/STOREFRONT_ONLY.md](docs/STOREFRONT_ONLY.md)).
 
 `pnpm run build:affected` selects applications through workspace dependencies using
 `BASE_SHA`; without a valid baseline it builds everything. Vercel uses the same selector with

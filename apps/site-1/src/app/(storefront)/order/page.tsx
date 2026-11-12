@@ -9,7 +9,7 @@ import { getBackendClient } from '@/lib/backendClient';
 import { captureRawAttribution, type SearchParams } from '@/lib/attribution';
 import { offersFromPlans } from '@/lib/offers';
 import { hasSavedLead, readOrderDraft } from './draft';
-import { OrderForm } from './order-form';
+import { OrderFormHost } from './order-form-host';
 import { selectOrderDraft, type SavedOrderDraft } from './resume';
 
 export const metadata: Metadata = pageMetadata('/order', {
@@ -93,8 +93,7 @@ export default async function OrderPage({ searchParams }: { searchParams: Promis
           </CardHeader>
         </Card>
       ) : (
-        <OrderForm
-          key={`${selected?.productId ?? 'plan-list'}:${restored.province ?? ''}`}
+        <OrderFormHost
           offers={offers}
           selected={selected}
           province={restored.province}

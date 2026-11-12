@@ -171,30 +171,22 @@ and never supplies a price.
   (`src/app/(storefront)/order/draft.ts`). Preview deployments are noindex
   (`VERCEL_ENV=preview`).
 
-### Order-form end-to-end tests
+### Browser suites
 
-`pnpm --filter site-1 run test:e2e` builds site-1 and runs the Playwright suite
-(`e2e/order.spec.ts`) at desktop and mobile widths. Playwright starts two
-servers:
+`pnpm --filter site-1 run test:e2e` builds site-1 and runs the Playwright suites
+in `e2e/` at desktop and mobile widths; `pnpm --filter site-1 run test:security`
+scans the client bundle for a synthetic site key and runs the security suites.
+Playwright starts two servers, neither needing a database or a secret:
 
-1. `apps/backend/tests/e2e/harness.ts` — the **real** backend app against a
-   disposable Postgres, with a stub published-catalogue provider and an
-   stateful action-bound one-use proof verifier. The browser fixture replaces
-   Cloudflare's external script; a synthetic public key is compiled by the test
-   runner, and no live Siteverify/provider call is made. The Sanity stub and
-   provider emulator stand in for unavailable live services; everything else
-   (routes, service credential and scopes, RLS, lead/quote/order transactions,
-   idempotency, reference generation) is the real code.
-2. the built site-1 server, pointed at the harness with a seeded service
-   credential.
+1. `e2e/crm-stub` — a contract-checking stand-in for the Canadian Plans CRM's
+   website API (not the real CRM). It validates every request and its own
+   answers with `@canadian-plans/crm-contracts`.
+2. the built site-1 server, pointed at the stub with a synthetic site key.
 
-Create the disposable database once (the harness migrates and seeds it):
-
-```bash
-createdb canadian_plans_e2e_test
-```
-
-The harness truncates tenant tables and resets the `app_runtime` password, so it refuses any database that is not on localhost or whose name does not end in `_test` / `_e2e` (override only for a remote throwaway database with `E2E_ALLOW_REMOTE_DATABASE=yes-i-understand`).
+The browser fixture replaces Cloudflare's external script; a synthetic public
+key is compiled by the test runner, and no live Siteverify call is made. See
+[e2e/README.md](e2e/README.md) for what each suite covers and what only a test
+order against the live CRM can show.
 
 ### Transactional email design previews
 

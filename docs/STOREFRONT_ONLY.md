@@ -67,19 +67,57 @@ the CRM's (`lead-save`, `upload-intent`, `upload-finalize`, `tracking-request`,
 - **Internet province** is not a field of the CRM's internet form; the postal
   code and the plan chosen carry it.
 
+## What the browser suites cover
+
+`pnpm run test:e2e` builds the storefront and runs its Playwright suites
+(`apps/site-1/e2e`, see the README there) at a desktop and a mobile width, then
+the client-bundle security check (`test:security`). CI runs both after the
+build. They need no database and no secret.
+
+The storefront in these runs talks to a **stub of the CRM's website API**
+(`apps/site-1/e2e/crm-stub`), not to the real CRM. The stub validates every
+request with the schemas of `@canadian-plans/crm-contracts` and checks its own
+answers against the same package, enforces the site key, the draft and customer
+grants, `Idempotency-Key` replay and conflict, and the lead-type rules the
+storefront depends on. Covered:
+
+- **SIM order**: plan, details, documents (a real PDF and PNG through the signed
+  upload; a wrong file type refused), the plan's price on the review step, the
+  `MS-` reference on the confirmation, and what the CRM received (lead type,
+  plan, form, consent versions, attribution from the URL).
+- **Resume**: a reload mid-draft restores the details; changing the plan.
+- **Internet and mobile orders**: nothing is sent before submit, then exactly
+  one `POST /website/leads` with `submit: true` and an `Idempotency-Key`.
+- **When it goes wrong**: field errors, a plan withdrawn or repriced before
+  submit, a lost answer retried under the same key (one order),
+  `idempotency_conflict`, a 503, an expired, unknown, submitted or forged
+  draft, the province wish list, "Request a callback", the CRM down.
+- **`/track`**: code, order list, order details, a change request (the four
+  allowed details only), a passport upload, a wrong code, an expired session, an
+  order that can no longer change.
+- **Accessibility** (axe, no serious or critical findings) on every step of the
+  order form and of tracking, the security headers, and that the site key never
+  reaches the browser.
+
+What they cannot show is that the real CRM behaves as the stub does: its
+database, emails, rate limits, real Turnstile verification and real storage are
+not in these runs.
+
 ## What is not done yet
 
-- **The browser journeys** in `apps/site-1/e2e` and the security suite
-  (`test:security`) still boot the old backend's test harness, which is gone.
-  The files are kept; CI does not run them. Unit tests (605), typecheck, lint
-  and the build do run. Rewriting them against a local `canadianplans-crm`
-  backend is the next engineering task.
 - **Nothing here was tried against the live CRM**: the storefront has no site
-  key yet. The unit tests use a fake client.
+  key yet. The unit tests use a fake client and the browser suites use the stub
+  above. A test order of each kind against the live CRM, followed on `/track`,
+  is the owner's final check.
 - **`/order/pre-arrival` and `/order/home-internet`** were preview-only pages
   before the split and still are.
 - **The old `packages/contracts`** can be cut down to the province helpers and
   `cms/` once nothing else imports it.
+- **Campaign attribution** (`utm_*`, partner code) is recorded only when the
+  customer lands on a link that already names the plan
+  (`/order?plan=…&utm_source=…`): choosing a plan from the list moves to a new
+  address without those parameters. Decide whether the storefront should carry
+  them across.
 
 ## What comes next
 
@@ -88,8 +126,8 @@ the CRM's (`lead-save`, `upload-intent`, `upload-finalize`, `tracking-request`,
 2. In the storefront's Vercel project: set `SITE_1_BACKEND_URL` to the CRM
    backend's origin and `SITE_1_SERVICE_CREDENTIAL` to the new key, then deploy
    this branch.
-3. Place a test order of each kind and follow it on `/track`.
-4. Rewrite the browser journeys and put them back in CI.
+3. Place a test order of each kind and follow it on `/track`. This is the check
+   the browser suites cannot make.
 
 ## Reading the older documents
 

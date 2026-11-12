@@ -17,9 +17,15 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const pnpm = process.env.npm_execpath;
 assert.ok(pnpm, 'Run through pnpm run test:security.');
 const sentinel = `TEST_ONLY_SITE_CREDENTIAL_${randomUUID()}`;
+// The suites that prove the site key stays on the server; the order and
+// tracking journeys run once, in `test:e2e`.
+const SECURITY_SPECS = ['scaffold.spec.ts', 'security-headers.spec.ts', 'site-key.spec.ts'];
 const baseEnv = {
   ...process.env,
   SITE_1_SERVICE_CREDENTIAL: sentinel,
+  // The same synthetic key at run time: Playwright gives it to the storefront's
+  // server and to the CRM stub, and the suites assert no page contains it.
+  E2E_SITE_KEY: sentinel,
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: 'e2e-public-site-key',
   SITE_1_BACKEND_URL: 'https://backend.example.test',
   NEXT_PUBLIC_SANITY_PROJECT_ID: '',
@@ -97,6 +103,8 @@ for (const enabled of [true, false]) {
   };
   run(['run', 'build'], env);
   scan();
-  run(['exec', 'playwright', 'test'], env);
+  run(['exec', 'playwright', 'test', ...SECURITY_SPECS, ...process.argv.slice(2)], env);
 }
-console.info('PASS: credential scan and desktop/mobile journeys with Umami enabled and disabled.');
+console.info(
+  'PASS: credential scan and desktop/mobile security suites with Umami enabled and disabled.',
+);

@@ -52,10 +52,20 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: pnpm run build:affected
-      # The storefront's browser journeys (apps/site-1/e2e) and its security
-      # suite (test:security) boot the backend this repository no longer holds,
-      # so they do not run here until the storefront calls the Canadian Plans
-      # CRM (docs/STOREFRONT_ONLY.md). The build itself is still proved.
-      - name: Ensure the storefront builds
-        run: test -f apps/site-1/.next/BUILD_ID || pnpm --filter site-1 build
+      # The storefront's browser suites (apps/site-1/e2e) and its client-bundle
+      # security check run against the CRM stub in apps/site-1/e2e/crm-stub, so
+      # they need no database and no secret (docs/STOREFRONT_ONLY.md). The run
+      # builds the storefront itself, with a synthetic public Turnstile key.
+      - name: Install the browser for the storefront's browser suites
+        run: pnpm --filter site-1 exec playwright install --with-deps chromium
+      - name: Run the storefront's browser suites and security check
+        run: pnpm run test:e2e
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: failure()
+        with:
+          name: browser-failures
+          path: |
+            apps/site-1/playwright-report
+            apps/site-1/test-results
+          retention-days: 7
 # No production credentials or deployment steps. Owner selects all releases.

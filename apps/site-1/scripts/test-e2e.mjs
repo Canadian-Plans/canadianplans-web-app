@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 
+// Builds the storefront and runs its browser suites (apps/site-1/e2e) against
+// the CRM stub Playwright starts. No database and no secret is needed. Extra
+// arguments go to Playwright, e.g. `pnpm run test:e2e --project desktop`.
 const pnpm = process.env.npm_execpath;
 assert.ok(pnpm, 'Run through pnpm run test:e2e.');
 // Compile only a synthetic public key. The browser fixture replaces the external

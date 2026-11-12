@@ -48,6 +48,7 @@
     "pngjs": "7.0.0",
     "postcss": "catalog:",
     "tailwindcss": "catalog:",
+    "tsx": "catalog:",
     "tw-animate-css": "catalog:",
     "typescript": "catalog:",
     "vite": "8.3.3",
