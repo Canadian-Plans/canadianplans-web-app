@@ -11,6 +11,9 @@ import type { NextConfig } from 'next';
  * needs `'unsafe-eval'` for React Refresh / HMR, gated on NODE_ENV.
  */
 const isProduction = process.env.NODE_ENV === 'production';
+// A deployment (Vercel sets VERCEL_ENV) is always served over https; a local
+// `next start` of the production build is not.
+const isDeployed = isProduction && Boolean(process.env.VERCEL_ENV);
 
 // A production build without a public origin would ship localhost canonicals and
 // noindex everywhere (REQ 10); fail the build instead of silently losing SEO.
@@ -74,6 +77,10 @@ function buildCsp(scope: 'storefront' | 'studio'): string {
     'img-src': dedupe(["'self'", 'data:', 'blob:', 'https:', ...SANITY_IMG]),
     'font-src': ["'self'", 'data:', ...(scope === 'studio' ? SANITY_STUDIO_FONT : [])],
     'style-src': ["'self'", "'unsafe-inline'"],
+    // Inline event-handler attributes are never used (React attaches listeners in
+    // script), so an injected `onclick="…"` cannot run even though inline <script>
+    // blocks, which Next's streamed payload needs on static pages, stay allowed.
+    'script-src-attr': ["'none'"],
     'script-src': dedupe([
       "'self'",
       "'unsafe-inline'",
@@ -85,30 +92,63 @@ function buildCsp(scope: 'storefront' | 'studio'): string {
     'connect-src': connect,
     'worker-src': ["'self'", 'blob:'],
     'manifest-src': ["'self'"],
+    // Any http:// subresource is fetched over https instead (production only:
+    // a local production build is served over plain http).
+    ...(isDeployed ? { 'upgrade-insecure-requests': [] } : {}),
   };
   return Object.entries(directives)
-    .map(([name, values]) => `${name} ${values.join(' ')}`)
+    .map(([name, values]) => [name, ...values].join(' '))
     .join('; ');
 }
 
 function commonSecurityHeaders(frameOption: 'DENY' | 'SAMEORIGIN') {
   return [
+    // No other origin may hold a window reference to a storefront page. The
+    // Studio signs in through a provider popup, so it keeps popups it opens.
+    {
+      key: 'Cross-Origin-Opener-Policy',
+      value: frameOption === 'DENY' ? 'same-origin' : 'same-origin-allow-popups',
+    },
     { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
     { key: 'X-Content-Type-Options', value: 'nosniff' },
     { key: 'X-Frame-Options', value: frameOption },
     { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
     {
       key: 'Permissions-Policy',
-      value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
+      value:
+        'camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=(), interest-cohort=()',
     },
   ];
 }
 
+// The files under /public are not content-hashed, so they cannot be immutable.
+// A day in the browser and a week of serving the stale copy while it is
+// re-fetched keeps repeat visits off the network without pinning an old logo.
+const PUBLIC_ASSET_CACHE = 'public, max-age=86400, stale-while-revalidate=604800';
+
 const config: NextConfig = {
   reactStrictMode: true,
+  // Do not advertise the framework in an `X-Powered-By` response header.
+  poweredByHeader: false,
   transpilePackages: ['@canadian-plans/ui'],
+  images: {
+    // AVIF first (about 20-30 % smaller than WebP for the photo covers), WebP for
+    // browsers without it. The sources never change under the same name, so the
+    // optimised copies are kept for a month instead of the default four hours.
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 2_592_000,
+  },
   async headers() {
     return [
+      {
+        source: '/:folder(brand|design|images)/:path*',
+        headers: [{ key: 'Cache-Control', value: PUBLIC_ASSET_CACHE }],
+      },
+      {
+        // Editor and machine routes never belong in a search index, whatever links to them.
+        source: '/:area(studio|api)/:path*',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+      },
       {
         source: '/studio/:path*',
         headers: [
