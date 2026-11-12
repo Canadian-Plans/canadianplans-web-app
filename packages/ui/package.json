@@ -32,7 +32,7 @@
     "tailwind-merge": "catalog:"
   },
   "devDependencies": {
-    "next": "16.3.8",
+    "next": "16.4.6",
     "@canadian-plans/config": "workspace:*",
     "@testing-library/react": "16.3.3",
     "@types/react": "19.3.0",

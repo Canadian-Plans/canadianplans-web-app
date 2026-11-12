@@ -24,7 +24,7 @@
     "@canadian-plans/ui": "workspace:*",
     "@hookform/resolvers": "5.4.3",
     "@sanity/client": "8.6.1",
-    "next": "16.3.8",
+    "next": "16.4.6",
     "next-sanity": "13.3.4",
     "react": "19.3.1",
     "react-dom": "19.3.1",
