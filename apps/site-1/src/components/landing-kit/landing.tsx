@@ -254,6 +254,7 @@ function Showcase({ shared }: { shared: LandingKitShared }) {
         {shared.showcase.map((row) => (
           <article
             key={row.id}
+            id={`showcase-${row.id}`}
             className="cp-lp-showcase-row"
             data-reverse={row.reverse ?? false}
             aria-labelledby={`showcase-${row.id}-title`}

@@ -47,7 +47,7 @@ function Stepper({ steps, currentStepId }: StepperProps) {
     <ol
       data-slot="stepper"
       aria-label="Order progress"
-      className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-start sm:gap-x-2 sm:gap-y-3"
+      className="flex w-full flex-row items-center gap-2 sm:flex-wrap sm:items-start sm:gap-x-2 sm:gap-y-3"
     >
       {steps.map((step, index) => {
         const state: StepState =
@@ -59,14 +59,21 @@ function Stepper({ steps, currentStepId }: StepperProps) {
             data-slot="stepper-step"
             data-state={state}
             aria-current={state === 'current' ? 'step' : undefined}
-            className="flex min-w-0 flex-1 items-center gap-2 rounded-md py-1 text-sm sm:flex-col sm:items-start sm:gap-1.5 sm:py-0"
+            className={cn(
+              'flex min-w-0 items-center gap-2 rounded-md py-1 text-sm sm:flex-1 sm:flex-col sm:items-start sm:gap-1.5 sm:py-0',
+              // Phones: one compact row. Only the current step shows its label;
+              // the others keep theirs for screen readers.
+              state === 'current' ? 'flex-1' : 'flex-none',
+            )}
           >
             <StepMarker state={state} index={index} />
             {state === 'complete' ? <span className="sr-only">Completed: </span> : null}
             <span
               className={cn(
                 'min-w-0 break-words',
-                state === 'current' ? 'font-medium text-foreground' : 'text-muted-foreground',
+                state === 'current'
+                  ? 'font-medium text-foreground'
+                  : 'text-muted-foreground max-sm:sr-only',
               )}
             >
               {step.label}

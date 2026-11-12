@@ -100,7 +100,7 @@ export const mobileCopy = {
         id: 'mobile-faq-2',
         question: 'Do I need a credit check for a phone plan in Canada?',
         answer:
-          'For these three plans, yes. They are postpaid, so the provider runs an identity and credit check, and you upload a government ID with your order. If you are new to Canada and have no credit history yet, start with one of our eSIM plans for newcomers instead: they have no credit check.',
+          'For these three plans, yes. They are postpaid, so the provider runs an identity and credit check, and your advisor asks for a government ID to complete it. If you are new to Canada and have no credit history yet, start with one of our eSIM plans for newcomers instead: they have no credit check.',
       },
       {
         id: 'mobile-faq-1',

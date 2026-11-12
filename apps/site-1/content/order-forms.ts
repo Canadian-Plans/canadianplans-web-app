@@ -51,7 +51,7 @@ export const orderFormContent = {
   checklistLabels,
 
   waitlist: {
-    title: 'Tell me when you arrive',
+    title: 'Tell me when plans are available',
     description:
       'Leave your email and we will write to you once when internet and TV plans become available in your province.',
     emailLabel: 'Email',
@@ -67,7 +67,7 @@ export const orderFormContent = {
     fullName: { label: 'Full name' },
     email: { label: 'Email' },
     phone: { label: 'Phone' },
-    countryCode: { label: 'Code', hint: 'ISO country, e.g. BD' },
+    countryCode: { label: 'Country code', hint: 'Two letters, for example IN or BD.' },
     currentCountry: { label: 'Country you are in now' },
     destination: { label: 'Destination in Canada' },
     arrivalDate: { label: 'Arrival date' },
@@ -97,7 +97,7 @@ export const orderFormContent = {
     email: 'Enter a valid email address.',
     phone: 'Enter your phone number.',
     phoneCanadian: 'Enter a phone number with at least 10 digits.',
-    countryCode: 'Use the two-letter country code, for example BD.',
+    countryCode: 'Use the two-letter code of your country, for example IN or BD.',
     currentCountry: 'Enter the country you are in now.',
     destination: 'Enter your destination in Canada.',
     arrivalDate: 'Enter your arrival date.',
@@ -119,10 +119,13 @@ export const orderFormContent = {
 
   planStep: {
     title: 'Choose a plan',
-    description: 'Prices are confirmed by our server when you reach the review step.',
+    description:
+      'Pick the plan that fits. You see the price again before you place the order, and nothing is paid on this website.',
     empty: 'No plans are available right now. Please try again later.',
+    emptyContact: 'Contact us',
     chooseTitle: 'What are you looking for?',
     seePlans: 'See plans',
+    select: 'Select plan',
     allCategories: 'All plan types',
     categoryDescriptions: {
       internet: 'Home internet and TV, with prices and offers for your province.',
@@ -143,5 +146,17 @@ export const orderFormContent = {
       '30_days': '/ 30 days',
       '90_days': '/ 90 days',
     },
+  },
+
+  detailsStep: {
+    /** A pre-arrival order is a draft the customer can come back to. */
+    savedDraft: 'We save your details so you can come back and finish later.',
+    /** An internet or mobile order is sent whole when the order is placed. */
+    sentOnSubmit: 'Nothing is sent until you place the order on the next step.',
+  },
+
+  reviewStep: {
+    reassurance:
+      'Nothing is paid on this website. An advisor confirms your order with you before anything is activated.',
   },
 } as const;

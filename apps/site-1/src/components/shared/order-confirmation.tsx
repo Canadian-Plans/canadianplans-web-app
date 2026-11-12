@@ -1,5 +1,12 @@
 'use client';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@canadian-plans/ui';
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@canadian-plans/ui';
 import { CpButton } from '@canadian-plans/ui/canadian-plans';
 import { orderConfirmationCopy as copy } from '@content/order-confirmation';
 type Props =
@@ -48,6 +55,14 @@ export function OrderConfirmation(props: Props) {
           {props.reference}
         </p>
         <p className="mt-2 text-sm">{copy.saved.email(props.email)}</p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Button asChild>
+            <a href={copy.saved.track.href}>{copy.saved.track.label}</a>
+          </Button>
+          <Button asChild variant="outline">
+            <a href={copy.saved.home.href}>{copy.saved.home.label}</a>
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

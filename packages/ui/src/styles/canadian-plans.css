@@ -583,6 +583,8 @@
   --cp-transition-duration: 180ms;
   --cp-layer-sticky: 40;
   --cp-layer-feedback: 45;
+  /* The consent banner sits above page-level sticky bars and below dialogs (50). */
+  --cp-layer-consent: 48;
   --cp-color-blue: #2457ff;
   --cp-color-ink: #111827;
   --cp-color-muted: #5b6170;

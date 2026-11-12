@@ -2,7 +2,14 @@ import type { WebsiteOffer } from '@/lib/offers';
 import { pageMetadata } from '@/lib/page-metadata';
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
-import { Card, CardDescription, CardHeader, CardTitle } from '@canadian-plans/ui';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@canadian-plans/ui';
 import { productTypeSchema, provinceFromName } from '@canadian-plans/contracts';
 
 import { getBackendClient } from '@/lib/backendClient';
@@ -81,7 +88,7 @@ export default async function OrderPage({ searchParams }: { searchParams: Promis
     <div className="space-y-8">
       <h1 className="text-3xl font-semibold">Order a plan</h1>
       {loadFailed ? (
-        <Card>
+        <Card className="mt-8">
           <CardHeader>
             <CardTitle>
               <h2 className="text-xl">Plans are unavailable right now</h2>
@@ -91,6 +98,14 @@ export default async function OrderPage({ searchParams }: { searchParams: Promis
               been created.
             </CardDescription>
           </CardHeader>
+          <CardContent className="flex flex-wrap gap-3">
+            <Button asChild>
+              <a href="/order">Try again</a>
+            </Button>
+            <Button asChild variant="outline">
+              <a href="/contact">Contact us</a>
+            </Button>
+          </CardContent>
         </Card>
       ) : (
         <OrderFormHost
