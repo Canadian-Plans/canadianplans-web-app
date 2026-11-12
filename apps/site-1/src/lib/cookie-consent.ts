@@ -14,7 +14,8 @@ export interface CookieChoice {
  */
 function readChoice(value: unknown): CookieChoice | null {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) return null;
-  const { version, analytics, marketing } = value as Record<string, unknown>;
+  if (!('version' in value) || !('analytics' in value) || !('marketing' in value)) return null;
+  const { version, analytics, marketing } = value;
   if (version !== COOKIE_VERSION) return null;
   if (typeof analytics !== 'boolean' || typeof marketing !== 'boolean') return null;
   return { version, analytics, marketing };

@@ -1,10 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-const zodGlobal = globalThis as { __zod_globalConfig?: { jitless?: boolean } };
-
 describe('browser instrumentation', () => {
   afterEach(() => {
-    if (zodGlobal.__zod_globalConfig) delete zodGlobal.__zod_globalConfig.jitless;
+    if (globalThis.__zod_globalConfig) delete globalThis.__zod_globalConfig.jitless;
     vi.unstubAllGlobals();
   });
 
@@ -19,9 +17,11 @@ describe('browser instrumentation', () => {
     vi.stubGlobal(
       'Function',
       new Proxy(Function, {
-        construct(target, args: unknown[]) {
+        construct(target, args: unknown[]): object {
           construct();
-          return Reflect.construct(target, args) as object;
+          const made: unknown = Reflect.construct(target, args);
+          if (typeof made !== 'function') throw new TypeError('Function did not build one.');
+          return made;
         },
       }),
     );

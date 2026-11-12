@@ -10,7 +10,10 @@
  * importing zod here: an import would put the library in every page's bundle.
  * `instrumentation-client.test.ts` fails if a zod upgrade stops reading it.
  */
-const zodGlobal = globalThis as { __zod_globalConfig?: { jitless?: boolean } };
-(zodGlobal.__zod_globalConfig ??= {}).jitless = true;
+declare global {
+  var __zod_globalConfig: { jitless?: boolean } | undefined;
+}
+
+(globalThis.__zod_globalConfig ??= {}).jitless = true;
 
 export {};
