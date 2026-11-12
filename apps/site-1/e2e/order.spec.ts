@@ -14,6 +14,7 @@ import {
   formReady,
   orderReference,
   reachSimReview,
+  selectPlan,
   visit,
 } from './journeys';
 import { LEADS_PATH, PLANS_PATH, stub } from './stub';
@@ -52,7 +53,7 @@ test.describe('pre-arrival SIM order', () => {
     await page.getByRole('link', { name: 'See plans for Pre-arrival eSIM' }).click();
     await expect(page.getByText('Students arriving this term')).toBeVisible();
     await expect(page.getByText('50 GB data')).toBeVisible();
-    await page.getByRole('link', { name: 'Select E2E Passport Plan', exact: true }).click();
+    await selectPlan(page, 'E2E Passport Plan');
 
     // Details: saved as a draft in the CRM.
     await expect(page.getByRole('heading', { name: 'Your details' })).toBeVisible();
@@ -89,6 +90,15 @@ test.describe('pre-arrival SIM order', () => {
     await expect(page.getByText('E2E Passport Plan, per 30 days')).toBeVisible();
     await expect(page.getByText('$45.00')).toHaveCount(2);
     await expect(page.getByText(CUSTOMER.email)).toBeVisible();
+    // Values read as a person writes them: a long date, and the phone with its country code.
+    await expect(page.getByText('January 15, 2027', { exact: true })).toBeVisible();
+    await expect(page.getByText(`${CUSTOMER.phone} (${CUSTOMER.countryCode})`)).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Change plan' })).toBeVisible();
+    // The terms are one click away from the checkbox that accepts them.
+    await expect(page.getByRole('link', { name: 'terms (opens in a new tab)' })).toHaveAttribute(
+      'href',
+      '/terms',
+    );
     expect(await stub.leads()).toMatchObject([{ leadType: 'sim_order', status: 'incomplete' }]);
 
     await acceptTermsAndPlaceOrder(page);
@@ -97,6 +107,12 @@ test.describe('pre-arrival SIM order', () => {
     await expect(
       page.getByText(`We've emailed a confirmation to ${CUSTOMER.email}.`),
     ).toBeVisible();
+    // The confirmation offers the next step.
+    await expect(page.getByRole('link', { name: 'Track this order' })).toHaveAttribute(
+      'href',
+      '/track',
+    );
+    await expect(page.getByRole('link', { name: 'Back to home' })).toHaveAttribute('href', '/');
 
     // What the CRM received.
     const leads = await stub.leads();
@@ -205,7 +221,7 @@ test.describe('pre-arrival SIM order', () => {
     await expect(page.getByRole('heading', { name: 'Your details' })).toBeVisible();
     await expect(page.getByLabel(/^Full name/)).toHaveValue(CUSTOMER.fullName);
     await expect(page.getByLabel(/^Email/)).toHaveValue(CUSTOMER.email);
-    await expect(page.getByLabel(/^Code/)).toHaveValue(CUSTOMER.countryCode);
+    await expect(page.getByLabel(/^Country code/)).toHaveValue(CUSTOMER.countryCode);
     await expect(page.getByLabel(/^Phone/)).toHaveValue(CUSTOMER.phone);
     await expect(page.getByLabel(/^Country you are in now/)).toHaveValue(CUSTOMER.currentCountry);
     await expect(page.getByLabel(/^Destination in Canada/)).toHaveValue(CUSTOMER.destination);
@@ -241,17 +257,18 @@ test.describe('pre-arrival SIM order', () => {
     await visit(page, '/order');
     await expect(page.getByLabel(/^Full name/)).toHaveValue(CUSTOMER.fullName);
     await page.getByRole('button', { name: 'Back', exact: true }).click();
-    await page.getByRole('link', { name: 'See plans for Pre-arrival eSIM' }).click();
-    await page.getByRole('link', { name: 'Select E2E Simple Plan', exact: true }).click();
+    // Back returns to the plan type being ordered, not to the type chooser.
+    await expect(page.getByRole('heading', { name: 'Choose a plan' })).toBeVisible();
+    await expect(page.getByText('What are you looking for?')).toHaveCount(0);
+    await selectPlan(page, 'E2E Simple Plan');
     await expect(page).toHaveURL(new RegExp(`plan=${SEED_PLAN_IDS.simSimple}`));
     await expect(page.getByLabel(/^Full name/)).toHaveValue('');
     await expect(page.getByText('We found your saved details and will update them.')).toHaveCount(
       0,
     );
     await fillSimDetails(page);
-    await continueFromDetails(page);
-    await expect(page.getByText('This plan does not require any documents.')).toBeVisible();
-    await continueFromDocuments(page);
+    // A plan with no document checklist has no Documents step: details go straight to the review.
+    await continueFromDetails(page, { documents: false });
     await expect(page.getByText('E2E Simple Plan, per 30 days')).toBeVisible();
     await expect(page.getByText('$25.00')).toHaveCount(2);
     await acceptTermsAndPlaceOrder(page);
@@ -278,7 +295,7 @@ test.describe('pre-arrival SIM order', () => {
       'Enter your full name.',
       'Enter a valid email address.',
       'Enter your phone number.',
-      'Use the two-letter country code, for example BD.',
+      'Use the two-letter code of your country, for example IN or BD.',
       'Enter the country you are in now.',
       'Enter your destination in Canada.',
       'Enter your arrival date.',
@@ -407,7 +424,7 @@ test.describe('internet order', () => {
     await page.getByRole('button', { name: 'Show plans' }).click();
     await expect(page).toHaveURL(/province=AB/);
     await formReady(page);
-    await page.getByRole('link', { name: 'Select E2E Internet 1 Gig', exact: true }).click();
+    await selectPlan(page, 'E2E Internet 1 Gig');
     await expect(page.getByRole('heading', { name: 'Your details' })).toBeVisible();
     await formReady(page);
   }
@@ -438,12 +455,8 @@ test.describe('internet order', () => {
       'That postal code is not in the province you chose.',
     );
     await page.getByLabel(/^Postal code/).fill('t2p1j9');
-    await continueFromDetails(page);
-
-    // An order sent whole has no draft to attach a document to.
-    await expect(page.getByText('This plan does not require any documents.')).toBeVisible();
-    await continueFromDocuments(page);
-    await expect(page.getByRole('heading', { name: 'Review and confirm' })).toBeVisible();
+    // An order sent whole has no draft to attach a document to, so it has no Documents step.
+    await continueFromDetails(page, { documents: false });
     await expect(page.getByText('E2E Internet 1 Gig, per month')).toBeVisible();
     await expect(page.getByText('$85.00')).toHaveCount(2);
     await expect(page.getByText('4B – 123 Main Street, Calgary, t2p1j9')).toBeVisible();
@@ -512,7 +525,7 @@ test.describe('internet order', () => {
     await expect(
       page.getByText("We don't sell internet or TV in that province yet."),
     ).toBeVisible();
-    const wishList = page.getByRole('form', { name: /Tell me when you arrive/ });
+    const wishList = page.getByRole('form', { name: /Tell me when plans are available/ });
     await expect(wishList).toContainText('Nova Scotia');
 
     await wishList.getByLabel(/^Email/).fill('not-an-email');
@@ -546,7 +559,7 @@ test.describe('mobile order', () => {
     await page
       .getByRole('link', { name: 'See plans for Mobile plans, bring your own phone' })
       .click();
-    await page.getByRole('link', { name: 'Select E2E Mobile 50 GB', exact: true }).click();
+    await selectPlan(page, 'E2E Mobile 50 GB');
     await expect(page.getByRole('heading', { name: 'Your details' })).toBeVisible();
 
     // The answers with no default must be given.
@@ -568,9 +581,8 @@ test.describe('mobile order', () => {
     await page.getByLabel(/^City/).fill('Toronto');
     await page.getByLabel(/^Postal code/).fill('M5V 2T6');
     await page.getByLabel(/^I agree that my ID can be used/).check();
-    await continueFromDetails(page);
-    await continueFromDocuments(page);
-    await expect(page.getByRole('heading', { name: 'Review and confirm' })).toBeVisible();
+    // A mobile order has no Documents step: the details go straight to the review.
+    await continueFromDetails(page, { documents: false });
     await expect(page.getByText('E2E Mobile 50 GB, per month')).toBeVisible();
     await expect(page.getByText('$40.00')).toHaveCount(2);
 
@@ -629,7 +641,14 @@ test.describe('when the CRM cannot be reached', () => {
         page.getByRole('heading', { name: 'Plans are unavailable right now' }),
       ).toBeVisible();
       await expect(page.getByText('No order has been created.')).toBeVisible();
-      await expect(page.getByRole('link', { name: /^Select / })).toHaveCount(0);
+      await expect(page.getByRole('link', { name: /^Select plan/ })).toHaveCount(0);
+      // The way forward, in the page itself: try again, or reach us.
+      const main = page.getByRole('main');
+      await expect(main.getByRole('link', { name: 'Try again' })).toHaveAttribute('href', '/order');
+      await expect(main.getByRole('link', { name: 'Contact us' })).toHaveAttribute(
+        'href',
+        '/contact',
+      );
 
       await page.reload();
       await expect(page.getByRole('heading', { name: 'Choose a plan' })).toBeVisible();

@@ -37,8 +37,8 @@ async function fillInternetOrderToReview(page: Page): Promise<void> {
   await page.getByLabel(/^Street address/).fill('123 Main Street');
   await page.getByLabel(/^City/).fill('Calgary');
   await page.getByLabel(/^Postal code/).fill('T2P 1J9');
-  await continueFromDetails(page);
-  await continueFromDocuments(page);
+  // An internet order has no Documents step.
+  await continueFromDetails(page, { documents: false });
   await expect(page.getByRole('heading', { name: 'Review and confirm' })).toBeVisible();
 }
 

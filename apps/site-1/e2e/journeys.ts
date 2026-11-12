@@ -58,13 +58,23 @@ export async function visit(page: Page, url: string): Promise<void> {
   await formReady(page);
 }
 
+/**
+ * Presses a plan card's button. It reads "Select plan"; the plan's name follows
+ * in its accessible name, which is how a screen reader tells the cards apart.
+ */
+export async function selectPlan(page: Page, plan: string): Promise<void> {
+  // The browser puts a space before the colon (the name is the visible text plus an sr-only span).
+  const name = new RegExp(`^Select plan\\s*:\\s*${plan.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`);
+  await page.getByRole('link', { name }).click();
+}
+
 export async function chooseSimPlan(page: Page, plan = 'E2E Passport Plan'): Promise<void> {
   await visit(page, '/order?category=sim');
   // Fail loudly when step 1 could not load its plans, not as a timeout on the link.
   await expect(page.getByRole('heading', { name: 'Plans are unavailable right now' })).toHaveCount(
     0,
   );
-  await page.getByRole('link', { name: `Select ${plan}`, exact: true }).click();
+  await selectPlan(page, plan);
   await expect(page.getByRole('heading', { name: 'Your details' })).toBeVisible();
   await formReady(page);
 }
@@ -76,16 +86,36 @@ export async function fillSimDetails(
   const customer = { ...CUSTOMER, ...overrides };
   await page.getByLabel(/^Full name/).fill(customer.fullName);
   await page.getByLabel(/^Email/).fill(customer.email);
-  await page.getByLabel(/^Code/).fill(customer.countryCode);
+  await page.getByLabel(/^Country code/).fill(customer.countryCode);
   await page.getByLabel(/^Phone/).fill(customer.phone);
   await page.getByLabel(/^Country you are in now/).fill(customer.currentCountry);
   await page.getByLabel(/^Destination in Canada/).fill(customer.destination);
   await page.getByLabel(/^Arrival date/).fill(customer.arrivalDate);
 }
 
-export async function continueFromDetails(page: Page): Promise<void> {
+/** The order form's progress list: only the steps this order has. */
+function progress(page: Page) {
+  return page.getByRole('list', { name: 'Order progress' });
+}
+
+/**
+ * Presses Continue on the details step. A plan that asks for documents goes to
+ * the Documents step; any other plan skips it, so the order goes straight to
+ * the review (`documents: false`) and the step is absent from the progress list.
+ */
+export async function continueFromDetails(
+  page: Page,
+  { documents = true }: { documents?: boolean } = {},
+): Promise<void> {
   await page.getByRole('button', { name: 'Continue', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Documents' })).toBeVisible();
+  if (documents) {
+    await expect(page.getByRole('heading', { name: 'Documents' })).toBeVisible();
+    await expect(progress(page)).toContainText('Documents');
+  } else {
+    await expect(page.getByRole('heading', { name: 'Review and confirm' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Documents' })).toHaveCount(0);
+    await expect(progress(page)).not.toContainText('Documents');
+  }
 }
 
 /** Leaves the documents step for the review step, acknowledging a checklist when there is one. */
