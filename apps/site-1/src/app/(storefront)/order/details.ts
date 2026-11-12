@@ -143,7 +143,7 @@ export function reviewRows(details: OrderDetailsInput): { label: string; value: 
       return [
         row(f.fullName.label, details.fullName),
         row(f.email.label, details.email),
-        row(f.phone.label, `+${details.countryCode} ${details.phone}`),
+        row(f.phone.label, `${details.phone} (${details.countryCode})`),
         row(f.currentCountry.label, details.currentCountry),
         row(f.destination.label, details.destination),
         row(f.arrivalDate.label, details.arrivalDate),

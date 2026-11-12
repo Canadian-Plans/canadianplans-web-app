@@ -16,7 +16,8 @@ export default function StorefrontLayout({ children }: { children: ReactNode }) 
   return (
     <div className="cp-design cp-storefront cp-legacy-controls min-h-screen bg-background text-foreground">
       <SkipLink />
-      <SiteHeader planHref="/pre-arrival-sim#plans" content={siteChrome} />
+      {/* No promo strip: nothing should pull a customer out of the order form. */}
+      <SiteHeader planHref="/pre-arrival-sim#plans" content={siteChrome} promo={false} />
       <main id="main-content" tabIndex={-1} className="cp-container cp-storefront-main">
         {children}
       </main>
