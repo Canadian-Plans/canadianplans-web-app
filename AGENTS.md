@@ -37,6 +37,10 @@ report it and use existing project sources rather than inventing its contents.
 
 ## Before project work
 
+This repository is the storefront only since 2026-11-12: the backend and admin
+live in `Canadian-Plans/canadianplans-crm`. Read
+[docs/STOREFRONT_ONLY.md](docs/STOREFRONT_ONLY.md) before anything else below.
+
 Before changing the project, read these once per session:
 
 1. [PLATFORM_CONTEXT.md](PLATFORM_CONTEXT.md), in full: architecture, business scope

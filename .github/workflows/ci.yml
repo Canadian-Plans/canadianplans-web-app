@@ -14,33 +14,9 @@ jobs:
   verify:
     # Blacksmith runner (same 4 vCPU / 16 GB shape as ubuntu-24.04). Needs the
     # Blacksmith GitHub App installed on the Canadian-Plans organization, or the
-    # job queues forever. Backup workflows stay on GitHub-hosted runners because
-    # they hold production database credentials.
+    # job queues forever.
     runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 60
-    env:
-      MIGRATION_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/canadian_plans_test
-      MIGRATION_DATABASE_SSL_MODE: disable
-      TEST_MIGRATION_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/canadian_plans_test
-      DB_TEST_ALLOW_DESTRUCTIVE: '1'
-      DATABASE_URL: postgresql://app_runtime:local_ci_runtime_password@localhost:5432/canadian_plans_test
-      DATABASE_SSL_MODE: disable
-      # Order submission hashes the lead contact for email suppression/consent
-      # (T18). Non-secret test value; >= 16 chars as `requireContactHashSecret` demands.
-      EMAIL_CONTACT_HASH_SECRET: ci-email-contact-hash-secret-0123456789
-    services:
-      postgres:
-        image: postgres:15.14-alpine3.22@sha256:64583b3cb4f2010277bdd9749456de78e5c36f8956466ba14b0b96922e510950
-        env:
-          POSTGRES_DB: canadian_plans_test
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres -d canadian_plans_test"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -55,27 +31,18 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Verify preview credentials target isolated non-production resources
         run: pnpm run check:preview-isolation
-      - name: Verify frontends cannot import the database package
+      - name: Verify the storefront cannot import database code
         run: pnpm run check:frontend-db-boundary
-      - name: Record release metadata (no credentials)
-        run: |
-          git rev-parse HEAD
-          sha256sum pnpm-lock.yaml
-          echo 'Schema compatibility: T4 additive workspace/access foundation'
-      - name: Apply migrations to empty disposable Postgres
-        run: pnpm --filter @canadian-plans/db db:migrate
       - run: pnpm run typecheck
       - run: pnpm run lint
       - run: pnpm run format
       - run: pnpm run test:tooling
       - name: Prove no Supabase service-role key appears in application code
         run: |
-          if git grep -n -E 'SUPABASE_SERVICE_ROLE_KEY|service_role' -- 'apps/**' 'packages/**/src/**' 'jobs/**' 'scripts/**'; then
+          if git grep -n -E 'SUPABASE_SERVICE_ROLE_KEY|service_role' -- 'apps/**' 'packages/**/src/**' 'scripts/**'; then
             echo 'Supabase service-role usage is forbidden in application code.' >&2
             exit 1
           fi
-      - name: Integration suites must not be skipped
-        run: test -n "$TEST_MIGRATION_DATABASE_URL" && test "$DB_TEST_ALLOW_DESTRUCTIVE" = '1'
       - run: pnpm run test
       - name: Verify generated API contract is current
         run: |
@@ -85,38 +52,10 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: pnpm run build:affected
-      # Shell journeys run on every change, so admin must be built even when
-      # only backend changed. This is test setup, not a deployment selection.
-      - name: Ensure admin build exists for browser tests
-        run: test -f apps/admin/.next/BUILD_ID || pnpm --filter admin build
-      - name: Prove the admin browser-test session seam is not in the normal build
-        run: |
-          if grep -rqE 'E2E_STAFF|e2e-staff' apps/admin/.next/static; then
-            echo 'The e2e staff session seam leaked into the normal admin build.' >&2
-            exit 1
-          fi
-      - run: pnpm --filter admin exec playwright install --with-deps chromium
-      - name: Create the disposable e2e database
-        run: PGPASSWORD=postgres createdb -h localhost -U postgres canadian_plans_e2e_test
-      - run: pnpm run test:e2e
-      # A2 launch-gate evidence (screenshots + captured API results) is produced
-      # on every run, including a green one, so it can be collected and committed
-      # into docs/EVIDENCE/A2.md.
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        if: always()
-        with:
-          name: a2-evidence
-          path: apps/site-1/e2e-evidence/a2
-          if-no-files-found: warn
-          retention-days: 30
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        if: failure()
-        with:
-          name: browser-failures
-          path: |
-            apps/admin/playwright-report
-            apps/admin/test-results
-            apps/site-1/playwright-report
-            apps/site-1/test-results
-          retention-days: 7
+      # The storefront's browser journeys (apps/site-1/e2e) and its security
+      # suite (test:security) boot the backend this repository no longer holds,
+      # so they do not run here until the storefront calls the Canadian Plans
+      # CRM (docs/STOREFRONT_ONLY.md). The build itself is still proved.
+      - name: Ensure the storefront builds
+        run: test -f apps/site-1/.next/BUILD_ID || pnpm --filter site-1 build
 # No production credentials or deployment steps. Owner selects all releases.

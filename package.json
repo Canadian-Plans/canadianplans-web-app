@@ -10,7 +10,6 @@
   "pnpm": {
     "overrides": {
       "@sanity/cli>skills": "1.5.9",
-      "@esbuild-kit/core-utils@3.3.2>esbuild": "0.25.12",
       "typeid-js@1.2.0>uuid": "11.1.1",
       "proxy-addr@<2.0.8": "2.0.8",
       "source-map-js@<1.2.2": "1.2.2",
@@ -30,13 +29,11 @@
     "format:fix": "prettier --write .",
     "typecheck": "pnpm -r run typecheck",
     "test": "vitest run",
-    "test:recovery-spike": "node scripts/recovery-spike.mjs",
     "build": "pnpm -r run build",
     "test:tooling": "node --test scripts/*.test.mjs",
     "check:preview-isolation": "node scripts/check-preview-isolation.mjs",
-    "check:frontend-db-boundary": "eslint apps/admin apps/site-1",
-    "build:affected": "node scripts/affected-builds.mjs --build",
-    "test:e2e": "pnpm --filter admin exec playwright test && pnpm --filter site-1 run test:e2e && pnpm --filter site-1 run test:security && pnpm --filter admin run test:e2e:orders"
+    "check:frontend-db-boundary": "eslint apps/site-1",
+    "build:affected": "node scripts/affected-builds.mjs --build"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
