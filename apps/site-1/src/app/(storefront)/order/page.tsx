@@ -1,19 +1,16 @@
+import type { WebsiteOffer } from '@/lib/offers';
 import { pageMetadata } from '@/lib/page-metadata';
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { Card, CardDescription, CardHeader, CardTitle } from '@canadian-plans/ui';
-import {
-  productTypeSchema,
-  provinceFromName,
-  type WebsiteOffer,
-  type LeadDraft,
-} from '@canadian-plans/contracts';
+import { productTypeSchema, provinceFromName } from '@canadian-plans/contracts';
 
 import { getBackendClient } from '@/lib/backendClient';
 import { captureRawAttribution, type SearchParams } from '@/lib/attribution';
-import { readOrderDraft } from './draft';
+import { offersFromPlans } from '@/lib/offers';
+import { hasSavedLead, readOrderDraft } from './draft';
 import { OrderForm } from './order-form';
-import { selectOrderDraft } from './resume';
+import { selectOrderDraft, type SavedOrderDraft } from './resume';
 
 export const metadata: Metadata = pageMetadata('/order', {
   title: 'Order a plan',
@@ -22,11 +19,11 @@ export const metadata: Metadata = pageMetadata('/order', {
 });
 
 /**
- * Step 1 (server side). The plan list comes from the backend's published-offer
- * read via the typed client, so the browser never receives a price it could
- * tamper with and never holds the site's service credential. Attribution is
- * captured here, from the URL and the referrer header, and passed to the form
- * for the lead save.
+ * Step 1 (server side). The plan list comes from the CRM (`GET /website/plans`)
+ * through the typed client, so the browser never holds the site's key. The
+ * price shown is display only: the CRM looks it up again and freezes it when
+ * the order is submitted. Attribution is captured here, from the URL and the
+ * referrer header, and passed to the form for the lead save.
  */
 export default async function OrderPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const params = await searchParams;
@@ -39,12 +36,18 @@ export default async function OrderPage({ searchParams }: { searchParams: Promis
     origin,
   });
   const draft = await readOrderDraft();
-  let savedDraft: LeadDraft | undefined;
-  if (draft) {
+  let savedDraft: SavedOrderDraft | undefined;
+  // Only a SIM order has a draft in the CRM to read back.
+  if (hasSavedLead(draft)) {
     try {
-      savedDraft = (
+      const saved = (
         await getBackendClient().leads.read(draft.leadId, { draftGrant: draft.draftGrant })
       ).draft;
+      savedDraft = {
+        productId: saved.order?.planId ?? draft.productId,
+        contact: saved.contact,
+        form: saved.form,
+      };
     } catch {
       // Expired, revoked and submitted drafts never prefill personal details.
       // Keep the cookie so an uncertain submission can still retry its exact key.
@@ -54,8 +57,8 @@ export default async function OrderPage({ searchParams }: { searchParams: Promis
   let offers: WebsiteOffer[] = [];
   let loadFailed = false;
   try {
-    const response = await getBackendClient().offers.list();
-    offers = [...response.offers];
+    const response = await getBackendClient().plans.list();
+    offers = offersFromPlans(response.plans);
   } catch {
     loadFailed = true;
   }

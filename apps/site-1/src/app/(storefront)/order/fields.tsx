@@ -40,7 +40,6 @@ export const FIELD_IDS: Readonly<Record<OrderDetailField, string>> = {
   simType: 'order-sim-type',
   creditCheckConsent: 'order-credit-check-consent',
   terms: 'order-terms',
-  marketing: 'order-marketing',
 };
 
 const f = orderFormContent.fields;

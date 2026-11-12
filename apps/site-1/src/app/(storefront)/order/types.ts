@@ -1,4 +1,4 @@
-import type { Quote, RawAttribution, WebsiteBotProof } from '@canadian-plans/contracts';
+import type { RawAttribution, WebsiteBotProof } from '@canadian-plans/crm-contracts';
 
 import type { OrderDetailsInput, OrderFieldErrors } from './details';
 
@@ -18,10 +18,8 @@ export type OrderErrorCode =
   | 'draft_expired'
   | 'not_saved'
   | 'callback'
-  | 'quote_restart'
   | 'offer_unavailable'
   | 'region_not_served'
-  | 'terms_changed'
   | 'unavailable'
   | 'verification_failed'
   | 'request_failed'
@@ -39,34 +37,47 @@ export type ActionResult<T> =
 
 export interface SaveDetailsInput extends WebsiteBotProof {
   details: OrderDetailsInput;
-  /** The selected offer's `documentChecklist`, persisted with the draft. */
-  documentKeys: readonly string[];
   productId: string;
   attribution: RawAttribution;
 }
 
 export interface SaveDocumentsInput extends WebsiteBotProof {
   details: OrderDetailsInput;
-  documentKeys: readonly string[];
-  /** The placeholder step records that the customer saw the checklist. */
-  acknowledged: boolean;
 }
 
 export interface CallbackInput extends WebsiteBotProof {
   details: OrderDetailsInput;
-  documentKeys: readonly string[];
 }
 
 export interface SubmitOrderInput extends WebsiteBotProof {
-  quoteId: string;
+  /** The terms version shown on the review step; the server checks it is current. */
   termsVersion: string;
-  marketingOptIn: boolean;
   details: OrderDetailsInput;
-  documentKeys: readonly string[];
+  /** Recorded on an internet or mobile order, which the CRM takes whole on submit. */
+  attribution: RawAttribution;
+}
+
+/** One line of the price summary on the review step. */
+export interface PriceLine {
+  label: string;
+  amountMinor: number;
+}
+
+/**
+ * The plan's current price, read from the CRM for the review step. It is shown
+ * only: the CRM looks the price up again and freezes it on the order when the
+ * order is submitted, and never takes one from the browser.
+ */
+export interface PriceSummary {
+  currency: 'CAD';
+  lines: PriceLine[];
+  totalMinor: number;
+  /** The terms the customer accepts with the order. */
+  termsVersion: string;
 }
 
 export interface QuoteResult {
-  quote: Quote;
+  quote: PriceSummary;
 }
 
 /** The three allowed document media types (recorded decision). */
@@ -80,6 +91,7 @@ export type DocumentFinalizeResult =
   { ok: true; fileId: string; documentType: string } | { ok: false; message: string };
 
 export interface SubmitOrderResult {
+  /** The order number when the CRM issues one (`MS-<n>`), else the order's id. */
   reference: string;
   orderId: string;
 }

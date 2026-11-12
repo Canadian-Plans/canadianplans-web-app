@@ -1,5 +1,6 @@
 'use client';
 
+import type { WebsiteOffer } from '@/lib/offers';
 import Link from 'next/link';
 import { useHumanChallenge } from '@/components/shared/human-challenge';
 import { OrderConfirmation } from '@/components/shared/order-confirmation';
@@ -9,10 +10,8 @@ import {
   provinceCodeSchema,
   provinceNames,
   type ProvinceCode,
-  type Quote,
-  type RawAttribution,
-  type WebsiteOffer,
 } from '@canadian-plans/contracts';
+import type { RawAttribution } from '@canadian-plans/crm-contracts';
 import {
   Button,
   Card,
@@ -42,7 +41,7 @@ import {
 } from './details';
 import { DocumentUploads } from './document-uploads';
 import { ArrivalFields, FIELD_IDS, InternetFields, MobileFields } from './fields';
-import type { ActionResult, OrderDetailsInput, OrderFieldErrors } from './types';
+import type { ActionResult, OrderDetailsInput, OrderFieldErrors, PriceSummary } from './types';
 import { WaitlistForm } from './waitlist-form';
 
 const STEPS = [
@@ -106,7 +105,7 @@ export function OrderForm({
   );
   const [fieldErrors, setFieldErrors] = useState<OrderFieldErrors>({});
   const [acknowledged, setAcknowledged] = useState(false);
-  const [quote, setQuote] = useState<Quote | undefined>(undefined);
+  const [quote, setQuote] = useState<PriceSummary | undefined>(undefined);
   const [quoteFailed, setQuoteFailed] = useState<string | undefined>(undefined);
   const [callbackRequested, setCallbackRequested] = useState(false);
   const [reference, setReference] = useState<string | undefined>(undefined);
@@ -114,7 +113,6 @@ export function OrderForm({
     undefined,
   );
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [busy, setBusy] = useState(false);
   const summaryRef = useRef<HTMLDivElement>(null);
   const stepRef = useRef<HTMLDivElement>(null);
@@ -206,7 +204,6 @@ export function OrderForm({
       saveDetails({
         turnstileToken,
         details,
-        documentKeys,
         productId: selected.productId,
         attribution,
       }),
@@ -215,7 +212,6 @@ export function OrderForm({
       result = await human.run('lead-save', (turnstileToken) =>
         saveDetails({
           details,
-          documentKeys,
           productId: selected.productId,
           attribution,
           turnstileToken,
@@ -242,9 +238,7 @@ export function OrderForm({
       return;
     }
     setBusy(true);
-    const result = await human.run('lead-save', (turnstileToken) =>
-      saveDocuments({ details, documentKeys, acknowledged: true, turnstileToken }),
-    );
+    const result = await saveDocuments({ details });
     setBusy(false);
     if (!result.ok) {
       applyFailure(result);
@@ -257,9 +251,7 @@ export function OrderForm({
     setBusy(true);
     setQuoteFailed(undefined);
     setOrderError(undefined);
-    const result = await human.run('quote-create', (turnstileToken) =>
-      requestQuote({ turnstileToken }),
-    );
+    const result = await requestQuote({ category: details.category });
     setBusy(false);
     goToStep(3);
     if (result.ok) {
@@ -281,15 +273,13 @@ export function OrderForm({
     const attempt = (turnstileToken: string) =>
       submitOrder({
         turnstileToken,
-        quoteId: quote.id,
         termsVersion: quote.termsVersion,
-        marketingOptIn,
         details,
-        documentKeys,
+        attribution,
       });
-    let result = await human.run('order-submit', attempt);
+    let result = await human.run('lead-save', attempt);
     if (!result.ok && result.code === 'transport_retry')
-      result = await human.run('order-submit', attempt);
+      result = await human.run('lead-save', attempt);
     setBusy(false);
     if (result.ok) {
       // The only path to the confirmation step: a server-issued reference.
@@ -300,11 +290,6 @@ export function OrderForm({
     if (result.code === 'validation_error' && result.fieldErrors) {
       setFieldErrors(result.fieldErrors);
       focusSummary();
-      return;
-    }
-    if (result.code === 'quote_restart') {
-      setQuote(undefined);
-      await loadQuote();
       return;
     }
     setOrderError({ code: result.code, message: result.message });
@@ -324,7 +309,7 @@ export function OrderForm({
   async function handleCallback(): Promise<void> {
     setBusy(true);
     const result = await human.run('lead-save', (turnstileToken) =>
-      requestCallback({ details, documentKeys, turnstileToken }),
+      requestCallback({ details, turnstileToken }),
     );
     setBusy(false);
     if (result.ok) {
@@ -669,15 +654,15 @@ export function OrderForm({
         </ReviewCard>
         <ReviewCard title="Price" onEdit={() => goToStep(2)}>
           <ul className="space-y-1">
-            {quote.charges.map((charge) => (
-              <li key={charge.code} className="flex justify-between gap-4">
-                <span>{charge.label}</span>
-                <span>{formatMoney(charge.amount.amountMinor, charge.amount.currency)}</span>
+            {quote.lines.map((line) => (
+              <li key={line.label} className="flex justify-between gap-4">
+                <span>{line.label}</span>
+                <span>{formatMoney(line.amountMinor, quote.currency)}</span>
               </li>
             ))}
             <li className="flex justify-between gap-4 font-medium">
               <span>Total</span>
-              <span>{formatMoney(quote.total.amountMinor, quote.total.currency)}</span>
+              <span>{formatMoney(quote.totalMinor, quote.currency)}</span>
             </li>
           </ul>
         </ReviewCard>
@@ -699,18 +684,6 @@ export function OrderForm({
               {fieldErrors.terms}
             </p>
           ) : null}
-          <div className="flex items-start gap-3">
-            <input
-              id="order-marketing"
-              type="checkbox"
-              checked={marketingOptIn}
-              onChange={(event) => setMarketingOptIn(event.target.checked)}
-              className="mt-1"
-            />
-            <label htmlFor="order-marketing">
-              Send me occasional updates. You can unsubscribe at any time.
-            </label>
-          </div>
         </div>
         {orderError ? (
           <div role="alert" className="space-y-2">

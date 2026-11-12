@@ -1,0 +1,355 @@
+import { z } from 'zod';
+
+import {
+  billingPeriods,
+  carrierCommissionStatuses,
+  orderLeadTypes,
+  paymentStatuses,
+  type PaymentStatus,
+} from '@canadian-plans/crm-types';
+
+import { isoDateTimeSchema, requestIdSchema } from './common';
+import { documentChecklistKeySchema } from './domain';
+import { PLAN_NAME_MAX, isCalendarDate, propertyKeySchema } from './properties';
+import { leadPropertyValueSchema } from './workspace-leads';
+
+/**
+ * Plans a site sells and the order details of a lead that orders one (spec
+ * §5.3). A plan belongs to one site and one order lead type
+ * (`orderLeadTypes`: `sim_order`, `internet`, `mobility`); its price is integer
+ * cents in CAD. When a website submits a lead with a plan, and whenever staff
+ * change the plan, the backend freezes a copy of it on the lead
+ * (`planSnapshotSchema`), so later price or name changes never rewrite an
+ * order already taken.
+ *
+ * This module imports `./leads` and the property modules, and none of them
+ * imports it back, so it cannot join the `./properties` import cycle.
+ */
+
+export { leadOrderIntakeSchema, type LeadOrderIntake, type LeadOrderIntakeInput } from './leads';
+/** Whether leads of this type carry order details; defined beside the order properties. */
+export { isOrderLeadType } from './properties';
+
+/** The most plans one site keeps, across its order lead types. */
+export const PLAN_LIMIT = 200;
+
+export const orderLeadTypeSchema = z.enum(orderLeadTypes);
+export const billingPeriodSchema = z.enum(billingPeriods);
+export const paymentStatusSchema = z.enum(paymentStatuses);
+export const carrierCommissionStatusSchema = z.enum(carrierCommissionStatuses);
+
+/** A document the plan's orders must carry, as the lead's document checklist names it. */
+export const planRequiredDocumentSchema = documentChecklistKeySchema;
+
+/** A plan's name, at most `PLAN_NAME_MAX` (80) characters, as its option label in the lead catalogue. */
+const planNameSchema = z.string().trim().min(1).max(PLAN_NAME_MAX);
+/** A frozen copy keeps the name as it was taken; the database allows 120, so an older copy still reads. */
+const snapshotNameSchema = z.string().trim().min(1).max(120);
+const planPriceMinorSchema = z.number().int().min(0).max(1e12);
+const planRequiredDocumentsSchema = z.array(planRequiredDocumentSchema).max(16);
+const planPositionSchema = z.number().int().min(0);
+const orderQuantitySchema = z.number().int().min(1).max(99);
+
+/** The most a plan's percent commission may be: 100 %, in basis points. */
+export const PLAN_COMMISSION_RATE_MAX_BPS = 10_000;
+export const PLAN_COMMISSION_TYPES = ['none', 'percent', 'fixed'] as const;
+
+/**
+ * What the site earns on one unit of the plan, staff-only (never sent to a
+ * website): nothing set, a percent of the price (`rateBps`, percent × 100) or
+ * a fixed amount in cents of the plan's currency.
+ */
+export const planCommissionSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('none') }).strict(),
+  z
+    .object({
+      type: z.literal('percent'),
+      rateBps: z.number().int().min(0).max(PLAN_COMMISSION_RATE_MAX_BPS),
+    })
+    .strict(),
+  z.object({ type: z.literal('fixed'), amountMinor: planPriceMinorSchema }).strict(),
+]);
+export type PlanCommission = z.infer<typeof planCommissionSchema>;
+export const NO_PLAN_COMMISSION: PlanCommission = { type: 'none' };
+
+/**
+ * The commission of `quantity` units of a plan priced `priceMinor`, in cents,
+ * rounded half up for a percent; null when no commission is set.
+ */
+export function commissionMinorOf(
+  commission: PlanCommission,
+  priceMinor: number,
+  quantity: number,
+): number | null {
+  if (commission.type === 'none') return null;
+  if (commission.type === 'fixed') return commission.amountMinor * quantity;
+  return Math.round((priceMinor * commission.rateBps * quantity) / PLAN_COMMISSION_RATE_MAX_BPS);
+}
+
+export const planSchema = z.object({
+  id: z.uuid(),
+  leadType: orderLeadTypeSchema,
+  name: planNameSchema,
+  priceMinor: planPriceMinorSchema,
+  currency: z.literal('CAD'),
+  billingPeriod: billingPeriodSchema,
+  paymentRequired: z.boolean(),
+  active: z.boolean(),
+  requiredDocuments: planRequiredDocumentsSchema,
+  /** Values of the site's custom properties on the plan, by property key. */
+  customValues: z.record(propertyKeySchema, leadPropertyValueSchema),
+  position: planPositionSchema,
+  /**
+   * Owner only (`revenue.view`): left out of the response for every other
+   * role, and never in the website's plan list.
+   */
+  commission: planCommissionSchema.optional(),
+  version: z.number().int().positive(),
+  createdAt: isoDateTimeSchema,
+  updatedAt: isoDateTimeSchema,
+});
+export type Plan = z.infer<typeof planSchema>;
+
+/** `POST /workspaces/:id/plans`: active with no custom values unless given. */
+export const createPlanRequestSchema = planSchema
+  .pick({
+    leadType: true,
+    name: true,
+    priceMinor: true,
+    billingPeriod: true,
+    paymentRequired: true,
+    requiredDocuments: true,
+  })
+  .extend({
+    active: z.boolean().default(true),
+    customValues: z.record(propertyKeySchema, leadPropertyValueSchema).default({}),
+    commission: planCommissionSchema.default(NO_PLAN_COMMISSION),
+  })
+  .strict();
+/** A parsed create; the commission may be left out by in-process callers (none). */
+export type CreatePlanRequest = Omit<z.infer<typeof createPlanRequestSchema>, 'commission'> & {
+  commission?: PlanCommission;
+};
+export type CreatePlanRequestInput = z.input<typeof createPlanRequestSchema>;
+
+/**
+ * `PATCH /workspaces/:id/plans/:planId`: something to change beside the
+ * version the caller read. A custom value of null clears it. The lead type
+ * is fixed at creation.
+ */
+export const updatePlanRequestSchema = z
+  .object({
+    expectedVersion: z.number().int().positive(),
+    name: planNameSchema.optional(),
+    priceMinor: planPriceMinorSchema.optional(),
+    billingPeriod: billingPeriodSchema.optional(),
+    paymentRequired: z.boolean().optional(),
+    active: z.boolean().optional(),
+    requiredDocuments: planRequiredDocumentsSchema.optional(),
+    customValues: z.record(propertyKeySchema, leadPropertyValueSchema.nullable()).optional(),
+    position: planPositionSchema.optional(),
+    commission: planCommissionSchema.optional(),
+  })
+  .strict()
+  .refine(
+    (value) =>
+      Object.entries(value).some(
+        ([key, field]) => key !== 'expectedVersion' && field !== undefined,
+      ),
+    { message: 'nothing to change' },
+  );
+export type UpdatePlanRequest = z.infer<typeof updatePlanRequestSchema>;
+
+export const listPlansQuerySchema = z.object({
+  leadType: orderLeadTypeSchema.optional(),
+  includeInactive: z.enum(['true', 'false']).default('false'),
+});
+export type ListPlansQuery = z.infer<typeof listPlansQuerySchema>;
+export type ListPlansQueryInput = z.input<typeof listPlansQuerySchema>;
+
+export const listPlansResponseSchema = z.object({
+  plans: z.array(planSchema).max(PLAN_LIMIT),
+  requestId: requestIdSchema,
+});
+export type ListPlansResponse = z.infer<typeof listPlansResponseSchema>;
+
+export const planResponseSchema = z.object({
+  plan: planSchema,
+  requestId: requestIdSchema,
+});
+export type PlanResponse = z.infer<typeof planResponseSchema>;
+
+/** The copy frozen on the lead at submission or at a staff plan change (spec §5.3). */
+export const planSnapshotSchema = z
+  .object({
+    planId: z.uuid(),
+    name: snapshotNameSchema,
+    priceMinor: planPriceMinorSchema,
+    currency: z.literal('CAD'),
+    billingPeriod: billingPeriodSchema,
+    paymentRequired: z.boolean(),
+    requiredDocuments: planRequiredDocumentsSchema,
+    /** The plan's website-visible custom values, as they were when frozen. */
+    properties: z.record(propertyKeySchema, leadPropertyValueSchema),
+    /**
+     * The plan's commission when frozen (staff-only). Absent on copies frozen
+     * before plans had one; the dashboard then reads the plan's current one.
+     */
+    commission: planCommissionSchema.optional(),
+    frozenAt: isoDateTimeSchema,
+  })
+  .strict();
+export type PlanSnapshot = z.infer<typeof planSnapshotSchema>;
+
+/** Who carries the order to the customer, as staff name it (`Canada Post`). */
+export const courierSchema = z.string().trim().min(1).max(120);
+/** The courier's tracking number for the parcel. */
+export const trackingNumberSchema = z.string().trim().min(1).max(120);
+/** The number the carrier activated for the customer. */
+export const activationNumberSchema = z.string().trim().min(1).max(40);
+/** The carrier account the line was activated on. */
+export const activationAccountSchema = z.string().trim().min(1).max(80);
+/** A calendar day of the order (`dispatchedAt`, `activatedAt`), `YYYY-MM-DD`. */
+export const orderDateSchema = z.string().refine(isCalendarDate, 'a calendar date, YYYY-MM-DD');
+
+/** Why staff moved the order on without its required documents approved. */
+export const documentsOverrideReasonSchema = z.string().trim().min(1).max(2000);
+/**
+ * The last time staff moved the order past the documents check without its
+ * documents (`order.override`): why, which documents were missing and when.
+ * Set only by the stage move, never by an order edit.
+ */
+export const documentsOverrideSchema = z
+  .object({
+    reason: documentsOverrideReasonSchema,
+    missing: z.array(documentChecklistKeySchema).min(1).max(16),
+    at: isoDateTimeSchema,
+  })
+  .strict();
+export type DocumentsOverride = z.infer<typeof documentsOverrideSchema>;
+
+/**
+ * The order details of a lead of an order type: its plan, quantity and money
+ * states, the dispatch details (`courier`, `trackingNumber`, `dispatchedAt`),
+ * the activation details (`activatedAt`, `activationNumber`,
+ * `activationAccount`) and the last documents override, each null until set.
+ */
+export const leadOrderSchema = z
+  .object({
+    planId: z.uuid().nullable(),
+    plan: planSnapshotSchema.nullable(),
+    quantity: orderQuantitySchema,
+    paymentStatus: paymentStatusSchema,
+    carrierCommission: carrierCommissionStatusSchema,
+    courier: courierSchema.nullable(),
+    trackingNumber: trackingNumberSchema.nullable(),
+    dispatchedAt: orderDateSchema.nullable(),
+    activatedAt: orderDateSchema.nullable(),
+    activationNumber: activationNumberSchema.nullable(),
+    activationAccount: activationAccountSchema.nullable(),
+    documentsOverride: documentsOverrideSchema.nullable(),
+  })
+  .strict();
+export type LeadOrder = z.infer<typeof leadOrderSchema>;
+
+/** The order details of a lead with no plan chosen yet. */
+export const DEFAULT_LEAD_ORDER: LeadOrder = {
+  planId: null,
+  plan: null,
+  quantity: 1,
+  paymentStatus: 'not_needed',
+  carrierCommission: 'not_yet',
+  courier: null,
+  trackingNumber: null,
+  dispatchedAt: null,
+  activatedAt: null,
+  activationNumber: null,
+  activationAccount: null,
+  documentsOverride: null,
+};
+
+/** Website: only what a storefront needs; custom values limited to website-visible properties. */
+export const websitePlanSchema = planSchema
+  .pick({
+    id: true,
+    leadType: true,
+    name: true,
+    priceMinor: true,
+    currency: true,
+    billingPeriod: true,
+    paymentRequired: true,
+    requiredDocuments: true,
+  })
+  .extend({ properties: z.record(propertyKeySchema, leadPropertyValueSchema) });
+export type WebsitePlan = z.infer<typeof websitePlanSchema>;
+
+export const listWebsitePlansQuerySchema = z.object({
+  leadType: orderLeadTypeSchema.optional(),
+});
+export type ListWebsitePlansQuery = z.infer<typeof listWebsitePlansQuerySchema>;
+
+export const listWebsitePlansResponseSchema = z.object({
+  plans: z.array(websitePlanSchema),
+  requestId: requestIdSchema,
+});
+export type ListWebsitePlansResponse = z.infer<typeof listWebsitePlansResponseSchema>;
+
+/**
+ * Staff edit of the order fields; `planId` re-freezes the snapshot, null
+ * clears the plan or a dispatch or activation detail. The documents override
+ * is never an edit: only a stage move records it.
+ */
+export const leadOrderEditSchema = z
+  .object({
+    planId: z.uuid().nullable().optional(),
+    quantity: orderQuantitySchema.optional(),
+    paymentStatus: paymentStatusSchema.optional(),
+    carrierCommission: carrierCommissionStatusSchema.optional(),
+    courier: courierSchema.nullable().optional(),
+    trackingNumber: trackingNumberSchema.nullable().optional(),
+    dispatchedAt: orderDateSchema.nullable().optional(),
+    activatedAt: orderDateSchema.nullable().optional(),
+    activationNumber: activationNumberSchema.nullable().optional(),
+    activationAccount: activationAccountSchema.nullable().optional(),
+  })
+  .strict()
+  .refine((value) => Object.values(value).some((field) => field !== undefined), {
+    message: 'at least one order field',
+  });
+export type LeadOrderEdit = z.infer<typeof leadOrderEditSchema>;
+
+/** Where a new order's payment starts: owed when its plan takes a payment, else not needed. */
+export function initialPaymentStatus(plan: Pick<Plan, 'paymentRequired'> | null): PaymentStatus {
+  return plan?.paymentRequired ? 'pending' : 'not_needed';
+}
+
+/**
+ * The copy of `plan` frozen on a lead at `now`. Only the custom values whose
+ * keys the site shows on its website (`websiteVisibleKeys`) are kept, so the
+ * snapshot never carries what staff keep to themselves (an internal cost).
+ */
+export function freezePlan(
+  plan: Plan,
+  websiteVisibleKeys: readonly string[],
+  now: Date,
+): PlanSnapshot {
+  const properties: Record<string, z.infer<typeof leadPropertyValueSchema>> = {};
+  for (const key of websiteVisibleKeys) {
+    if (Object.hasOwn(plan.customValues, key)) {
+      const value = plan.customValues[key];
+      if (value !== undefined) properties[key] = value;
+    }
+  }
+  return {
+    planId: plan.id,
+    name: plan.name,
+    priceMinor: plan.priceMinor,
+    currency: plan.currency,
+    billingPeriod: plan.billingPeriod,
+    paymentRequired: plan.paymentRequired,
+    requiredDocuments: [...plan.requiredDocuments],
+    properties,
+    commission: plan.commission ?? NO_PLAN_COMMISSION,
+    frozenAt: now.toISOString(),
+  };
+}

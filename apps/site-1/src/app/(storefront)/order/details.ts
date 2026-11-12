@@ -1,10 +1,10 @@
+import type { WebsiteOffer } from '@/lib/offers';
 import {
   provinceCodeSchema,
   provinceFromPostalCode,
   provinceNames,
   isOfferSoldIn,
   type ProvinceCode,
-  type WebsiteOffer,
 } from '@canadian-plans/contracts';
 import { z } from 'zod';
 
@@ -71,7 +71,7 @@ export type OrderDetailsInput = ArrivalDetails | InternetDetails | MobileDetails
 
 type DetailKey = keyof ArrivalDetails | keyof InternetDetails | keyof MobileDetails;
 
-export type OrderDetailField = Exclude<DetailKey, 'category'> | 'terms' | 'marketing';
+export type OrderDetailField = Exclude<DetailKey, 'category'> | 'terms';
 export type OrderFieldErrors = Partial<Record<OrderDetailField, string>>;
 
 export function emptyDetails(category: OrderCategory): OrderDetailsInput {
@@ -296,14 +296,47 @@ export interface OrderContact {
   countryCode: string;
 }
 
-export interface ParsedOrder {
-  category: OrderCategory;
+interface OrderAddress {
+  street: string;
+  unit?: string;
+  city: string;
+  postalCode: string;
+}
+
+interface ParsedOrderBase {
   contact: OrderContact;
   /** The province an internet plan is priced for; undefined for national categories. */
   province: ProvinceCode | undefined;
-  /** Category fields as stored in the lead and order form payload. */
-  fields: Record<string, unknown>;
 }
+
+/** A validated order, per category, before it is put in the CRM's form shape. */
+export type ParsedOrder =
+  | (ParsedOrderBase & {
+      category: 'sim';
+      fields: { currentCountry: string; destination: string; arrivalDate: string };
+    })
+  | (ParsedOrderBase & {
+      category: 'internet';
+      fields: {
+        category: 'internet';
+        province: ProvinceCode;
+        dateOfBirth: string;
+        address: OrderAddress;
+        currentProvider?: string;
+        preferredInstallationTime?: string;
+      };
+    })
+  | (ParsedOrderBase & {
+      category: 'mobile';
+      fields: {
+        category: 'mobile';
+        lines: number;
+        currentProvider: string;
+        keepNumber: boolean;
+        simType: 'esim' | 'physical';
+        address: OrderAddress;
+      };
+    });
 
 export type ParseOrderResult =
   { ok: true; order: ParsedOrder } | { ok: false; errors: OrderFieldErrors };
@@ -330,7 +363,6 @@ export const ORDER_DETAIL_FIELDS: readonly OrderDetailField[] = [
   'simType',
   'creditCheckConsent',
   'terms',
-  'marketing',
 ];
 
 function collect(error: z.ZodError): OrderFieldErrors {
@@ -441,31 +473,80 @@ export function parseOrderDetails(input: unknown, now: Date = new Date()): Parse
   }
 }
 
+/** What `buildOrderForm` needs to know about the chosen plan. */
+export interface OrderFormPlan {
+  /** The storefront's stable plan key; kept on the lead beside the CRM plan id. */
+  productKey: string;
+  offerName: string;
+}
+
+function splitName(fullName: string): { firstName: string; lastName: string } {
+  const parts = fullName.trim().split(/\s+/);
+  const firstName = parts[0] ?? fullName.trim();
+  const rest = parts.slice(1).join(' ');
+  // The CRM needs both; a single-word name is recorded as both.
+  return { firstName: firstName.slice(0, 80), lastName: (rest || firstName).slice(0, 80) };
+}
+
 /**
- * The versioned form sent to the backend. One shape for every save, so a later
- * PATCH replaces (never drops) earlier steps.
+ * The versioned form sent to the CRM, in the shape its lead type takes
+ * (`sim_order`, `internet` or `mobility`; strict: an unknown key is refused).
+ * One shape for every save, so a later PATCH replaces (never drops) earlier
+ * steps. `consentedAt` is when the customer sent the order.
  */
 export function buildOrderForm(
   order: ParsedOrder,
-  documentKeys: readonly string[],
-  acknowledged: boolean,
-  options: { creditCheckConsentVersion: string; extra?: Record<string, unknown> },
-) {
-  const consent =
-    order.category === 'mobile'
-      ? { creditCheck: { consent: true, version: options.creditCheckConsentVersion } }
-      : {};
+  plan: OrderFormPlan,
+  options: { consentedAt: string },
+): { schemaVersion: 1; payload: Record<string, unknown> } {
+  const planLabel = plan.offerName.slice(0, 80);
+  if (order.category === 'sim') {
+    return {
+      schemaVersion: 1,
+      payload: {
+        planId: plan.productKey.slice(0, 60),
+        planLabel,
+        // Pre-arrival plans are eSIMs; nothing is shipped.
+        delivery: 'esim',
+        arrivalDate: order.fields.arrivalDate,
+        canadaAddress: order.fields.destination,
+        currentCountry: order.fields.currentCountry,
+      },
+    };
+  }
+  const address = order.fields.address;
+  const shared = {
+    planId: plan.productKey.slice(0, 40),
+    planLabel,
+    streetAddress: address.street,
+    ...(address.unit ? { aptUnit: address.unit } : {}),
+    city: address.city,
+    postalCode: address.postalCode,
+  };
+  if (order.category === 'internet') {
+    return {
+      schemaVersion: 1,
+      payload: {
+        ...shared,
+        dateOfBirth: order.fields.dateOfBirth,
+        consent: true,
+        consentedAt: options.consentedAt,
+        ...(order.fields.currentProvider ? { currentProvider: order.fields.currentProvider } : {}),
+        ...(order.fields.preferredInstallationTime
+          ? { preferredInstallationTime: order.fields.preferredInstallationTime }
+          : {}),
+      },
+    };
+  }
   return {
     schemaVersion: 1,
     payload: {
-      ...order.fields,
-      ...consent,
-      documents: {
-        required: [...documentKeys],
-        // Real uploads are handled separately; this records only that the step was seen.
-        acknowledged,
-      },
-      ...options.extra,
+      ...shared,
+      ...splitName(order.contact.fullName),
+      lineCount: order.fields.lines,
+      keepNumber: order.fields.keepNumber,
+      simType: order.fields.simType,
+      currentProvider: order.fields.currentProvider.slice(0, 60),
     },
   };
 }

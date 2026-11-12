@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { WebsiteBotAction } from '@canadian-plans/contracts';
+import type { WebsiteBotAction } from '@canadian-plans/crm-contracts';
 import { verificationContent as copy } from '@content/verification';
 
 interface TurnstileApi {

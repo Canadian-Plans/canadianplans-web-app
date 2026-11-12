@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { TrackingOrderDetail, TrackingOrderSummary } from '@canadian-plans/contracts';
+import type { TrackingOrder } from '@canadian-plans/crm-contracts';
 import { FormField, Input } from '@canadian-plans/ui';
 import { CpButton } from '@canadian-plans/ui/canadian-plans';
 import { trackCopy as copy } from '@content/track';
@@ -21,8 +21,8 @@ type View =
   | { phase: 'checking' }
   | { phase: 'lookup' }
   | { phase: 'code' }
-  | { phase: 'list'; orders: TrackingOrderSummary[] }
-  | { phase: 'detail'; order: TrackingOrderDetail };
+  | { phase: 'list'; orders: TrackingOrder[] }
+  | { phase: 'detail'; order: TrackingOrder };
 
 const ORDER_PARAM = 'order';
 

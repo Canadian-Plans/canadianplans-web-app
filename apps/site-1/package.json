@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@canadian-plans/contracts": "workspace:*",
+    "@canadian-plans/crm-contracts": "workspace:*",
     "@canadian-plans/ui": "workspace:*",
     "@hookform/resolvers": "5.4.3",
     "@sanity/client": "8.6.1",
