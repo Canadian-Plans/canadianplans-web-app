@@ -72,7 +72,34 @@ export function buildOrganizationSchema(origin: string): OrganizationSchema {
   };
 }
 
+export interface WebSiteSchema {
+  readonly '@context': 'https://schema.org';
+  readonly '@type': 'WebSite';
+  readonly '@id': string;
+  readonly name: string;
+  readonly url: string;
+  readonly inLanguage: string;
+  readonly publisher: { readonly '@id': string };
+}
+
+/**
+ * Sitewide WebSite JSON-LD: the name search engines show for the site, tied to the
+ * Organization above. No search action: the site search page is not indexable.
+ */
+export function buildWebSiteSchema(origin: string): WebSiteSchema {
+  const base = origin.replace(/\/+$/u, '');
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${base}/#website`,
+    name: organizationContent.name,
+    url: `${base}/`,
+    inLanguage: organizationContent.languages[0],
+    publisher: { '@id': `${base}/#organization` },
+  };
+}
+
 /** Same script-terminator escaping as the FAQ and landing schemas. */
-export function serializeOrganizationSchema(schema: OrganizationSchema): string {
+export function serializeOrganizationSchema(schema: OrganizationSchema | WebSiteSchema): string {
   return JSON.stringify(schema).replace(/</gu, '\\u003c');
 }

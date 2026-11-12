@@ -26,9 +26,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
   );
   const routes = [...publicRoutes, ...legal.filter((route): route is string => route !== null)];
-  return routes.map((route) => ({
-    url: `${base}${route}`,
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }));
+  // Only a guide records when it last changed; a date is given where it is known, never guessed.
+  const guideUpdated = new Map(
+    guideArticles.map((article) => [`/guides/${article.slug}`, article.updated]),
+  );
+  return routes.map((route) => {
+    const updated = guideUpdated.get(route);
+    return {
+      url: `${base}${route}`,
+      ...(updated ? { lastModified: updated } : {}),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    };
+  });
 }

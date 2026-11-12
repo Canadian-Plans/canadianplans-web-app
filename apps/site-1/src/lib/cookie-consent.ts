@@ -1,23 +1,32 @@
-import { z } from 'zod';
 export const COOKIE_KEY = 'canadian-plans.cookie-choices.v1';
 export const COOKIE_VERSION = 1;
 export const COOKIE_MAX_LENGTH = 500;
 const CHANGE_EVENT = 'canadian-plans-cookie-change';
-const schema = z.object({
-  version: z.literal(COOKIE_VERSION),
-  analytics: z.boolean(),
-  marketing: z.boolean(),
-});
-export type CookieChoice = z.infer<typeof schema>;
+export interface CookieChoice {
+  version: typeof COOKIE_VERSION;
+  analytics: boolean;
+  marketing: boolean;
+}
+/**
+ * Checked by hand rather than with zod: this module is in the root layout's
+ * browser bundle, and a schema library here costs every page about 85 kB.
+ * Unknown keys are dropped, as the schema it replaces did.
+ */
+function readChoice(value: unknown): CookieChoice | null {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return null;
+  if (!('version' in value) || !('analytics' in value) || !('marketing' in value)) return null;
+  const { version, analytics, marketing } = value;
+  if (version !== COOKIE_VERSION) return null;
+  if (typeof analytics !== 'boolean' || typeof marketing !== 'boolean') return null;
+  return { version, analytics, marketing };
+}
 let visitSnapshot: string | null = null;
 let failedWrite = false;
 let storedAtFailure: string | null | undefined;
 export function parseCookieChoice(input: unknown): CookieChoice | null {
   if (typeof input !== 'string' || input.length > COOKIE_MAX_LENGTH) return null;
   try {
-    const value: unknown = JSON.parse(input);
-    const parsed = schema.safeParse(value);
-    return parsed.success ? parsed.data : null;
+    return readChoice(JSON.parse(input));
   } catch {
     return null;
   }
@@ -54,9 +63,9 @@ export function cookieSnapshot(): string | null {
   }
 }
 export function saveCookieChoice(input: unknown): { valid: boolean; persisted: boolean } {
-  const value = schema.safeParse(input);
-  if (!value.success || typeof window === 'undefined') return { valid: false, persisted: false };
-  visitSnapshot = JSON.stringify(value.data);
+  const value = readChoice(input);
+  if (!value || typeof window === 'undefined') return { valid: false, persisted: false };
+  visitSnapshot = JSON.stringify(value);
   let persisted = false;
   try {
     window.localStorage.setItem(COOKIE_KEY, visitSnapshot);
