@@ -6,7 +6,7 @@ html[data-cp-consent='stored'] .cp-cookie-banner {
   position: fixed;
   bottom: 0;
   left: 0;
-  z-index: 40;
+  z-index: var(--cp-layer-consent);
   width: 100%;
   padding: var(--cp-space-24) var(--cp-space-20) var(--cp-space-12);
   border-radius: var(--cp-radius-24) var(--cp-radius-24) 0 0;
