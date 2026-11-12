@@ -204,7 +204,7 @@ export const faqGroups: readonly HelpFaqGroup[] = [
       site(
         'order-tracking',
         'How do I track my order?',
-        'Use the Track order page with your order number and email. You see the current status and any document we still need, and you can request a change from there. No account is needed.',
+        'Open the Track order page and enter the email you ordered with. We email you a six-digit code, and then you see every order placed with that email, its current status and any document we still need. You can request a change to your details from there. No account or password is needed.',
         ['track', 'status'],
       ),
       site(

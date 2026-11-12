@@ -92,7 +92,7 @@ const steps = [
     marker: '2',
     meta: 'Same day',
     title: 'Verify your ID',
-    body: 'Upload a government ID over a secure connection. An advisor runs the identity and credit check and confirms your exact price with you.',
+    body: 'Your advisor asks for a government ID, then runs the identity and credit check and confirms your exact price with you.',
   },
   {
     id: 'activate',
@@ -132,7 +132,7 @@ const faq: readonly LandingFaq[] = [
     id: 'credit',
     question: 'Do I need a credit check for a phone plan in Canada?',
     answer:
-      'Yes, for these plans. They are postpaid, so the provider runs an identity and credit check, and you upload a government ID with your order. New to Canada with no credit history yet? Our pre-arrival SIM plans need no credit check.',
+      'Yes, for these plans. They are postpaid, so the provider runs an identity and credit check, and your advisor asks for a government ID to complete it. New to Canada with no credit history yet? Our pre-arrival SIM plans need no credit check.',
   },
   {
     id: 'pay',

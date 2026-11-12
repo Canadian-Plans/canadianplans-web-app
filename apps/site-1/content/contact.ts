@@ -67,7 +67,7 @@ export const contactCopy = {
       'See the status of your eSIM, mobile plan or internet install, and request a change. No account needed.',
     submit: 'Track order  →',
     href: '/track',
-    help: "Can't find your order number? It's in your confirmation email. Or call or email us and we'll look it up.",
+    help: "You only need the email you ordered with. Not sure which one you used? Call or email us and we'll look it up.",
   },
   office: {
     title: 'Our address',
