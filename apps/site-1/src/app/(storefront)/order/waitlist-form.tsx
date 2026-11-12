@@ -27,7 +27,7 @@ export function WaitlistForm({ province }: { province: ProvinceCode }) {
     if (busy) return;
     setBusy(true);
     setError(undefined);
-    const result = await human.run('waitlist-join', (turnstileToken) =>
+    const result = await human.run('lead-save', (turnstileToken) =>
       joinWaitlist({ province, email, turnstileToken }),
     );
     setBusy(false);

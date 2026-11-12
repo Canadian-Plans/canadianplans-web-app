@@ -1,34 +1,20 @@
 import { defineConfig } from '@playwright/test';
 import { basePlaywrightConfig } from '@canadian-plans/config/playwright.base';
 
-/**
- * T13 end-to-end configuration.
- *
- * Two servers are started:
- *  - the e2e harness (`apps/backend/tests/e2e/harness.ts`), which runs the real
- *    backend app against a disposable Postgres with a stub published-catalogue
- *    provider and an admitting bot check (a live Sanity project and a real
- *    Cloudflare Turnstile token are not available to CI);
- *  - the built site-1 server, pointed at the harness with a seeded service
- *    credential.
- *
- * Required local/CI setup (documented in apps/site-1/README.md):
- *   createdb canadian_plans_e2e_test   # disposable; the harness migrates it
- * The e2e database is deliberately separate from the unit/integration test
- * database, because the harness truncates its tenant tables on start. Override
- * with `E2E_TEST_DATABASE_URL` / `E2E_DATABASE_URL` if needed.
- */
-const HARNESS_PORT = 4100;
-const BACKEND_URL = `http://127.0.0.1:${HARNESS_PORT}`;
-const SERVICE_CREDENTIAL =
-  process.env['E2E_SERVICE_CREDENTIAL'] ?? 'cplsk_e2e_order_journey_secret_0001';
-const TEST_DATABASE_URL =
-  process.env['E2E_TEST_DATABASE_URL'] ??
-  'postgresql://postgres:postgres@localhost:5432/canadian_plans_e2e_test';
-const RUNTIME_DATABASE_URL =
-  process.env['E2E_DATABASE_URL'] ??
-  'postgresql://app_runtime:local_ci_runtime_password@localhost:5432/canadian_plans_e2e_test';
+import { SITE_KEY, SITE_PORT, SITE_URL, STUB_URL } from './e2e/crm-stub/config';
 
+/**
+ * The storefront's browser suites.
+ *
+ * Two servers are started, neither needing a database or a secret:
+ *  - the CRM stub (`e2e/crm-stub`), which stands in for the Canadian Plans
+ *    CRM's website API and checks every request and its own answers against
+ *    `@canadian-plans/crm-contracts`;
+ *  - the built storefront (`next start`), pointed at the stub with a synthetic
+ *    site key.
+ *
+ * One worker: the stub holds one in-memory state, reset before every test.
+ */
 function stringEnv(source: NodeJS.ProcessEnv): Record<string, string> {
   const result: Record<string, string> = {};
   for (const [key, value] of Object.entries(source)) {
@@ -41,7 +27,7 @@ export default defineConfig({
   ...basePlaywrightConfig,
   testDir: './e2e',
   workers: 1,
-  use: { ...basePlaywrightConfig.use, baseURL: 'http://127.0.0.1:3101' },
+  use: { ...basePlaywrightConfig.use, baseURL: SITE_URL },
   projects: [
     { name: 'desktop', use: { viewport: { width: 1440, height: 900 } } },
     {
@@ -51,45 +37,26 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: 'pnpm --filter backend exec tsx tests/e2e/harness.ts',
-      url: `${BACKEND_URL}/api/v1/health`,
+      command: 'pnpm exec tsx e2e/crm-stub/server.ts',
+      url: `${STUB_URL}/api/v1/health`,
       reuseExistingServer: false,
-      timeout: 120_000,
-      // Diagnostic: surface a webServer crash after startup (not just a failed
-      // health check) directly in CI output instead of only "page couldn't load".
+      timeout: 60_000,
       stdout: 'pipe',
       stderr: 'pipe',
-      env: {
-        ...stringEnv(process.env),
-        TEST_MIGRATION_DATABASE_URL: TEST_DATABASE_URL,
-        DATABASE_URL: RUNTIME_DATABASE_URL,
-        DATABASE_SSL_MODE: 'disable',
-        MIGRATION_DATABASE_SSL_MODE: 'disable',
-        E2E_SERVICE_CREDENTIAL: SERVICE_CREDENTIAL,
-        E2E_HARNESS_PORT: String(HARNESS_PORT),
-        E2E_BACKEND_PORT: String(HARNESS_PORT + 1),
-        QUOTE_WITHDRAWAL_POLICY: 'honour_until_expiry',
-        OUTBOX_ADAPTERS: 'fake',
-        // Harness seam 3 for the per-endpoint budgets (REQ 37): the real limiter
-        // still runs, but every journey shares 127.0.0.1, so the production
-        // defaults (orders 10/60s) would throttle the suite against itself.
-        RATE_LIMIT_LEADS_MAX: '20000',
-        RATE_LIMIT_QUOTES_MAX: '20000',
-        RATE_LIMIT_ORDERS_MAX: '20000',
-        RATE_LIMIT_TRACKING_MAX: '20000',
-      },
+      env: { ...stringEnv(process.env), E2E_SITE_KEY: SITE_KEY },
     },
     {
-      command: 'pnpm exec next start --hostname 127.0.0.1 --port 3101',
-      url: 'http://127.0.0.1:3101',
+      command: `pnpm exec next start --hostname 127.0.0.1 --port ${SITE_PORT}`,
+      url: SITE_URL,
       reuseExistingServer: false,
       timeout: 120_000,
+      // Surface a server crash after startup directly in the run's output.
       stdout: 'pipe',
       stderr: 'pipe',
       env: {
         ...stringEnv(process.env),
-        SITE_1_BACKEND_URL: BACKEND_URL,
-        SITE_1_SERVICE_CREDENTIAL: SERVICE_CREDENTIAL,
+        SITE_1_BACKEND_URL: STUB_URL,
+        SITE_1_SERVICE_CREDENTIAL: SITE_KEY,
       },
     },
   ],

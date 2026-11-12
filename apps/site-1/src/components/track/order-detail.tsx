@@ -1,16 +1,16 @@
 'use client';
 
 import { useCallback, useRef, useState, type ReactNode } from 'react';
-import type { AmendableFieldKey, TrackingOrderDetail } from '@canadian-plans/contracts';
+import type { TrackingOrder } from '@canadian-plans/crm-contracts';
 import { CpAsset, CpButton } from '@canadian-plans/ui/canadian-plans';
-import { orderFormContent } from '@content/order-forms';
 import {
   trackBillingCopy,
   trackCopy as copy,
   trackDeliveryCopy,
+  trackDocumentLabels,
+  trackDocumentStateCopy,
   trackFieldLabels,
-  trackPaymentCopy,
-  trackStatusCopy,
+  trackPermitCopy,
 } from '@content/track';
 import { trackingAssets as assets } from '@content/track-order';
 import { useHumanChallenge } from '@/components/shared/human-challenge';
@@ -18,30 +18,19 @@ import {
   documentRows,
   fillTemplate,
   formatDate,
-  formatMoney,
-  progressFor,
+  formatPrice,
+  isUploadDocumentType,
+  pendingChangeView,
+  planView,
   type DocumentRow,
+  type TrackEditableField,
 } from '@/lib/tracking-view';
 import { TrackChangeDialog } from './change-dialog';
-import { TrackInfoRequestForm } from './info-request-form';
 import { useDocumentUpload } from './use-document-upload';
 
 function documentLabel(key: string): string {
-  return orderFormContent.checklistLabels[key] ?? key.replace(/_/g, ' ');
+  return trackDocumentLabels[key] ?? key.replace(/_/g, ' ');
 }
-
-const documentStatusLabel: Readonly<Record<DocumentRow['status'], string>> = {
-  received: copy.upload.statusReceived,
-  approved: copy.upload.statusApproved,
-  needs_replacement: copy.upload.statusReplace,
-  missing: copy.upload.statusMissing,
-};
-
-const changeStatusLabel = {
-  pending: copy.detail.changePending,
-  approved: copy.detail.changeApproved,
-  rejected: copy.detail.changeRejected,
-} as const;
 
 /** One verified customer's view of one of their orders. */
 export function TrackOrderDetail({
@@ -50,36 +39,37 @@ export function TrackOrderDetail({
   onRefresh,
   onSessionExpired,
 }: {
-  order: TrackingOrderDetail;
+  order: TrackingOrder;
   onBack: () => void;
   onRefresh: () => Promise<void>;
   onSessionExpired: () => void;
 }) {
   const human = useHumanChallenge();
   const [openCard, setOpenCard] = useState('documents');
-  const [change, setChange] = useState<AmendableFieldKey | null>(null);
-  const [notice, setNotice] = useState('');
+  const [change, setChange] = useState<TrackEditableField | null>(null);
   const trigger = useRef<HTMLElement | null>(null);
   const refresh = useCallback(() => void onRefresh(), [onRefresh]);
   const uploads = useDocumentUpload(order.reference, human, refresh);
   const inputs = useRef<Record<string, HTMLInputElement | null>>({});
 
-  const status = trackStatusCopy[order.fulfilmentStatus];
-  const attention = order.actionNeeded || order.fulfilmentStatus === 'awaiting_customer';
   const rows = documentRows(order);
-  const missing = rows.filter((row) => row.uploadable);
-  const progress = progressFor(order.fulfilmentStatus);
+  const missing = rows.filter((row) => row.needed);
+  const attention = missing.length > 0;
+  const plan = planView(order);
+  const pendingChange = pendingChangeView(order);
 
-  function openChange(field: AmendableFieldKey) {
+  function openChange(field: TrackEditableField) {
     trigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     setChange(field);
   }
 
   function uploadControl(row: DocumentRow, place: 'action' | 'documents') {
-    const key = `${place}:${row.documentType}`;
+    const documentType = row.documentType;
+    if (!isUploadDocumentType(documentType)) return null;
+    const key = `${place}:${documentType}`;
     const label = fillTemplate(
-      row.status === 'needs_replacement' ? copy.upload.replace : copy.upload.choose,
-      { document: documentLabel(row.documentType) },
+      row.state === 'missing' && !row.sent ? copy.upload.choose : copy.upload.replace,
+      { document: documentLabel(documentType) },
     );
     return (
       <>
@@ -92,10 +82,10 @@ export function TrackOrderDetail({
           tabIndex={-1}
           accept="application/pdf,image/jpeg,image/png"
           aria-label={label}
-          data-document={row.documentType}
+          data-document={documentType}
           disabled={uploads.busy}
           onChange={(event) => {
-            void uploads.upload(row.documentType, event.target.files?.[0]);
+            void uploads.upload(documentType, event.target.files?.[0]);
             event.target.value = '';
           }}
         />
@@ -133,7 +123,7 @@ export function TrackOrderDetail({
     title: string,
     summary: string,
     children: ReactNode,
-    field?: AmendableFieldKey,
+    field?: TrackEditableField,
   ) {
     const open = openCard === id;
     return (
@@ -190,7 +180,21 @@ export function TrackOrderDetail({
 
   const d = copy.detail;
   const given = (value: string | null) => value ?? d.notGiven;
-  const recurring = `${formatMoney(order.price.recurring)} ${trackBillingCopy[order.billingPeriod]}`;
+  const price =
+    plan.priceMinor === null || plan.billingPeriod === null
+      ? null
+      : `${formatPrice(plan.priceMinor)} ${trackBillingCopy[plan.billingPeriod]}`;
+  const details = order.details;
+  const changeField: TrackEditableField | undefined = order.canRequestChange
+    ? 'fullName'
+    : undefined;
+  const deliveryRows: (readonly [string, ReactNode])[] = [
+    ...(order.delivery ? [[d.deliveryMethod, trackDeliveryCopy[order.delivery]] as const] : []),
+    ...(order.courier ? [[d.courier, order.courier] as const] : []),
+    ...(order.trackingNumber ? [[d.trackingNumber, order.trackingNumber] as const] : []),
+    ...(order.dispatchedAt ? [[d.dispatched, formatDate(order.dispatchedAt)] as const] : []),
+    ...(order.simNumber ? [[d.simNumber, order.simNumber] as const] : []),
+  ];
 
   return (
     <>
@@ -209,19 +213,13 @@ export function TrackOrderDetail({
             data-testid="tracking-status"
           >
             <CpAsset asset={attention ? assets.attentionDot : assets.sentDot} />
-            {status.label}
+            {order.stageLabel}
           </span>
         </div>
-        <p>{status.description}</p>
-        <small>{fillTemplate(d.updated, { date: formatDate(order.updatedAt) })}</small>
+        <small>{fillTemplate(d.submittedOn, { date: formatDate(order.submittedAt) })}</small>
       </section>
-      {notice ? (
-        <p className="cp-container cp-tracking-feedback" role="status">
-          {notice}
-        </p>
-      ) : null}
 
-      {attention && (missing.length > 0 || order.infoRequests.length > 0) ? (
+      {attention ? (
         <section className="cp-container cp-tracking-action-wrap">
           <div className="cp-tracking-action" data-testid="tracking-action">
             <span className="cp-tracking-attention-icon" aria-hidden="true">
@@ -229,8 +227,7 @@ export function TrackOrderDetail({
             </span>
             <div className="cp-tracking-action-copy">
               <h2>{copy.action.title}</h2>
-              {missing.length > 0 ? <p>{copy.action.documents}</p> : null}
-              {order.infoRequests.length > 0 ? <p>{copy.action.info}</p> : null}
+              <p>{copy.action.documents}</p>
             </div>
             {missing.map((row) => (
               <div className="cp-tracking-upload" key={row.documentType}>
@@ -240,89 +237,55 @@ export function TrackOrderDetail({
                 {uploadFeedback(row.documentType)}
               </div>
             ))}
-            {order.infoRequests.map((request) => (
-              <div className="cp-track-info" key={request.id}>
-                <h3>{copy.info.title}</h3>
-                <TrackInfoRequestForm
-                  reference={order.reference}
-                  request={request}
-                  onSent={() => {
-                    setNotice(copy.info.sent);
-                    refresh();
-                  }}
-                  onSessionExpired={onSessionExpired}
-                />
-              </div>
-            ))}
           </div>
         </section>
       ) : null}
 
-      {order.fulfilmentStatus === 'cancelled' ? null : (
-        <section className="cp-container cp-tracking-progress-wrap">
-          <ol className="cp-tracking-progress" aria-label={status.label}>
-            {progress.map((step) => (
-              <li key={step.label} data-stage={step.kind}>
-                <span className="cp-tracking-progress-marker">
-                  <span className="cp-tracking-desktop">{step.marker}</span>
-                  <span className="cp-tracking-mobile">
-                    {step.kind === 'done' ? <CpAsset asset={assets.check} /> : step.marker}
-                  </span>
-                </span>
-                <div>
-                  <strong>{step.label}</strong>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
-      )}
-
       <section className="cp-container cp-tracking-details">
         <div>
           <h2>{d.detailsTitle}</h2>
-          <p>{d.detailsIntro}</p>
+          <p>{order.canRequestChange ? d.detailsIntro : d.detailsIntroLocked}</p>
         </div>
         <div className="cp-tracking-details-grid">
           {group(
             'plan',
             d.plan,
-            `${order.productTitle} · ${recurring}`,
+            [plan.name ?? d.planNotGiven, price].filter(Boolean).join(' · '),
             rowsOf([
-              [d.planName, `${order.productTitle} · ${order.offerName}`],
-              [d.price, recurring],
-              [d.payableToday, formatMoney(order.price.amountPayableToday)],
-              [d.payment, trackPaymentCopy[order.paymentState]],
-              [d.delivery, trackDeliveryCopy[order.deliveryState]],
-              ...(order.trackingReference
-                ? [[d.trackingReference, order.trackingReference] as const]
-                : []),
+              [d.planName, plan.name ?? d.planNotGiven],
+              ...(price ? [[d.price, price] as const] : []),
+              ...(order.quantity > 1 ? [[d.quantity, String(order.quantity)] as const] : []),
               [d.submitted, formatDate(order.submittedAt)],
             ]),
           )}
+          {deliveryRows.length > 0
+            ? group(
+                'delivery',
+                d.delivery,
+                deliveryRows.map(([, value]) => value).join(' · '),
+                rowsOf(deliveryRows),
+              )
+            : null}
           {group(
             'personal',
             d.personal,
-            [order.customer.fullName, order.customer.email].filter(Boolean).join(' · '),
+            [details.fullName, details.canadaAddress].filter(Boolean).join(' · ') || d.notGiven,
             rowsOf([
-              [d.name, given(order.customer.fullName)],
-              [d.email, given(order.customer.email)],
-              [d.phone, given(order.customer.phone)],
-              [d.country, given(order.customer.countryCode)],
+              [d.name, given(details.fullName)],
+              [d.phone, given(details.phone)],
+              [d.arrivalDate, details.arrivalDate ? formatDate(details.arrivalDate) : d.notGiven],
+              [d.destination, given(details.canadaAddress)],
+              ...(details.permitType
+                ? [[d.permitType, trackPermitCopy[details.permitType]] as const]
+                : []),
+              ...(details.shippingAddress
+                ? [[d.shippingAddress, details.shippingAddress] as const]
+                : []),
+              ...(details.flightBooked === null
+                ? []
+                : [[d.flightBooked, details.flightBooked ? d.yes : d.no] as const]),
             ]),
-            'contact.email',
-          )}
-          {group(
-            'arrival',
-            d.arrival,
-            [order.details.destination, order.details.arrivalDate].filter(Boolean).join(' · ') ||
-              d.notGiven,
-            rowsOf([
-              [d.currentCountry, given(order.details.currentCountry)],
-              [d.destination, given(order.details.destination)],
-              [d.arrivalDate, given(order.details.arrivalDate)],
-            ]),
-            'form.arrivalDate',
+            changeField,
           )}
           {group(
             'documents',
@@ -334,42 +297,60 @@ export function TrackOrderDetail({
               {rows.length === 0 ? (
                 <p className="cp-tracking-detail-note">{d.documentsNone}</p>
               ) : null}
-              {rows.map((row) => (
-                <div
-                  className="cp-tracking-document"
-                  key={row.documentType}
-                  data-attention={row.uploadable}
-                  data-testid={`tracking-document-${row.documentType}`}
-                >
-                  <span>{copy.upload.doc}</span>
-                  <div>
-                    <strong>{documentLabel(row.documentType)}</strong>
-                    {row.uploadable ? <small>{documentStatusLabel[row.status]}</small> : null}
+              {rows.map((row) => {
+                const stateLabel = row.sent ? copy.upload.sent : trackDocumentStateCopy[row.state];
+                return (
+                  <div
+                    className="cp-tracking-document"
+                    key={row.documentType}
+                    data-attention={row.needed}
+                    data-testid={`tracking-document-${row.documentType}`}
+                  >
+                    <span>{copy.upload.doc}</span>
+                    <div>
+                      <strong>{documentLabel(row.documentType)}</strong>
+                      {row.uploadable ? <small>{stateLabel}</small> : null}
+                    </div>
+                    {row.uploadable ? (
+                      uploadControl(row, 'documents')
+                    ) : (
+                      <span className="cp-tracking-verified">{stateLabel}</span>
+                    )}
+                    {uploadFeedback(row.documentType)}
                   </div>
-                  {row.uploadable ? (
-                    uploadControl(row, 'documents')
-                  ) : (
-                    <span className="cp-tracking-verified">{documentStatusLabel[row.status]}</span>
-                  )}
-                  {uploadFeedback(row.documentType)}
-                </div>
-              ))}
+                );
+              })}
               <p className="cp-tracking-document-note">{d.documentsNote}</p>
             </>,
           )}
         </div>
-        {order.changeRequests.length > 0 ? (
-          <div className="cp-track-changes">
-            <h3>{d.changesTitle}</h3>
+        {pendingChange ? (
+          <div className="cp-track-changes" data-testid="tracking-pending-change">
+            <h3>{d.pendingTitle}</h3>
             <ul>
-              {order.changeRequests.map((request) => (
-                <li key={request.id} data-status={request.status}>
-                  <span>{request.fields.map((field) => trackFieldLabels[field]).join(', ')}</span>
+              <li data-status="pending">
+                <span>
+                  {fillTemplate(d.pendingRequest, { number: String(pendingChange.requestNo) })}
+                </span>
+                <small>
+                  {d.pendingStatus} ·{' '}
+                  {fillTemplate(d.pendingUpdated, { date: formatDate(pendingChange.updatedAt) })}
+                </small>
+              </li>
+              {pendingChange.fields.length > 0 ? (
+                <li>
+                  <span>{d.pendingFields}</span>
                   <small>
-                    {changeStatusLabel[request.status]} · {formatDate(request.createdAt)}
+                    {pendingChange.fields.map((field) => trackFieldLabels[field]).join(', ')}
                   </small>
                 </li>
-              ))}
+              ) : null}
+              {pendingChange.documents.length > 0 ? (
+                <li>
+                  <span>{d.pendingDocuments}</span>
+                  <small>{pendingChange.documents.map(documentLabel).join(', ')}</small>
+                </li>
+              ) : null}
             </ul>
           </div>
         ) : null}

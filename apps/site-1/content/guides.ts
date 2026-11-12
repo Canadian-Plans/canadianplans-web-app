@@ -480,7 +480,7 @@ export const creditCheckGuide: GuideArticle = {
       kind: 'section',
       id: 'later',
       title: 'Switching to a regular plan once you have Canadian ID',
-      text: 'After a few months you may want a plan with more data, Mexico coverage or a bigger hotspot. The bring-your-own-phone mobile plans do include a credit check and a government ID upload, and your advisor can move your number over so you keep it. Until then, the eSIM plan you arrived with is month to month and can be changed after the first month.',
+      text: 'After a few months you may want a plan with more data, Mexico coverage or a bigger hotspot. The bring-your-own-phone mobile plans do include a credit check with a government ID, and your advisor can move your number over so you keep it. Until then, the eSIM plan you arrived with is month to month and can be changed after the first month.',
     },
     {
       kind: 'tip',

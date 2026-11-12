@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { pageMetadata } from './page-metadata';
+import { documentTitle, pageMetadata } from './page-metadata';
 describe('page metadata', () => {
   it('keeps drafts unindexable and gives each page its own sharing URL and copy', () => {
     vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://example.test');
@@ -33,5 +33,20 @@ describe('page metadata', () => {
       type: 'article',
       authors: ['Editor'],
     });
+  });
+  it('brands short titles that do not name the site and leaves the rest as written', () => {
+    expect(documentTitle('Privacy Policy')).toBe('Privacy Policy | Canadian Plans');
+    expect(documentTitle('Track your order | Canadian Plans')).toBe(
+      'Track your order | Canadian Plans',
+    );
+    expect(documentTitle('Accessibility at Canadian Plans')).toBe(
+      'Accessibility at Canadian Plans',
+    );
+    const headline = 'Rogers vs Fido vs Chatr for newcomers: which plan should you pick? (2026)';
+    expect(documentTitle(headline)).toBe(headline);
+    const metadata = pageMetadata('/terms', { title: 'Terms of Service' });
+    expect(metadata.title).toBe('Terms of Service | Canadian Plans');
+    // Sharing cards already show the site name beside the title.
+    expect(metadata.openGraph).toMatchObject({ title: 'Terms of Service' });
   });
 });

@@ -3,23 +3,37 @@
 import { randomUUID } from 'node:crypto';
 import {
   BackendError,
-  type ProvinceCode,
   websiteBotTokenSchema,
   type WebsiteBotProof,
-  type WebsiteOffer,
-} from '@canadian-plans/contracts';
+} from '@canadian-plans/crm-contracts';
+import type { ProvinceCode } from '@canadian-plans/contracts';
 import { z } from 'zod';
 
 import { getBackendClient } from '@/lib/backendClient';
+import {
+  isDraftCategory,
+  leadTypeByCategory,
+  offerFromPlan,
+  offerSoldIn,
+  type OrderCategory,
+  type WebsiteOffer,
+} from '@/lib/offers';
 import { siteConfig } from '@/site.config';
 import { buildOrderForm, parseOrderDetails, type ParsedOrder } from './details';
-import { clearOrderDraft, readOrderDraft, writeOrderDraft } from './draft';
+import {
+  clearOrderDraft,
+  hasSavedLead,
+  readOrderDraft,
+  writeOrderDraft,
+  type OrderDraft,
+} from './draft';
 import { verificationContent } from '@content/verification';
 import type {
   ActionResult,
   CallbackInput,
   DocumentFinalizeResult,
   DocumentIntentResult,
+  PriceSummary,
   QuoteResult,
   SaveDetailsInput,
   SaveDocumentsInput,
@@ -28,10 +42,15 @@ import type {
 } from './types';
 
 /**
- * Server actions for the order form. Every backend call happens here, on the
- * server, with the site's service credential — the browser never holds it and
- * never sees a price it could tamper with. The scoped draft grant and the
- * submission idempotency key live in an httpOnly cookie (see `draft.ts`).
+ * Server actions for the order form. Every call to the CRM happens here, on the
+ * server, with the site's key: the browser never holds it and never sends a
+ * price. The CRM looks the plan's price up itself and freezes it on the order
+ * when the order is submitted.
+ *
+ * A SIM order (`sim_order`) is saved as a draft and resumed; internet and
+ * mobile orders (`internet`, `mobility`) are sent once, on submit. The draft
+ * grant and the submission's idempotency key live in an httpOnly cookie (see
+ * `draft.ts`).
  */
 
 function validProof(input: WebsiteBotProof): boolean {
@@ -40,8 +59,6 @@ function validProof(input: WebsiteBotProof): boolean {
 function verificationFailure(): Extract<ActionResult<never>, { ok: false }> {
   return { ok: false, code: 'verification_failed', message: verificationContent.failed };
 }
-
-const documentKeysSchema = z.array(z.string().regex(/^[a-z0-9_]{1,64}$/)).max(32);
 
 /**
  * Validates what the browser sent, on the server, against the category's rules.
@@ -63,30 +80,33 @@ function checkDetails(
   };
 }
 
-/** One API payload shape, so a later PATCH replaces (never drops) earlier steps. */
-function formFor(
-  order: ParsedOrder,
-  documentKeys: readonly string[],
-  acknowledged: boolean,
-  extra: Record<string, unknown> = {},
-) {
-  return buildOrderForm(order, documentKeys, acknowledged, {
-    creditCheckConsentVersion: siteConfig.legal.creditCheckConsentVersion,
-    extra,
-  });
-}
-
 /**
- * The offer the customer picked, read from the backend (the browser is not
- * trusted on what a product is). A provincial plan is only returned for a
- * province it is sold in.
+ * The plan the customer picked, read from the CRM (the browser is not trusted
+ * on what a plan is). A provincial plan is only returned for a province it is
+ * sold in.
  */
 async function findOffer(
   productId: string,
+  category: OrderCategory,
   province: ProvinceCode | undefined,
 ): Promise<WebsiteOffer | undefined> {
-  const { offers } = await getBackendClient().offers.list(province ? { province } : undefined);
-  return offers.find((offer) => offer.productId === productId);
+  const { plans } = await getBackendClient().plans.list({ leadType: leadTypeByCategory[category] });
+  const plan = plans.find((candidate) => candidate.id === productId);
+  if (!plan) return undefined;
+  const offer = offerFromPlan(plan);
+  return offerSoldIn(offer, province) ? offer : undefined;
+}
+
+/** The consent and terms versions the customer accepted, as one recorded value. */
+function acceptedVersions(category: OrderCategory): string {
+  const versions = [siteConfig.legal.consentVersion, siteConfig.legal.termsVersion];
+  if (category === 'mobile') versions.push(siteConfig.legal.creditCheckConsentVersion);
+  // At most 64 characters in the CRM; a longer value is refused there, never cut here.
+  return versions.join(';');
+}
+
+function newIdempotencyKey(): string {
+  return `order-${randomUUID()}`;
 }
 
 function notSaved(): ActionResult<never> {
@@ -107,7 +127,7 @@ function draftExpired(): ActionResult<never> {
 
 /**
  * The previous draft can no longer be edited: its grant lapsed, it was cleaned
- * up, or it was already turned into an order. None of these is a save failure —
+ * up, or it was already turned into an order. None of these is a save failure;
  * the customer simply needs a new draft (see `saveDetails`).
  */
 function isFinishedDraft(error: unknown): boolean {
@@ -119,14 +139,6 @@ function isFinishedDraft(error: unknown): boolean {
   );
 }
 
-function regionNotServed(): ActionResult<never> {
-  return {
-    ok: false,
-    code: 'region_not_served',
-    message: "That plan isn't sold in the province you chose. Choose another plan or province.",
-  };
-}
-
 function alreadyOrdered(): ActionResult<never> {
   return {
     ok: false,
@@ -135,11 +147,15 @@ function alreadyOrdered(): ActionResult<never> {
   };
 }
 
+function offerUnavailable(): ActionResult<never> {
+  return { ok: false, code: 'offer_unavailable', message: 'That plan is no longer available.' };
+}
+
 function failureFrom(error: unknown): ActionResult<never> {
   if (error instanceof BackendError) {
-    // The same key arrived with a different payload: an earlier submit whose
-    // response was lost already created the order (REQ 18). Retrying with this
-    // key can only conflict again, so no "Try again" — point at the order.
+    // The same key arrived with a different body: an earlier submit whose
+    // response was lost already created the order. Retrying with this key can
+    // only conflict again, so no "Try again": point at the order.
     if (error.code === 'idempotency_conflict') {
       return {
         ok: false,
@@ -150,58 +166,11 @@ function failureFrom(error: unknown): ActionResult<never> {
     }
     if (error.code === 'draft_already_submitted') return alreadyOrdered();
     if (error.code === 'draft_expired' || error.code === 'draft_not_found') return draftExpired();
-    if (
-      error.code === 'quote_expired' ||
-      error.code === 'quote_withdrawn' ||
-      error.code === 'quote_consumed'
-    ) {
-      return {
-        ok: false,
-        code: 'quote_restart',
-        message: 'That price quotation has expired. Please review the current price again.',
-      };
-    }
-    if (error.code === 'terms_version_unsupported') {
-      return {
-        ok: false,
-        code: 'terms_changed',
-        message: 'The terms changed while you were ordering. Please review and accept them again.',
-      };
-    }
-    if (error.code === 'offer_unavailable') {
-      return {
-        ok: false,
-        code: 'offer_unavailable',
-        message: 'That plan is no longer available.',
-      };
-    }
-    if (error.code === 'region_not_served') return regionNotServed();
-    if (error.code === 'priced_checkout_disabled') {
-      return { ok: false, code: 'callback', message: 'Online pricing is unavailable right now.' };
-    }
+    if (error.code === 'plan_not_available') return offerUnavailable();
+    if (error.code === 'caller_forbidden') return verificationFailure();
   }
   // A transport failure, a 5xx or an unhandled code must never look like success.
   return notSaved();
-}
-
-function quoteFailureFrom(error: unknown): ActionResult<never> {
-  if (error instanceof BackendError) {
-    if (error.code === 'draft_already_submitted') return alreadyOrdered();
-    if (error.code === 'draft_expired' || error.code === 'draft_not_found') return draftExpired();
-    if (error.code === 'region_not_served') return regionNotServed();
-    if (error.code === 'offer_unavailable') {
-      return {
-        ok: false,
-        code: 'offer_unavailable',
-        message: 'That plan is no longer available. Choose another plan or request a callback.',
-      };
-    }
-  }
-  return {
-    ok: false,
-    code: 'callback',
-    message: "We couldn't verify the current price for this plan.",
-  };
 }
 
 /** The plan is not on offer for this customer: not sold in their province, or gone. */
@@ -213,62 +182,73 @@ function planNotAvailable(order: ParsedOrder): ActionResult<never> {
       message: "That plan isn't sold in the province you chose. Choose another plan or province.",
     };
   }
-  return { ok: false, code: 'offer_unavailable', message: 'That plan is no longer available.' };
+  return offerUnavailable();
+}
+
+function formFor(order: ParsedOrder, offer: WebsiteOffer, consentedAt: string) {
+  return buildOrderForm(
+    order,
+    { productKey: offer.commercial.productKey, offerName: offer.commercial.offerName },
+    { consentedAt },
+  );
 }
 
 /**
- * End of step 2: create the draft lead (or update it when resuming), then issue
- * and persist the one idempotency key this draft will ever use.
+ * End of the details step. A SIM order's draft is created in the CRM (or
+ * updated when resuming); an internet or mobile order is only checked here,
+ * because the CRM takes it whole on submit. Either way the plan is read from
+ * the CRM, and a new idempotency key is issued for the submission that follows.
  */
-export async function saveDetails(
-  input: SaveDetailsInput,
-): Promise<ActionResult<{ leadId: string }>> {
+export async function saveDetails(input: SaveDetailsInput): Promise<ActionResult<{ saved: true }>> {
   const checked = checkDetails(input.details);
   if (!checked.ok) return checked.failure;
   const { order } = checked;
-  const documentKeys = documentKeysSchema.safeParse(input.documentKeys);
   const productId = z.uuid().safeParse(input.productId);
-  if (!documentKeys.success || !productId.success) {
+  if (!productId.success) {
     return { ok: false, code: 'validation_error', message: 'The selected plan is invalid.' };
   }
-  // Only an internet plan is priced by province; the quote needs it again later.
-  const province = order.category === 'internet' ? order.province : undefined;
+  // The province the plan is sold in: chosen for internet, from the postal code for mobile.
+  const province = order.province;
 
   if (!validProof(input)) return verificationFailure();
   const existing = await readOrderDraft();
-  const contact = order.contact;
-  const form = formFor(order, documentKeys.data, false);
   const client = getBackendClient();
 
   try {
-    // The browser is not trusted on what the product is or where it is sold: the
-    // plan is read from the backend, and the form must match its category.
-    const offer = await findOffer(productId.data, order.province);
+    const offer = await findOffer(productId.data, order.category, order.province);
     if (!offer) return planNotAvailable(order);
-    if (offer.commercial.productType !== order.category) {
-      return {
-        ok: false,
-        code: 'validation_error',
-        message: 'Those details do not match the plan you selected. Please start again.',
-      };
+    const base: OrderDraft = {
+      idempotencyKey: newIdempotencyKey(),
+      productId: productId.data,
+      province,
+    };
+    if (!isDraftCategory(order.category)) {
+      await writeOrderDraft(base);
+      return { ok: true, data: { saved: true } };
     }
 
-    if (existing) {
+    const contact = order.contact;
+    const form = formFor(order, offer, new Date().toISOString());
+    const planOrder = { planId: productId.data };
+    if (hasSavedLead(existing)) {
       try {
-        const updated = await client.leads.update(
+        await client.leads.update(
           existing.leadId,
-          { leadType: order.category, contact, form, productId: productId.data },
+          { contact, form, order: planOrder },
           { draftGrant: existing.draftGrant, turnstileToken: input.turnstileToken },
         );
-        // Same draft, same grant, same submission key — only the plan may change.
-        await writeOrderDraft({ ...existing, productId: productId.data, province });
-        return { ok: true, data: { leadId: updated.lead.id } };
+        await writeOrderDraft({
+          ...base,
+          leadId: existing.leadId,
+          draftGrant: existing.draftGrant,
+        });
+        return { ok: true, data: { saved: true } };
       } catch (error) {
-        // The cookie still points at a draft that can no longer be edited —
-        // most often because the customer already ordered with it and has come
-        // back for a second plan. Fall through and start a brand-new draft with
-        // its own idempotency key rather than dead-ending them on an httpOnly
-        // cookie they cannot clear. Anything else is a real failure.
+        // The cookie still points at a draft that can no longer be edited, most
+        // often because the customer already ordered with it and has come back
+        // for a second plan. Start a brand-new draft rather than dead-ending
+        // them on an httpOnly cookie they cannot clear. Anything else is a real
+        // failure.
         if (!isFinishedDraft(error)) throw error;
         await clearOrderDraft();
         return { ok: false, code: 'retry_fresh_draft', message: verificationContent.retryDraft };
@@ -276,54 +256,41 @@ export async function saveDetails(
     }
     const created = await client.leads.create(
       {
-        leadType: order.category,
+        leadType: leadTypeByCategory[order.category],
         contact,
         form,
-        productId: productId.data,
+        order: planOrder,
         attribution: input.attribution,
         // The server's own disclosure version: never trusted from the browser.
         consentVersion: siteConfig.legal.consentVersion,
       },
       { turnstileToken: input.turnstileToken },
     );
+    if (!created.draftGrant) return notSaved();
     await writeOrderDraft({
+      ...base,
       leadId: created.lead.id,
       draftGrant: created.draftGrant.token,
-      // Generated exactly once per draft and reused by every later attempt.
-      idempotencyKey: `order-${randomUUID()}`,
-      productId: productId.data,
-      province,
     });
-    return { ok: true, data: { leadId: created.lead.id } };
+    return { ok: true, data: { saved: true } };
   } catch (error) {
     return failureFrom(error);
   }
 }
 
+/**
+ * End of the documents step. The files themselves are attached by
+ * `createDocumentIntent` and `finalizeDocument`; this only confirms the order
+ * in progress is still there to continue.
+ */
 export async function saveDocuments(
   input: SaveDocumentsInput,
-): Promise<ActionResult<{ leadId: string }>> {
+): Promise<ActionResult<{ saved: true }>> {
   const checked = checkDetails(input.details);
   if (!checked.ok) return checked.failure;
-  if (!validProof(input)) return verificationFailure();
   const draft = await readOrderDraft();
   if (!draft) return draftExpired();
-
-  try {
-    const updated = await getBackendClient().leads.update(
-      draft.leadId,
-      {
-        leadType: checked.order.category,
-        contact: checked.order.contact,
-        form: formFor(checked.order, input.documentKeys, input.acknowledged),
-        productId: draft.productId,
-      },
-      { draftGrant: draft.draftGrant, turnstileToken: input.turnstileToken },
-    );
-    return { ok: true, data: { leadId: updated.lead.id } };
-  } catch (error) {
-    return failureFrom(error);
-  }
+  return { ok: true, data: { saved: true } };
 }
 
 const documentTypeSchema = z.string().regex(/^[a-z0-9_]{1,64}$/);
@@ -350,7 +317,7 @@ function documentErrorMessage(error: unknown): string {
 }
 
 /**
- * T17 step 3: authorise a direct-to-R2 upload for one checklist document. The
+ * Authorises a direct upload for one checklist document of a SIM order. The
  * browser PUTs the file to the returned signed URL, then calls `finalizeDocument`.
  * The service credential and draft grant stay on the server (in the httpOnly cookie).
  */
@@ -370,7 +337,9 @@ export async function createDocumentIntent(input: {
   }
   if (!validProof(input)) return verificationFailure();
   const draft = await readOrderDraft();
-  if (!draft) return { ok: false, message: 'Your saved details have expired. Please start again.' };
+  if (!hasSavedLead(draft)) {
+    return { ok: false, message: 'Your saved details have expired. Please start again.' };
+  }
   try {
     const intent = await getBackendClient().uploads.createIntent(
       {
@@ -395,7 +364,7 @@ export async function createDocumentIntent(input: {
   }
 }
 
-/** T17 step 3: finalize the uploaded object; the backend verifies and attaches it. */
+/** Finalizes the uploaded object; the CRM verifies and attaches it. */
 export async function finalizeDocument(input: {
   uploadId: string;
   checksumSha256: string;
@@ -408,7 +377,9 @@ export async function finalizeDocument(input: {
   }
   if (!validProof(input)) return verificationFailure();
   const draft = await readOrderDraft();
-  if (!draft) return { ok: false, message: 'Your saved details have expired. Please start again.' };
+  if (!hasSavedLead(draft)) {
+    return { ok: false, message: 'Your saved details have expired. Please start again.' };
+  }
   try {
     const finalized = await getBackendClient().uploads.finalize(
       uploadId.data,
@@ -421,25 +392,64 @@ export async function finalizeDocument(input: {
   }
 }
 
-/** Step 4 (first half): a server-authoritative quote for the saved draft. */
-export async function requestQuote(
-  input: WebsiteBotProof = {},
-): Promise<ActionResult<QuoteResult>> {
-  if (!validProof(input)) return verificationFailure();
+const BILLING_PERIOD_WORDS: Record<
+  NonNullable<WebsiteOffer['commercial']['billingPeriod']>,
+  string
+> = {
+  month: 'per month',
+  '30_days': 'per 30 days',
+  '90_days': 'per 90 days',
+};
+
+function priceSummary(offer: WebsiteOffer): PriceSummary {
+  const { commercial } = offer;
+  const period = commercial.billingPeriod ? BILLING_PERIOD_WORDS[commercial.billingPeriod] : '';
+  return {
+    currency: commercial.currency,
+    lines: [
+      {
+        label: period ? `${commercial.offerName}, ${period}` : commercial.offerName,
+        amountMinor: commercial.recurringChargeAmountMinor,
+      },
+    ],
+    totalMinor: commercial.recurringChargeAmountMinor,
+    termsVersion: siteConfig.legal.termsVersion,
+  };
+}
+
+/**
+ * The review step's price: the chosen plan's current price, read from the CRM.
+ * Shown only; the CRM reads it again and freezes it when the order is submitted.
+ */
+export async function requestQuote(input: {
+  category: OrderCategory;
+}): Promise<ActionResult<QuoteResult>> {
+  const category = z.enum(['sim', 'mobile', 'internet']).safeParse(input.category);
   const draft = await readOrderDraft();
-  if (!draft) return draftExpired();
+  if (!draft || !category.success) return draftExpired();
   try {
-    const result = await getBackendClient().quotes.create(
-      { leadId: draft.leadId, productId: draft.productId, province: draft.province },
-      { draftGrant: draft.draftGrant, turnstileToken: input.turnstileToken },
-    );
-    return { ok: true, data: { quote: result.quote } };
-  } catch (error) {
-    return quoteFailureFrom(error);
+    const offer = await findOffer(draft.productId, category.data, draft.province);
+    if (!offer) {
+      return {
+        ok: false,
+        code: 'offer_unavailable',
+        message: 'That plan is no longer available. Choose another plan or request a callback.',
+      };
+    }
+    return { ok: true, data: { quote: priceSummary(offer) } };
+  } catch {
+    return {
+      ok: false,
+      code: 'callback',
+      message: "We couldn't load the current price for this plan.",
+    };
   }
 }
 
-/** Step 4 alternative: keep the lead as an unpriced callback instead of ordering. */
+/**
+ * The review step's alternative: ask to be called instead of ordering. Saved in
+ * the CRM as a contact message naming the plan the customer was looking at.
+ */
 export async function requestCallback(
   input: CallbackInput,
 ): Promise<ActionResult<{ requested: true }>> {
@@ -448,16 +458,25 @@ export async function requestCallback(
   if (!draft) return draftExpired();
   const checked = checkDetails(input.details);
   if (!checked.ok) return checked.failure;
+  const { order } = checked;
   try {
-    await getBackendClient().leads.update(
-      draft.leadId,
+    await getBackendClient().leads.create(
       {
-        leadType: checked.order.category,
-        contact: checked.order.contact,
-        form: formFor(checked.order, input.documentKeys, false, { callbackRequested: true }),
-        productId: draft.productId,
+        leadType: 'contact_message',
+        contact: order.contact,
+        form: {
+          schemaVersion: 1,
+          payload: {
+            kind: 'callback_request',
+            category: order.category,
+            planId: draft.productId,
+            ...(draft.province ? { province: draft.province } : {}),
+          },
+        },
+        consentVersion: siteConfig.legal.consentVersion,
+        submit: true,
       },
-      { draftGrant: draft.draftGrant, turnstileToken: input.turnstileToken },
+      { turnstileToken: input.turnstileToken },
     );
     return { ok: true, data: { requested: true } };
   } catch (error) {
@@ -466,54 +485,63 @@ export async function requestCallback(
 }
 
 /**
- * Step 4 (second half). A transport failure asks the browser for a fresh proof
- * before retrying with the SAME cookie/idempotency key (REQ 18). A server HTTP
+ * The last step. A transport failure asks the browser for a fresh proof before
+ * retrying with the SAME cookie, idempotency key and body. A server HTTP
  * response, including 503, is returned for an explicit customer retry.
  */
 export async function submitOrder(
   input: SubmitOrderInput,
 ): Promise<ActionResult<SubmitOrderResult>> {
   if (!validProof(input)) return verificationFailure();
-  const draft = await readOrderDraft();
-  if (!draft) return draftExpired();
+  const stored = await readOrderDraft();
+  if (!stored) return draftExpired();
   const checked = checkDetails(input.details);
   if (!checked.ok) return checked.failure;
-  const quoteId = z.uuid().safeParse(input.quoteId);
-  const termsVersion = z.string().min(1).max(64).safeParse(input.termsVersion);
-  if (!quoteId.success || !termsVersion.success) {
+  const { order } = checked;
+  if (input.termsVersion !== siteConfig.legal.termsVersion) {
     return {
       ok: false,
-      code: 'quote_restart',
-      message: 'That price quotation is no longer valid. Please review the price again.',
+      code: 'validation_error',
+      message: 'The terms changed while you were ordering. Please reload the page and review them.',
     };
   }
-
-  const body = {
-    quoteId: quoteId.data,
-    termsVersion: termsVersion.data,
-    form: formFor(checked.order, input.documentKeys, true),
-    consent: {
-      termsVersion: termsVersion.data,
-      marketingOptIn: input.marketingOptIn,
-    },
-  };
-  const options = {
-    draftGrant: draft.draftGrant,
-    idempotencyKey: draft.idempotencyKey,
-    turnstileToken: input.turnstileToken,
-  };
+  if (isDraftCategory(order.category) !== hasSavedLead(stored)) return draftExpired();
+  // Kept from the first attempt, so a retry sends the same body under the same key.
+  const draft: OrderDraft = stored.consentedAt
+    ? stored
+    : { ...stored, consentedAt: new Date().toISOString() };
+  if (draft !== stored) await writeOrderDraft(draft);
   const client = getBackendClient();
 
   try {
-    const result = await client.orders.submit(body, options);
+    const offer = await findOffer(draft.productId, order.category, draft.province);
+    if (!offer) return planNotAvailable(order);
+    const form = formFor(order, offer, draft.consentedAt ?? new Date().toISOString());
+    const body = {
+      contact: order.contact,
+      form,
+      order: { planId: draft.productId },
+      consentVersion: acceptedVersions(order.category),
+      submit: true,
+    };
+    const result = hasSavedLead(draft)
+      ? await client.leads.update(draft.leadId, body, {
+          draftGrant: draft.draftGrant,
+          idempotencyKey: draft.idempotencyKey,
+          turnstileToken: input.turnstileToken,
+        })
+      : await client.leads.create(
+          { ...body, leadType: leadTypeByCategory[order.category], attribution: input.attribution },
+          { idempotencyKey: draft.idempotencyKey, turnstileToken: input.turnstileToken },
+        );
     return {
       ok: true,
-      data: { reference: result.order.reference, orderId: result.order.id },
+      data: { reference: result.lead.externalRef ?? result.lead.id, orderId: result.lead.id },
     };
   } catch (error) {
     if (!(error instanceof BackendError))
       return { ok: false, code: 'transport_retry', message: verificationContent.retryOrder };
-    // The order behind this draft already exists; the next visit to /order
+    // The order behind this cookie already exists; the next visit to /order
     // must start a fresh draft and key instead of conflicting forever.
     if (error.code === 'idempotency_conflict') await clearOrderDraft();
     return failureFrom(error);

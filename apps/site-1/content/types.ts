@@ -1,4 +1,4 @@
-import type { WebsiteOffer } from '@canadian-plans/contracts';
+import type { WebsiteOffer } from '@/lib/offers';
 
 export interface SiteContent {
   readonly name: string;

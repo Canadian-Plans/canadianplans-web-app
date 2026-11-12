@@ -14,10 +14,14 @@ export const siteConfig = {
   legal: {
     /**
      * Disclosure/consent version recorded when a draft lead is saved (REQ 17).
-     * Identifies the current published privacy policy. The accepted terms
-     * version for an order always comes from the server-issued quote.
+     * Identifies the current published privacy policy.
      */
     consentVersion: 'privacy-2026-10-v2',
+    /**
+     * The terms a customer accepts with an order: version 2 of
+     * `content/legal-published.ts` (effective 21 October 2026). Change both together.
+     */
+    termsVersion: 'terms-2026-10-v2',
     /**
      * Version of the credit-check consent a mobile customer accepts, recorded with
      * the order (invariant 11). TEST placeholder until the owner approves the text.

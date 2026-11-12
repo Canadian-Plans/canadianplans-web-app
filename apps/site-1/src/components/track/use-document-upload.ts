@@ -1,11 +1,13 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { MAX_DOCUMENT_BYTES, type DocumentMediaType } from '@canadian-plans/contracts';
+import { MAX_DOCUMENT_BYTES, type DocumentMediaType } from '@canadian-plans/crm-contracts';
 import { trackCopy } from '@content/track';
 import type { useHumanChallenge } from '@/components/shared/human-challenge';
+import type { UploadDocumentType } from '@/lib/tracking-view';
 import { createTrackingUpload, finalizeTrackingUpload } from '@/app/(track-order)/track/actions';
 
+/** The types this page offers; the backend verifies the file's real signature. */
 const ALLOWED: Readonly<Record<string, DocumentMediaType>> = {
   'application/pdf': 'application/pdf',
   'image/jpeg': 'image/jpeg',
@@ -24,9 +26,10 @@ export type UploadState =
   | { status: 'error'; documentType: string; message: string; code?: string };
 
 /**
- * One document at a time for an existing order: the browser hashes the file,
+ * One passport or visa at a time for an existing order: the browser hashes the file,
  * asks the server for a signed PUT (credential and grant stay server-side), PUTs
- * straight to storage, then finalizes so the backend copy-verifies the bytes.
+ * straight to storage, then finalizes so the backend copy-verifies the bytes and adds the document to
+ * the order's pending change request.
  */
 export function useDocumentUpload(
   reference: string,
@@ -37,7 +40,7 @@ export function useDocumentUpload(
   const busy = useRef(false);
 
   const upload = useCallback(
-    async (documentType: string, file: File | undefined): Promise<void> => {
+    async (documentType: UploadDocumentType, file: File | undefined): Promise<void> => {
       if (!file || busy.current) return;
       const contentType = ALLOWED[file.type];
       if (!contentType) {
@@ -56,7 +59,6 @@ export function useDocumentUpload(
           createTrackingUpload({
             reference,
             documentType,
-            fileName: file.name,
             contentType,
             sizeBytes: file.size,
             turnstileToken,

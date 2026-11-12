@@ -1065,7 +1065,7 @@ export const documentsForPhonePlanGuide: GuideArticle = {
         {
           label: 'Bring-your-own-phone plan through Canadian Plans, once in Canada',
           values: [
-            'Government ID uploaded with the order',
+            'Government ID, which your advisor asks for after you order',
             'The provider’s identity and credit check',
           ],
         },

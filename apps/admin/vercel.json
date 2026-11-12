@@ -1,6 +1,0 @@
-{
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nextjs",
-  "regions": ["sfo1"],
-  "ignoreCommand": "node ../../scripts/affected-builds.mjs --vercel admin"
-}

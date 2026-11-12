@@ -9,24 +9,41 @@ import {
   DialogTitle,
   FormField,
   Input,
-  Textarea,
 } from '@canadian-plans/ui';
 import { CpAsset, CpButton } from '@canadian-plans/ui/canadian-plans';
-import type { AmendableFieldKey, TrackingOrderDetail } from '@canadian-plans/contracts';
-import { trackChangeFields, trackCopy as copy, trackFieldLabels } from '@content/track';
+import type { TrackingOrder } from '@canadian-plans/crm-contracts';
+import { trackCopy as copy, trackFieldLabels } from '@content/track';
 import { trackingAssets as assets } from '@content/track-order';
-import { currentValue, patchFromValues, type FieldValueError } from '@/lib/tracking-view';
+import {
+  TRACK_EDITABLE_FIELDS,
+  changeFormValues,
+  changeFromValues,
+  currentValue,
+  formatDate,
+  type TrackChangeValues,
+  type TrackEditableField,
+} from '@/lib/tracking-view';
 import { sendTrackingChange } from '@/app/(track-order)/track/actions';
 
-const valueErrors: Readonly<Record<FieldValueError, string>> = {
-  value: copy.change.valueError,
-  email: copy.change.emailError,
-  countryCode: copy.change.countryCodeError,
+const fieldId = (field: TrackEditableField) => `track-change-${field}`;
+
+const inputProps: Readonly<
+  Record<
+    TrackEditableField,
+    { type: 'text' | 'tel' | 'date'; autoComplete: string; maxLength?: number }
+  >
+> = {
+  fullName: { type: 'text', autoComplete: 'name', maxLength: 160 },
+  phone: { type: 'tel', autoComplete: 'tel', maxLength: 40 },
+  arrivalDate: { type: 'date', autoComplete: 'off' },
+  canadaAddress: { type: 'text', autoComplete: 'off', maxLength: 300 },
 };
 
 /**
- * A customer change request for one of their own details. Nothing is edited
- * directly: the request waits in staff's Change requests panel for approval.
+ * A customer change request for their own details: full name, phone, arrival
+ * date and destination. Nothing is edited directly: the request waits for
+ * staff approval and replaces any request already pending on the order, so
+ * the form starts from the pending values where there are any.
  */
 export function TrackChangeDialog({
   order,
@@ -35,40 +52,43 @@ export function TrackChangeDialog({
   onSent,
   onSessionExpired,
 }: {
-  order: TrackingOrderDetail;
-  initial: AmendableFieldKey;
+  order: TrackingOrder;
+  initial: TrackEditableField;
   onClose: () => void;
   onSent: () => void;
   onSessionExpired: () => void;
 }) {
-  const [field, setField] = useState<AmendableFieldKey>(initial);
-  const [value, setValue] = useState('');
-  const [note, setNote] = useState('');
-  const [error, setError] = useState('');
+  const [values, setValues] = useState<TrackChangeValues>(() => changeFormValues(order));
+  const [errors, setErrors] = useState<Partial<Record<TrackEditableField, string>>>({});
   const [failure, setFailure] = useState('');
   const [pending, setPending] = useState(false);
   const [complete, setComplete] = useState(false);
 
+  const focusField = (field: TrackEditableField) =>
+    requestAnimationFrame(() => document.getElementById(fieldId(field))?.focus());
+
   async function submit() {
     if (pending) return;
     setFailure('');
-    const built = patchFromValues({ [field]: value });
+    const built = changeFromValues(order, values);
     if (!built.ok) {
-      setError(valueErrors[built.errors[field] ?? 'value']);
-      requestAnimationFrame(() => document.getElementById('track-change-value')?.focus());
-      return;
-    }
-    if (note.length > 2000) {
-      setFailure(copy.change.noteError);
+      if (built.unchanged) {
+        setErrors({});
+        setFailure(copy.change.unchanged);
+        focusField(initial);
+        return;
+      }
+      const next: Partial<Record<TrackEditableField, string>> = {};
+      for (const field of TRACK_EDITABLE_FIELDS)
+        if (built.errors[field]) next[field] = copy.change.fieldErrors[field];
+      setErrors(next);
+      const first = TRACK_EDITABLE_FIELDS.find((field) => next[field]);
+      if (first) focusField(first);
       return;
     }
     setPending(true);
     try {
-      const result = await sendTrackingChange({
-        reference: order.reference,
-        patch: built.patch,
-        ...(note.trim() ? { note: note.trim() } : {}),
-      });
+      const result = await sendTrackingChange({ reference: order.reference, fields: built.fields });
       if (result.ok) {
         setComplete(true);
         onSent();
@@ -85,7 +105,12 @@ export function TrackChangeDialog({
     }
   }
 
-  const current = currentValue(order, field);
+  function currentText(field: TrackEditableField): string {
+    const value = currentValue(order, field);
+    if (!value) return copy.detail.notGiven;
+    return field === 'arrivalDate' ? formatDate(value) : value;
+  }
+
   return (
     <Dialog
       open
@@ -149,82 +174,26 @@ export function TrackChangeDialog({
               <p className="cp-tracking-change-legend" aria-hidden="true">
                 {copy.change.legend}
               </p>
-              <div
-                className="cp-tracking-change-options"
-                role="radiogroup"
-                aria-label={copy.change.legend}
-              >
-                {trackChangeFields.map((item) => (
-                  <label key={item} data-selected={field === item}>
-                    <input
-                      type="radio"
-                      className="sr-only"
-                      name="track-change-field"
-                      value={item}
-                      checked={field === item}
-                      onChange={() => {
-                        setField(item);
-                        setValue('');
-                        setError('');
-                      }}
-                    />
-                    <span className="cp-tracking-mobile">
-                      <CpAsset
-                        asset={field === item ? assets.radioMobile : assets.radioEmptyMobile}
-                      />
-                    </span>
-                    <span className="cp-tracking-desktop">
-                      <CpAsset
-                        asset={field === item ? assets.radioDesktop : assets.radioEmptyDesktop}
-                      />
-                    </span>
-                    {trackFieldLabels[item]}
-                  </label>
-                ))}
-              </div>
-              <div className="cp-tracking-change-current">
-                <strong>{copy.change.current}</strong>
-                <span>{current ?? copy.detail.notGiven}</span>
-              </div>
-              <FormField
-                id="track-change-value"
-                label={`${copy.change.newValue}: ${trackFieldLabels[field]}`}
-                error={error}
-              >
-                <Input
-                  value={value}
-                  type={
-                    field === 'contact.email'
-                      ? 'email'
-                      : field === 'form.arrivalDate'
-                        ? 'date'
-                        : 'text'
-                  }
-                  autoComplete={
-                    field === 'contact.email' ? 'email' : field === 'contact.phone' ? 'tel' : 'off'
-                  }
-                  maxLength={field === 'contact.email' ? 254 : 160}
-                  onChange={(event) => {
-                    setValue(event.target.value);
-                    setError('');
-                  }}
-                />
-              </FormField>
-              <FormField
-                id="track-change-note"
-                label={
-                  <>
-                    {copy.change.noteLabel} <span>{copy.change.optional}</span>
-                  </>
-                }
-              >
-                <Textarea
-                  value={note}
-                  placeholder={copy.change.notePlaceholder}
-                  maxLength={2000}
-                  onChange={(event) => setNote(event.target.value)}
-                />
-              </FormField>
+              {TRACK_EDITABLE_FIELDS.map((field) => (
+                <FormField
+                  key={field}
+                  id={fieldId(field)}
+                  label={trackFieldLabels[field]}
+                  hint={`${copy.change.current} ${currentText(field)}`}
+                  error={errors[field]}
+                >
+                  <Input
+                    value={values[field]}
+                    {...inputProps[field]}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      setValues((current) => ({ ...current, [field]: value }));
+                      setErrors((current) => ({ ...current, [field]: undefined }));
+                      setFailure('');
+                    }}
+                  />
+                </FormField>
+              ))}
               <p className="cp-tracking-change-notice">{copy.change.notice}</p>
               {failure ? (
                 <p role="alert" className="cp-tracking-inline-error">

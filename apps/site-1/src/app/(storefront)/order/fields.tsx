@@ -40,7 +40,6 @@ export const FIELD_IDS: Readonly<Record<OrderDetailField, string>> = {
   simType: 'order-sim-type',
   creditCheckConsent: 'order-credit-check-consent',
   terms: 'order-terms',
-  marketing: 'order-marketing',
 };
 
 const f = orderFormContent.fields;
@@ -123,8 +122,8 @@ function AddressFields({ details, errors, onChange }: FieldsProps<AddressValues>
           autoComplete="address-line2"
         />
       </FormField>
-      <div className="flex flex-wrap gap-4">
-        <div className="min-w-[12rem] flex-1">
+      <div className="grid gap-4 sm:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        <div>
           <FormField id={FIELD_IDS.city} label={f.city.label} required error={errors.city}>
             <Input
               value={details.city}
@@ -133,7 +132,7 @@ function AddressFields({ details, errors, onChange }: FieldsProps<AddressValues>
             />
           </FormField>
         </div>
-        <div className="w-40">
+        <div>
           <FormField
             id={FIELD_IDS.postalCode}
             label={f.postalCode.label}
@@ -145,6 +144,9 @@ function AddressFields({ details, errors, onChange }: FieldsProps<AddressValues>
               value={details.postalCode}
               onChange={(event) => onChange({ postalCode: event.target.value })}
               autoComplete="postal-code"
+              autoCapitalize="characters"
+              autoCorrect="off"
+              spellCheck={false}
               maxLength={10}
             />
           </FormField>
@@ -173,8 +175,8 @@ export function ArrivalFields({ details, errors, onChange }: FieldsProps<Arrival
           autoComplete="email"
         />
       </FormField>
-      <div className="flex flex-wrap gap-4">
-        <div className="w-28">
+      <div className="grid gap-4 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+        <div>
           <FormField
             id={FIELD_IDS.countryCode}
             label={f.countryCode.label}
@@ -186,11 +188,14 @@ export function ArrivalFields({ details, errors, onChange }: FieldsProps<Arrival
               value={details.countryCode}
               onChange={(event) => onChange({ countryCode: event.target.value.toUpperCase() })}
               autoComplete="country"
+              autoCapitalize="characters"
+              autoCorrect="off"
+              spellCheck={false}
               maxLength={2}
             />
           </FormField>
         </div>
-        <div className="min-w-[12rem] flex-1">
+        <div>
           <FormField id={FIELD_IDS.phone} label={f.phone.label} required error={errors.phone}>
             <Input
               type="tel"
@@ -353,7 +358,7 @@ function RadioGroup<V extends string>({
             value={option.value}
             checked={value === option.value}
             onChange={() => onSelect(option.value)}
-            className="mt-1"
+            className="mt-0.5 size-5 shrink-0 accent-primary"
           />
           <label htmlFor={`${id}-${option.value}`}>{option.label}</label>
         </div>
@@ -444,7 +449,7 @@ export function MobileFields({ details, errors, onChange }: FieldsProps<MobileDe
             aria-describedby={
               errors.creditCheckConsent ? `${FIELD_IDS.creditCheckConsent}-error` : undefined
             }
-            className="mt-1"
+            className="mt-0.5 size-5 shrink-0 accent-primary"
           />
           <label htmlFor={FIELD_IDS.creditCheckConsent}>{f.creditCheckConsent.label}</label>
         </div>

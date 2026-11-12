@@ -1,111 +1,47 @@
 import { expect, test, type Page } from './fixtures';
+import { CUSTOMER, PDF_FILE, declineCookies, formReady, placeSimOrder, visit } from './journeys';
+import { stub } from './stub';
 
 /**
- * Email-only order tracking, end to end (owner request, 25 Oct 2026).
- *
- * Runs against the real backend app in the e2e harness: the customer places an
- * order, signs in to /track with only their email and an emailed code, sees
- * their orders, uploads a missing document through the real signed-upload +
- * signature-verified finalize pipeline (harness-hosted fake storage), asks for
- * a change, and answers a staff request for details. The staff leg uses the
- * real /api/v1/staff API to prove each item lands in admin's panels.
+ * Email-only order tracking on /track, in a real browser against the built
+ * storefront and the CRM stub: the emailed code, the customer's orders, one
+ * order's details, a change request for the customer's own details and a
+ * passport sent through the signed upload.
  */
 
-const HARNESS_URL = process.env['E2E_HARNESS_URL'] ?? 'http://127.0.0.1:4100';
-const STAFF_BEARER = process.env['E2E_STAFF_BEARER'] ?? 'e2e-staff-session-owner-aal2';
-const WORKSPACE_ID = process.env['E2E_WORKSPACE_ID'] ?? '10000000-0000-4000-8000-000000000e01';
-const EMAIL = 'customer@example.test';
+const EMAIL: string = CUSTOMER.email;
+const TRACKING = '/api/v1/website/tracking';
 
-async function control(path: string): Promise<void> {
-  const response = await fetch(`${HARNESS_URL}${path}`, { method: 'POST' });
-  expect(response.ok).toBe(true);
-}
-
-async function emailedCode(email: string): Promise<Response> {
-  return fetch(`${HARNESS_URL}/__e2e__/tracking-code`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ email }),
-  });
-}
-
-async function readCode(email: string): Promise<string> {
-  const response = await emailedCode(email);
-  expect(response.status).toBe(200);
-  const body: unknown = await response.json();
-  if (!body || typeof body !== 'object' || !('code' in body) || typeof body.code !== 'string')
-    throw new Error('synthetic tracking code missing');
-  return body.code;
-}
-
-async function staff(path: string, init: RequestInit = {}): Promise<unknown> {
-  const response = await fetch(`${HARNESS_URL}/api/v1/staff/workspaces/${WORKSPACE_ID}${path}`, {
-    ...init,
-    headers: {
-      authorization: `Bearer ${STAFF_BEARER}`,
-      'content-type': 'application/json',
-      ...init.headers,
-    },
-  });
-  expect(response.ok, `${init.method ?? 'GET'} ${path} -> ${response.status}`).toBe(true);
-  return response.json();
-}
-
-/** Narrow an unknown JSON value to a record without an unchecked cast. */
-function record(value: unknown): Record<string, unknown> {
-  if (typeof value !== 'object' || value === null || Array.isArray(value))
-    throw new Error('expected an object');
-  return Object.fromEntries(Object.entries(value));
-}
-
-function list(value: unknown): Record<string, unknown>[] {
-  if (!Array.isArray(value)) throw new Error('expected an array');
-  return value.map(record);
-}
-
-async function staffOrderId(reference: string): Promise<string> {
-  const orders = list(record(await staff('/orders?pageSize=50')).orders);
-  const id = orders.find((order) => order['reference'] === reference)?.['id'];
-  if (typeof id !== 'string') throw new Error(`order ${reference} not visible to staff`);
-  return id;
-}
-
-async function staffOrder(orderId: string): Promise<Record<string, unknown>> {
-  return record(record(await staff(`/orders/${orderId}`)).order);
-}
-
-async function placeOrder(page: Page): Promise<string> {
-  await page.goto('/order');
-  const rejectCookies = page.getByRole('button', { name: 'Reject non-essential', exact: true });
-  if (await rejectCookies.isVisible()) await rejectCookies.click();
-  await page.getByRole('link', { name: /Select .*E2E Passport Plan/ }).click();
-  await expect(page.getByRole('heading', { name: 'Your details' })).toBeVisible();
-  await page.getByLabel(/Full name/i).fill('Test Customer');
-  await page.getByLabel(/^Email/i).fill(EMAIL);
-  await page.getByLabel(/^Code/i).fill('BD');
-  await page.getByLabel(/^Phone/i).fill('1712345678');
-  await page.getByLabel(/Country you are in now/i).fill('Bangladesh');
-  await page.getByLabel(/Destination in Canada/i).fill('Toronto');
-  await page.getByLabel(/Arrival date/i).fill('2026-10-01');
-  await page.getByRole('button', { name: 'Continue' }).click();
-  await expect(page.getByRole('heading', { name: 'Documents' })).toBeVisible();
-  await page.getByLabel(/I have read the document checklist/i).check();
-  await page.getByRole('button', { name: 'Continue' }).click();
-  await page.getByLabel(/I accept the terms/i).check();
-  await page.getByRole('button', { name: 'Place order' }).click();
-  await expect(page.getByRole('heading', { name: 'Order received' })).toBeVisible();
-  return (await page.getByTestId('order-reference').innerText()).trim();
-}
-
-async function signIn(page: Page, email = EMAIL): Promise<void> {
-  await page.goto('/track');
+async function requestCode(page: Page, email = EMAIL): Promise<void> {
+  await visit(page, '/track');
   await page.locator('main').getByLabel('Email used on your order').fill(email);
   await page.getByRole('button', { name: 'Email me a code' }).click();
   await expect(page.getByRole('heading', { name: 'Enter your code' })).toBeVisible();
-  await control('/__e2e__/run-outbox');
 }
 
-/** Opens a details card on mobile (collapsed) and clicks its visible change button. */
+async function emailedCode(email = EMAIL): Promise<string> {
+  const code = await stub.trackingCode(email);
+  if (code === undefined) throw new Error('no tracking code was sent');
+  return code;
+}
+
+async function signIn(page: Page): Promise<void> {
+  await requestCode(page);
+  await page.getByLabel('Six-digit code').fill(await emailedCode());
+  await page.getByRole('button', { name: 'Show my orders' }).click();
+  await expect(page.getByRole('heading', { name: 'Your orders' })).toBeVisible();
+  // Setting the grant cookie re-renders the page, which loads the orders once more.
+  await page.waitForLoadState('networkidle');
+}
+
+async function openOrder(page: Page, reference: string): Promise<void> {
+  await page.getByRole('button', { name: `View order ${reference}` }).click();
+  await expect(
+    page.getByRole('heading', { name: `Order ${reference}`, exact: true }),
+  ).toBeVisible();
+}
+
+/** Opens a details card (collapsed on mobile) and clicks its visible change button. */
 async function openChange(page: Page, card: string): Promise<void> {
   const section = page.locator(`[data-card="${card}"]`);
   const toggle = section.locator('.cp-tracking-detail-toggle');
@@ -120,142 +56,228 @@ async function openChange(page: Page, card: string): Promise<void> {
 }
 
 test.beforeEach(async ({ page }) => {
-  await control('/__e2e__/reset');
-  // The harness's fake storage hands out https upload URLs (the site's CSP
-  // allows only https); forward each direct browser PUT to the harness.
-  await page.route('https://storage.e2e.test/**', async (route) => {
-    const cors = {
-      'access-control-allow-origin': '*',
-      'access-control-allow-methods': 'PUT',
-      'access-control-allow-headers': 'content-type',
-    };
-    const request = route.request();
-    if (request.method() === 'OPTIONS') {
-      await route.fulfill({ status: 204, headers: cors });
-      return;
-    }
-    const key = new URL(request.url()).pathname.slice(1);
-    const forwarded = await fetch(`${HARNESS_URL}/__e2e__/r2/${key}`, {
-      method: 'PUT',
-      body: new Uint8Array(request.postDataBuffer() ?? Buffer.alloc(0)),
-    });
-    await route.fulfill({ status: forwarded.ok ? 200 : 502, headers: cors });
-  });
+  await declineCookies(page);
 });
 
-test('a customer tracks every order by email, uploads, asks for a change and answers staff', async ({
+test('code, order list, order details, a change request and a passport upload', async ({
   page,
+  context,
 }) => {
-  const reference = await placeOrder(page);
+  const reference = await placeSimOrder(page);
 
-  // 1. Email only, then the emailed six-digit code.
-  await signIn(page);
-  await page.getByLabel('Six-digit code').fill(await readCode(EMAIL));
+  // 1. The email, then the six-digit code that was "emailed".
+  await requestCode(page);
+  await expect(page.getByText(`If we have orders for ${EMAIL}, we have sent`)).toBeVisible();
+  await page.getByLabel('Six-digit code').fill(await emailedCode());
   await page.getByRole('button', { name: 'Show my orders' }).click();
 
-  // 2. Every order of this email on this website.
+  // 2. The orders placed with that email. The grant stays in an httpOnly cookie.
   await expect(page.getByRole('heading', { name: 'Your orders' })).toBeVisible();
-  await page.getByRole('button', { name: `View order ${reference}` }).click();
+  await page.waitForLoadState('networkidle');
+  await expect(page.getByText(`Every order placed with ${EMAIL} on Canadian Plans.`)).toBeVisible();
+  const grant = (await context.cookies()).find((entry) => entry.name === 'cp_tracking_grant');
+  expect(grant?.httpOnly).toBe(true);
+  expect(await page.evaluate(() => document.cookie)).not.toContain('cp_tracking_grant');
+  expect(await page.content()).not.toContain('cg_e2e_');
+  const card = page.getByRole('button', { name: `View order ${reference}` });
+  await expect(card).toContainText('E2E Passport Plan');
+  await expect(card).toContainText('Received');
+  await expect(card).toContainText('Action needed');
 
-  // 3. The order's details.
-  await expect(
-    page.getByRole('heading', { name: `Order ${reference}`, exact: true }),
-  ).toBeVisible();
+  // 3. One order: its status in the customer's words, its plan and its details.
+  await openOrder(page, reference);
+  await expect(page).toHaveURL(new RegExp(`order=${reference}`));
   await expect(page.getByTestId('tracking-status')).toHaveText(/Received/);
-  await expect(page.getByTestId('tracking-action')).toBeVisible();
+  await expect(page.locator('[data-card="plan"]')).toContainText('E2E Passport Plan');
+  await expect(page.locator('[data-card="plan"]')).toContainText('$45.00 per 30 days');
+  const personal = page.locator('[data-card="personal"]');
+  await expect(personal).toContainText(CUSTOMER.fullName);
+  await expect(personal).toContainText(CUSTOMER.phone);
+  await expect(personal).toContainText(CUSTOMER.destination);
+  await expect(personal).toContainText('15 Jan 2027');
+  await expect(page.getByTestId('tracking-action')).toContainText('We need something from you');
 
-  // 5. Upload a missing document through the signed, signature-verified pipeline.
-  await page
-    .getByTestId('tracking-action')
-    .locator('input[type=file][data-document="passport"]')
-    .setInputFiles({
-      name: 'passport.pdf',
-      mimeType: 'application/pdf',
-      buffer: Buffer.from('%PDF-1.7\nTEST ONLY synthetic passport\n'),
-    });
-  await expect(page.getByTestId('tracking-document-passport')).toContainText('Received', {
-    timeout: 15_000,
-  });
-
-  // 4. Ask for a change to the customer's details.
+  // 4. A change request: only the customer's own four details, never the plan or email.
   await openChange(page, 'personal');
   const dialog = page.getByRole('dialog');
-  await dialog.getByText('Phone number', { exact: true }).click();
-  await dialog.getByLabel(/^New value: Phone number/).fill('+880 1712 000000');
+  await expect(dialog.getByRole('heading', { name: 'Request a change' })).toBeVisible();
+  await expect(dialog.locator('label')).toHaveText([
+    'Full name',
+    'Phone number',
+    'Arrival date',
+    'Destination in Canada',
+  ]);
+  await dialog.getByRole('button', { name: 'Send request →' }).click();
+  await expect(dialog.getByText('Change at least one detail before sending.')).toBeVisible();
+  await dialog.getByLabel('Phone number').fill('123');
+  await dialog.getByRole('button', { name: 'Send request →' }).click();
+  await expect(dialog.getByText('Enter a phone number with at least seven digits.')).toBeVisible();
+  await dialog.getByLabel('Phone number').fill('+880 1712 000000');
+  await dialog.getByLabel('Destination in Canada').fill('Vancouver');
   await dialog.getByRole('button', { name: 'Send request →' }).click();
   await expect(dialog.getByText('Request sent')).toBeVisible();
   await dialog.getByRole('button', { name: 'Done' }).click();
-  await expect(page.locator('.cp-track-changes')).toContainText('Phone number');
-  await expect(page.locator('.cp-track-changes')).toContainText('Waiting for review');
+  const pending = page.getByTestId('tracking-pending-change');
+  await expect(pending).toContainText('Waiting for review');
+  await expect(pending).toContainText('Phone number, Destination in Canada');
+  // The order itself is unchanged until staff approve the request.
+  await expect(personal).toContainText(CUSTOMER.destination);
 
-  // Staff see both: the change request (from the customer) and the document.
-  const orderId = await staffOrderId(reference);
-  const afterChange = await staffOrder(orderId);
-  expect(list(afterChange['changeRequests'])).toEqual([
-    expect.objectContaining({
-      origin: 'customer',
-      status: 'pending',
-      patch: { contact: { phone: '+880 1712 000000' } },
-    }),
-  ]);
-  const files = list(record(await staff(`/orders/${orderId}/files`)).files);
-  expect(files).toEqual(
-    expect.arrayContaining([expect.objectContaining({ documentType: 'passport' })]),
-  );
-
-  // 6. Staff ask for missing details; the customer fills them in.
-  await staff(`/orders/${orderId}/info-requests`, {
-    method: 'POST',
-    body: JSON.stringify({ fields: ['form.arrivalDate'], message: 'Your flight moved?' }),
+  let lead = (await stub.leads())[0];
+  expect(lead?.pendingChange).toMatchObject({
+    fields: { phone: '+880 1712 000000', canadaAddress: 'Vancouver' },
+    documents: [],
   });
+  expect(Object.keys(lead?.pendingChange?.fields ?? {}).sort()).toEqual(['canadaAddress', 'phone']);
+  expect(lead?.contact['phone']).toBe(CUSTOMER.phone);
+
+  // 5. A passport: a wrong type is refused here; a PDF goes through the signed upload.
+  const passportInput = page
+    .getByTestId('tracking-action')
+    .locator('input[type=file][data-document="passport"]');
+  await passportInput.setInputFiles({
+    name: 'notes.txt',
+    mimeType: 'text/plain',
+    buffer: Buffer.from('TEST ONLY'),
+  });
+  await expect(page.getByText('Choose a PDF, JPG or PNG file.').first()).toBeVisible();
+  await passportInput.setInputFiles(PDF_FILE);
+  await expect(page.getByTestId('tracking-document-passport')).toContainText('Sent for review');
+  await expect(pending).toContainText('Documents you sent');
+  await expect(pending).toContainText('Passport');
+  // The visa is still asked for.
+  await expect(page.getByTestId('tracking-action')).toContainText('Visa or permit');
+
+  lead = (await stub.leads())[0];
+  expect(lead?.pendingChange).toMatchObject({
+    fields: { phone: '+880 1712 000000', canadaAddress: 'Vancouver' },
+    documents: ['passport'],
+  });
+  const requests = (await stub.requests()).filter((request) => request.path.startsWith(TRACKING));
+  expect(
+    requests
+      .filter((request) => request.method === 'POST')
+      .map((request) => [request.path.replace(/[0-9a-f-]{36}/, ':id'), request.status]),
+  ).toEqual([
+    [`${TRACKING}/code`, 200],
+    [`${TRACKING}/verify`, 200],
+    [`${TRACKING}/orders/${reference}/changes`, 201],
+    [`${TRACKING}/orders/${reference}/uploads/intents`, 201],
+    [`${TRACKING}/orders/${reference}/uploads/:id/finalize`, 200],
+  ]);
+  expect(requests.map((request) => request.botAction).filter(Boolean)).toEqual([
+    'tracking-request',
+    'tracking-verify',
+    'upload-intent',
+    'upload-finalize',
+  ]);
+
+  // The session survives a reload on the open order, and signing out ends it.
   await page.reload();
+  await formReady(page);
   await expect(
     page.getByRole('heading', { name: `Order ${reference}`, exact: true }),
   ).toBeVisible();
-  const info = page.getByRole('form', { name: 'Details we need' });
-  await expect(info).toContainText('Your flight moved?');
-  await info.getByRole('button', { name: 'Send details' }).click();
-  await expect(info.getByText('Fill in this detail.')).toBeVisible();
-  await info.getByLabel('Arrival date').fill('2026-10-03');
-  await info.getByRole('button', { name: 'Send details' }).click();
-  await expect(page.getByText('Thank you. Our team will review your details.')).toBeVisible();
-
-  const answered = await staffOrder(orderId);
-  const infoRequests = list(answered['infoRequests']);
-  expect(infoRequests).toEqual([expect.objectContaining({ status: 'answered' })]);
-  expect(list(answered['changeRequests'])).toEqual(
-    expect.arrayContaining([
-      expect.objectContaining({
-        origin: 'customer',
-        infoRequestId: infoRequests[0]?.['id'],
-        patch: { form: { arrivalDate: '2026-10-03' } },
-      }),
-    ]),
-  );
-
-  // The grant survives a reload of the list, and signing out ends it.
   await page.getByRole('button', { name: '← All my orders' }).click();
   await expect(page.getByRole('heading', { name: 'Your orders' })).toBeVisible();
   await page.getByRole('button', { name: 'Sign out' }).click();
   await expect(page.getByRole('heading', { name: 'Track your order' })).toBeVisible();
   await page.reload();
+  await formReady(page);
   await expect(page.getByRole('heading', { name: 'Track your order' })).toBeVisible();
 });
 
 test('an unknown email gets the same answer and no code; a wrong code shows nothing', async ({
   page,
 }) => {
-  await placeOrder(page);
+  await placeSimOrder(page);
 
-  // Existence is hidden: the same next step, but no email is sent.
-  await signIn(page, 'nobody@example.test');
-  expect((await emailedCode('nobody@example.test')).status).toBe(404);
+  // Existence is hidden: the same next step, but nothing is sent.
+  await visit(page, '/track');
+  await page.locator('main').getByLabel('Email used on your order').fill('not-an-email');
+  await page.getByRole('button', { name: 'Email me a code' }).click();
+  await expect(page.getByText('Enter the email address you used on your order.')).toBeVisible();
+  await requestCode(page, 'nobody@example.test');
+  expect(await stub.trackingCode('nobody@example.test')).toBeUndefined();
+  await page.getByLabel('Six-digit code').fill('123456');
+  await page.getByRole('button', { name: 'Show my orders' }).click();
+  await expect(page.getByText(/^That code is not valid or has expired\./)).toBeVisible();
 
-  // A wrong code for a real email never opens the orders.
-  await signIn(page);
-  const code = await readCode(EMAIL);
+  // A wrong code for a real email never opens the orders; the right one still does.
+  await requestCode(page);
+  const code = await emailedCode();
+  await page.getByLabel('Six-digit code').fill('12');
+  await page.getByRole('button', { name: 'Show my orders' }).click();
+  await expect(page.getByText('Enter the six digits from the email.')).toBeVisible();
   await page.getByLabel('Six-digit code').fill(code === '000000' ? '111111' : '000000');
   await page.getByRole('button', { name: 'Show my orders' }).click();
-  await expect(page.getByText(/That code is not valid or has expired/)).toBeVisible();
+  await expect(page.getByText(/^That code is not valid or has expired\./)).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Your orders' })).toHaveCount(0);
+  await page.getByLabel('Six-digit code').fill(code);
+  await page.getByRole('button', { name: 'Show my orders' }).click();
+  await expect(page.getByRole('heading', { name: 'Your orders' })).toBeVisible();
+});
+
+test('an expired session returns to the email step and shows no order', async ({ page }) => {
+  const reference = await placeSimOrder(page);
+  await signIn(page);
+  await stub.expireTrackingGrants();
+
+  await page.getByRole('button', { name: `View order ${reference}` }).click();
+  await expect(page.getByRole('heading', { name: 'Track your order' })).toBeVisible();
+  await expect(page.getByText('For your security, please confirm your email again.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: `Order ${reference}` })).toHaveCount(0);
+
+  // The same while a change request is being sent: the dialog gives way to the email step.
+  await signIn(page);
+  await openOrder(page, reference);
+  await openChange(page, 'personal');
+  const dialog = page.getByRole('dialog');
+  await dialog.getByLabel('Full name').fill('Changed Name');
+  await stub.expireTrackingGrants();
+  await dialog.getByRole('button', { name: 'Send request →' }).click();
+  await expect(page.getByRole('heading', { name: 'Track your order' })).toBeVisible();
+  await expect(page.getByText('For your security, please confirm your email again.')).toBeVisible();
+  expect((await stub.leads())[0]?.pendingChange).toBeNull();
+});
+
+test('an order past the stage for changes refuses the request and stops offering it', async ({
+  page,
+}) => {
+  const reference = await placeSimOrder(page);
+  await signIn(page);
+  await openOrder(page, reference);
+
+  // Staff dispatch the order while the customer still has the page open.
+  await stub.setStage(reference, 'delivered');
+  await openChange(page, 'personal');
+  const dialog = page.getByRole('dialog');
+  await dialog.getByLabel('Full name').fill('Changed Name');
+  await dialog.getByRole('button', { name: 'Send request →' }).click();
+  await expect(
+    dialog.getByText('This order can no longer be changed here. Contact us for help.'),
+  ).toBeVisible();
+  expect((await stub.leads())[0]?.pendingChange).toBeNull();
+  await dialog.getByRole('button', { name: 'Cancel' }).click();
+
+  // The same for a document.
+  await page
+    .getByTestId('tracking-action')
+    .locator('input[type=file][data-document="passport"]')
+    .setInputFiles(PDF_FILE);
+  await expect(
+    page
+      .getByText('Documents can no longer be added to this order here. Contact us for help.')
+      .first(),
+  ).toBeVisible();
+
+  // Once reloaded the order shows its new status and offers no change.
+  await page.reload();
+  await formReady(page);
+  await expect(page.getByTestId('tracking-status')).toHaveText(/On its way/);
+  await expect(
+    page.getByText('What we have on your order. To change something, contact us.'),
+  ).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Request change →' })).toHaveCount(0);
+  await expect(page.getByTestId('tracking-action')).toHaveCount(0);
 });

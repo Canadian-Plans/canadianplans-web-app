@@ -4,6 +4,8 @@ export const orderConfirmationCopy = {
     description: 'Keep this reference: it is how we track your order.',
     email: (email: string) =>
       `We've emailed a confirmation to ${email}. We'll contact you if we need anything else.`,
+    track: { label: 'Track this order', href: '/track' },
+    home: { label: 'Back to home', href: '/' },
   },
   missing: {
     heading: 'Not saved',

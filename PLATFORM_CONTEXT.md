@@ -6,6 +6,13 @@ Also follow [AGENTS.md](AGENTS.md) for the shared session workflow and required
 project skill. Read each startup document once per session; do not loop through
 links to documents already read.
 
+> **Split on 2026-11-12.** This repository now holds only the storefront
+> (`apps/site-1`) and the packages it uses. The backend and admin moved to
+> `Canadian-Plans/canadianplans-crm`; do not build backend or admin features
+> here. Read [docs/STOREFRONT_ONLY.md](docs/STOREFRONT_ONLY.md) first. The rest
+> of this file describes the whole platform as it was; its storefront rules
+> still apply.
+
 ---
 
 ## 1. What this is

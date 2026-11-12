@@ -1,10 +1,10 @@
 'use client';
 
-import type { TrackingOrderSummary } from '@canadian-plans/contracts';
+import type { TrackingOrder } from '@canadian-plans/crm-contracts';
 import { CpAsset } from '@canadian-plans/ui/canadian-plans';
-import { trackCopy as copy, trackStatusCopy } from '@content/track';
+import { trackCopy as copy } from '@content/track';
 import { trackingAssets as assets } from '@content/track-order';
-import { fillTemplate, formatDate } from '@/lib/tracking-view';
+import { fillTemplate, formatDate, needsAttention, planView } from '@/lib/tracking-view';
 
 /** Every order of the verified email on this website, newest first. */
 export function TrackOrderList({
@@ -14,7 +14,7 @@ export function TrackOrderList({
   onSignOut,
 }: {
   email: string | undefined;
-  orders: readonly TrackingOrderSummary[];
+  orders: readonly TrackingOrder[];
   onOpen: (reference: string) => void;
   onSignOut: () => void;
 }) {
@@ -39,8 +39,7 @@ export function TrackOrderList({
       ) : (
         <ul className="cp-track-order-cards">
           {orders.map((order) => {
-            const status = trackStatusCopy[order.fulfilmentStatus];
-            const attention = order.actionNeeded || order.fulfilmentStatus === 'awaiting_customer';
+            const attention = needsAttention(order);
             return (
               <li key={order.reference}>
                 <button
@@ -53,14 +52,11 @@ export function TrackOrderList({
                     <strong>{order.reference}</strong>
                     <span className="cp-tracking-status" data-attention={attention}>
                       <CpAsset asset={attention ? assets.attentionDot : assets.sentDot} />
-                      {attention && order.fulfilmentStatus !== 'awaiting_customer'
-                        ? copy.list.actionNeeded
-                        : status.label}
+                      {order.stageLabel}
                     </span>
                   </span>
-                  <span>
-                    {order.productTitle} · {order.offerName}
-                  </span>
+                  <span>{planView(order).name ?? copy.list.planNotGiven}</span>
+                  {attention ? <span>{copy.list.actionNeeded}</span> : null}
                   <small>
                     {copy.list.submitted} {formatDate(order.submittedAt)}
                   </small>

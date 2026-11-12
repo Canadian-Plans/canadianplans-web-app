@@ -462,6 +462,7 @@
 }
 .cp-guide-tip {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   gap: var(--cp-space-12);
   padding: calc(var(--cp-space-18) + var(--cp-border-outline))
@@ -478,7 +479,9 @@
   text-transform: uppercase;
 }
 .cp-guide-tip p {
-  flex: 1;
+  /* Needs room to read: with a long label on a phone it drops below the label
+     instead of being squeezed into a few characters per line. */
+  flex: 1 1 calc(var(--cp-space-44) * 5);
   min-width: 0;
 }
 .cp-guide-faq .cp-faq-accordion {

@@ -10,13 +10,14 @@
   "pnpm": {
     "overrides": {
       "@sanity/cli>skills": "1.5.9",
-      "@esbuild-kit/core-utils@3.3.2>esbuild": "0.25.12",
       "typeid-js@1.2.0>uuid": "11.1.1",
       "proxy-addr@<2.0.8": "2.0.8",
       "source-map-js@<1.2.2": "1.2.2",
       "brace-expansion@^1.0.0": "1.1.21",
       "brace-expansion@^5.0.0": "5.0.12",
-      "dompurify@<3.4.16": "3.4.16",
+      "dompurify@<3.4.17": "3.4.17",
+      "undici@>=7.0.0 <7.30.1": "7.30.1",
+      "fast-uri@>=3.0.0 <3.1.9": "3.1.9",
       "js-yaml@^3.0.0": "3.15.2",
       "markdown-it@^14.0.0": "14.3.3",
       "sharp@^0.35.0": "0.35.5",
@@ -30,13 +31,12 @@
     "format:fix": "prettier --write .",
     "typecheck": "pnpm -r run typecheck",
     "test": "vitest run",
-    "test:recovery-spike": "node scripts/recovery-spike.mjs",
     "build": "pnpm -r run build",
     "test:tooling": "node --test scripts/*.test.mjs",
+    "test:e2e": "node scripts/test-e2e.mjs",
     "check:preview-isolation": "node scripts/check-preview-isolation.mjs",
-    "check:frontend-db-boundary": "eslint apps/admin apps/site-1",
-    "build:affected": "node scripts/affected-builds.mjs --build",
-    "test:e2e": "pnpm --filter admin exec playwright test && pnpm --filter site-1 run test:e2e && pnpm --filter site-1 run test:security && pnpm --filter admin run test:e2e:orders"
+    "check:frontend-db-boundary": "eslint apps/site-1",
+    "build:affected": "node scripts/affected-builds.mjs --build"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",

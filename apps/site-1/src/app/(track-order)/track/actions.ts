@@ -2,23 +2,21 @@
 
 import {
   BackendError,
-  documentChecklistKeySchema,
-  documentMediaTypeSchema,
-  emailSchema,
-  MAX_DOCUMENT_BYTES,
-  orderChangeRequestPatchSchema,
-  trackingOrderReferenceSchema,
+  finalizeUploadRequestSchema,
+  trackingCodeRequestSchema,
+  trackingReferenceSchema,
+  trackingUploadIntentRequestSchema,
+  trackingVerifyRequestSchema,
   websiteBotTokenSchema,
-  type TrackingChangeRequest,
-  type TrackingDocument,
-  type TrackingOrderDetail,
-  type TrackingOrderSummary,
-} from '@canadian-plans/contracts';
+  type TrackingOrder,
+  type TrackingPendingChange,
+} from '@canadian-plans/crm-contracts';
 import { z } from 'zod';
 
 import { trackCopy } from '@content/track';
 import { verificationContent } from '@content/verification';
 import { getBackendClient } from '@/lib/backendClient';
+import { findOrder, trackChangeFieldsSchema } from '@/lib/tracking-view';
 import { clearTrackingGrant, readTrackingGrant, writeTrackingGrant } from './grant';
 
 /**
@@ -39,8 +37,7 @@ export type TrackFailureCode =
   | 'session_expired'
   | 'not_found'
   | 'rate_limited'
-  | 'too_many_pending'
-  | 'fields_mismatch'
+  | 'change_not_allowed'
   | 'upload_rejected'
   | 'upload_unavailable'
   | 'failed';
@@ -56,7 +53,7 @@ function mapError<T>(error: unknown, fallback: string): TrackActionResult<T> {
   if (!(error instanceof BackendError)) return failure('failed', fallback);
   switch (error.code) {
     case 'not_found':
-      // 401 from the grant check: missing, expired or foreign.
+      // 401 from the grant check: missing, expired or forged.
       return failure('session_expired', trackCopy.session.expired);
     case 'order_not_found':
       return failure('not_found', trackCopy.session.failed);
@@ -77,14 +74,13 @@ export async function requestTrackingCode(input: {
   email: string;
   turnstileToken?: string;
 }): Promise<TrackActionResult<{ sent: true }>> {
-  const email = emailSchema.safeParse(input.email.trim());
-  if (!email.success) return failure('validation_error', trackCopy.lookup.emailError);
+  const body = trackingCodeRequestSchema.safeParse({ email: input.email });
+  if (!body.success) return failure('validation_error', trackCopy.lookup.emailError);
   if (!websiteBotTokenSchema.safeParse(input.turnstileToken).success) return botFailed();
   try {
-    await getBackendClient().tracking.otp(
-      { email: email.data },
-      { turnstileToken: input.turnstileToken },
-    );
+    await getBackendClient().tracking.requestCode(body.data, {
+      turnstileToken: input.turnstileToken,
+    });
   } catch (error) {
     if (error instanceof BackendError && error.code === 'caller_forbidden') return botFailed();
     // Neutral: the response must not reveal whether the email has orders.
@@ -97,19 +93,15 @@ export async function verifyTrackingCode(input: {
   code: string;
   turnstileToken?: string;
 }): Promise<TrackActionResult<{ verified: true }>> {
-  const email = emailSchema.safeParse(input.email.trim());
-  const code = z
-    .string()
-    .regex(/^\d{6}$/)
-    .safeParse(input.code);
-  if (!email.success || !code.success) return failure('validation_error', trackCopy.code.error);
+  const body = trackingVerifyRequestSchema.safeParse({ email: input.email, code: input.code });
+  if (!body.success) return failure('validation_error', trackCopy.code.error);
   if (!websiteBotTokenSchema.safeParse(input.turnstileToken).success) return botFailed();
   try {
-    const result = await getBackendClient().tracking.verify(
-      { email: email.data, code: code.data },
-      { turnstileToken: input.turnstileToken },
-    );
-    await writeTrackingGrant(result.grant);
+    const result = await getBackendClient().tracking.verify(body.data, {
+      turnstileToken: input.turnstileToken,
+    });
+    // The grant goes to the httpOnly cookie only; it is never returned.
+    await writeTrackingGrant({ token: result.grant.token, expiresAt: result.grant.expiresAt });
     return { ok: true, data: { verified: true } };
   } catch (error) {
     if (error instanceof BackendError && error.code === 'rate_limited')
@@ -119,105 +111,91 @@ export async function verifyTrackingCode(input: {
   }
 }
 
-export async function loadTrackedOrders(): Promise<TrackActionResult<TrackingOrderSummary[]>> {
+/** The verified email's orders on this website, newest first. */
+export async function loadTrackedOrders(): Promise<TrackActionResult<TrackingOrder[]>> {
   const grant = await grantOrExpired();
   if (!grant) return failure('session_expired', trackCopy.session.expired);
   try {
-    const { orders } = await getBackendClient().tracking.listOrders({ customerGrant: grant });
+    const { orders } = await getBackendClient().tracking.orders({ customerGrant: grant });
     return { ok: true, data: orders };
   } catch (error) {
     return mapError(error, trackCopy.session.failed);
   }
 }
 
+/** One order, found by reference in the verified email's list (the API has no single-order read). */
 export async function loadTrackedOrder(
   reference: string,
-): Promise<TrackActionResult<TrackingOrderDetail>> {
-  const ref = trackingOrderReferenceSchema.safeParse(reference);
+): Promise<TrackActionResult<TrackingOrder>> {
+  const ref = trackingReferenceSchema.safeParse(reference);
   if (!ref.success) return failure('not_found', trackCopy.session.failed);
-  const grant = await grantOrExpired();
-  if (!grant) return failure('session_expired', trackCopy.session.expired);
-  try {
-    const { order } = await getBackendClient().tracking.getOrder(ref.data, {
-      customerGrant: grant,
-    });
-    return { ok: true, data: order };
-  } catch (error) {
-    return mapError(error, trackCopy.session.failed);
-  }
+  const listed = await loadTrackedOrders();
+  if (!listed.ok) return listed;
+  const order = findOrder(listed.data, ref.data);
+  return order ? { ok: true, data: order } : failure('not_found', trackCopy.session.failed);
 }
 
-const changeInputSchema = z.object({
-  reference: trackingOrderReferenceSchema,
-  patch: orderChangeRequestPatchSchema,
-  note: z.string().trim().max(2000).optional(),
-  infoRequestId: z.uuid().optional(),
-});
+const changeInputSchema = z
+  .object({ reference: trackingReferenceSchema, fields: trackChangeFieldsSchema })
+  .strict();
 
 /**
- * A change request, or the answer to a staff request for details when
- * `infoRequestId` is set. Either way it waits for staff approval.
+ * A change request for the customer's own details. It waits for staff
+ * approval and replaces any request already pending on the order.
  */
 export async function sendTrackingChange(input: {
   reference: string;
-  patch: unknown;
-  note?: string;
-  infoRequestId?: string;
-}): Promise<TrackActionResult<TrackingChangeRequest>> {
+  fields: unknown;
+}): Promise<TrackActionResult<TrackingPendingChange>> {
   const parsed = changeInputSchema.safeParse(input);
-  const fallback = input.infoRequestId ? trackCopy.info.failed : trackCopy.change.failed;
-  if (!parsed.success) return failure('validation_error', fallback);
+  if (!parsed.success) return failure('validation_error', trackCopy.change.invalid);
   const grant = await grantOrExpired();
   if (!grant) return failure('session_expired', trackCopy.session.expired);
-  const { reference, patch, infoRequestId } = parsed.data;
-  const note = parsed.data.note ? { note: parsed.data.note } : {};
   try {
-    const client = getBackendClient().tracking;
-    const result = infoRequestId
-      ? await client.answerInfoRequest(
-          reference,
-          infoRequestId,
-          { patch, ...note },
-          { customerGrant: grant },
-        )
-      : await client.requestChange(reference, { patch, ...note }, { customerGrant: grant });
+    const result = await getBackendClient().tracking.requestChange(
+      parsed.data.reference,
+      { fields: parsed.data.fields },
+      { customerGrant: grant },
+    );
     return { ok: true, data: result.changeRequest };
   } catch (error) {
-    if (error instanceof BackendError && error.code === 'too_many_pending_requests')
-      return failure('too_many_pending', trackCopy.change.tooMany);
-    if (error instanceof BackendError && error.code === 'info_request_fields_mismatch')
-      return failure('fields_mismatch', trackCopy.info.mismatch);
-    if (error instanceof BackendError && error.code === 'info_request_not_found')
-      return failure('not_found', fallback);
-    return mapError(error, fallback);
+    if (error instanceof BackendError && error.code === 'change_request_not_allowed')
+      return failure('change_not_allowed', trackCopy.change.notAllowed);
+    if (error instanceof BackendError && error.code === 'validation_error')
+      return failure('validation_error', trackCopy.change.invalid);
+    return mapError(error, trackCopy.change.failed);
   }
 }
 
-const intentInputSchema = z.object({
-  reference: trackingOrderReferenceSchema,
-  documentType: documentChecklistKeySchema,
-  fileName: z.string().min(1).max(255),
-  contentType: documentMediaTypeSchema,
-  sizeBytes: z.int().positive().max(MAX_DOCUMENT_BYTES),
-});
-
 function uploadError<T>(error: unknown): TrackActionResult<T> {
   if (error instanceof BackendError) {
-    if (error.code === 'feature_not_ready')
-      return failure('upload_unavailable', trackCopy.upload.unavailable);
-    if (error.code === 'document_verification_failed')
-      return failure('upload_rejected', trackCopy.upload.rejected);
-    if (error.code === 'document_too_large')
-      return failure('validation_error', trackCopy.upload.sizeError);
+    switch (error.code) {
+      case 'feature_not_ready':
+        return failure('upload_unavailable', trackCopy.upload.unavailable);
+      case 'document_verification_failed':
+        return failure('upload_rejected', trackCopy.upload.rejected);
+      case 'document_too_large':
+        return failure('validation_error', trackCopy.upload.sizeError);
+      case 'change_request_not_allowed':
+        return failure('change_not_allowed', trackCopy.upload.notAllowed);
+      case 'checklist_mismatch':
+        return failure('change_not_allowed', trackCopy.upload.mismatch);
+      case 'upload_expired':
+      case 'upload_not_found':
+        return failure('failed', trackCopy.upload.expired);
+      case 'verification_in_progress':
+        return failure('failed', trackCopy.upload.checking);
+      default:
+        break;
+    }
   }
   return mapError(error, trackCopy.upload.failed);
 }
 
-/** Authorises one direct-to-R2 upload for a checklist document of the order. */
+/** Authorises one direct-to-storage upload of a passport or visa for the order. */
 export async function createTrackingUpload(input: {
   reference: string;
   documentType: string;
-  fileName: string;
   contentType: string;
   sizeBytes: number;
   turnstileToken?: string;
@@ -229,14 +207,19 @@ export async function createTrackingUpload(input: {
     headers: Record<string, string>;
   }>
 > {
-  const parsed = intentInputSchema.safeParse(input);
-  if (!parsed.success) return failure('validation_error', trackCopy.upload.typeError);
+  const reference = trackingReferenceSchema.safeParse(input.reference);
+  const body = trackingUploadIntentRequestSchema.safeParse({
+    documentType: input.documentType,
+    contentType: input.contentType,
+    sizeBytes: input.sizeBytes,
+  });
+  if (!reference.success || !body.success)
+    return failure('validation_error', trackCopy.upload.typeError);
   if (!websiteBotTokenSchema.safeParse(input.turnstileToken).success) return botFailed();
   const grant = await grantOrExpired();
   if (!grant) return failure('session_expired', trackCopy.session.expired);
-  const { reference, ...body } = parsed.data;
   try {
-    const intent = await getBackendClient().tracking.createUploadIntent(reference, body, {
+    const intent = await getBackendClient().tracking.createUpload(reference.data, body.data, {
       customerGrant: grant,
       turnstileToken: input.turnstileToken,
     });
@@ -254,20 +237,20 @@ export async function createTrackingUpload(input: {
   }
 }
 
-/** Finalizes an uploaded object; the backend verifies its signature and checksum. */
+/**
+ * Finalizes an uploaded object; the backend verifies its signature and
+ * checksum, then adds the document to the order's pending change request.
+ */
 export async function finalizeTrackingUpload(input: {
   reference: string;
   uploadId: string;
   checksumSha256: string;
   turnstileToken?: string;
-}): Promise<TrackActionResult<TrackingDocument>> {
-  const reference = trackingOrderReferenceSchema.safeParse(input.reference);
+}): Promise<TrackActionResult<TrackingPendingChange>> {
+  const reference = trackingReferenceSchema.safeParse(input.reference);
   const uploadId = z.uuid().safeParse(input.uploadId);
-  const checksum = z
-    .string()
-    .regex(/^[a-f0-9]{64}$/)
-    .safeParse(input.checksumSha256);
-  if (!reference.success || !uploadId.success || !checksum.success)
+  const body = finalizeUploadRequestSchema.safeParse({ checksumSha256: input.checksumSha256 });
+  if (!reference.success || !uploadId.success || !body.success)
     return failure('validation_error', trackCopy.upload.failed);
   if (!websiteBotTokenSchema.safeParse(input.turnstileToken).success) return botFailed();
   const grant = await grantOrExpired();
@@ -276,10 +259,10 @@ export async function finalizeTrackingUpload(input: {
     const result = await getBackendClient().tracking.finalizeUpload(
       reference.data,
       uploadId.data,
-      { checksumSha256: checksum.data },
+      body.data,
       { customerGrant: grant, turnstileToken: input.turnstileToken },
     );
-    return { ok: true, data: result.document };
+    return { ok: true, data: result.changeRequest };
   } catch (error) {
     return uploadError(error);
   }

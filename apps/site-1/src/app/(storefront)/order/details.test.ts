@@ -86,6 +86,14 @@ function accepted(input: unknown) {
   return result.order;
 }
 
+/** The mobile fields of an accepted order, narrowed on its category. */
+function acceptedMobile(input: unknown) {
+  const order = accepted(input);
+  if (order.category !== 'mobile')
+    throw new Error(`expected a mobile order, got ${order.category}`);
+  return order;
+}
+
 describe('pre-arrival (sim) details', () => {
   it('accepts valid details and normalises the country code', () => {
     const order = accepted(arrival);
@@ -232,7 +240,7 @@ describe('mobile details', () => {
   });
 
   it('stores "no" for keep my number as false', () => {
-    expect(accepted({ ...mobile, keepNumber: 'no' }).fields['keepNumber']).toBe(false);
+    expect(acceptedMobile({ ...mobile, keepNumber: 'no' }).fields.keepNumber).toBe(false);
   });
 
   it.each(['0', '11', '', 'two', '-1', '1.5'])('rejects %j lines', (lines) => {
@@ -240,8 +248,8 @@ describe('mobile details', () => {
   });
 
   it('accepts one and ten lines', () => {
-    expect(accepted({ ...mobile, lines: '1' }).fields['lines']).toBe(1);
-    expect(accepted({ ...mobile, lines: '10' }).fields['lines']).toBe(10);
+    expect(acceptedMobile({ ...mobile, lines: '1' }).fields.lines).toBe(1);
+    expect(acceptedMobile({ ...mobile, lines: '10' }).fields.lines).toBe(10);
   });
 
   it('gives neither SIM question a default', () => {
@@ -293,41 +301,103 @@ describe('emptyDetails', () => {
 });
 
 describe('buildOrderForm', () => {
-  const options = { creditCheckConsentVersion: 'TEST-credit-check-v1' };
+  const plan = { productKey: 'visitor-esim-20', offerName: 'Visitor eSIM 20 GB' };
+  const options = { consentedAt: '2026-10-20T12:00:00.000Z' };
 
-  it('keeps the pre-arrival payload exactly as it was before categories existed', () => {
-    const form = buildOrderForm(accepted(arrival), ['passport'], false, options);
-    expect(form).toEqual({
+  it('writes the SIM draft payload: plan, eSIM delivery, arrival and address', () => {
+    expect(buildOrderForm(accepted(arrival), plan, options)).toEqual({
       schemaVersion: 1,
       payload: {
-        currentCountry: 'Bangladesh',
-        destination: 'Toronto',
+        planId: 'visitor-esim-20',
+        planLabel: 'Visitor eSIM 20 GB',
+        delivery: 'esim',
         arrivalDate: '2026-11-01',
-        documents: { required: ['passport'], acknowledged: false },
+        canadaAddress: 'Toronto',
+        currentCountry: 'Bangladesh',
       },
     });
   });
 
-  it('records the credit-check consent and its version for a mobile order', () => {
-    const form = buildOrderForm(accepted(mobile), ['government_id'], true, options);
-    expect(form.payload).toMatchObject({
-      category: 'mobile',
-      creditCheck: { consent: true, version: 'TEST-credit-check-v1' },
-      documents: { required: ['government_id'], acknowledged: true },
+  it('writes no consent into a SIM draft, which is consented to on submit', () => {
+    const { payload } = buildOrderForm(accepted(arrival), plan, options);
+    expect(payload).not.toHaveProperty('consent');
+    expect(payload).not.toHaveProperty('consentedAt');
+  });
+
+  it('writes the internet payload with the consent time and every optional field', () => {
+    expect(buildOrderForm(accepted(internet), plan, options)).toEqual({
+      schemaVersion: 1,
+      payload: {
+        planId: 'visitor-esim-20',
+        planLabel: 'Visitor eSIM 20 GB',
+        streetAddress: '123 Main Street',
+        aptUnit: '4B',
+        city: 'Saskatoon',
+        postalCode: 'S7K 0A1',
+        dateOfBirth: '1990-05-15',
+        consent: true,
+        consentedAt: '2026-10-20T12:00:00.000Z',
+        currentProvider: 'SaskTel',
+        preferredInstallationTime: 'Weekday mornings',
+      },
     });
   });
 
-  it('records no credit-check consent for internet', () => {
-    const form = buildOrderForm(accepted(internet), [], false, options);
-    expect(form.payload).not.toHaveProperty('creditCheck');
-    expect(form.payload).toMatchObject({ category: 'internet', province: 'SK' });
+  it('omits the optional internet fields when they are blank', () => {
+    const { payload } = buildOrderForm(
+      accepted({ ...internet, aptUnit: '', currentProvider: '', preferredInstallationTime: '' }),
+      plan,
+      options,
+    );
+    expect(payload).not.toHaveProperty('aptUnit');
+    expect(payload).not.toHaveProperty('currentProvider');
+    expect(payload).not.toHaveProperty('preferredInstallationTime');
+    expect(payload).toMatchObject({ consent: true });
   });
 
-  it('adds extra fields such as a callback request', () => {
-    const form = buildOrderForm(accepted(internet), [], false, {
-      ...options,
-      extra: { callbackRequested: true },
+  it('writes the mobile payload with the name split and the line count', () => {
+    expect(
+      buildOrderForm(accepted({ ...mobile, fullName: 'Ada Augusta King' }), plan, options),
+    ).toEqual({
+      schemaVersion: 1,
+      payload: {
+        planId: 'visitor-esim-20',
+        planLabel: 'Visitor eSIM 20 GB',
+        streetAddress: '1 Queen Street',
+        city: 'Toronto',
+        postalCode: 'M5V 2T6',
+        firstName: 'Ada',
+        lastName: 'Augusta King',
+        lineCount: 2,
+        keepNumber: true,
+        simType: 'esim',
+        currentProvider: 'Rogers',
+      },
     });
-    expect(form.payload).toMatchObject({ callbackRequested: true });
+  });
+
+  it('records a single-word mobile name as both first and last name', () => {
+    const { payload } = buildOrderForm(accepted({ ...mobile, fullName: 'Cher' }), plan, options);
+    expect(payload).toMatchObject({ firstName: 'Cher', lastName: 'Cher' });
+  });
+
+  it('includes the unit for mobile and carries no consent timestamp', () => {
+    const { payload } = buildOrderForm(accepted({ ...mobile, aptUnit: '9' }), plan, options);
+    expect(payload).toMatchObject({ aptUnit: '9' });
+    expect(payload).not.toHaveProperty('consentedAt');
+    expect(payload).not.toHaveProperty('consent');
+  });
+
+  it('truncates the plan key (60 for SIM, 40 for the others) and the label (80)', () => {
+    const longPlan = { productKey: 'k'.repeat(100), offerName: 'N'.repeat(120) };
+    const sim = buildOrderForm(accepted(arrival), longPlan, options).payload;
+    expect(sim['planId']).toBe('k'.repeat(60));
+    expect(sim['planLabel']).toBe('N'.repeat(80));
+    expect(buildOrderForm(accepted(internet), longPlan, options).payload['planId']).toBe(
+      'k'.repeat(40),
+    );
+    expect(buildOrderForm(accepted(mobile), longPlan, options).payload['planId']).toBe(
+      'k'.repeat(40),
+    );
   });
 });

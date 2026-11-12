@@ -1,3 +1,4 @@
+import { SITE_KEY } from './crm-stub/config';
 import { expect, test } from './fixtures';
 
 const pages = [
@@ -25,11 +26,9 @@ for (const [path, heading] of pages) {
     const response = await page.goto(path);
     expect(response?.status()).toBe(200);
     await expect(page.getByRole('heading', { name: heading, exact: true })).toBeVisible();
-    const credential = process.env['SITE_1_SERVICE_CREDENTIAL'];
-    if (credential) {
-      expect(await response?.text()).not.toContain(credential);
-      expect(await page.content()).not.toContain(credential);
-    }
+    // The site key the running storefront holds (see playwright.config.ts).
+    expect(await response?.text()).not.toContain(SITE_KEY);
+    expect(await page.content()).not.toContain(SITE_KEY);
     expect(errors).toEqual([]);
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),

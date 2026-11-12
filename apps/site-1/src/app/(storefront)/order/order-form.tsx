@@ -1,5 +1,6 @@
 'use client';
 
+import type { WebsiteOffer } from '@/lib/offers';
 import Link from 'next/link';
 import { useHumanChallenge } from '@/components/shared/human-challenge';
 import { OrderConfirmation } from '@/components/shared/order-confirmation';
@@ -9,10 +10,8 @@ import {
   provinceCodeSchema,
   provinceNames,
   type ProvinceCode,
-  type Quote,
-  type RawAttribution,
-  type WebsiteOffer,
 } from '@canadian-plans/contracts';
+import type { RawAttribution } from '@canadian-plans/crm-contracts';
 import {
   Button,
   Card,
@@ -42,7 +41,7 @@ import {
 } from './details';
 import { DocumentUploads } from './document-uploads';
 import { ArrivalFields, FIELD_IDS, InternetFields, MobileFields } from './fields';
-import type { ActionResult, OrderDetailsInput, OrderFieldErrors } from './types';
+import type { ActionResult, OrderDetailsInput, OrderFieldErrors, PriceSummary } from './types';
 import { WaitlistForm } from './waitlist-form';
 
 const STEPS = [
@@ -66,6 +65,17 @@ export interface OrderFormProps {
 
 function formatMoney(amountMinor: number, currency: string): string {
   return new Intl.NumberFormat('en-CA', { style: 'currency', currency }).format(amountMinor / 100);
+}
+
+const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
+const longDate = new Intl.DateTimeFormat('en-CA', { dateStyle: 'long', timeZone: 'UTC' });
+
+/** A review value as the customer reads it: a typed date becomes "January 15, 2027". */
+function reviewValue(value: string): string {
+  const match = ISO_DATE.exec(value);
+  if (!match) return value;
+  const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+  return Number.isNaN(date.getTime()) ? value : longDate.format(date);
 }
 
 function checklistLabel(key: string): string {
@@ -106,7 +116,7 @@ export function OrderForm({
   );
   const [fieldErrors, setFieldErrors] = useState<OrderFieldErrors>({});
   const [acknowledged, setAcknowledged] = useState(false);
-  const [quote, setQuote] = useState<Quote | undefined>(undefined);
+  const [quote, setQuote] = useState<PriceSummary | undefined>(undefined);
   const [quoteFailed, setQuoteFailed] = useState<string | undefined>(undefined);
   const [callbackRequested, setCallbackRequested] = useState(false);
   const [reference, setReference] = useState<string | undefined>(undefined);
@@ -114,7 +124,6 @@ export function OrderForm({
     undefined,
   );
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [busy, setBusy] = useState(false);
   const summaryRef = useRef<HTMLDivElement>(null);
   const stepRef = useRef<HTMLDivElement>(null);
@@ -206,7 +215,6 @@ export function OrderForm({
       saveDetails({
         turnstileToken,
         details,
-        documentKeys,
         productId: selected.productId,
         attribution,
       }),
@@ -215,7 +223,6 @@ export function OrderForm({
       result = await human.run('lead-save', (turnstileToken) =>
         saveDetails({
           details,
-          documentKeys,
           productId: selected.productId,
           attribution,
           turnstileToken,
@@ -229,7 +236,9 @@ export function OrderForm({
     }
     setFieldErrors({});
     setOrderError(undefined);
-    goToStep(2);
+    // A plan that asks for no documents has nothing to show on that step.
+    if (documentsRequired) goToStep(2);
+    else await handleDocuments();
   }
 
   async function handleDocuments(): Promise<void> {
@@ -242,9 +251,7 @@ export function OrderForm({
       return;
     }
     setBusy(true);
-    const result = await human.run('lead-save', (turnstileToken) =>
-      saveDocuments({ details, documentKeys, acknowledged: true, turnstileToken }),
-    );
+    const result = await saveDocuments({ details });
     setBusy(false);
     if (!result.ok) {
       applyFailure(result);
@@ -257,9 +264,7 @@ export function OrderForm({
     setBusy(true);
     setQuoteFailed(undefined);
     setOrderError(undefined);
-    const result = await human.run('quote-create', (turnstileToken) =>
-      requestQuote({ turnstileToken }),
-    );
+    const result = await requestQuote({ category: details.category });
     setBusy(false);
     goToStep(3);
     if (result.ok) {
@@ -281,15 +286,13 @@ export function OrderForm({
     const attempt = (turnstileToken: string) =>
       submitOrder({
         turnstileToken,
-        quoteId: quote.id,
         termsVersion: quote.termsVersion,
-        marketingOptIn,
         details,
-        documentKeys,
+        attribution,
       });
-    let result = await human.run('order-submit', attempt);
+    let result = await human.run('lead-save', attempt);
     if (!result.ok && result.code === 'transport_retry')
-      result = await human.run('order-submit', attempt);
+      result = await human.run('lead-save', attempt);
     setBusy(false);
     if (result.ok) {
       // The only path to the confirmation step: a server-issued reference.
@@ -300,11 +303,6 @@ export function OrderForm({
     if (result.code === 'validation_error' && result.fieldErrors) {
       setFieldErrors(result.fieldErrors);
       focusSummary();
-      return;
-    }
-    if (result.code === 'quote_restart') {
-      setQuote(undefined);
-      await loadQuote();
       return;
     }
     setOrderError({ code: result.code, message: result.message });
@@ -324,7 +322,7 @@ export function OrderForm({
   async function handleCallback(): Promise<void> {
     setBusy(true);
     const result = await human.run('lead-save', (turnstileToken) =>
-      requestCallback({ details, documentKeys, turnstileToken }),
+      requestCallback({ details, turnstileToken }),
     );
     setBusy(false);
     if (result.ok) {
@@ -354,8 +352,16 @@ export function OrderForm({
             <CardDescription>
               {commercial.presentation?.bestFor ?? commercial.productTitle}
             </CardDescription>
+            <p className="pt-1">
+              <span className="text-2xl font-bold tabular-nums">
+                {formatMoney(commercial.recurringChargeAmountMinor, commercial.currency)}
+              </span>{' '}
+              <span className="text-sm text-muted-foreground">
+                {commercial.currency} {period}
+              </span>
+            </p>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-4">
             {commercial.promotion ? (
               <p className="text-sm font-medium">{commercial.promotion.headline}</p>
             ) : null}
@@ -366,18 +372,14 @@ export function OrderForm({
                 ))}
               </ul>
             ) : null}
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <p className="font-medium">
-                {formatMoney(commercial.recurringChargeAmountMinor, commercial.currency)} {period}
-              </p>
-              <Button asChild>
-                <Link
-                  href={`/order?plan=${encodeURIComponent(offer.productId)}${commercial.productType === 'internet' && province ? `&province=${province}` : ''}`}
-                >
-                  Select {commercial.offerName}
-                </Link>
-              </Button>
-            </div>
+            <Button asChild className="w-full sm:w-auto">
+              <Link
+                href={`/order?plan=${encodeURIComponent(offer.productId)}${commercial.productType === 'internet' && province ? `&province=${province}` : ''}`}
+              >
+                {orderFormContent.planStep.select}
+                <span className="sr-only">: {commercial.offerName}</span>
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       </li>
@@ -489,7 +491,9 @@ export function OrderForm({
     // A province only means something for internet; one plan type needs no chooser.
     const active: OrderCategory | undefined = province
       ? 'internet'
-      : (category ?? (present.length === 1 ? present[0] : undefined));
+      : (category ??
+        selected?.commercial.productType ??
+        (present.length === 1 ? present[0] : undefined));
     return (
       <Card>
         <CardHeader>
@@ -500,12 +504,17 @@ export function OrderForm({
         </CardHeader>
         <CardContent className="space-y-8">
           {offers.length === 0 ? (
-            <p>{copy.empty}</p>
+            <div className="space-y-4">
+              <p>{copy.empty}</p>
+              <Button asChild variant="outline">
+                <a href="/contact">{copy.emptyContact}</a>
+              </Button>
+            </div>
           ) : (
             <>
               {active && present.length > 1 ? (
-                <Link href="/order" className="text-sm underline">
-                  {copy.allCategories}
+                <Link href="/order" className="inline-flex min-h-11 items-center text-sm underline">
+                  ← {copy.allCategories}
                 </Link>
               ) : null}
               {active === undefined ? renderCategoryChooser(present) : null}
@@ -528,7 +537,21 @@ export function OrderForm({
           <CardTitle>
             <h2 className="text-xl">Your details</h2>
           </CardTitle>
-          <CardDescription>We&apos;ll save your details so you can continue later.</CardDescription>
+          <CardDescription>
+            {selected ? (
+              <span className="mb-1 block font-medium text-foreground">
+                {selected.commercial.offerName} ·{' '}
+                {formatMoney(
+                  selected.commercial.recurringChargeAmountMinor,
+                  selected.commercial.currency,
+                )}{' '}
+                {orderFormContent.planStep.perPeriod[selected.commercial.billingPeriod ?? 'month']}
+              </span>
+            ) : null}
+            {details.category === 'sim'
+              ? orderFormContent.detailsStep.savedDraft
+              : orderFormContent.detailsStep.sentOnSubmit}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={handleDetails} noValidate>
@@ -594,7 +617,7 @@ export function OrderForm({
                 type="checkbox"
                 checked={acknowledged}
                 onChange={(event) => setAcknowledged(event.target.checked)}
-                className="mt-1"
+                className="mt-0.5 size-5 shrink-0 accent-primary"
               />
               <label htmlFor="order-documents-ack">I have read the document checklist.</label>
             </div>
@@ -653,31 +676,33 @@ export function OrderForm({
     return (
       <form className="space-y-6" onSubmit={handleSubmit} noValidate>
         <h2 className="text-xl">Review and confirm</h2>
-        <ReviewCard title="Plan" onEdit={() => goToStep(0)}>
-          <p>{selected?.commercial.offerName}</p>
-          <p className="text-sm">{selected?.commercial.productTitle}</p>
+        <ReviewCard title="Plan" onEdit={() => goToStep(0)} editLabel="Change plan">
+          <p className="font-medium">{selected?.commercial.offerName}</p>
+          {selected && selected.commercial.productTitle !== selected.commercial.offerName ? (
+            <p className="text-sm text-muted-foreground">{selected.commercial.productTitle}</p>
+          ) : null}
         </ReviewCard>
         <ReviewCard title="Your details" onEdit={() => goToStep(1)}>
-          <dl className="grid gap-1 sm:grid-cols-2">
+          <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:gap-y-2">
             {reviewRows(details).map((row) => (
-              <div key={row.label} className="contents">
-                <dt>{row.label}</dt>
-                <dd>{row.value}</dd>
+              <div key={row.label} className="sm:contents">
+                <dt className="text-sm text-muted-foreground">{row.label}</dt>
+                <dd className="font-medium break-words">{reviewValue(row.value)}</dd>
               </div>
             ))}
           </dl>
         </ReviewCard>
-        <ReviewCard title="Price" onEdit={() => goToStep(2)}>
+        <ReviewCard title="Price">
           <ul className="space-y-1">
-            {quote.charges.map((charge) => (
-              <li key={charge.code} className="flex justify-between gap-4">
-                <span>{charge.label}</span>
-                <span>{formatMoney(charge.amount.amountMinor, charge.amount.currency)}</span>
+            {quote.lines.map((line) => (
+              <li key={line.label} className="flex justify-between gap-4">
+                <span>{line.label}</span>
+                <span>{formatMoney(line.amountMinor, quote.currency)}</span>
               </li>
             ))}
             <li className="flex justify-between gap-4 font-medium">
               <span>Total</span>
-              <span>{formatMoney(quote.total.amountMinor, quote.total.currency)}</span>
+              <span>{formatMoney(quote.totalMinor, quote.currency)}</span>
             </li>
           </ul>
         </ReviewCard>
@@ -690,30 +715,26 @@ export function OrderForm({
               onChange={(event) => setTermsAccepted(event.target.checked)}
               aria-invalid={fieldErrors.terms ? true : undefined}
               aria-describedby={fieldErrors.terms ? 'order-terms-error' : undefined}
-              className="mt-1"
+              className="mt-0.5 size-5 shrink-0 accent-primary"
             />
-            <label htmlFor="order-terms">I accept the terms, version {quote.termsVersion}.</label>
+            <label htmlFor="order-terms">
+              I accept the{' '}
+              <a href="/terms" target="_blank" rel="noopener" className="underline">
+                terms
+                <span className="sr-only"> (opens in a new tab)</span>
+              </a>
+              , version {quote.termsVersion}.
+            </label>
           </div>
           {fieldErrors.terms ? (
-            <p id="order-terms-error" role="alert">
+            <p id="order-terms-error" role="alert" className="text-sm text-destructive">
               {fieldErrors.terms}
             </p>
           ) : null}
-          <div className="flex items-start gap-3">
-            <input
-              id="order-marketing"
-              type="checkbox"
-              checked={marketingOptIn}
-              onChange={(event) => setMarketingOptIn(event.target.checked)}
-              className="mt-1"
-            />
-            <label htmlFor="order-marketing">
-              Send me occasional updates. You can unsubscribe at any time.
-            </label>
-          </div>
+          <p className="text-sm text-muted-foreground">{orderFormContent.reviewStep.reassurance}</p>
         </div>
         {orderError ? (
-          <div role="alert" className="space-y-2">
+          <div role="alert" className="space-y-2 text-destructive">
             <p>{orderError.message}</p>
             {orderError.code === 'not_saved' || orderError.code === 'transport_retry' ? (
               <Button type="button" onClick={performSubmit} disabled={busy}>
@@ -726,7 +747,11 @@ export function OrderForm({
           <Button type="submit" disabled={busy}>
             {busy ? 'Placing your order…' : 'Place order'}
           </Button>
-          <Button type="button" variant="outline" onClick={() => goToStep(2)}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => goToStep(documentsRequired ? 2 : 1)}
+          >
             Back
           </Button>
         </div>
@@ -745,14 +770,17 @@ export function OrderForm({
   return (
     <div className="space-y-8">
       {human.challenge}
-      <Stepper steps={STEPS} currentStepId={STEPS[stepIndex]?.id ?? 'plan'} />
+      <Stepper
+        steps={STEPS.filter((step) => step.id !== 'documents' || documentsRequired)}
+        currentStepId={STEPS[stepIndex]?.id ?? 'plan'}
+      />
       {showSummary && stepIndex !== 4 ? (
         <div
           ref={summaryRef}
           role="alert"
           tabIndex={-1}
           aria-labelledby="order-error-summary-title"
-          className="rounded-md border border-destructive p-4"
+          className="rounded-2xl border border-destructive p-4"
         >
           <h2 id="order-error-summary-title" className="font-medium">
             There is a problem
@@ -760,7 +788,9 @@ export function OrderForm({
           <ul className="mt-2 list-disc space-y-1 pl-5">
             {summaryItems.map((item) => (
               <li key={item.field}>
-                <a href={`#${FIELD_IDS[item.field]}`}>{item.message}</a>
+                <a href={`#${FIELD_IDS[item.field]}`} className="underline">
+                  {item.message}
+                </a>
               </li>
             ))}
             {orderError ? <li key="order">{orderError.message}</li> : null}

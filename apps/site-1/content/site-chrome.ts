@@ -103,3 +103,12 @@ export const siteFooter: FooterContent = {
     { label: 'Cookie settings', href: '#cookie-settings' },
   ],
 };
+
+/** `/plans` has no catalogue of its own: it sends the visitor to the plan pages. */
+export const plansHub = {
+  title: 'Plans',
+  description: 'Choose a plan type to see every plan and its monthly price.',
+  planTitle: 'Plan details',
+  planDescription: 'Plans are listed by type. Choose one to see every plan and its monthly price.',
+  links: siteChrome.navigation.filter((link) => link.href !== '/guides'),
+} as const;

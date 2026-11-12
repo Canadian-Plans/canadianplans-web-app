@@ -1,8 +1,0 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
-@import '@canadian-plans/ui/tokens.css';
-@import './crm-theme.css';
-
-@source '../../../../packages/ui/src';
-
-@custom-variant dark (&:is(.dark *));

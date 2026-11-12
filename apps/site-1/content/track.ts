@@ -1,9 +1,8 @@
 import type {
-  AmendableFieldKey,
-  DeliveryState,
-  OrderFulfilmentStatus,
-  PaymentState,
-} from '@canadian-plans/contracts';
+  ChangeableFieldKey,
+  TrackingDocumentState,
+  TrackingOrder,
+} from '@canadian-plans/crm-contracts';
 
 /**
  * Live order tracking (/track, owner request 25 Oct 2026): the customer signs in
@@ -51,58 +50,56 @@ export const trackCopy = {
     empty: 'We could not find any orders for this email.',
     open: 'View order',
     actionNeeded: 'Action needed',
+    planNotGiven: 'Plan not shown',
     submitted: 'Ordered',
     signOut: 'Sign out',
   },
   detail: {
     back: '← All my orders',
     orderPrefix: 'Order',
-    updated: 'Last updated {date}',
+    submittedOn: 'Ordered on {date}',
     requestChange: 'Request change →',
     detailsTitle: 'Order details',
     detailsIntro:
-      'Everything you sent us. Something wrong? Request a change and our team will review it. Your order stays as submitted until a change is approved.',
+      'What we have on your order. Something wrong? Request a change and our team will review it. Your order stays as submitted until a change is approved.',
+    detailsIntroLocked: 'What we have on your order. To change something, contact us.',
     plan: 'Plan',
     planName: 'Plan',
-    billing: 'Billing',
+    planNotGiven: 'Not shown',
     price: 'Price',
-    payableToday: 'Due today',
-    payment: 'Payment',
-    delivery: 'Hand-over',
-    trackingReference: 'Provider reference',
+    quantity: 'Quantity',
     submitted: 'Ordered on',
+    delivery: 'Delivery',
+    deliveryMethod: 'Delivery method',
+    courier: 'Courier',
+    trackingNumber: 'Tracking number',
+    dispatched: 'Sent on',
+    simNumber: 'SIM number',
     personal: 'Your details',
-    name: 'Name',
-    email: 'Email',
-    phone: 'Phone',
-    country: 'Country code',
-    arrival: 'Arrival',
-    currentCountry: 'Country you are in now',
-    destination: 'Destination in Canada',
+    name: 'Full name',
+    phone: 'Phone number',
     arrivalDate: 'Arrival date',
+    destination: 'Destination in Canada',
+    permitType: 'Visa or permit type',
+    shippingAddress: 'Shipping address',
+    flightBooked: 'Flight booked',
+    yes: 'Yes',
+    no: 'No',
     notGiven: 'Not given',
     documents: 'Documents',
-    documentsNone: 'This plan needs no documents.',
+    documentsNone: 'No documents are listed for this order.',
     documentsNote: 'We use your documents only to set up your plan, and we keep them private.',
-    changesTitle: 'Your change requests',
-    changePending: 'Waiting for review',
-    changeApproved: 'Approved',
-    changeRejected: 'Not approved',
+    pendingTitle: 'Your change request',
+    pendingStatus: 'Waiting for review',
+    pendingRequest: 'Request {number}',
+    pendingFields: 'Details you asked to change',
+    pendingDocuments: 'Documents you sent',
+    pendingUpdated: 'Sent {date}',
   },
   action: {
     title: 'We need something from you',
     documents: 'Upload the documents below so we can continue.',
-    info: 'Our team asked for a few details. Fill them in below.',
     mark: '!',
-  },
-  info: {
-    title: 'Details we need',
-    submit: 'Send details',
-    pending: 'Sending…',
-    sent: 'Thank you. Our team will review your details.',
-    fieldError: 'Fill in this detail.',
-    failed: 'We could not send your details. Please try again.',
-    mismatch: 'Fill in every detail we asked for.',
   },
   upload: {
     choose: 'Upload {document}',
@@ -113,25 +110,22 @@ export const trackCopy = {
     typeError: 'Choose a PDF, JPG or PNG file.',
     sizeError: 'That file is larger than the 10 MB limit.',
     failed: 'The upload could not be completed. Please try again.',
+    expired: 'The upload took too long. Please choose the file again.',
     rejected: 'That file could not be verified as a PDF, JPG or PNG. Please choose another file.',
     unavailable: 'Uploads are not available right now. Please try again later.',
-    statusReceived: 'Received',
-    statusApproved: '✓ Approved',
-    statusReplace: 'Needs a new file',
-    statusMissing: 'Still needed',
+    checking: 'We are still checking your file. Please try again in a moment.',
+    notAllowed: 'Documents can no longer be added to this order here. Contact us for help.',
+    mismatch: 'This order does not take that document.',
+    sent: 'Sent for review',
     doc: 'DOC',
   },
   change: {
     title: 'Request a change',
     description: 'Ask us to correct your details. Our team reviews every request.',
-    legend: 'What do you want to change?',
+    legend: 'Correct the details that are wrong',
     current: 'Current:',
-    newValue: 'New value',
-    noteLabel: 'Anything else we should know?',
-    optional: '(optional)',
-    notePlaceholder: 'For example, my flight moved to the next day',
     notice:
-      'Our team will review your request and email you if anything else is needed. Plan and price changes are not made here; contact us for those.',
+      'Our team will review your request. If you already have a request waiting for review, this one replaces it. Plan and price changes are not made here; contact us for those.',
     send: 'Send request →',
     pending: 'Sending…',
     cancel: 'Cancel',
@@ -140,13 +134,16 @@ export const trackCopy = {
     successTitle: 'Request sent',
     success: 'Our team will review your change. Your order shows the new details once approved.',
     done: 'Done',
-    valueError: 'Enter the new value.',
-    emailError: 'Enter a valid email address.',
-    countryCodeError: 'Enter a two-letter country code, for example IN.',
-    noteError: 'Keep the note to 2,000 characters.',
+    unchanged: 'Change at least one detail before sending.',
+    invalid: 'Check the details you entered and try again.',
     failed: 'We could not send your request. Please try again.',
-    tooMany:
-      'You already have three changes waiting for review on this order. We will get to them soon.',
+    notAllowed: 'This order can no longer be changed here. Contact us for help.',
+    fieldErrors: {
+      fullName: 'Enter your full name.',
+      phone: 'Enter a phone number with at least seven digits.',
+      arrivalDate: 'Enter a valid arrival date.',
+      canadaAddress: 'Enter your destination in Canada.',
+    },
   },
   session: {
     expired: 'For your security, please confirm your email again.',
@@ -160,78 +157,55 @@ export const trackCopy = {
   },
 } as const;
 
-/** Customer-facing names for the details a customer may change or be asked for. */
-export const trackFieldLabels: Readonly<Record<AmendableFieldKey, string>> = {
-  'contact.fullName': 'Full name',
-  'contact.email': 'Email',
-  'contact.phone': 'Phone number',
-  'contact.countryCode': 'Country code',
-  'form.currentCountry': 'Country you are in now',
-  'form.destination': 'Destination in Canada',
-  'form.arrivalDate': 'Arrival date',
+/** Customer-facing names for every detail a change request can carry. */
+export const trackFieldLabels: Readonly<Record<ChangeableFieldKey, string>> = {
+  fullName: 'Full name',
+  phone: 'Phone number',
+  planId: 'Plan',
+  delivery: 'Delivery method',
+  arrivalDate: 'Arrival date',
+  permitType: 'Visa or permit type',
+  canadaAddress: 'Destination in Canada',
+  shippingAddress: 'Shipping address',
+  flightBooked: 'Flight booked',
 };
 
-/** The change options in the order the dialog lists them. */
-export const trackChangeFields: readonly AmendableFieldKey[] = [
-  'contact.email',
-  'form.arrivalDate',
-  'form.destination',
-  'contact.fullName',
-  'contact.phone',
-  'form.currentCountry',
-];
+/** Customer-facing names for the documents an order can list. */
+export const trackDocumentLabels: Readonly<Record<string, string>> = {
+  passport: 'Passport',
+  visa: 'Visa or permit',
+  address_proof: 'Proof of address',
+  government_id: 'Government-issued ID',
+};
 
-/** What each fulfilment status means to the customer; never internal notes. */
-export const trackStatusCopy: Readonly<
-  Record<OrderFulfilmentStatus, { label: string; description: string }>
+export const trackDocumentStateCopy: Readonly<Record<TrackingDocumentState, string>> = {
+  missing: 'Still needed',
+  received: 'Received',
+  approved: '✓ Approved',
+  needs_replacement: 'Needs a new file',
+};
+
+export const trackDeliveryCopy: Readonly<Record<NonNullable<TrackingOrder['delivery']>, string>> = {
+  esim: 'eSIM',
+  pickup: 'Pickup',
+};
+
+export const trackPermitCopy: Readonly<
+  Record<NonNullable<TrackingOrder['details']['permitType']>, string>
 > = {
-  submitted: {
-    label: 'Received',
-    description: 'We have your order. Our team will contact you to confirm it.',
-  },
-  in_progress: { label: 'In progress', description: 'Our team is working on your order.' },
-  awaiting_customer: {
-    label: 'Action needed',
-    description: 'We need something from you before we can continue.',
-  },
-  ready_for_delivery: {
-    label: 'Ready',
-    description: 'Your order is ready to pass to your service provider.',
-  },
-  dispatched: {
-    label: 'With your provider',
-    description:
-      'Your order has been passed to your service provider for activation. They will contact you directly.',
-  },
-  activated: { label: 'Active', description: 'Your service is active.' },
-  cancelled: { label: 'Cancelled', description: 'This order was cancelled.' },
+  newcomer: 'Newcomer',
+  student: 'Student',
+  worker: 'Worker',
+  tourist: 'Tourist',
 };
 
-export const trackPaymentCopy: Readonly<Record<PaymentState, string>> = {
-  not_required: 'Nothing to pay now',
-  pending: 'Payment pending',
-  paid: 'Paid',
-};
+type TrackBillingPeriod = NonNullable<TrackingOrder['plan']>['billingPeriod'];
 
-export const trackDeliveryCopy: Readonly<Record<DeliveryState, string>> = {
-  none: 'Not yet passed to your provider',
-  dispatched: 'Passed to your provider',
-};
-
-export const trackBillingCopy = {
+/** Follows the price; a one-time price stands alone. */
+export const trackBillingCopy: Readonly<Record<TrackBillingPeriod, string>> = {
+  one_time: 'one time',
   month: 'per month',
   '30_days': 'per 30 days',
   '90_days': 'per 90 days',
-} as const;
-
-/** The progress steps shown on an order, in order. */
-export const trackProgressSteps: readonly {
-  label: string;
-  statuses: readonly OrderFulfilmentStatus[];
-}[] = [
-  { label: 'Received', statuses: ['submitted'] },
-  { label: 'In progress', statuses: ['in_progress', 'awaiting_customer'] },
-  { label: 'Ready', statuses: ['ready_for_delivery'] },
-  { label: 'With your provider', statuses: ['dispatched'] },
-  { label: 'Active', statuses: ['activated'] },
-];
+  year: 'per year',
+};

@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { buildOrganizationSchema, serializeOrganizationSchema } from './organization-schema';
+import {
+  buildOrganizationSchema,
+  buildWebSiteSchema,
+  serializeOrganizationSchema,
+} from './organization-schema';
 
 describe('organization schema', () => {
   it('describes the business at the deployment origin without a trailing slash problem', () => {
@@ -19,5 +23,18 @@ describe('organization schema', () => {
     expect(parsed).toMatchObject({ email: 'info@canadianplans.com' });
     expect(serialized).not.toContain('<');
     expect(serialized).not.toMatch(/takib/iu);
+  });
+
+  it('names the site and points at the organization that publishes it', () => {
+    const site = buildWebSiteSchema('https://example.test/');
+    expect(site).toMatchObject({
+      '@type': 'WebSite',
+      '@id': 'https://example.test/#website',
+      name: 'Canadian Plans',
+      url: 'https://example.test/',
+      inLanguage: 'en-CA',
+    });
+    expect(site.publisher['@id']).toBe(buildOrganizationSchema('https://example.test')['@id']);
+    expect(serializeOrganizationSchema(site)).not.toContain('<');
   });
 });

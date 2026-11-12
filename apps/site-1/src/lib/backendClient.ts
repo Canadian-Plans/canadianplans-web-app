@@ -1,6 +1,6 @@
 import 'server-only';
 import { randomUUID } from 'node:crypto';
-import { createBackendClient, type BackendClient } from '@canadian-plans/contracts';
+import { createBackendClient, type BackendClient } from '@canadian-plans/crm-contracts';
 import { getBackendConfig } from '../backend.config';
 import { websiteVisitorId } from './visitor';
 
