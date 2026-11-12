@@ -339,7 +339,7 @@ export const mobileLandingPage: LandingKitPage = {
     lead: `Three 5G+ plans with unlimited talk and text, from $${lowestPrice} a month. Bring your unlocked phone, choose an eSIM or a SIM card, and we move your number for you. Nothing to pay on this website.`,
     bullets: [],
     primary: { label: 'See the three plans', href: '#plans' },
-    secondary: { label: 'Will my phone work?', href: '#compatibility' },
+    secondary: { label: 'Will my phone work?', href: '#showcase-compatibility' },
     priceLabel: 'From',
     price: `$${lowestPrice}`,
     priceSuffix: '/mo + tax',
