@@ -458,6 +458,15 @@
 .cp-hd-carousel .cp-hd-dot[aria-pressed='true'] {
   background: var(--cp-hd-brand);
 }
+/* A 12px dot is too small to tap: the hit area extends around it. */
+.cp-hd-carousel .cp-hd-dot {
+  position: relative;
+}
+.cp-hd-carousel .cp-hd-dot::after {
+  content: '';
+  position: absolute;
+  inset: calc(var(--cp-space-16) * -1) calc(var(--cp-space-6) * -1);
+}
 
 /* ---------- Category picker ---------- */
 .cp-hd-picker {

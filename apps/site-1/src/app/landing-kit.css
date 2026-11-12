@@ -887,6 +887,33 @@ a.cp-lp-card:hover .cp-lp-card-action[data-featured='true'] {
   background: var(--cp-hd-tint-blue);
   font-weight: var(--cp-hd-weight-bold);
 }
+/* Phones: the row labels stay in place while the columns scroll, and the
+   columns are narrow enough that the next one is always partly in view, so it
+   is clear there is more to compare. */
+@media (width < 48rem) {
+  .cp-lp-table {
+    min-width: calc(var(--cp-space-44) * 11);
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: var(--cp-text-14);
+  }
+  .cp-lp-table th,
+  .cp-lp-table td {
+    padding: var(--cp-space-12);
+  }
+  .cp-lp-table thead th {
+    font-size: var(--cp-text-15);
+  }
+  .cp-lp-table thead th:first-child,
+  .cp-lp-table th[scope='row'] {
+    position: sticky;
+    left: 0;
+    width: calc(var(--cp-space-44) * 3);
+    min-width: calc(var(--cp-space-44) * 3);
+    background: var(--cp-color-white);
+    border-right: var(--cp-border-thin) solid var(--cp-hd-card-line);
+  }
+}
 .cp-lp-table-foot {
   display: flex;
   flex-wrap: wrap;
@@ -1111,6 +1138,9 @@ a.cp-lp-card:hover .cp-lp-card-action[data-featured='true'] {
 .cp-lp-faq-list .cp-faq-item summary {
   font-size: var(--cp-text-18);
   font-weight: var(--cp-hd-weight-bold);
+  /* 44px tap row without moving the text. */
+  padding-block: var(--cp-space-6);
+  margin-block: calc(var(--cp-space-6) * -1);
 }
 .cp-lp-faq-list .cp-faq-answer {
   font-size: var(--cp-text-15);
