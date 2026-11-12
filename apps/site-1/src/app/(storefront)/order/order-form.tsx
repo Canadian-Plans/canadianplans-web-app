@@ -504,7 +504,12 @@ export function OrderForm({
         </CardHeader>
         <CardContent className="space-y-8">
           {offers.length === 0 ? (
-            <p>{copy.empty}</p>
+            <div className="space-y-4">
+              <p>{copy.empty}</p>
+              <Button asChild variant="outline">
+                <a href="/contact">{copy.emptyContact}</a>
+              </Button>
+            </div>
           ) : (
             <>
               {active && present.length > 1 ? (

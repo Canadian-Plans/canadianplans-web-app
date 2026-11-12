@@ -122,6 +122,7 @@ export const orderFormContent = {
     description:
       'Pick the plan that fits. You see the price again before you place the order, and nothing is paid on this website.',
     empty: 'No plans are available right now. Please try again later.',
+    emptyContact: 'Contact us',
     chooseTitle: 'What are you looking for?',
     seePlans: 'See plans',
     select: 'Select plan',
