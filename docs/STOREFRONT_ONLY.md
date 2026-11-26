@@ -105,12 +105,11 @@ not in these runs.
 
 ## What is not done yet
 
-- **No order has been tried against the live CRM.** Reading works: on
-  2026-11-26 the live `/order` listed the 23 launch plans from the CRM's
-  `GET /website/plans`, so production has a working site key. Saving, uploads,
-  submitting, emails and `/track` have only run against the stub above. A test
-  order of each kind against the live CRM, followed on `/track`, is the owner's
-  final check.
+- **Tried against the live CRM on 2026-11-26:** one SIM order (`MS-1`), one
+  internet and one mobile order went from the live site
+  into the CRM with their campaign attribution, each sent its Order received
+  email once the owner switched that automation on, and `/track` sent its
+  codes. See [LAUNCH_NEXT.md](LAUNCH_NEXT.md).
 - **`/order/pre-arrival` and `/order/home-internet`** were preview-only pages
   before the split and still are.
 - **The old `packages/contracts`** can be cut down to the province helpers and
@@ -125,14 +124,10 @@ not in these runs.
 
 ## What comes next
 
-1. In the CRM admin: save the email settings (the site key and the plans are
-   in place, see above).
-2. Deploy `main` to the storefront's Vercel project (search indexing was opened
-   on 2026-11-26, `STOREFRONT_INDEXING_OPEN` in `src/lib/seo.ts`), then submit
-   `https://canadianplans.com/sitemap.xml` to Google Search Console and Bing
-   Webmaster Tools.
-3. Place a test order of each kind and follow it on `/track`. This is the check
-   the browser suites cannot make.
+The plan for the next session is [LAUNCH_NEXT.md](LAUNCH_NEXT.md) (written
+2026-11-26): test orders of all three kinds passed on the live site; next are
+search engine registration, the credit-check consent version, Resend delivery
+reports and the launch posts.
 
 ## Reading the older documents
 

@@ -14,6 +14,7 @@ session workflow; this page only tells you where things are.
 | [TASK_TEMPLATE.md](TASK_TEMPLATE.md)       | The fields every task fills in: REQ IDs, contract, schema, negative tests, evidence, rollback.             |
 | [OWNER_PLAYBOOK.md](OWNER_PLAYBOOK.md)     | How the owner runs the build and what to review.                                                           |
 | [OPEN_INPUTS.md](OPEN_INPUTS.md)           | Business inputs: open questions and every recorded owner decision. Never invent an answer.                 |
+| [LAUNCH_NEXT.md](LAUNCH_NEXT.md)           | **Start here:** the current plan from working orders to marketing the site (26 November 2026).           |
 | [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md) | From "code on `main`" to the first real order fulfilled, with production status checks.                    |
 | [LAUNCH_PLANS.md](LAUNCH_PLANS.md)         | The plans, prices and promotions confirmed for launch (feeds the repo catalogue, ADR 0005).                |
 | [RETENTION_POLICY.md](RETENTION_POLICY.md) | Customer-data retention and deletion rules (request-only deletion, 21 October 2026).                       |
