@@ -34,7 +34,7 @@ describe('joinWaitlist', () => {
           schemaVersion: 1,
           payload: { kind: 'region_waitlist', interest: 'internet', province: 'NS' },
         },
-        consentVersion: 'privacy-2026-10-v2',
+        consentVersion: 'privacy-2026-11-v3',
         submit: true,
       },
       { turnstileToken: 'synthetic-proof' },

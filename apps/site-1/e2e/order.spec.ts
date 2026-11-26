@@ -236,6 +236,30 @@ test.describe('pre-arrival SIM order', () => {
     });
   });
 
+  test('a campaign link to the home page is remembered for an order placed later in the visit', async ({
+    page,
+    context,
+  }) => {
+    await page.goto('/?utm_source=facebook&utm_medium=social&utm_campaign=launch&partner=MAPLE10');
+    const remembered = (await context.cookies()).find((cookie) => cookie.name === 'cp_campaign');
+    expect(remembered?.httpOnly).toBe(true);
+    expect(remembered?.expires).toBe(-1); // a session cookie
+    // The visitor browses on and reaches the plan list without the campaign in the URL.
+    await chooseSimPlan(page);
+    await fillSimDetails(page);
+    await continueFromDetails(page);
+
+    const leads = await stub.leads();
+    expect(leads).toHaveLength(1);
+    expect(leads[0]?.attribution).toEqual({
+      utmSource: 'facebook',
+      utmMedium: 'social',
+      utmCampaign: 'launch',
+      partnerCode: 'MAPLE10',
+      landingPath: '/',
+    });
+  });
+
   test('a reload mid-draft restores the details without exposing the draft grant', async ({
     page,
     context,

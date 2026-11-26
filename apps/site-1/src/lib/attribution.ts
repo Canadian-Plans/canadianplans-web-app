@@ -1,4 +1,5 @@
 import type { RawAttribution } from '@canadian-plans/contracts';
+import { z } from 'zod';
 
 /**
  * Captures attribution from the order URL and the referrer header into the
@@ -49,6 +50,8 @@ export interface AttributionSources {
   referrer: string | undefined;
   /** This storefront's own origin, so same-site referrers become landing paths. */
   origin: string | undefined;
+  /** The page a remembered campaign landed on (see `readCampaignCookie`); wins over the referrer. */
+  landingPath?: string | undefined;
 }
 
 function first(value: string | string[] | undefined): string | undefined {
@@ -92,6 +95,15 @@ function landingPathFromReferrer(referrer: string | undefined, origin: string | 
   return undefined;
 }
 
+/** A bare same-site path (no query, fragment or scheme), or undefined. */
+function screenedPath(value: string | undefined): string | undefined {
+  const path = bounded(value, LANDING_PATH_MAX);
+  if (!path || !path.startsWith('/') || path.startsWith('//') || /[?#\\]/.test(path)) {
+    return undefined;
+  }
+  return path;
+}
+
 function referrerHostFor(referrer: string | undefined, origin: string | undefined) {
   if (!referrer) return undefined;
   let parsed: URL;
@@ -123,7 +135,10 @@ export function captureRawAttribution(sources: AttributionSources): RawAttributi
   const boundedPartner = safeAttributionValue(bounded(partnerCode, PARTNER_CODE_MAX));
   if (boundedPartner) attribution['partnerCode'] = boundedPartner;
 
-  const landingPath = landingPathFromReferrer(sources.referrer, sources.origin) ?? '/order';
+  const landingPath =
+    screenedPath(sources.landingPath) ??
+    landingPathFromReferrer(sources.referrer, sources.origin) ??
+    '/order';
   attribution['landingPath'] = landingPath;
 
   const referrerHost = referrerHostFor(sources.referrer, sources.origin);
@@ -162,4 +177,97 @@ export function orderHref(
   for (const [key, value] of campaignQueryParams(attribution)) query.set(key, value);
   const text = query.toString();
   return text ? `/order?${text}` : '/order';
+}
+
+/**
+ * Session cookie that remembers the campaign a visitor landed with on any page,
+ * so an order placed later in the same visit is still attributed. It holds only
+ * the screened utm and partner values and the landing path (no personal data),
+ * has no expiry (the browser drops it when the session ends) and is set by
+ * `src/proxy.ts`. Disclosed in the privacy policy, version 3, section 1.
+ */
+export const CAMPAIGN_COOKIE = 'cp_campaign';
+
+const storedCampaignSchema = z.object({
+  params: z.record(z.string(), z.unknown()),
+  landingPath: z.unknown().optional(),
+});
+
+interface StoredCampaign {
+  readonly params: Record<string, string>;
+  readonly landingPath: string;
+}
+
+/** The cookie value for a landing URL that carries a campaign, or undefined when it carries none. */
+export function campaignCookieValue(
+  searchParams: SearchParams,
+  pathname: string,
+  existing?: string,
+): string | undefined {
+  // The same campaign again (the order form carries it in its links) keeps the
+  // page it first landed on.
+  if (rememberedCampaign(searchParams, existing) && hasCampaign(searchParams)) return undefined;
+  const screened = captureRawAttribution({ searchParams, referrer: undefined, origin: undefined });
+  const params = campaignQueryParams(screened);
+  if (params.length === 0) return undefined;
+  const stored: StoredCampaign = {
+    params: Object.fromEntries(params),
+    landingPath: screenedPath(pathname) ?? '/',
+  };
+  return JSON.stringify(stored);
+}
+
+function campaignKey(searchParams: SearchParams): string {
+  const screened = captureRawAttribution({ searchParams, referrer: undefined, origin: undefined });
+  return JSON.stringify(campaignQueryParams(screened));
+}
+
+/** True when the URL itself names a campaign. */
+export function hasCampaign(searchParams: SearchParams): boolean {
+  return campaignKey(searchParams) !== '[]';
+}
+
+/**
+ * The remembered campaign that applies to this request: the cookie's, unless the
+ * URL names a different campaign (a new link wins). The same campaign carried in
+ * the URL by the order form keeps the remembered landing page.
+ */
+export function rememberedCampaign(
+  searchParams: SearchParams,
+  cookieValue: string | undefined,
+): ReturnType<typeof readCampaignCookie> {
+  const stored = readCampaignCookie(cookieValue);
+  if (!stored) return undefined;
+  if (!hasCampaign(searchParams)) return stored;
+  return campaignKey(searchParams) === campaignKey(stored.searchParams) ? stored : undefined;
+}
+
+/**
+ * Reads the remembered campaign back as query-shaped parameters plus its landing
+ * path. Anything malformed or unknown is dropped; the values are screened again
+ * by `captureRawAttribution`, so a hand-edited cookie gains nothing.
+ */
+export function readCampaignCookie(
+  value: string | undefined,
+): { searchParams: SearchParams; landingPath: string | undefined } | undefined {
+  if (!value || value.length > 2048) return undefined;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(value);
+  } catch {
+    return undefined;
+  }
+  const stored = storedCampaignSchema.safeParse(parsed);
+  if (!stored.success) return undefined;
+  const allowed = new Set<string>([...UTM_KEYS.map(([key]) => key), 'partner']);
+  const searchParams: SearchParams = {};
+  for (const [key, raw] of Object.entries(stored.data.params)) {
+    if (allowed.has(key) && typeof raw === 'string') searchParams[key] = raw;
+  }
+  if (Object.keys(searchParams).length === 0) return undefined;
+  const path = stored.data.landingPath;
+  return {
+    searchParams,
+    landingPath: screenedPath(typeof path === 'string' ? path : undefined),
+  };
 }

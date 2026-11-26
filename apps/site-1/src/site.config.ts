@@ -16,7 +16,7 @@ export const siteConfig = {
      * Disclosure/consent version recorded when a draft lead is saved (REQ 17).
      * Identifies the current published privacy policy.
      */
-    consentVersion: 'privacy-2026-10-v2',
+    consentVersion: 'privacy-2026-11-v3',
     /**
      * The terms a customer accepts with an order: version 2 of
      * `content/legal-published.ts` (effective 21 October 2026). Change both together.
@@ -31,6 +31,6 @@ export const siteConfig = {
      * Version of the notice shown with the region wish list, recorded with the
      * address (ADR 0005, D5). TEST placeholder until the owner approves the text.
      */
-    waitlistConsentVersion: 'privacy-2026-10-v2',
+    waitlistConsentVersion: 'privacy-2026-11-v3',
   },
 };

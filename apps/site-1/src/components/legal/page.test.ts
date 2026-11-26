@@ -7,6 +7,7 @@ vi.mock('@/components/shared/site-header', () => ({ SiteHeader: () => null }));
 import { LegalPage } from './page';
 import { repoLegalPage, testPlaceholder } from '@/lib/legal';
 import { legalDrafts } from '@content/legal';
+import { siteConfig } from '@/site.config';
 describe('legal page source ownership', () => {
   beforeAll(() => vi.stubGlobal('React', React));
   afterAll(() => vi.unstubAllGlobals());
@@ -56,8 +57,18 @@ describe('legal page source ownership', () => {
       expect(html).toContain(`<h1>${heading}</h1>`);
       expect(html).toContain('<h2');
       expect(html).toContain('9981 Whalley Blvd');
-      expect(html.replace(/<!--.*?-->/gu, '')).toContain('Version 2');
+      expect(html.replace(/<!--.*?-->/gu, '')).toContain(
+        slug === 'privacy' ? 'Version 3' : 'Version 2',
+      );
       expect(html).not.toContain('not approved legal text');
     }
+  });
+
+  it('discloses the campaign cookie in the privacy policy the site records consent to', () => {
+    const page = repoLegalPage('privacy');
+    expect(siteConfig.legal.consentVersion).toBe(`privacy-2026-11-v${page.version}`);
+    const html = renderToStaticMarkup(createElement(LegalPage, { slug: 'privacy', page }));
+    expect(html).toContain('campaign or a partner');
+    expect(html).toContain('deleted when you close your browser');
   });
 });

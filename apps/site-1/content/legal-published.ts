@@ -178,6 +178,9 @@ const privacyBody: readonly LegalBlock[] = [
   paragraph(
     'Information collected automatically. Our website may collect standard technical information such as IP address, browser type and the pages you visit. We use privacy-friendly analytics that count visits and the provinces and plans people look at, without recording personal details. We use a bot-protection check on forms.',
   ),
+  paragraph(
+    'Where you came from. If you arrive through a link that names a campaign or a partner (for example a link in one of our social media posts, or from a partner or agent who refers you), we remember that campaign, the partner code and the page you arrived on in an essential cookie for the rest of your visit, and record them with any order or enquiry you submit. This tells us which posts and partners bring customers, and lets us credit a partner for a referral. The cookie holds no personal details and is deleted when you close your browser.',
+  ),
   heading('2. Why we collect it'),
   paragraph('We use your personal information only to:'),
   bullet('contact you about the order or enquiry you submitted;'),
@@ -237,7 +240,7 @@ const privacyBody: readonly LegalBlock[] = [
   ),
   heading('7. Cookies'),
   paragraph(
-    'We use essential cookies to make the site work. With your consent, we use analytics cookies to count visits. If you agree to marketing cookies, advertising platforms may set cookies to measure our advertising. You can change your choice at any time in Cookie settings, and through your browser settings; disabling cookies may affect how parts of the site work.',
+    'We use essential cookies to make the site work, including the one that remembers the campaign or partner link you arrived through (section 1). With your consent, we use analytics cookies to count visits. If you agree to marketing cookies, advertising platforms may set cookies to measure our advertising. You can change your choice at any time in Cookie settings, and through your browser settings; disabling cookies may affect how parts of the site work.',
   ),
   heading('8. Children'),
   paragraph(
@@ -262,8 +265,8 @@ export const publishedLegal: Record<LegalSlug, PublishedLegal> = {
   },
   privacy: {
     title: 'Privacy Policy',
-    version: 2,
-    effectiveDate: '2026-10-21',
+    version: 3,
+    effectiveDate: '2026-11-26',
     body: privacyBody,
   },
 };
