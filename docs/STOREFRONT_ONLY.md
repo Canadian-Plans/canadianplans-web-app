@@ -115,13 +115,13 @@ not in these runs.
   before the split and still are.
 - **The old `packages/contracts`** can be cut down to the province helpers and
   `cms/` once nothing else imports it.
-- **Campaign attribution** (`utm_*`, partner code) is read only on `/order`.
-  Since 2026-11-26 the order form carries it across choosing a plan type, a
-  province and a plan (`orderHref` in `src/lib/attribution.ts`), so a link to
-  `/order?utm_source=…` keeps it to the saved lead. A campaign link to any other
-  page (the home page, a landing page) still loses it: carrying it from there
-  would need the site to remember it in the browser, which is a consent
-  decision for the owner.
+- **Campaign attribution** (`utm_*`, partner code), since 2026-11-26: a
+  campaign link to any page is remembered for the visit in the essential session
+  cookie `cp_campaign` (`src/proxy.ts`, disclosed in privacy version 3), and the
+  order form carries it across choosing a plan type, a province and a plan
+  (`orderHref` in `src/lib/attribution.ts`). The lead records the campaign and
+  the page it landed on. The CRM keeps a landing page only if it is on its
+  route list (`apps/backend/src/leads/attribution.ts` there).
 
 ## What comes next
 

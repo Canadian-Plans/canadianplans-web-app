@@ -14,9 +14,9 @@ there.
 
 Each channel gets its own link so the order records where the customer came from (the
 site stores `utm_source`, `utm_medium` and `utm_campaign` with the lead). The links open the
-plan list on `/order`: the campaign is read there and carried through choosing a plan type
-and a plan. A link to the home page or any other page loses it, because only `/order` reads
-these parameters.
+plan list on `/order`, the shortest way to an order. A tagged link to any other page (the
+home page, a landing page or a guide) also works: the site remembers the campaign for the
+visit and records it with the order.
 
 | Channel              | Link                                                                                         |
 | -------------------- | -------------------------------------------------------------------------------------------- |
