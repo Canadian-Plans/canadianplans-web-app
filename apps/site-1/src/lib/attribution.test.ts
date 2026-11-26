@@ -1,6 +1,14 @@
 import { describe, expect, test } from 'vitest';
 
-import { captureRawAttribution } from './attribution';
+import {
+  campaignCookieValue,
+  campaignQueryParams,
+  captureRawAttribution,
+  hasCampaign,
+  orderHref,
+  readCampaignCookie,
+  rememberedCampaign,
+} from './attribution';
 
 const ORIGIN = 'https://site-1.example';
 
@@ -98,5 +106,137 @@ describe('captureRawAttribution', () => {
     ).toEqual({
       landingPath: '/order',
     });
+  });
+});
+
+describe('carrying campaign parameters across /order', () => {
+  const landed = captureRawAttribution({
+    searchParams: {
+      utm_source: 'whatsapp',
+      utm_medium: 'social',
+      utm_campaign: 'launch',
+      ref: 'AGENT-7',
+      secret: 'do-not-forward',
+    },
+    referrer: undefined,
+    origin: ORIGIN,
+  });
+
+  test('rebuilds only the screened utm and partner keys', () => {
+    expect(campaignQueryParams(landed)).toEqual([
+      ['utm_source', 'whatsapp'],
+      ['utm_medium', 'social'],
+      ['utm_campaign', 'launch'],
+      ['partner', 'AGENT-7'],
+    ]);
+  });
+
+  test('a plan link keeps the campaign, and the next page captures it again', () => {
+    const href = orderHref({ plan: 'plan id/1', province: 'BC' }, landed);
+    expect(href).toBe(
+      '/order?plan=plan+id%2F1&province=BC&utm_source=whatsapp&utm_medium=social&utm_campaign=launch&partner=AGENT-7',
+    );
+    const next = new URL(href, ORIGIN);
+    const again = captureRawAttribution({
+      searchParams: Object.fromEntries(next.searchParams),
+      referrer: `${ORIGIN}/order`,
+      origin: ORIGIN,
+    });
+    expect(again).toMatchObject({
+      utmSource: 'whatsapp',
+      utmMedium: 'social',
+      utmCampaign: 'launch',
+      partnerCode: 'AGENT-7',
+    });
+    expect(href).not.toContain('do-not-forward');
+  });
+
+  test('no campaign and no parameters gives the bare order page', () => {
+    const plain = captureRawAttribution({ searchParams: {}, referrer: undefined, origin: ORIGIN });
+    expect(orderHref({ category: undefined }, plain)).toBe('/order');
+    expect(orderHref({ category: 'sim' }, plain)).toBe('/order?category=sim');
+  });
+});
+
+describe('remembering a campaign for the visit', () => {
+  test('a landing URL with a campaign gives a cookie holding only screened values and the path', () => {
+    const value = campaignCookieValue(
+      {
+        utm_source: 'facebook',
+        utm_campaign: 'launch',
+        utm_content: 'someone@example.test',
+        partner_code: 'MAPLE10',
+        secret: 'nope',
+      },
+      '/pre-arrival-sim/students',
+    );
+    expect(value).toBeDefined();
+    expect(JSON.parse(value ?? '')).toEqual({
+      params: { utm_source: 'facebook', utm_campaign: 'launch', partner: 'MAPLE10' },
+      landingPath: '/pre-arrival-sim/students',
+    });
+    expect(value).not.toContain('example.test');
+    expect(value).not.toContain('nope');
+  });
+
+  test('no campaign, no cookie', () => {
+    expect(campaignCookieValue({ plan: 'x', province: 'BC' }, '/order')).toBeUndefined();
+    expect(campaignCookieValue({ utm_source: 'a@b.co' }, '/')).toBeUndefined();
+    expect(hasCampaign({ plan: 'x' })).toBe(false);
+    expect(hasCampaign({ ref: 'AGENT7' })).toBe(true);
+  });
+
+  test('the remembered campaign becomes the order attribution, landing page included', () => {
+    const remembered = readCampaignCookie(
+      campaignCookieValue({ utm_source: 'whatsapp', utm_medium: 'social' }, '/'),
+    );
+    expect(remembered).toEqual({
+      searchParams: { utm_source: 'whatsapp', utm_medium: 'social' },
+      landingPath: '/',
+    });
+    const attribution = captureRawAttribution({
+      searchParams: { plan: 'p1', ...remembered?.searchParams },
+      referrer: `${ORIGIN}/mobile-plans`,
+      origin: ORIGIN,
+      landingPath: remembered?.landingPath,
+    });
+    expect(attribution).toEqual({ utmSource: 'whatsapp', utmMedium: 'social', landingPath: '/' });
+  });
+
+  test('the same campaign carried by the order form keeps its landing page; a new one wins', () => {
+    const cookie = campaignCookieValue({ utm_source: 'facebook', utm_campaign: 'launch' }, '/faq');
+    const carried = { plan: 'p1', utm_source: 'facebook', utm_campaign: 'launch' };
+    expect(campaignCookieValue(carried, '/order', cookie)).toBeUndefined();
+    expect(rememberedCampaign(carried, cookie)?.landingPath).toBe('/faq');
+    expect(rememberedCampaign({ plan: 'p1' }, cookie)?.landingPath).toBe('/faq');
+    const other = { utm_source: 'whatsapp', utm_campaign: 'launch' };
+    expect(rememberedCampaign(other, cookie)).toBeUndefined();
+    expect(JSON.parse(campaignCookieValue(other, '/order', cookie) ?? '')).toMatchObject({
+      landingPath: '/order',
+    });
+  });
+
+  test('a malformed or hand-edited cookie gains nothing', () => {
+    expect(readCampaignCookie(undefined)).toBeUndefined();
+    expect(readCampaignCookie('not json')).toBeUndefined();
+    expect(readCampaignCookie('null')).toBeUndefined();
+    expect(readCampaignCookie(JSON.stringify({ params: { secret: 'x' } }))).toBeUndefined();
+    expect(readCampaignCookie('x'.repeat(3000))).toBeUndefined();
+    const edited = readCampaignCookie(
+      JSON.stringify({
+        params: { utm_source: 'ok', token: 'drop', utm_medium: 42 },
+        landingPath: 'https://evil.example/x?y',
+      }),
+    );
+    expect(edited).toEqual({ searchParams: { utm_source: 'ok' }, landingPath: undefined });
+    for (const path of ['//evil.example', '/a?b', '/a#b', 'relative']) {
+      const attribution = captureRawAttribution({
+        searchParams: {},
+        referrer: undefined,
+        origin: ORIGIN,
+        landingPath: path,
+      });
+      expect(attribution['landingPath']).toBe('/order');
+    }
   });
 });

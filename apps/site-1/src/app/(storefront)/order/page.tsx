@@ -1,7 +1,7 @@
 import type { WebsiteOffer } from '@/lib/offers';
 import { pageMetadata } from '@/lib/page-metadata';
 import type { Metadata } from 'next';
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import {
   Button,
   Card,
@@ -13,7 +13,12 @@ import {
 import { productTypeSchema, provinceFromName } from '@canadian-plans/contracts';
 
 import { getBackendClient } from '@/lib/backendClient';
-import { captureRawAttribution, type SearchParams } from '@/lib/attribution';
+import {
+  CAMPAIGN_COOKIE,
+  captureRawAttribution,
+  rememberedCampaign,
+  type SearchParams,
+} from '@/lib/attribution';
 import { offersFromPlans } from '@/lib/offers';
 import { hasSavedLead, readOrderDraft } from './draft';
 import { OrderFormHost } from './order-form-host';
@@ -37,10 +42,14 @@ export default async function OrderPage({ searchParams }: { searchParams: Promis
   const headerList = await headers();
   const host = headerList.get('host');
   const origin = host ? `${headerList.get('x-forwarded-proto') ?? 'http'}://${host}` : undefined;
+  // The campaign remembered from the page the visitor landed on earlier in the
+  // visit (src/proxy.ts), unless this URL names a different one.
+  const remembered = rememberedCampaign(params, (await cookies()).get(CAMPAIGN_COOKIE)?.value);
   const attribution = captureRawAttribution({
-    searchParams: params,
+    searchParams: remembered ? { ...params, ...remembered.searchParams } : params,
     referrer: headerList.get('referer') ?? undefined,
     origin,
+    landingPath: remembered?.landingPath,
   });
   const draft = await readOrderDraft();
   let savedDraft: SavedOrderDraft | undefined;

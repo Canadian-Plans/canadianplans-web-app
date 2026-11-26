@@ -1,7 +1,8 @@
 # Launch posts — first customers (task 6.3)
 
-**Status: draft for the owner to review (22 October 2026). Do not post until `/order` lists
-plans on production** (the backend deploy, launch task 1.2, and the order check, 3.8).
+**Status: draft for the owner to review (22 October 2026; links and prices checked against the
+live site 26 November 2026).** `/order` lists the 23 launch plans on production. Post after a
+test order of each kind has gone through the live CRM (see `docs/STOREFRONT_ONLY.md`).
 
 Owner choices (22 Oct 2026): every channel the owner can reach (WhatsApp groups, Facebook
 groups, international-student groups, agents and friends); English only; no launch offer,
@@ -12,27 +13,30 @@ there.
 ## Links with tracking
 
 Each channel gets its own link so the order records where the customer came from (the
-site stores `utm_source`, `utm_medium` and `utm_campaign` with the lead).
+site stores `utm_source`, `utm_medium` and `utm_campaign` with the lead). The links open the
+plan list on `/order`, the shortest way to an order. A tagged link to any other page (the
+home page, a landing page or a guide) also works: the site remembers the campaign for the
+visit and records it with the order.
 
-| Channel              | Link                                                                                    |
-| -------------------- | --------------------------------------------------------------------------------------- |
-| WhatsApp groups      | `https://canadianplans.com/?utm_source=whatsapp&utm_medium=social&utm_campaign=launch`  |
-| Facebook groups      | `https://canadianplans.com/?utm_source=facebook&utm_medium=social&utm_campaign=launch`  |
-| Student associations | `https://canadianplans.com/?utm_source=students&utm_medium=partner&utm_campaign=launch` |
-| Agents and friends   | `https://canadianplans.com/?utm_source=agents&utm_medium=referral&utm_campaign=launch`  |
+| Channel              | Link                                                                                         |
+| -------------------- | -------------------------------------------------------------------------------------------- |
+| WhatsApp groups      | `https://canadianplans.com/order?utm_source=whatsapp&utm_medium=social&utm_campaign=launch`  |
+| Facebook groups      | `https://canadianplans.com/order?utm_source=facebook&utm_medium=social&utm_campaign=launch`  |
+| Student associations | `https://canadianplans.com/order?utm_source=students&utm_medium=partner&utm_campaign=launch` |
+| Agents and friends   | `https://canadianplans.com/order?utm_source=agents&utm_medium=referral&utm_campaign=launch`  |
 
 ## 1. WhatsApp message (short)
 
 > Hi everyone 👋 We've opened **Canadian Plans** — phone and internet plans for people
 > living in or moving to Canada.
 >
-> 📱 Mobile plans from $40/mo (bring your own phone, keep your number)
+> 📱 Mobile plans from $55/mo (bring your own phone, keep your number)
 > ✈️ Canadian eSIM before you land, from $35/mo, nothing to pay today
 > 🏠 Home internet in BC, Alberta, Manitoba and Saskatchewan, from $50/mo
 >
 > Nothing is paid on the website. A real advisor confirms everything with you, usually the
 > same day.
-> 👉 [WhatsApp link]
+> 👉 https://canadianplans.com/order?utm_source=whatsapp&utm_medium=social&utm_campaign=launch
 > Questions: +1 778-682-3771 · info@canadianplans.com
 
 ## 2. Facebook group post
@@ -42,7 +46,7 @@ site stores `utm_source`, `utm_medium` and `utm_campaign` with the lead).
 > We're Canadian Plans, a small team in Surrey, BC. We help newcomers, students and
 > families choose a phone or internet plan and set it up with a real person, not a chatbot.
 >
-> - **Mobile plans** from $40/mo with unlimited Canada talk and text. Bring your own
+> - **Mobile plans** from $55/mo with unlimited Canada talk and text. Bring your own
 >   unlocked phone and keep your number.
 > - **Pre-arrival eSIM**: get a Canadian number before you fly, from $35/mo, $0 to order.
 > - **Home internet** in British Columbia, Alberta, Manitoba and Saskatchewan, from $50/mo,
@@ -51,7 +55,7 @@ site stores `utm_source`, `utm_medium` and `utm_campaign` with the lead).
 > You don't pay anything on our website. Send your details and an advisor confirms your
 > plan and price, usually the same day. Prices in CAD, taxes extra.
 >
-> 👉 [Facebook link]
+> 👉 https://canadianplans.com/order?utm_source=facebook&utm_medium=social&utm_campaign=launch
 
 ## 3. Message for student associations and agents
 
@@ -63,13 +67,15 @@ site stores `utm_source`, `utm_medium` and `utm_campaign` with the lead).
 >
 > - Pre-arrival eSIM plans from $35/mo (study permit, work permit and PR arrivals; visitor
 >   plans for stays under 90 days), with nothing to pay when ordering.
-> - Mobile plans from $40/mo for people already in Canada, bring your own phone.
+> - Mobile plans from $55/mo for people already in Canada, bring your own phone.
 > - Home internet in BC, AB, MB and SK from $50/mo.
 >
 > Would you be open to sharing this with your students or clients before the next intake?
 > I'm happy to answer any questions: +1 778-682-3771 or info@canadianplans.com.
 >
-> 👉 [Students or Agents link]
+> 👉 https://canadianplans.com/order?utm_source=students&utm_medium=partner&utm_campaign=launch
+>
+> _(For an agent, use the `agents` link from the table instead.)_
 >
 > Thank you,
 > Takib, Canadian Plans

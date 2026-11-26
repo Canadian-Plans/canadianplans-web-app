@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import sitemap from './sitemap';
 import { getLegalPage } from '../lib/legal';
-import { INDEXABLE_PATHS, publicRobots } from '../lib/seo';
+import { INDEXABLE_PATHS, STOREFRONT_INDEXING_OPEN, publicRobots } from '../lib/seo';
 vi.mock('../lib/legal', () => ({ getLegalPage: vi.fn() }));
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -23,16 +23,22 @@ describe('publication-aware sitemap', () => {
       body: [],
       source: slug === 'privacy' ? 'sanity' : 'test_placeholder',
     }));
-    expect((await sitemap()).map((row) => row.url)).toEqual([
-      'https://example.test/accessibility',
-      'https://example.test/privacy',
-    ]);
+    const urls = (await sitemap()).map((row) => row.url);
+    expect(urls).toContain('https://example.test/accessibility');
+    expect(urls).toContain('https://example.test/privacy');
+    expect(urls).not.toContain('https://example.test/terms');
+    for (const path of ['/order', '/track', '/track-order', '/search', '/business-internet']) {
+      expect(urls).not.toContain(`https://example.test${path}`);
+    }
   });
-  it('keeps commercial pages noindex while launch step 6.1 is closed', () => {
+  it('leaves commercial pages and guides to the layout, and keeps order and tracking noindex', () => {
+    expect(STOREFRONT_INDEXING_OPEN).toBe(true);
     for (const path of ['/', '/mobile-plans', '/guides/best-sim-for-students-from-india']) {
+      expect(publicRobots(path)).toBeUndefined();
+    }
+    for (const path of ['/order', '/track', '/business-internet']) {
       expect(publicRobots(path)).toEqual({ index: false, follow: false });
     }
-    expect(publicRobots('/order')).toEqual({ index: false, follow: false });
   });
 });
 describe('sitemap once indexing is open', () => {

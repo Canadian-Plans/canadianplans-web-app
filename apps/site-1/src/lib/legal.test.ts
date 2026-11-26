@@ -118,8 +118,8 @@ describe('getLegalPage without Sanity', () => {
     for (const slug of ['privacy', 'terms'] as const) {
       const page = await getLegalPage(slug);
       expect(page.source).toBe('repo');
-      expect(page.version).toBe(2);
-      expect(page.effectiveDate).toBe('2026-10-21');
+      expect(page.version).toBe(slug === 'privacy' ? 3 : 2);
+      expect(page.effectiveDate).toBe(slug === 'privacy' ? '2026-11-26' : '2026-10-21');
       const text = page.body.map((block) => block.children?.map((c) => c.text).join('')).join('\n');
       expect(text).toContain('9981 Whalley Blvd, Surrey, BC V3T 0A8');
       expect(text).toContain('info@canadianplans.com');
@@ -155,7 +155,7 @@ it('does not serve an older CMS privacy policy over the current owner-approved r
   });
   try {
     const page = await getLegalPage('privacy');
-    expect(page).toMatchObject({ source: 'repo', version: 2, effectiveDate: '2026-10-21' });
+    expect(page).toMatchObject({ source: 'repo', version: 3, effectiveDate: '2026-11-26' });
     expect(
       page.body.map((block) => block.children?.map((child) => child.text).join('')).join('\n'),
     ).toContain('until you ask us to delete them');
