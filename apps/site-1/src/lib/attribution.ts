@@ -131,3 +131,35 @@ export function captureRawAttribution(sources: AttributionSources): RawAttributi
 
   return attribution;
 }
+
+/**
+ * The campaign query parameters to carry onto the next `/order` address, rebuilt
+ * from an already-captured attribution object (so every value has passed the
+ * screening above). Choosing a category, a province or a plan moves the customer
+ * to a new `/order` URL; without these the `utm_*` and partner code they landed
+ * with would be lost before the lead is saved.
+ */
+export function campaignQueryParams(attribution: RawAttribution): [string, string][] {
+  const params: [string, string][] = [];
+  for (const [queryKey, field] of UTM_KEYS) {
+    const value = attribution[field];
+    if (typeof value === 'string' && value.length > 0) params.push([queryKey, value]);
+  }
+  const partner = attribution['partnerCode'];
+  if (typeof partner === 'string' && partner.length > 0) params.push(['partner', partner]);
+  return params;
+}
+
+/** An `/order` address with the given parameters plus the carried campaign parameters. */
+export function orderHref(
+  params: Record<string, string | undefined>,
+  attribution: RawAttribution,
+): string {
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value) query.set(key, value);
+  }
+  for (const [key, value] of campaignQueryParams(attribution)) query.set(key, value);
+  const text = query.toString();
+  return text ? `/order?${text}` : '/order';
+}

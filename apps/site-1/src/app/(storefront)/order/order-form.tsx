@@ -26,6 +26,7 @@ import {
 } from '@canadian-plans/ui';
 
 import { orderFormContent } from '@content/order-forms';
+import { campaignQueryParams, orderHref } from '@/lib/attribution';
 
 import { trackPlanSelected, trackRegionSelected } from '../../../lib/analytics';
 import { requestCallback, requestQuote, saveDetails, saveDocuments, submitOrder } from './actions';
@@ -374,7 +375,14 @@ export function OrderForm({
             ) : null}
             <Button asChild className="w-full sm:w-auto">
               <Link
-                href={`/order?plan=${encodeURIComponent(offer.productId)}${commercial.productType === 'internet' && province ? `&province=${province}` : ''}`}
+                href={orderHref(
+                  {
+                    plan: offer.productId,
+                    province:
+                      commercial.productType === 'internet' && province ? province : undefined,
+                  },
+                  attribution,
+                )}
               >
                 {orderFormContent.planStep.select}
                 <span className="sr-only">: {commercial.offerName}</span>
@@ -432,6 +440,9 @@ export function OrderForm({
               </NativeSelect>
             </FormField>
           </div>
+          {campaignQueryParams(attribution).map(([key, value]) => (
+            <input key={key} type="hidden" name={key} value={value} />
+          ))}
           <Button type="submit" variant="outline">
             {copy.provinceApply}
           </Button>
@@ -467,7 +478,7 @@ export function OrderForm({
                 </CardHeader>
                 <CardContent>
                   <Button asChild>
-                    <Link href={`/order?category=${type}`}>
+                    <Link href={orderHref({ category: type }, attribution)}>
                       {copy.seePlans}
                       <span className="sr-only"> for {copy.categories[type]}</span>
                     </Link>
@@ -513,7 +524,10 @@ export function OrderForm({
           ) : (
             <>
               {active && present.length > 1 ? (
-                <Link href="/order" className="inline-flex min-h-11 items-center text-sm underline">
+                <Link
+                  href={orderHref({}, attribution)}
+                  className="inline-flex min-h-11 items-center text-sm underline"
+                >
                   ← {copy.allCategories}
                 </Link>
               ) : null}

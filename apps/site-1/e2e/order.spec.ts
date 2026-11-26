@@ -206,6 +206,36 @@ test.describe('pre-arrival SIM order', () => {
     });
   });
 
+  test('a campaign link to the plan list keeps its attribution through category and plan', async ({
+    page,
+  }) => {
+    // The launch posts link to the plan list; choosing a type and a plan moves
+    // to new /order addresses, which must carry the campaign along.
+    await visit(
+      page,
+      '/order?utm_source=whatsapp&utm_medium=social&utm_campaign=launch&ref=AGENT7',
+    );
+    await page.getByRole('link', { name: /^See plans\s*for Pre-arrival eSIM$/ }).click();
+    await expect(page).toHaveURL(/category=sim/);
+    await expect(page).toHaveURL(/utm_campaign=launch/);
+    await formReady(page);
+    await selectPlan(page, 'E2E Passport Plan');
+    await expect(page.getByRole('heading', { name: 'Your details' })).toBeVisible();
+    await formReady(page);
+    await fillSimDetails(page);
+    await continueFromDetails(page);
+
+    const leads = await stub.leads();
+    expect(leads).toHaveLength(1);
+    expect(leads[0]?.attribution).toEqual({
+      utmSource: 'whatsapp',
+      utmMedium: 'social',
+      utmCampaign: 'launch',
+      partnerCode: 'AGENT7',
+      landingPath: '/order',
+    });
+  });
+
   test('a reload mid-draft restores the details without exposing the draft grant', async ({
     page,
     context,

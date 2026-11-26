@@ -105,27 +105,32 @@ not in these runs.
 
 ## What is not done yet
 
-- **Nothing here was tried against the live CRM**: the storefront has no site
-  key yet. The unit tests use a fake client and the browser suites use the stub
-  above. A test order of each kind against the live CRM, followed on `/track`,
-  is the owner's final check.
+- **No order has been tried against the live CRM.** Reading works: on
+  2026-11-26 the live `/order` listed the 23 launch plans from the CRM's
+  `GET /website/plans`, so production has a working site key. Saving, uploads,
+  submitting, emails and `/track` have only run against the stub above. A test
+  order of each kind against the live CRM, followed on `/track`, is the owner's
+  final check.
 - **`/order/pre-arrival` and `/order/home-internet`** were preview-only pages
   before the split and still are.
 - **The old `packages/contracts`** can be cut down to the province helpers and
   `cms/` once nothing else imports it.
-- **Campaign attribution** (`utm_*`, partner code) is recorded only when the
-  customer lands on a link that already names the plan
-  (`/order?plan=…&utm_source=…`): choosing a plan from the list moves to a new
-  address without those parameters. Decide whether the storefront should carry
-  them across.
+- **Campaign attribution** (`utm_*`, partner code) is read only on `/order`.
+  Since 2026-11-26 the order form carries it across choosing a plan type, a
+  province and a plan (`orderHref` in `src/lib/attribution.ts`), so a link to
+  `/order?utm_source=…` keeps it to the saved lead. A campaign link to any other
+  page (the home page, a landing page) still loses it: carrying it from there
+  would need the site to remember it in the browser, which is a consent
+  decision for the owner.
 
 ## What comes next
 
-1. In the CRM admin: create the site key (the three scopes above), save the
-   email settings and enter the plans with the properties above.
-2. In the storefront's Vercel project: set `SITE_1_BACKEND_URL` to the CRM
-   backend's origin and `SITE_1_SERVICE_CREDENTIAL` to the new key, then deploy
-   this branch.
+1. In the CRM admin: save the email settings (the site key and the plans are
+   in place, see above).
+2. Deploy `main` to the storefront's Vercel project (search indexing was opened
+   on 2026-11-26, `STOREFRONT_INDEXING_OPEN` in `src/lib/seo.ts`), then submit
+   `https://canadianplans.com/sitemap.xml` to Google Search Console and Bing
+   Webmaster Tools.
 3. Place a test order of each kind and follow it on `/track`. This is the check
    the browser suites cannot make.
 

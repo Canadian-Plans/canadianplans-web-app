@@ -8,12 +8,13 @@
 const DEFAULT_BASE_URL = 'http://localhost:3001';
 
 /**
- * Launch step 6.1 switch: while false every commercial page stays noindex and
- * off the sitemap; flip to true (one deploy) to open the storefront to search.
- * Order, tracking, search, dev, Studio, legacy plan and business pages are never
- * listed regardless of this flag.
+ * Launch step 6.1 switch, opened 2026-11-26: the commercial pages and guides are
+ * indexable and in the sitemap on the production deployment. Set it back to false
+ * (one deploy) to take every commercial page out of search again. Order, tracking,
+ * search, dev, Studio, legacy plan and business pages are never listed regardless
+ * of this flag, and preview deployments stay noindex (`isIndexable`).
  */
-export const STOREFRONT_INDEXING_OPEN = false;
+export const STOREFRONT_INDEXING_OPEN = true;
 
 export const INDEXABLE_PATHS: readonly string[] = [
   '/',

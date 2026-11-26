@@ -438,12 +438,17 @@ Depends on Stage 1 findings and the Stage 2 answers.
 
 ## Stage 6 — Go live (Both)
 
-- ☑ **6.1 Open to search engines** _(Claude)_ — production robots/sitemap allow indexing;
+- ◐ **6.1 Open to search engines** _(Claude)_ — production robots/sitemap allow indexing;
   only `/business-internet` stays noindex. One switch: flip `STOREFRONT_INDEXING_OPEN`
   in `apps/site-1/src/lib/seo.ts` to `true` and deploy; the commercial pages and the
   sitemap follow it (`publicRobots()` / `INDEXABLE_PATHS`). _25 Oct: live robots.txt is
   `Allow: /` with `/studio` and `/api` disallowed; sitemap.xml returns 200. Not verified:
   sitemap submission to Google Search Console / Bing._
+  _26 Nov: correction. The switch itself was still `false` in the code, so every commercial
+  page carried `noindex, nofollow` and the live sitemap listed only `/accessibility`,
+  `/privacy` and `/terms` (robots.txt allowed crawling, but the pages asked not to be
+  indexed). Flipped to `true` on branch `ccr-3906a09d-e6ab7j`; live once merged and deployed.
+  Then submit the sitemap to Google Search Console and Bing._
 - ☑ **6.2 Analytics** _(Both)_ — Umami (or chosen tool) recording visits and order starts.
   _25 Oct: self-hosted Umami at umami.canadianplans.com (OPEN_INPUTS #12). Backend
   `UMAMI_EVENTS_URL`, `UMAMI_WORKSPACE_WEBSITES`, `UMAMI_HOSTNAME` set on Railway (live

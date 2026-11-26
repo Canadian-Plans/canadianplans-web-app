@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { captureRawAttribution } from './attribution';
+import { campaignQueryParams, captureRawAttribution, orderHref } from './attribution';
 
 const ORIGIN = 'https://site-1.example';
 
@@ -98,5 +98,54 @@ describe('captureRawAttribution', () => {
     ).toEqual({
       landingPath: '/order',
     });
+  });
+});
+
+describe('carrying campaign parameters across /order', () => {
+  const landed = captureRawAttribution({
+    searchParams: {
+      utm_source: 'whatsapp',
+      utm_medium: 'social',
+      utm_campaign: 'launch',
+      ref: 'AGENT-7',
+      secret: 'do-not-forward',
+    },
+    referrer: undefined,
+    origin: ORIGIN,
+  });
+
+  test('rebuilds only the screened utm and partner keys', () => {
+    expect(campaignQueryParams(landed)).toEqual([
+      ['utm_source', 'whatsapp'],
+      ['utm_medium', 'social'],
+      ['utm_campaign', 'launch'],
+      ['partner', 'AGENT-7'],
+    ]);
+  });
+
+  test('a plan link keeps the campaign, and the next page captures it again', () => {
+    const href = orderHref({ plan: 'plan id/1', province: 'BC' }, landed);
+    expect(href).toBe(
+      '/order?plan=plan+id%2F1&province=BC&utm_source=whatsapp&utm_medium=social&utm_campaign=launch&partner=AGENT-7',
+    );
+    const next = new URL(href, ORIGIN);
+    const again = captureRawAttribution({
+      searchParams: Object.fromEntries(next.searchParams),
+      referrer: `${ORIGIN}/order`,
+      origin: ORIGIN,
+    });
+    expect(again).toMatchObject({
+      utmSource: 'whatsapp',
+      utmMedium: 'social',
+      utmCampaign: 'launch',
+      partnerCode: 'AGENT-7',
+    });
+    expect(href).not.toContain('do-not-forward');
+  });
+
+  test('no campaign and no parameters gives the bare order page', () => {
+    const plain = captureRawAttribution({ searchParams: {}, referrer: undefined, origin: ORIGIN });
+    expect(orderHref({ category: undefined }, plain)).toBe('/order');
+    expect(orderHref({ category: 'sim' }, plain)).toBe('/order?category=sim');
   });
 });
