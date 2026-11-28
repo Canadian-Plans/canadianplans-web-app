@@ -24,9 +24,12 @@ export const siteConfig = {
     termsVersion: 'terms-2026-10-v2',
     /**
      * Version of the credit-check consent a mobile customer accepts, recorded with
-     * the order (invariant 11). TEST placeholder until the owner approves the text.
+     * the order (invariant 11): `fields.creditCheckConsent` in
+     * `content/order-forms.ts`, approved by the owner on 28 November 2026. Change
+     * both together. The three versions of a mobile order are joined into one
+     * field of at most 64 characters (`consentVersionSchema`).
      */
-    creditCheckConsentVersion: 'TEST-credit-check-v1',
+    creditCheckConsentVersion: 'credit-check-2026-11-v1',
     /**
      * Version of the notice shown with the region wish list, recorded with the
      * address (ADR 0005, D5). TEST placeholder until the owner approves the text.

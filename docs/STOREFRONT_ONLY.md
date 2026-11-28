@@ -126,8 +126,9 @@ not in these runs.
 
 The plan for the next session is [LAUNCH_NEXT.md](LAUNCH_NEXT.md) (written
 2026-11-26): test orders of all three kinds passed on the live site; next are
-search engine registration, the credit-check consent version, Resend delivery
-reports and the launch posts.
+search engine registration, Resend delivery reports and the launch posts. The
+owner approved the credit-check consent text on 2026-11-28
+(`credit-check-2026-11-v1`).
 
 ## Reading the older documents
 

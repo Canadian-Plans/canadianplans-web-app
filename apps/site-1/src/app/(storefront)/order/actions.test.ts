@@ -47,7 +47,7 @@ const LEAD_B = '22222222-2222-4222-8222-222222222222';
 const PRODUCT_ID = '33333333-3333-4333-8333-333333333333';
 const TERMS = 'terms-2026-10-v2';
 const CONSENT = 'privacy-2026-11-v3';
-const CREDIT_CHECK = 'TEST-credit-check-v1';
+const CREDIT_CHECK = 'credit-check-2026-11-v1';
 const FIRST_CONSENT_AT = '2026-10-20T12:00:00.000Z';
 
 /** A plan as the CRM returns it for the storefront. */

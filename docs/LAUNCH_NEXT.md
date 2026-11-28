@@ -27,7 +27,8 @@ or clicks.
 
 - ☐ Confirm `/track` listed all three test orders for the test email.
 - ☐ Archive the three test orders in the CRM admin (Leads → each order's menu,
-  or the toolbar's bulk archive) so they stay out of reports.
+  or the toolbar's bulk archive) so they stay out of reports. None was archived
+  on 2026-11-28.
 
 ### 2. Search engines _(Owner, 10 min; Claude can check afterwards)_
 
@@ -36,17 +37,20 @@ or clicks.
   request indexing of `https://canadianplans.com/`.
 - ☐ Bing Webmaster Tools: **Import from Google Search Console**.
 - Done when both show the sitemap as read without errors.
+- On 2026-11-28 DNS had no Google verification record yet.
 
 ### 3. Credit-check consent text _(Both, 15 min)_
 
-Mobile orders still record the placeholder version `TEST-credit-check-v1`
-(`apps/site-1/src/site.config.ts`, `legal.creditCheckConsentVersion`).
+The owner approved the text as written on 2026-11-28. Mobile orders record
+`credit-check-2026-11-v1` once this change is merged and deployed
+(`apps/site-1/src/site.config.ts`, `legal.creditCheckConsentVersion`). The text
+lives in `apps/site-1/content/order-forms.ts`.
 
-- ☐ Claude shows the owner the consent text the mobile form displays (the copy
-  lives in `apps/site-1/content/order-forms.ts`).
-- ☐ The owner approves it as written or gives new wording.
-- ☐ Claude sets a real version (for example `credit-check-2026-11-v1`), updates
-  the tests that name the version, runs unit and browser tests, opens a PR.
+- ☑ Claude shows the owner the consent text the mobile form displays.
+- ☑ The owner approves it as written.
+- ☑ Claude sets the version, updates the test that names it, runs unit and
+  browser tests, opens a PR.
+- ☐ Owner: merge the PR.
 
 ### 4. Resend delivery reports _(Both, 15 min)_
 
@@ -56,9 +60,25 @@ on Railway has no Resend webhook entry. Emails still send; bounces and
 deliveries are just not recorded on the lead.
 
 - ☐ Owner: in the Canadian Plans Resend account, open the webhook that points at
-  the backend and copy its signing secret into the password manager.
-- ☐ Claude: add the webhook entry to `MACHINE_REGISTRY_JSON` (format in the CRM's
-  `docs/ENV.md`); the owner pastes the secret on Railway, never in chat.
+  the backend, check that it is still enabled (on 2026-11-28 the logs showed one
+  post since 2026-11-26, for the first of five emails) and copy its signing
+  secret into the password manager.
+- ☐ Owner: add this to the `webhooks` list of `MACHINE_REGISTRY_JSON` on
+  Railway, keeping the other entries, and paste the secret there, never in chat.
+  Keep `providerAccount` as written: it matches the emails already sent, and the
+  CRM's `docs/ENV.md` warns that another account stops the site's mail.
+
+  ```json
+  {
+    "selector": "resend-site-1",
+    "provider": "resend",
+    "providerAccount": "canadianplans-resend",
+    "workspaceId": "60942550-3167-41dd-9256-c712cd8a7bc5",
+    "actorId": "8e8ea263-d0bd-4894-903d-e952844189c2",
+    "verificationSecret": "<signing secret, starts whsec_>"
+  }
+  ```
+
 - Done when a new email's delivery shows on its lead and the log has no `401`.
 
 ### 5. Rename the Railway project _(Owner, 1 min)_
@@ -85,7 +105,10 @@ deliveries are just not recorded on the lead.
 
 ### 8. Can wait
 
-- ☐ Lawyer's reply on terms v2 and privacy v3 (OPEN_INPUTS #24).
+- ☐ Lawyer's reply on terms v2 and privacy v3 (OPEN_INPUTS #24). Ask about this
+  too: terms §6 and privacy §1 say we ask for a copy of government ID for mobile
+  plans, but the mobile order form collects none, and the approved consent text
+  does not say when it is asked for or who runs the check.
 - ☐ Branded covers for the 10 guides still on a placeholder
   (`apps/site-1/content/guide-covers.ts`).
 - ☐ Backups: revisit before the customer base grows (CRM
